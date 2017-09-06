@@ -121,7 +121,7 @@ occa::kernel calcDiscBottomSurf;
 occa::kernel calcEdgeValues;
 occa::kernel preservePosivitity;
 occa::kernel FindLambdaMax;
-occa::kernel modifyGradient;
+occa::kernel scaleGradient;
 occa::kernel SurfaceKernelVisc;
 occa::kernel UpdateQt;
 
@@ -183,7 +183,7 @@ dfloat epsilon_0,sigma_min,sigma_max;
 dfloat t=0.0;
 int NumPlots,NumTimeChecks,Testcase;
 ReadInputFile(&N, &meshFile,&CFL,&DFL,&T,&g_const,&ArtificialViscosity,&PositivityPreserving,&epsilon_0,&sigma_min,&sigma_max,&PlotVar,&NumPlots,&NumTimeChecks,&Testcase,&ES,&NumFlux,&Fluxdifferencing,&Cartesian,&rkorder, &rkSSP);
-if (Testcase == 14){
+if (Testcase == 31){
     dfloat h0 = 0.1;
     dfloat a=1.0;
     dfloat omega = sqrt(2*g_const*h0)/a;
@@ -749,17 +749,13 @@ free(y_phy);
 if(MPI.rank==0){cout <<"Build Kernels...\n";}
 
 switch(Testcase){
-case 1: // THIS INCLUDES DIRICHLET BOUNDARIES
+case 1: {// THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
     CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/Dirichlet_ConvTest.okl","CollectEdgeData",info);
-    addS = device.buildKernelFromSource("okl/ManufacturedSolutions/S_ConvTest1.okl","addS",info);
-    break;
-case 15: // THESE ARE THE INFLOW BOUNDARIES FOR 3 MOUND INFLOW ONLY
+    addS = device.buildKernelFromSource("okl/ManufacturedSolutions/S_ConvTest.okl","addS",info);
+    break;}
+case 32:{ // Inflow Boundaries for 3 Mound PP test case
     CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/3MoundInflow.okl","CollectEdgeData",info);
-    break;
-case 16: // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
-    CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/Dirichlet_PeriodicConvTest.okl","CollectEdgeData",info);
-    addS = device.buildKernelFromSource("okl/ManufacturedSolutions/S_ConvTest2.okl","addS",info);
-    break;
+    break;}
 default:
     CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/SolidWalls.okl","CollectEdgeData",info);
     break;
@@ -829,8 +825,8 @@ if (ArtificialViscosity){
     CollectEdgeDataGradient =   device.buildKernelFromSource("okl/BR1_Gradient/CollectEdgeDataGradient.okl","CollectEdgeDataGradient",info);
     SurfaceKernelGradient   =   device.buildKernelFromSource("okl/BR1_Gradient/SurfaceKernelGradient.okl","SurfaceKernelGradient",info);
     calcGradient            =   device.buildKernelFromSource("okl/BR1_Gradient/calcGradient.okl","calcGradient",info);
-    calcNumFluxesGradient   =   device.buildKernelFromSource("okl/BR1_Gradient/calcNumFluxesGradientMod.okl","calcNumFluxesGradient",info);
-    modifyGradient          =   device.buildKernelFromSource("okl/BR1_Gradient/ModifyGradient.okl","modifyGradient",info);
+    calcNumFluxesGradient   =   device.buildKernelFromSource("okl/BR1_Gradient/calcNumFluxesGradient.okl","calcNumFluxesGradient",info);
+    scaleGradient          =   device.buildKernelFromSource("okl/BR1_Gradient/scaleGradient.okl","scaleGradient",info);
 
 
 
@@ -905,7 +901,18 @@ o_bL.copyFrom(bL);
 o_bR.copyFrom(bR);
 
 
-
+//for (int i=0; i<=Nfaces;i++){
+//        cout << " proc: " << MPI.rank << " edge " << i <<"\n";
+//        cout  << " bL: ";
+//        for (int i_ngl=0; i_ngl<ngl; i_ngl++){
+//             cout << bL[i*ngl+i_ngl] <<"  ";
+//        }
+//        cout  << "\n bR: ";
+//        for (int i_ngl=0; i_ngl<ngl; i_ngl++){
+//             cout  <<   bR[i*ngl+i_ngl] <<"  ";
+//        }
+//cout << "\n";
+//}
 
 
 
@@ -923,22 +930,8 @@ if(t>=mCheckpoints[plotCount]){
     if(MPI.rank==0){
         CollectSolution( MPI, DGMeshPartition, q, Q_global);
         PlotSolution(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount);
-//        if(ArtificialViscosity==1){
-//            CollectViscPara(MPI,   DGMeshPartition, ViscPara, ViscPara_Global);
-//            PlotViscoseParameter(Nelem_global, ngl, x_phy_global,y_phy_global, ViscPara_Global, plotCount);
-//
-//            CollectViscosity( MPI, DGMeshPartition, Qx,Qy, Qx_global, Qy_global);
-//            PlotViscosity(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Qx_global,Qy_global,plotCount);
-//
-//        }
     }else{
-
         SendSolution(MPI, DGMeshPartition,  q);
-//        if(ArtificialViscosity==1){
-//            SendViscPara(MPI, DGMeshPartition,  ViscPara);
-//
-//            SendViscosity(MPI, DGMeshPartition,  Qx,Qy);
-//        }
     }
 
     plotCount=plotCount+1;
@@ -1162,7 +1155,7 @@ device.finish();
 
 
 
-modifyGradient(Nelem,o_q,o_qGradientX,o_qGradientY);
+scaleGradient(Nelem,o_q,o_qGradientX,o_qGradientY);
 
 
 
@@ -1178,7 +1171,7 @@ o_qGradientYL.copyTo(qGradientYL);
 o_qGradientYR.copyTo(qGradientYR);
 
 
-
+// not an OCCA kernel, this is MPI communication for exchanging gradient data
 CollectViscoseEdgeDataMPI(MPI, DGMeshPartition, ViscParaL, ViscParaL, qGradientXL,  qGradientXR,qGradientYL,qGradientYR);
 
 

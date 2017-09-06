@@ -23,7 +23,6 @@
 
         if (EdgesToSend > 0){
             int id = (startIndex) * ngl*Neq;
-            int idx = (startIndex) * ngl;
             int tagSend = MeshSplit.CommTags(MPI.rank+1,cpuR+1);
             int tagRecv = MeshSplit.CommTags(cpuR+1,MPI.rank+1);
 //            int PackSizeQ = EdgesToSend*ngl*Neq;
@@ -80,7 +79,7 @@
         int cpuR = i-1;
 
         if (EdgesToSend > 0){
-            int id = (startIndex) * ngl*Neq;
+
             int idx = (startIndex) * ngl;
             int tagSend = MeshSplit.CommTags(MPI.rank+1,cpuR+1);
             int tagRecv = MeshSplit.CommTags(cpuR+1,MPI.rank+1);

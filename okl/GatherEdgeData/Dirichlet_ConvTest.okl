@@ -1,18 +1,19 @@
 
+
 #define InitQNodal(x[idxR],y[idxR],q1,q2,q3,t,bL[edgeIDX])				\
       {		  barrier(localMemFence);							\
 
-	q1 = (8.0+cos(x[idxR])*sin(y[idxR])*cos(t)-bL[edgeIDX]);					\
-	q2 = 0.5*(8.0+cos(x[idxR])*sin(y[idxR])*cos(t)-bL[edgeIDX]);					\
-	q3 = 1.5*(8.0+cos(x[idxR])*sin(y[idxR])*cos(t)-bL[edgeIDX]);					\
+	q1 = (8.0+cos(2.0*PI*x[idxR])*sin(2.0*PI*y[idxR])*cos(t)-bL[edgeIDX]);					\
+	q2 = 0.5*(8.0+cos(2.0*PI*x[idxR])*sin(2.0*PI*y[idxR])*cos(t)-bL[edgeIDX]);					\
+	q3 = 1.5*(8.0+cos(2.0*PI*x[idxR])*sin(2.0*PI*y[idxR])*cos(t)-bL[edgeIDX]);					\
       }
 
 #define InitQNodal(x[idxL],y[idxL],q1,q2,q3,t,bR[edgeIDX])					\
       {		  barrier(localMemFence);							\
 
-	q1 = (8.0+cos(x[idxL])*sin(y[idxL])*cos(t)-bR[edgeIDX]);					\
-	q2 = 0.5*(8.0+cos(x[idxL])*sin(y[idxL])*cos(t)-bR[edgeIDX]);					\
-	q3 = 1.5*(8.0+cos(x[idxL])*sin(y[idxL])*cos(t)-bR[edgeIDX]);					\
+	q1 = (8.0+cos(2.0*PI*x[idxL])*sin(2.0*PI*y[idxL])*cos(t)-bR[edgeIDX]);					\
+	q2 = 0.5*(8.0+cos(2.0*PI*x[idxL])*sin(2.0*PI*y[idxL])*cos(t)-bR[edgeIDX]);					\
+	q3 = 1.5*(8.0+cos(2.0*PI*x[idxL])*sin(2.0*PI*y[idxL])*cos(t)-bR[edgeIDX]);					\
       }
 
 kernel void CollectEdgeData(const int Nfaces,const int * EdgeData,const dfloat * Q,const dfloat * x,const dfloat * y,const dfloat * normx,const dfloat * normy,const dfloat * bL, const dfloat * bR, dfloat * qL, dfloat * qR,const dfloat t)

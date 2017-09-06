@@ -22,18 +22,8 @@ kernel void calcNumFluxes(const int Nfaces,const dfloat * normalx,const dfloat *
 
 
                 const dfloat hL=qL[edgeID];
-//                const dfloat huL=qL[edgeID+ngl];
-//                const dfloat hvL=qL[edgeID+ngl+ngl];
-//                const dfloat uL=qL[edgeID+ngl]/hL;
-//                const dfloat vL=qL[edgeID+ngl+ngl]/hL;
-
                 const dfloat hR=qR[edgeID];
 
-
-//                const dfloat huR=qR[edgeID+ngl];
-//                const dfloat hvR=qR[edgeID+ngl+ngl];
-//                const dfloat uR=qR[edgeID+ngl]/hR;
-//                const dfloat vR=qR[edgeID+ngl+ngl]/hR;
 
 
 

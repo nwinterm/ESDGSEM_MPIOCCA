@@ -6,98 +6,7 @@
 
 
 
-//void InitDomain(const int Testcase, int NelemX,int NelemY, dfloat xL, dfloat xR, dfloat yL, dfloat yR){
-//
-// switch(Testcase){
-//case 1: {    // convergence test, non periodic
-//    b[xid] = 2.0+sin(y[xid])+cos(x[xid]);//+cos(x[xid])*sin(y[xid])*cos(t);
-//    break;}
-//case 2: {    // convergence test, non periodic
-//    b[xid] = 2.0+sin(2.0*PI*y[xid])+cos(2.0*PI*x[xid]);//+cos(x[xid])*sin(y[xid])*cos(t);
-//    break;}
-//
-//case 3: {    // WELL BALANCED (CARTESIAN 20x20)
-//    if ((globalEleID == 232)||(globalEleID==233) ||(globalEleID==231)||(globalEleID==212)||(globalEleID==213)||(globalEleID==211)||(globalEleID==252)||(globalEleID==251)||(globalEleID==253)){
-//        b[xid] =2.0+sin(y[xid])+cos(x[xid]);
-//    }else{
-//        b[xid] =0.0;//b[xid] =2.0+sin(y[xid])+cos(x[xid]);
-//    }
-//    break;}
-//case 30:{    // Steeper Dam Break To Test Shock Capturing
-//
-//    if (x[xid] >= 2.5){
-//        b[xid] = sin((x[xid]-2.5)/2.5 * PI);
-//    }else{
-//        b[xid] =0.0;
-//    }
-//     b[xid] =0.0;
-//    break;}
-//case 31:     // Two-dimensional oscillating lake  (Xing_PosPres paper, 6.8)
-//    {
-//
-//
-//    dfloat a=1.0;
-//    dfloat h0 = 0.1;
-//    b[xid] = h0 * ( pow(x[xid],2)+pow(y[xid],2)/pow(a,2));
-//
-//    break;
-//
-//    }
-//case 32:     // Three Mound (4.6)
-//    {
-//
-//        xL=0.0;
-//        xR=75.0;
-//        yL=0.0;
-//        yR=30.0;
-//        NelemX=150;
-//        NelemY=100;
-//        PeriodicBD_X=0;
-//        PeriodicBD_Y=0;
-//
-//
-//    break;
-//
-//    }
-//
-//case 33:     // Dam Break Three Mound (4.6)
-//    {
-//
-//        xL=0.0;
-//        xR=75.0;
-//        yL=0.0;
-//        yR=30.0;
-//        NelemX=150;
-//        NelemY=100;
-//        PeriodicBD_X=0;
-//        PeriodicBD_Y=0;
-//
-//
-//    break;
-//
-//    }
-//
-//case 34:{     // 2D Solitary Wave Runup and Run-down
-//
-//    break;}
-//case 35:{     // 1D Bowl
-//
-//
-//    xL=0.0;
-//    xR=25.0;
-//    yL=-15.0;
-//    yR=15.0;
-//
-//
-//    break;}
-//
-//default:{
-//
-//    break;}
-//    }
-//
-//
-//  }
+
 
 
 //  void InitQ(const int Nelem,const int ngl,const int ngl2,const dfloat x[NoSpaceDofs],const dfloat y[NoSpaceDofs], dfloat q[NoDofs],const dfloat t,const dfloat b[NoSpaceDofs]){
@@ -126,7 +35,7 @@ for(int ie=0;ie<Nelem;++ie){
 
 
 
-            if (Testcase==4){
+            if (Testcase==3){
                 int NelemX = sqrt(MeshSplit.global_NumElements);
                 if( globalEleID % (NelemX/2) == 0){
                     qNodal[0] = 1.0;
@@ -227,19 +136,14 @@ void InitQNodal(const int Testcase,const dfloat x,const dfloat y, dfloat q[],con
 
 dfloat h,v,w;
  switch(Testcase){
-case 1: {    // convergence test, non periodic
-    h=8.0+cos(x)*sin(y)*cos(t)-b;
-    v= 0.5;
-    w= 1.5;
-    break;}
 
-case 2:{     // periodic conv test
+case 1:{     // periodic conv test
     h=8.0+cos(2.0*PI*x)*sin(2.0*PI*y)*cos(t)-b;
     v= 0.5;
     w= 1.5;
     break;}
 
-case 3: {    // WELL BALANCED (WITH BOTTOM)
+case 2: {    // WELL BALANCED (WITH BOTTOM)
 
         h=10.0-b;
 
@@ -247,7 +151,7 @@ case 3: {    // WELL BALANCED (WITH BOTTOM)
     v= 0.0;
     w= 0.0;
         break;}
-case 4:     // Entropy Glitch
+case 3:  {   // Entropy Glitch
     if (x<0.0){
             h=1.0-b;
 
@@ -257,7 +161,15 @@ case 4:     // Entropy Glitch
 
     v= 0.0;
     w= 0.0;
-        break;
+        break;}
+case 4: {    // smaller discontinuous bottom WB test
+
+        h=5.0-b;
+
+
+    v= 0.0;
+    w= 0.0;
+        break;}
 
 case 20: {    // Partial Dam Break (CARTESIAN)
     if (x<0.0){
@@ -488,14 +400,18 @@ for(int ie=0;ie<Nelem;++ie){
 
  switch(Testcase){
 case 1: {    // convergence test, non periodic
-    b[xid] = 2.0+sin(y[xid])+cos(x[xid]);//+cos(x[xid])*sin(y[xid])*cos(t);
-    break;}
-case 2: {    // convergence test, non periodic
     b[xid] = 2.0+sin(2.0*PI*y[xid])+cos(2.0*PI*x[xid]);//+cos(x[xid])*sin(y[xid])*cos(t);
     break;}
 
-case 3: {    // WELL BALANCED (CARTESIAN 20x20)
+case 2: {    // WELL BALANCED (CARTESIAN 20x20)
     if ((globalEleID == 232)||(globalEleID==233) ||(globalEleID==231)||(globalEleID==212)||(globalEleID==213)||(globalEleID==211)||(globalEleID==252)||(globalEleID==251)||(globalEleID==253)){
+        b[xid] =2.0+sin(y[xid])+cos(x[xid]);
+    }else{
+        b[xid] =0.0;//b[xid] =2.0+sin(y[xid])+cos(x[xid]);
+    }
+    break;}
+case 4: {    // WELL BALANCED (CARTESIAN 4x4)
+    if ((globalEleID == 6)||(globalEleID==7) ||(globalEleID==10)||(globalEleID==11)){
         b[xid] =2.0+sin(y[xid])+cos(x[xid]);
     }else{
         b[xid] =0.0;//b[xid] =2.0+sin(y[xid])+cos(x[xid]);

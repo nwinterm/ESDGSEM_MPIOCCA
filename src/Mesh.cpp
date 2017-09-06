@@ -18,7 +18,14 @@ void Mesh::InitMesh(const string meshFile, const bool Cartesian, const int Testc
 NelemX=0;
 NelemY=0;
 if (Cartesian){
-    GenerateMesh();
+    dfloat xR,xL,yR,yL;
+    bool PeriodicBD_X,PeriodicBD_Y;
+    int fixedDomain,fixedDisc;
+
+
+    InitDomain(Testcase, &fixedDomain,&fixedDisc,&NelemX, &NelemY,&PeriodicBD_X, &PeriodicBD_Y, &xL, &xR, &yL, &yR);
+    ReadCartesianData(fixedDomain,fixedDisc,&xL,&xR,&yL,&yR,&NelemX,&NelemY,&PeriodicBD_X,&PeriodicBD_Y);
+    GenerateMesh(xL,xR,yL,yR,PeriodicBD_X,PeriodicBD_Y);
     }
     else{
     ReadMesh(meshFile);
@@ -298,12 +305,11 @@ if (Cartesian){
 
 
 
-void Mesh::GenerateMesh()
+void Mesh::GenerateMesh(const dfloat xL,const dfloat xR,const dfloat yL,const dfloat yR,const bool PeriodicBD_X,const bool PeriodicBD_Y)
 {
-    dfloat xR,xL,yR,yL;
-    int ngl2=ngl*ngl;
-    bool PeriodicBD_X,PeriodicBD_Y;
-    ReadCartesianData(&xL,&xR,&yL,&yR,&NelemX,&NelemY,&PeriodicBD_X,&PeriodicBD_Y);
+
+      int ngl2=ngl*ngl;
+
     cout <<"NelemX: "<<NelemX<< "  NelemY: "<<NelemY <<".\n";
     m_num_elements=NelemX*NelemY;
 
@@ -1429,7 +1435,135 @@ void Mesh :: LagrangeInterpolation(const dfloat xpt,const dfloat functionvals[],
 
 
 
+void Mesh::InitDomain(const int Testcase, int *fixedDomain,int *fixedDisc, int *NelemX,int *NelemY,bool *PeriodicBD_X, bool*PeriodicBD_Y, dfloat *xL, dfloat *xR, dfloat *yL, dfloat *yR){
 
+ switch(Testcase){
+case 1: {    // convergence test, periodic
+    *fixedDomain = 1 ;
+    *fixedDisc = 0 ;
+    *xL=0.0;
+    *xR=1.0;
+    *yL=0.0;
+    *yR=1.0;
+    break;}
+
+case 2: {    // WELL BALANCED (CARTESIAN 20x20)
+    *fixedDomain = 0 ;
+    *fixedDisc = 1 ;
+    *NelemX=20;
+    *NelemY=20;
+    *PeriodicBD_X=0;
+    *PeriodicBD_Y=0;
+    break;}
+case 3:{    // Steeper Dam Break To Test Shock Capturing
+    *fixedDomain = 1 ;
+    *fixedDisc = 0;
+
+    *xL=-5.0;
+    *xR=5.0;
+    *yL=-5.0;
+    *yR=5.0;
+    break;}
+case 4: {    // WELL BALANCED (CARTESIAN 20x20)
+    *fixedDomain = 0 ;
+    *fixedDisc = 1 ;
+    *NelemX=4;
+    *NelemY=4;
+    *PeriodicBD_X=0;
+    *PeriodicBD_Y=0;
+    break;}
+case 30:{    // Steeper Dam Break To Test Shock Capturing
+    *fixedDomain = 1 ;
+    *fixedDisc = 0;
+
+    *xL=-5.0;
+    *xR=5.0;
+    *yL=-5.0;
+    *yR=5.0;
+    break;}
+case 31:     // Two-dimensional oscillating lake  (Xing_PosPres paper, 6.8)
+    {
+    *fixedDomain = 1 ;
+    *fixedDisc = 0;
+
+        *xL=-2.0;
+        *xR=2.0;
+        *yL=-2.0;
+        *yR=2.0;
+
+
+    break;
+
+    }
+case 32:     // Three Mound (4.6)
+    {
+    *fixedDomain = 1 ;
+    *fixedDisc = 1;
+    *xL=0.0;
+    *xR=75.0;
+    *yL=0.0;
+    *yR=30.0;
+    *NelemX=150;
+    *NelemY=100;
+    *PeriodicBD_X=0;
+    *PeriodicBD_Y=0;
+
+
+    break;
+
+    }
+
+case 33:     // Dam Break Three Mound (4.6)
+    {
+
+    *fixedDomain = 1 ;
+    *fixedDisc = 1;
+    *xL=0.0;
+    *xR=75.0;
+    *yL=0.0;
+    *yR=30.0;
+    *NelemX=150;
+    *NelemY=100;
+    *PeriodicBD_X=0;
+    *PeriodicBD_Y=0;
+
+
+    break;
+
+    }
+
+
+case 34:{     // 2D Solitary Wave Runup and Run-down
+    *fixedDomain = 1 ;
+    *fixedDisc = 0;
+
+    *xL=0.0;
+    *xR=25.0;
+    *yL=-15.0;
+    *yR=15.0;
+
+
+    break;}
+case 35:{     // 1D Bowl
+    *fixedDomain = 1 ;
+    *fixedDisc = 0;
+
+    *xL=-3000.0;
+    *xR=3000.0;
+    *yL=-3000.0;
+    *yR=3000.0;
+
+
+    break;}
+
+default:{
+    *fixedDomain = 0 ;
+    *fixedDisc = 0 ;
+    break;}
+    }
+
+
+  }
 
 
 

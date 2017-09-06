@@ -106,17 +106,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Testcase included in the code}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{TESTCASE 1: Non-Periodic Convergence Test}
-\subsection{TESTCASE 2: Periodic Convergence Test}
-\subsection{TESTCASE 3: Well Balanced Test with Discontinous Bottom}
-\subsection{TESTCASE 4: Entropy Glitch Test}
+\subsection{TESTCASE 1: Periodic Convergence Test}
+\subsection{TESTCASE 2: Well Balanced Test with Discontinous Bottom}
+\subsection{TESTCASE 3: Entropy Glitch Test}
 \subsection{TESTCASE 20: Partial Dam Break (CARTESIAN)}
+Note: interior boundary conditions for partial dam are hacked in Mesh.cpp
 \subsection{TESTCASE 30: Steep Dam Break - Test for Shock Capturing // Limiting}
 \subsection{TESTCASE 31: 2D Oscillating Lake // Parabolic Bowl}
 \subsection{TESTCASE 32: Flooding over 3 Mounds}
 \subsection{TESTCASE 33: Dam Break over 3 Mounds}
-\subsection{TESTCASE 34: Dam Break over 3 Mounds}
-\subsection{TESTCASE 35: 2D solitary wave runup}
+\subsection{TESTCASE 34: 2D solitary wave runup}
 \begin{equation}
 \begin{aligned}
 &h(x,y,0)=\max \left( 0, h_0 + \frac{A}{h_0}  \text{sech}^2 (\gamma (x-x_c)) -b(x,y) \right),\\
@@ -128,10 +127,12 @@ where the parameters are set to $A=0.064m$, $x_c = 2.5m$, $h_0 = 0.32m$, $\gamma
 b(x,y) = 0.93 \left(1-\frac{r}{r_c}\right)	\qquad \text{ if } r\leq r_c
 \end{equation}
 with $r=\sqrt{(x-x_c)^2 + (y-y_c)}$,  $r_c = 3.6m$ and $(x_c,y_c) = (12.5,15)$. The domain is $\Omega = [0,25] \times [0,30]$ and bounded by solid wall boundary conditions.
-\subsection{TESTCASE 36: 1D Bowl (2D Version)}
+\subsection{TESTCASE 35: 1D Bowl (2D Version)}
 \subsection{TESTCASE 43: Curved Dam Break PARTIAL}
+Note: interior boundary conditions for partial dam are hacked in Mesh.cpp
 \subsection{TESTCASE 44: Curved Dam Break FULL}
 \subsection{TESTCASE 45: Curved Dam Break Setup - NO BREAK (WB test)}
+Note: interior boundary conditions for full dam are hacked in Mesh.cpp
 
 
 

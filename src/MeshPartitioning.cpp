@@ -674,12 +674,7 @@ ElemEdgeMasterSlave.resize(4,NumElements);
 void MeshPartitioning::SortMPIEdges(const MPI_setup MPI){
 
 
-//    cout <<"I AM " << MPI.rank << " My Global Edges are: ";
-//    for (int is = 1; is<=NumEdges; is++){
-//      int globalEdgeID  = 	MyEdgeInfo(10,is);
-//      cout << " " << globalEdgeID ;
-//    }
-//      cout <<"\n";
+
 
     MPIEdges.resize(2,NumProcessors);
     for (int i=1;i<=NumProcessors;i++){
@@ -770,11 +765,6 @@ void MeshPartitioning::SortMPIEdges(const MPI_setup MPI){
         EdgeCounterPerProc(sortCPU)++;
     }
 
-//        cout << "RESTORING: old index: "<< is << " double check: " << oldEdgeIndex(newEdgeIndex(is)) << " and the new edge index is " <<newEdgeIndex(is)  <<"\n";
-      //RESORT EDGE INFORMATION
-//      for (int info = 1; info<=10;info++){
-//            EdgeInfoTMP(info,newEdgeIndex(is)) = MyEdgeInfo(info,is);
-//        }
 
 
 
@@ -791,18 +781,6 @@ for (int iproc = 1; iproc <= NumProcessors;iproc++){
 
 }
 
-//    cout <<"RANK: " << MPI.rank << " Edge Numbering  NEW : " ;
-//    for (int j=0;j<NumEdges;j++){
-//        cout << newOrderGlobal[j] << " " ;
-//    }
-//    cout <<"\n";
-//
-//        cout <<"RANK: " << MPI.rank << " Edge Numbering OLD  : " ;
-//    for (int j=1;j<=NumEdges;j++){
-//        cout << MyEdgeInfo(10,oldEdgeIndex(j)) << " " ;
-//    }
-//    cout <<"\n";
-
 
 
 // RESORT newEdgeIndex array via the found global edge ordering on this processor
@@ -813,13 +791,6 @@ for (int is = 1; is<=NumEdges; is++){
         }
     }
 }
-
-
-//    cout <<"RANK: " << MPI.rank << " Edge Numbering  NEW : " ;
-//    for (int j=1;j<=NumEdges;j++){
-//        cout << newEdgeIndex(j) << " " ;
-//    }
-//    cout <<"\n";
 
 
 
@@ -874,16 +845,7 @@ for (int is = 1; is<=NumEdges; is++){
     }
 
   }
-//    if (MPI.rank==0){
-//    for (int is = 1; is<=NumEdges; is++){
-////    cout << "Ele Local: "<< ie+1 << " Ele Global: "  << MeshSplit.ElementLocalToGlobal(ie+1,1) << "\n";
-//      int cpuL	        =	MyEdgeInfo(8,is);
-//      int cpuR	        =   MyEdgeInfo(9,is);
-//      int globalEdgeID  = 	MyEdgeInfo(10,is);
-//
-//    cout << "global Edge id: "  << globalEdgeID << " cpuL: " << cpuL << " cpuR: " << cpuR << "\n";
-//
-//    }}
+
     MyEdgeInfo=EdgeInfoTMP;
     nx_global=nx_globalTMP;
     ny_global=ny_globalTMP;
@@ -894,39 +856,6 @@ for (int is = 1; is<=NumEdges; is++){
 
 
 
-//   for (int ie=1;ie<=NumElements;ie++){
-//        cout << " I am Rank: " << MPI.rank << " this is Element: " << ie ;
-//    for (int is=1;is<=4;is++){
-//        cout << " side " << ElementToEdgeTMP(is,ie) << " SwitchLeftRight is " << SwitchLeftRight(ElementToEdge(is,ie)) <<"   ";
-//
-//    }
-//    cout <<"\n";
-//  }
-
-
-//        if (MPI.rank==0){
-//        for (int is = 1; is<=NumEdges; is++){
-////    cout << "Ele Local: "<< ie+1 << " Ele Global: "  << MeshSplit.ElementLocalToGlobal(ie+1,1) << "\n";
-//      int cpuL	        =	MyEdgeInfo(8,is);
-//      int cpuR	        =   MyEdgeInfo(9,is);
-//      int globalEdgeID  = 	MyEdgeInfo(10,is);
-//
-//    cout << "global Edge id: "  << globalEdgeID << " cpuL: " << cpuL << " cpuR: " << cpuR << "\n";
-//
-//    }}
-
-
-//    for (int is = 1; is<=NumEdges; is++){
-//        cout << "My local Edge " << is << " is global edge "<< EdgeInfoTMP(10,is) << " and used to be local edge "<< oldEdgeIndex(is) <<"\n" ;
-//    }
-
-
-
-
-//    for (int i=1;i<=NumProcessors;i++){
-//    cout << "I am Rank "<<MPI.rank <<" and i have "<< EdgeCounterPerProc(i) <<  " Edges with Processor " <<i <<" storing edges from "<< ProcIndex(1,i) <<" to "<< ProcIndex(2,i) <<"\n";
-//
-//  }
 
 
 }

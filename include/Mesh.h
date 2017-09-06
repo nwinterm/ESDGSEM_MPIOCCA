@@ -32,10 +32,12 @@ class Mesh
         imatrix ElemEdgeMasterSlave;
         imatrix ElemEdgeOrientation;
 
-
-        virtual ~Mesh();
         void ReadMesh(const string);
-        void GenerateMesh();
+        void GenerateMesh(const dfloat ,const dfloat ,const dfloat ,const dfloat ,const bool ,const bool );
+        void InitDomain(const int , int* ,int *, int *,int *, bool *, bool *, dfloat* , dfloat *, dfloat* , dfloat *);
+        virtual ~Mesh();
+
+
 
 
     protected:

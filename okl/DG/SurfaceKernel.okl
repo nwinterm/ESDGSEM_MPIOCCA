@@ -89,9 +89,8 @@ kernel void SurfaceKernel(const int Nelem, const dfloat *Jac,const int * ElemEdg
         }
 
 
+barrier(localMemFence);
 
-
-        barrier(localMemFence);
          // SIDE 3 (TOP)
 
         for (int j=0; j<ngl; ++j;inner0){
@@ -132,8 +131,8 @@ kernel void SurfaceKernel(const int Nelem, const dfloat *Jac,const int * ElemEdg
 
 
 
-         barrier(localMemFence);
 
+barrier(localMemFence);
         //SIDE 4 (LEFT)
 
             for (int j=0; j<ngl; ++j;inner0){

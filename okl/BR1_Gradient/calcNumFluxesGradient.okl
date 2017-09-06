@@ -1,11 +1,14 @@
 
-kernel void calcNumFluxesGradient(const int Nfaces,const int * EdgeData,const dfloat * normalx,const dfloat * normaly,const dfloat *Scal, const dfloat * qL,const dfloat * qR, const dfloat * BL,const dfloat * BR,dfloat * SurfGradientsX,dfloat * SurfGradientsY)
+
+kernel void calcNumFluxesGradient(const int Nfaces,const int * EdgeData,const dfloat * normalx,const dfloat * normaly,const dfloat *Scal,const dfloat * qL,const dfloat * qR, const dfloat * BL,const dfloat * BR,dfloat * SurfGradientsX,dfloat * SurfGradientsY)
 {
         for (int ifa=0;ifa<Nfaces;ifa++;outer0){
 
 
             for(int i=0;i<ngl;i++;inner0){
 
+                const int iel           =EdgeData[8*ifa];
+                const int ier           =EdgeData[8*ifa+1];
                 const int cpuL          =EdgeData[8*ifa+5];     // rank of cpuL
                 const int cpuR          =EdgeData[8*ifa+6];     // rank of cpuR
 
@@ -50,34 +53,37 @@ kernel void calcNumFluxesGradient(const int Nfaces,const int * EdgeData,const df
                 }
 
 
-                const dfloat HL = hL;
-                const dfloat HR = hR;
+                dfloat HL;
+                dfloat HR;
+
+
 
                 dfloat hLinv;
-                if (hL>PosPresTOL){
+                if (hL>=PosPresTOL){
                     hLinv =  1.f/hL;
                 }else{
                     hLinv = 0.0;
                 }
                 dfloat hRinv;
-                if (hR>PosPresTOL){
+                if (hR>=PosPresTOL){
                     hRinv =  1.f/hR;
                 }else{
                     hRinv = 0.0;
                 }
 
-                const dfloat HuL = HL * huL*hLinv ;
-                const dfloat HuR = HR * huR*hRinv ;
-
-                const dfloat HvL = HL * hvL*hLinv ;
-                const dfloat HvR = HR * hvR*hRinv ;
 
 
-                NumFlux[0]=0.5*(HL+HR );
-                NumFlux[1]=0.5*(HuL+HuR );
-                NumFlux[2]=0.5*(HvL+HvR );
+                const dfloat uL =  huL*hLinv ;
+                const dfloat uR =  huR*hRinv ;
+                const dfloat vL =  hvL*hLinv ;
+                const dfloat vR =  hvR*hRinv ;
 
 
+
+
+                NumFlux[0]=0.0;
+                NumFlux[1]=0.5*(uL+uR );
+                NumFlux[2]=0.5*(vL+vR );
 
                 SurfGradientsX[edgeID]          =  nx * scaling*geomFace*  NumFlux[0];
                 SurfGradientsX[edgeID+ngl]      =  nx * scaling*geomFace*  NumFlux[1];
