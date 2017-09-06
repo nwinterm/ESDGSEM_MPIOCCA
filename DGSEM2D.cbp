@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="DGSEM2D" />
+		<Option makefile="makefile" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/DGSEM1D" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option='-Ddfloat=float -Ddfloat4=float4 -g -O0 -DdfloatString=\&quot;float\&quot; -Ddfloat4String=\&quot;float4\&quot;' />
+					<Add directory="include" />
+					<Add directory="../occa-master/include" />
+				</Compiler>
+				<Linker>
+					<Add library="lapack" />
+					<Add library="blas" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/DGSEM1D" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="include" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="Cartesian.dat" />
+		<Unit filename="include/Constants.hpp" />
+		<Unit filename="include/MPI_Communication.h" />
+		<Unit filename="include/MPI_setup.h" />
+		<Unit filename="include/Mesh.h" />
+		<Unit filename="include/MeshPartitioning.h" />
+		<Unit filename="include/ReadInput.h" />
+		<Unit filename="include/RungeKutta.h" />
+		<Unit filename="include/SW2D.h" />
+		<Unit filename="include/basis.h" />
+		<Unit filename="include/blaslapack.hpp" />
+		<Unit filename="include/headers3d.hpp" />
+		<Unit filename="include/matrix.hpp" />
+		<Unit filename="include/matrix.tpp" />
+		<Unit filename="include/plots.h" />
+		<Unit filename="input.dat" />
+		<Unit filename="main.cpp" />
+		<Unit filename="meshFiles/BoxAroundCircle.mesh" />
+		<Unit filename="meshFiles/PeriodicXandY14.mesh" />
+		<Unit filename="meshFiles/PeriodicXandY5.mesh" />
+		<Unit filename="okl/BR1_Gradient/CollectEdgeDataGradient.okl" />
+		<Unit filename="okl/BR1_Gradient/ModifyGradient.okl" />
+		<Unit filename="okl/BR1_Gradient/SurfaceKernelGradient.okl" />
+		<Unit filename="okl/BR1_Gradient/calcGradient.okl" />
+		<Unit filename="okl/BR1_Gradient/calcNumFluxesGradient.okl" />
+		<Unit filename="okl/BR1_Gradient/calcNumFluxesGradientMod.okl" />
+		<Unit filename="okl/DG/FindLambdaMax.okl" />
+		<Unit filename="okl/DG/SurfaceKernel.okl" />
+		<Unit filename="okl/DG/VolumeKernel.okl" />
+		<Unit filename="okl/DG/VolumeKernelFluxDiff.okl" />
+		<Unit filename="okl/DG/VolumeKernelFluxDiffCentral.okl" />
+		<Unit filename="okl/DiscontinuousBathimetry/calcDiscBottomSurf.okl" />
+		<Unit filename="okl/DiscontinuousBathimetry/calcEdgeValues.okl" />
+		<Unit filename="okl/GatherEdgeData/3MoundInflow.okl" />
+		<Unit filename="okl/GatherEdgeData/CollectEdgeData_Bottom.okl" />
+		<Unit filename="okl/GatherEdgeData/Dirichlet_ConvTest.okl" />
+		<Unit filename="okl/GatherEdgeData/Dirichlet_PeriodicConvTest.okl" />
+		<Unit filename="okl/GatherEdgeData/SolidWalls.okl" />
+		<Unit filename="okl/ManufacturedSolutions/S_ConvTest1.okl" />
+		<Unit filename="okl/ManufacturedSolutions/S_ConvTest2.okl" />
+		<Unit filename="okl/Positivity/PosPres.okl" />
+		<Unit filename="okl/RiemannSolvers/calcESFlux.okl" />
+		<Unit filename="okl/RiemannSolvers/calcLFTypeESFlux.okl" />
+		<Unit filename="okl/RiemannSolvers/calcLaxFriedrich.okl" />
+		<Unit filename="okl/RungeKutta/UpdateKernelLS.okl" />
+		<Unit filename="okl/RungeKutta/UpdateKernelSSP.okl" />
+		<Unit filename="okl/RungeKutta/rkLS.okl" />
+		<Unit filename="okl/ViscoseParts/ShockCapturing.okl" />
+		<Unit filename="okl/ViscoseParts/SurfaceKernelVisc.okl" />
+		<Unit filename="okl/ViscoseParts/UpdateQt.okl" />
+		<Unit filename="okl/ViscoseParts/VolumeKernelViscose.okl" />
+		<Unit filename="okl/ViscoseParts/calcNumFluxesViscose.okl" />
+		<Unit filename="src/MPI_Communication.cpp" />
+		<Unit filename="src/MPI_setup.cpp" />
+		<Unit filename="src/Mesh.cpp" />
+		<Unit filename="src/MeshPartitioning.cpp" />
+		<Unit filename="src/Plots.cpp" />
+		<Unit filename="src/ReadInput.cpp" />
+		<Unit filename="src/RungeKutta.cpp" />
+		<Unit filename="src/SW2D.cpp" />
+		<Unit filename="src/basis.cpp" />
+		<Unit filename="src/matrix.cpp" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+			<envvars />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

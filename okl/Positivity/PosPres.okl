@@ -1,0 +1,159 @@
+
+kernel void PosPres(const int Nelem,const dfloat * restrict EleSizes,const dfloat * restrict GLw, const dfloat * Jac ,dfloat * Q)
+{
+
+
+
+    for(int ie = 0; ie < Nelem; ie++; outer0)
+    {
+
+        shared dfloat s_Havg;
+       shared dfloat s_HUavg;
+        shared dfloat s_HVavg;
+        shared dfloat s_Hmin;
+        shared dfloat s_theta;
+
+        shared dfloat s_GLw[ngl];
+        shared dfloat s_H[ngl][ngl];
+        shared dfloat s_Hu[ngl][ngl];
+        shared dfloat s_Hv[ngl][ngl];
+
+
+
+        for (int i=0; i<ngl; ++i;inner1){
+            for (int j=0; j<ngl;++j;inner0){
+                    int Fid = ie*ngl2*Neq   +j*ngl+i;
+                    s_H[i][j]=Q[Fid];Fid+=ngl2;
+                    s_Hu[i][j]=Q[Fid];Fid+=ngl2;
+                    s_Hv[i][j]=Q[Fid];
+
+                if (j == 0) {
+                    s_GLw[i] = GLw[i];
+                }
+
+
+            }
+
+        }
+
+        barrier(localMemFence);
+
+// Very naive way to integrate over an element
+
+        for (int l=0; l<1; ++l;inner0){
+            s_Hmin = 0.0;
+            s_Havg = 0.0;
+            s_HUavg = 0.0;
+            s_HVavg = 0.0;
+
+            occaUnroll(ngl) // <- #pragma unroll ngl
+            for (int i=0; i<ngl; ++i){
+                occaUnroll(ngl)
+                for (int j=0; j<ngl;++j){
+
+                    const int xid=ie*ngl2   +j*ngl+i;
+                    dfloat r_Weights = s_GLw[i] * s_GLw[j] /Jac[xid];
+                    s_Havg += s_H[i][j] * r_Weights;
+                    s_HUavg += s_Hu[i][j] * r_Weights;
+                    s_HVavg += s_Hv[i][j] * r_Weights;
+                    s_Hmin = min(s_Hmin, s_H[i][j]);
+
+
+
+                }
+
+            }
+            s_Havg =   s_Havg/ EleSizes[ie];
+            s_HUavg =   s_HUavg/ EleSizes[ie];
+           s_HVavg =   s_HVavg/ EleSizes[ie];
+
+
+           if (s_Havg == s_Hmin){
+            s_theta = 1.0;
+           }else{
+            s_theta = min(1.0,s_Havg/(s_Havg-(s_Hmin)));
+           }
+
+
+
+
+
+
+        }
+
+            barrier(localMemFence);
+
+// now that theta is found, update all values
+
+        for (int i=0; i<ngl; ++i;inner1){
+            for (int j=0; j<ngl;++j;inner0){
+                    const int id = ie*ngl2*Neq   +j*ngl+i;
+
+					dfloat h_new =0.0;
+					dfloat hu_new=0.0;
+					dfloat hv_new=0.0;
+
+                    dfloat r_h = s_H[i][j];
+                    dfloat r_hu = s_Hu[i][j];
+                    dfloat r_hv = s_Hv[i][j];
+					dfloat r_hAvg = s_Havg;
+					dfloat r_huAvg = s_HUavg;
+					dfloat r_hvAvg = s_HVavg;
+					dfloat r_theta = s_theta;
+
+                    if (r_hAvg>0.0){
+//                   if (r_hAvg>=PosPresTOL){
+
+                        h_new =  fabs(r_theta * ( r_h - r_hAvg ) + r_hAvg);
+
+
+
+//h_new =  fabs(r_theta * ( r_h - r_hAvg ) + r_hAvg);
+                        if (h_new > PosPresTOL){
+                                hu_new = r_theta * (r_hu -  r_huAvg) +  r_huAvg;
+                                hv_new = r_theta * (r_hv -  r_hvAvg) + r_hvAvg;
+                        }else{
+                            hu_new = 0.0;
+                            hv_new = 0.0;
+
+                        }
+
+
+
+
+
+                    }else{
+                        h_new=0.0;
+                        hu_new = 0.0;
+                        hv_new = 0.0;
+
+                    }
+
+//					if (!(isfinite(hu_new))){hu_new=0.0;}
+//					if (!(isfinite(hv_new))){hv_new=0.0;}
+
+//					if(!(fabs(hu_new)>=0.0)){hu_new=0.0;}
+//					if(!(fabs(hv_new)>=0.0)){hv_new=0.0;}
+
+
+
+                        Q[id]=h_new;
+                        Q[id+ngl2] =hu_new;
+                        Q[id+ngl2+ngl2] = hv_new;
+
+
+
+
+            }
+        }
+
+
+
+
+
+
+    }
+
+
+
+}

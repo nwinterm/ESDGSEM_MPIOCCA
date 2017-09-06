@@ -1,0 +1,181 @@
+
+kernel void CollectEdgeData(const int Nfaces,const int * EdgeData,const dfloat * Q,const dfloat * x,const dfloat * y,const dfloat * normx,const dfloat * normy,const dfloat * bL, const dfloat * bR, dfloat * qL, dfloat * qR, const dfloat t)
+{
+        for (int ifa=0;ifa<Nfaces;ifa++;outer0){
+
+
+             for(int i=0;i<ngl;i++;inner0){
+                const int iel           =EdgeData[8*ifa];       //left element
+                const int ier           =EdgeData[8*ifa+1];       //right element
+                const int isl           =EdgeData[8*ifa+2];       //side within left element
+                const int isr           =EdgeData[8*ifa+3];      //side within right element
+                const int ireversed     =EdgeData[8*ifa+4];           //is order reversed? 0=yes, 1=no
+                const int cpuL          =EdgeData[8*ifa+5];     // rank of cpuL
+                const int cpuR          =EdgeData[8*ifa+6];     // rank of cpuR
+
+
+                int increment;
+                int idL,idR;
+                const int edgeID=ifa*ngl*Neq + i;   //for edge wise solution
+                const int edgeIDX=ifa*ngl + i;
+
+                    if (ireversed==0){
+                        increment = (ngl-1)-i;
+                    }else{
+                        increment=i;
+                    }
+
+                const dfloat nx = normx[edgeIDX];
+                const dfloat ny = normy[edgeIDX];
+                dfloat qNodalL[Neq];
+                dfloat qNodalR[Neq];
+
+                qNodalL[0]=0.0;
+                qNodalL[1]=0.0;
+                qNodalL[2]=0.0;
+
+                qNodalR[0]=0.0;
+                qNodalR[1]=0.0;
+                qNodalR[2]=0.0;
+
+
+
+
+
+                if (procID == cpuL){
+                    switch(isl){
+                    case (0): //bottom side
+                        idL = iel*ngl2*Neq+i;
+                        break;
+                    case (2): //top side
+                        idL = iel*ngl2*Neq+ngl2-ngl+i;
+                        break;
+                    case (3): //left side
+                        idL = iel*ngl2*Neq+i*ngl;
+                        break;
+                    case (1): //right side
+                        idL = iel*ngl2*Neq+(i+1)*ngl-1;
+                        break;
+
+                    }
+
+
+
+
+
+
+                    qNodalL[0]=Q[idL];
+                    qNodalL[1]=Q[idL+ngl2];
+                    qNodalL[2]=Q[idL+ngl2+ngl2];
+                }
+
+
+
+
+
+
+
+                if (procID == cpuR){
+                    switch(isr){
+                    case (0): //bottom side
+                        idR = ier*ngl2*Neq+increment;
+                        break;
+                    case (2): //top side
+                        idR = ier*ngl2*Neq+ngl2-ngl+increment;
+                        break;
+                    case (3): //left side
+                        idR = ier*ngl2*Neq+increment*ngl;
+                        break;
+                    case (1): //right side
+                        idR = ier*ngl2*Neq+(increment+1)*ngl-1;
+                        break;
+
+                    }
+
+                    qNodalR[0]=Q[idR];
+                    qNodalR[1]=Q[idR+ngl2];
+                    qNodalR[2]=Q[idR+ngl2+ngl2];
+                }
+
+
+                // EXTERIOR BOUNDARY CASE!
+
+
+
+                    if (cpuL==-1){
+                        dfloat tx = - ny;
+                        dfloat ty = nx;
+                        dfloat vx;
+                        dfloat vy;
+                        if(qNodalR[0]>=PosPresTOL){
+                            vx = qNodalR[1]/qNodalR[0];
+                            vy = qNodalR[2]/qNodalR[0];
+                        }else{
+                            vx = 0.0;
+                            vy = 0.0;
+                        }
+                        dfloat v_n  = nx * vx + ny * vy;
+                        dfloat v_t = tx*vx + ty * vy;
+
+                        dfloat vTilde_n = -v_n;
+                        dfloat vTilde_t = v_t;
+
+                        dfloat vTilde_x = nx * vTilde_n + tx * vTilde_t;
+                        dfloat vTilde_y = ny * vTilde_n + ty * vTilde_t;
+
+                        qNodalL[0]=qNodalR[0];
+                        qNodalL[1]=qNodalR[0] * vTilde_x;
+                        qNodalL[2]=qNodalR[0] * vTilde_y;
+                    }
+                    if (cpuR==-1){
+                        dfloat tx = - ny;
+                        dfloat ty = nx;
+                        dfloat vx;
+                        dfloat vy;
+                        if(qNodalL[0]>=PosPresTOL){
+                            vx = qNodalL[1]/qNodalL[0];
+                            vy = qNodalL[2]/qNodalL[0];
+                        }else{
+                            vx = 0.0;
+                            vy = 0.0;
+                        }
+                        dfloat v_n  = nx * vx + ny * vy;
+                        dfloat v_t = tx*vx + ty * vy;
+
+                        dfloat vTilde_n = -v_n;
+                        dfloat vTilde_t = v_t;
+
+                        dfloat vTilde_x = nx * vTilde_n + tx * vTilde_t;
+                        dfloat vTilde_y = ny * vTilde_n + ty * vTilde_t;
+
+                        qNodalR[0]=qNodalL[0];
+                        qNodalR[1]=qNodalL[0]*vTilde_x;
+                        qNodalR[2]=qNodalL[0]*vTilde_y;
+                    }
+
+
+
+
+
+
+
+                qL[edgeID]=qNodalL[0];
+                qL[edgeID+ngl]=qNodalL[1];
+                qL[edgeID+ngl+ngl]=qNodalL[2];
+
+                qR[edgeID]=qNodalR[0];
+                qR[edgeID+ngl]=qNodalR[1];
+                qR[edgeID+ngl+ngl]=qNodalR[2];
+
+
+
+
+            }//inner0 loop
+
+
+
+
+        }//outer0 loop
+
+
+}//end kernel

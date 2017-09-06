@@ -1,0 +1,181 @@
+
+
+kernel void CollectEdgeDataGradient(const int Nfaces,const int * EdgeData,const dfloat * qGradientX,const dfloat * qGradientY,const dfloat * ViscPara,dfloat * ViscParaL,dfloat * ViscParaR, dfloat * qGradientXL, dfloat * qGradientXR,dfloat * qGradientYL, dfloat * qGradientYR,dfloat t)
+{
+        for (int ifa=0;ifa<Nfaces;ifa++;outer0){
+
+
+             for(int i=0;i<ngl;i++;inner0){
+                const int iel           =EdgeData[8*ifa];       //left element
+                const int ier           =EdgeData[8*ifa+1];       //right element
+                const int isl           =EdgeData[8*ifa+2];       //side within left element
+                const int isr           =EdgeData[8*ifa+3];      //side within right element
+                const int ireversed     =EdgeData[8*ifa+4];           //is order reversed? 0=yes, 1=no
+                const int cpuL          =EdgeData[8*ifa+5];     // rank of cpuL
+                const int cpuR          =EdgeData[8*ifa+6];     // rank of cpuR
+                int increment;
+                int idL,idR;
+
+                const int edgeID=ifa*ngl*Neq + i;   //for edge wise solution
+//                const int edgeIDX=ifa*ngl + i;
+
+
+                if (ireversed==0){
+                        increment = (ngl-1)-i;
+                    }else{
+                        increment=i;
+                    }
+
+//                const dfloat nx = normx[edgeIDX];
+//                const dfloat ny = normy[edgeIDX];
+
+                dfloat qNodalXL[Neq];
+                dfloat qNodalXR[Neq];
+                dfloat qNodalYL[Neq];
+                dfloat qNodalYR[Neq];
+                qNodalXL[0]=0.0;
+                qNodalXL[1]=0.0;
+                qNodalXL[2]=0.0;
+                qNodalXR[0]=0.0;
+                qNodalXR[1]=0.0;
+                qNodalXR[2]=0.0;
+                qNodalYL[0]=0.0;
+                qNodalYL[1]=0.0;
+                qNodalYL[2]=0.0;
+                qNodalYR[0]=0.0;
+                qNodalYR[1]=0.0;
+                qNodalYR[2]=0.0;
+                if (i==0){
+                    ViscParaL[ifa]=0.0;
+                    ViscParaR[ifa]=0.0;
+                }
+
+                if (procID == cpuL){
+                    switch(isl){
+                    case (0): //bottom side
+                        idL = iel*ngl2*Neq+i;
+                        break;
+                    case (2): //top side
+                        idL = iel*ngl2*Neq+ngl2-ngl+i;
+
+                        break;
+                    case (3): //left side
+                        idL = iel*ngl2*Neq+i*ngl;
+
+                        break;
+                    case (1): //right side
+                        idL = iel*ngl2*Neq+(i+1)*ngl-1;
+
+                        break;
+
+                    }
+
+                    qNodalXL[0]=qGradientX[idL];
+                    qNodalXL[1]=qGradientX[idL+ngl2];
+                    qNodalXL[2]=qGradientX[idL+ngl2+ngl2];
+                    qNodalYL[0]=qGradientY[idL];
+                    qNodalYL[1]=qGradientY[idL+ngl2];
+                    qNodalYL[2]=qGradientY[idL+ngl2+ngl2];
+                    if (i==0){
+                        ViscParaL[ifa]=ViscPara[iel];
+                    }
+
+                }
+
+
+                if (procID == cpuR){
+                    switch(isr){
+                    case (0): //bottom side
+                        idR = ier*ngl2*Neq+increment;
+
+                        break;
+                    case (2): //top side
+                        idR = ier*ngl2*Neq+ngl2-ngl+increment;
+
+                        break;
+                    case (3): //left side
+                        idR = ier*ngl2*Neq+increment*ngl;
+
+                        break;
+                    case (1): //right side
+                        idR = ier*ngl2*Neq+(increment+1)*ngl-1;
+
+                        break;
+
+                    }
+
+                    qNodalXR[0]=qGradientX[idR];
+                    qNodalXR[1]=qGradientX[idR+ngl2];
+                    qNodalXR[2]=qGradientX[idR+ngl2+ngl2];
+                    qNodalYR[0]=qGradientY[idR];
+                    qNodalYR[1]=qGradientY[idR+ngl2];
+                    qNodalYR[2]=qGradientY[idR+ngl2+ngl2];
+                    if (i==0){
+                        ViscParaR[ifa]=ViscPara[ier];
+                    }
+                }
+
+
+
+
+// EXTERIOR BOUNDARY?
+                if (cpuL==-1){
+
+
+                    qNodalXL[0]=qGradientX[idR];
+                    qNodalXL[1]=0.0;
+                    qNodalXL[2]=0.0;
+                    qNodalYL[0]=qGradientY[idR];
+                    qNodalYL[1]=0.0;
+                    qNodalYL[2]=0.0;
+                     if (i==0){
+                        ViscParaL[ifa]=ViscPara[ier];
+                        ViscParaR[ifa]=ViscPara[ier];
+                    }
+
+                }
+
+
+                if (cpuR==-1){
+
+
+                    qNodalXR[0]=qGradientX[idL];
+                    qNodalXR[1]=0.0;
+                    qNodalXR[2]=0.0;
+                    qNodalYR[0]=qGradientY[idL];
+                    qNodalYR[1]=0.0;
+                    qNodalYR[2]=0.0;
+                    if (i==0){
+                        ViscParaL[ifa]=ViscPara[iel];
+                        ViscParaR[ifa]=ViscPara[iel];
+                    }
+                }
+
+
+                qGradientXL[edgeID]=qNodalXL[0];
+                qGradientXL[edgeID+ngl]=qNodalXL[1];
+                qGradientXL[edgeID+ngl+ngl]=qNodalXL[2];
+
+                qGradientXR[edgeID]=qNodalXR[0];
+                qGradientXR[edgeID+ngl]=qNodalXR[1];
+                qGradientXR[edgeID+ngl+ngl]=qNodalXR[2];
+
+
+                qGradientYL[edgeID]=qNodalYL[0];
+                qGradientYL[edgeID+ngl]=qNodalYL[1];
+                qGradientYL[edgeID+ngl+ngl]=qNodalYL[2];
+
+                qGradientYR[edgeID]=qNodalYR[0];
+                qGradientYR[edgeID+ngl]=qNodalYR[1];
+                qGradientYR[edgeID+ngl+ngl]=qNodalYR[2];
+
+
+            }//inner0 loop
+
+
+
+
+        }//outer0 loop
+
+
+}//end kernel

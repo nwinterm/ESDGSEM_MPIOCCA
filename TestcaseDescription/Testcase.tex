@@ -1,0 +1,138 @@
+\documentclass[times,sort]{elsarticle}
+
+
+\usepackage{yfonts}
+
+\usepackage[margin=2.0cm]{geometry}
+%
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+% for algorithms
+\usepackage[ruled,vlined]{algorithm2e}
+\DontPrintSemicolon
+\SetAlFnt{\small}
+
+\usepackage{mathrsfs}
+\usepackage{epstopdf}
+\usepackage{stmaryrd}
+\usepackage{subfig}
+\usepackage{amsthm}
+\usepackage{lmodern}
+\usepackage{enumitem}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{stackrel}
+\usepackage{accents}
+
+
+
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}
+\newtheoremstyle{proofpartstyle}
+  {1pc} % Space above
+  {1pc} % Space below
+  {} % Body font
+  {2.5mm} % Indent amount
+  {\itshape} % Theorem head font
+  {} % Punctuation after theorem head
+  {-0.1em} % Space after theorem head
+  {} % Theorem head spec (can be left empty, meaning `normal')
+\theoremstyle{proofpartstyle} \newtheorem*{proofpart}{Proof of Part}
+\makeatletter
+\@addtoreset{proofpart}{theorem}
+\makeatother
+\theoremstyle{plain}
+\newtheorem{Lem}{Lemma}
+\newtheorem{Prop}{Proposition}
+\theoremstyle{remark}
+\newtheorem{rem}{Remark}
+
+\allowdisplaybreaks
+\renewcommand{\qedsymbol}{$\blacksquare$}
+
+\usepackage{placeins}
+
+\numberwithin{equation}{section}
+
+%newcommands
+%
+\newcommand{\pderivative}[2]{\frac{\partial #1}{\partial #2}}
+\newcommand{\mytext}[1]{\textnormal{\textbf{#1}}}
+
+\newcommand{\dmat}{\mat{D}}
+\newcommand{\dmatT}{\mat{D}^T}
+\newcommand{\mmat}{\mat{{M}}}
+\newcommand{\qmat}{\mat{{Q}}}
+\newcommand{\diffmat}{\mmat^{-1}\boldsymbol{\Delta}}
+\newcommand{\diffmatT}{\boldsymbol{\Delta}^T\mmat^{-1}}
+\newcommand{\smat}{\mat{{S}}}
+\newcommand{\zmat}{\mat{{Z}}}
+\newcommand{\average}[1]{\overline{ #1}}
+%\newcommand{\average}[1]{\left\{\!\left\{ #1\right\}\!\right\}}
+\newcommand{\jump}[1]{\llbracket #1 \rrbracket}
+\newcommand{\ip}[1]{\left\langle#1\right\rangle_N}
+
+\newcommand{\half}{\frac{1}{2}}
+\newcommand{\fourth}{\frac{1}{4}}
+\newcommand{\mat}[1]{\mathbf{#1}}
+% all just use one vector notation now to avoid confusion
+
+\newcommand\statevec[1]{\vec{ #1}}% space vector, x\hat x + y \hat y
+\newcommand\spacevec[1]{\vec{ #1}}% space vector, x\hat x + y \hat y
+\newcommand\tensor[1]{\overset{\text{$\leftrightarrow$}}{#1}}% state vector, e.g. [rho rhou rhoe]^{T}
+\newcommand{\arry}[1]{\mathbf{ #1}}
+
+\newcommand{\hmat}{\mat{{h}}}
+\newcommand{\umat}{\mat{{u}}}
+\newcommand{\vmat}{\mat{{v}}}
+\newcommand{\bmat}{\mat{{b}}}
+\newcommand{\Bmat}{\mat{{B}}}
+\newcommand{\Dhat}{\hat{{D}}}
+\newcommand{\dtdx}{\frac{\Delta t}{\Delta x}}
+\newcommand\acclrvec[1]{\accentset{\,\leftrightarrow}{#1}}  % define leftrightarrow as an accent
+\definecolor{redcol}{rgb}{1.,0.,0.0}
+
+
+%extra space between paragraphs
+\parskip2mm
+
+\begin{document}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Testcase included in the code}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{TESTCASE 1: Non-Periodic Convergence Test}
+\subsection{TESTCASE 2: Periodic Convergence Test}
+\subsection{TESTCASE 3: Well Balanced Test with Discontinous Bottom}
+\subsection{TESTCASE 4: Entropy Glitch Test}
+\subsection{TESTCASE 20: Partial Dam Break (CARTESIAN)}
+\subsection{TESTCASE 30: Steep Dam Break - Test for Shock Capturing // Limiting}
+\subsection{TESTCASE 31: 2D Oscillating Lake // Parabolic Bowl}
+\subsection{TESTCASE 32: Flooding over 3 Mounds}
+\subsection{TESTCASE 33: Dam Break over 3 Mounds}
+\subsection{TESTCASE 34: Dam Break over 3 Mounds}
+\subsection{TESTCASE 35: 2D solitary wave runup}
+\begin{equation}
+\begin{aligned}
+&h(x,y,0)=\max \left( 0, h_0 + \frac{A}{h_0}  \text{sech}^2 (\gamma (x-x_c)) -b(x,y) \right),\\
+&u=v=0,
+\end{aligned}
+\end{equation}
+where the parameters are set to $A=0.064m$, $x_c = 2.5m$, $h_0 = 0.32m$, $\gamma = \sqrt{\frac{3A}{4h_0}}$. The bottom topography is a cone and defined by
+\begin{equation}
+b(x,y) = 0.93 \left(1-\frac{r}{r_c}\right)	\qquad \text{ if } r\leq r_c
+\end{equation}
+with $r=\sqrt{(x-x_c)^2 + (y-y_c)}$,  $r_c = 3.6m$ and $(x_c,y_c) = (12.5,15)$. The domain is $\Omega = [0,25] \times [0,30]$ and bounded by solid wall boundary conditions.
+\subsection{TESTCASE 36: 1D Bowl (2D Version)}
+\subsection{TESTCASE 43: Curved Dam Break PARTIAL}
+\subsection{TESTCASE 44: Curved Dam Break FULL}
+\subsection{TESTCASE 45: Curved Dam Break Setup - NO BREAK (WB test)}
+
+
+
+\end{document} 

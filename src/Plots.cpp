@@ -1,0 +1,205 @@
+
+#include "plots.h"
+
+
+
+void PlotSolution(const int Nelem, const int ngl,const int PlotVar, const dfloat x[], const dfloat y[], const dfloat Q[], const dfloat b[], const int plotCount){
+
+  ostringstream os;
+  os << "movie/plot_" << plotCount << ".tec";
+  string fName = os.str();
+
+
+ofstream plotfile;
+plotfile.open (fName.c_str());
+
+
+int ngl2=ngl*ngl;
+dfloat Qinv;
+    switch(PlotVar){
+    case 1:
+
+        plotfile <<"TITLE = H_solution.tec\n";
+        plotfile <<"VARIABLES = \"x\",\"y\",\"H\",\"u\",\"v\",\"bottom\"\n";
+
+        for (int ie=0; ie<Nelem;ie++){
+                plotfile <<"ZONE I ="<<ngl<<",J="<<ngl<<",F=POINT\n";
+                  for(int j=0;j<ngl;++j){
+                    for(int i=0;i<ngl;++i){
+                        int id = ie*ngl2*Neq   +j*ngl+i;
+                        int xid = ie*ngl2   +j*ngl+i;
+                            dfloat H;
+                            if (Q[id] > 0.0){
+                                Qinv = 1.0/Q[id];
+                            }else{
+                                Qinv = 0.0;
+                            }
+
+                            if (Q[id] > pow(10.0,2)){
+                                H=-1;
+                            }else{
+                                H=Q[id]+b[xid];
+                            }
+
+                            plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<<" \n";
+
+                            //plotfile <<x[xid]<<" "<<y[xid]<<" "<<Q[id]+b[xid]<< " " << Q[id+ngl2]<<" " << Q[id+ngl2+ngl2]<<" "<<b[xid]<<" \n";
+                }
+                  }
+        }
+        break;
+    case 2:
+
+        plotfile <<"TITLE = H_solution.tec\n";
+        plotfile <<"VARIABLES = \"x\",\"y\",\"H\",\"bottom\"\n";
+
+        for (int ie=0; ie<Nelem;ie++){
+                plotfile <<"ZONE I ="<<ngl<<",J="<<ngl<<",F=POINT\n";
+                  for(int j=0;j<ngl;++j){
+                    for(int i=0;i<ngl;++i){
+                        int id = ie*ngl2*Neq   +j*ngl+i;
+                        int xid = ie*ngl2   +j*ngl+i;
+                               plotfile <<x[xid]<<" "<<y[xid]<<" "<<Q[id+ngl2]<<" "<<b[xid]<<" \n";
+
+                }
+                  }
+        }
+        break;
+    case 3:
+
+        plotfile <<"TITLE = H_solution.tec\n";
+        plotfile <<"VARIABLES = \"x\",\"y\",\"H\",\"bottom\"\n";
+
+        for (int ie=0; ie<Nelem;ie++){
+                plotfile <<"ZONE I ="<<ngl<<",J="<<ngl<<",F=POINT\n";
+                  for(int j=0;j<ngl;++j){
+                    for(int i=0;i<ngl;++i){
+                        int id = ie*ngl2*Neq   +j*ngl+i;
+                        int xid = ie*ngl2   +j*ngl+i;
+                               plotfile <<x[xid]<<" "<<y[xid]<<" "<<Q[id+2*ngl2]<<" "<<b[xid]<<" \n";
+
+                }
+                  }
+        }
+        break;
+    case 4:
+
+        plotfile <<"TITLE = H_solution.tec\n";
+        plotfile <<"VARIABLES = \"x\",\"y\",\"h\",\"bottom\"\n";
+
+        for (int ie=0; ie<Nelem;ie++){
+                plotfile <<"ZONE I ="<<ngl<<",J="<<ngl<<",F=POINT\n";
+                  for(int j=0;j<ngl;++j){
+                    for(int i=0;i<ngl;++i){
+                        int id = ie*ngl2*Neq   +j*ngl+i;
+                        int xid = ie*ngl2   +j*ngl+i;
+                               plotfile <<x[xid]<<" "<<y[xid]<<" "<<Q[id]<<" "<<b[xid]<<" \n";
+
+                }
+                  }
+        }
+        break;
+    }
+
+
+
+
+
+
+
+
+plotfile << "Test";
+plotfile.close();
+
+
+}
+
+
+
+void PlotViscosity(const int Nelem, const int ngl,const int PlotVar, const dfloat x[], const dfloat y[], const dfloat Qx[], const dfloat Qy[], const int plotCount){
+
+  ostringstream os;
+  os << "movie/gradients_" << plotCount << ".tec";
+  string fName = os.str();
+
+
+ofstream plotfile;
+plotfile.open (fName.c_str());
+
+
+int ngl2=ngl*ngl;
+
+
+
+
+    plotfile <<"TITLE = H_solution.tec\n";
+    plotfile <<"VARIABLES = \"x\",\"y\",\"Qx1\",\"Qx2\",\"Qx3\",\"Qy1\",\"Qy2\",\"Qy3\"\n";
+
+    for (int ie=0; ie<Nelem;ie++){
+            plotfile <<"ZONE I ="<<ngl<<",J="<<ngl<<",F=POINT\n";
+              for(int j=0;j<ngl;++j){
+                for(int i=0;i<ngl;++i){
+                    int id = ie*ngl2*Neq   +j*ngl+i;
+                    int xid = ie*ngl2   +j*ngl+i;
+                           plotfile <<x[xid]<<" "<<y[xid]<<" "<<Qx[id]<<" "<<Qx[id+ngl2]<<" "<<Qx[id+ngl2+ngl2]<<" "<<Qy[id]<<" "<<Qy[id+ngl2]<<" "<<Qy[id+ngl2+ngl2]<<" \n";
+
+
+            }
+              }
+    }
+
+
+
+plotfile << "Test";
+plotfile.close();
+
+
+}
+
+
+void PlotViscoseParameter(const int Nelem, const int ngl, const dfloat x[], const dfloat y[], const dfloat Eps[], const int plotCount){
+
+  ostringstream os;
+  os << "movie/visc_" << plotCount << ".tec";
+  string fName = os.str();
+
+
+ofstream plotfile;
+plotfile.open (fName.c_str());
+
+
+int ngl2=ngl*ngl;
+
+
+        plotfile <<"TITLE = ArtVisc.tec\n";
+        plotfile <<"VARIABLES = \"x\",\"y\",\"Eps\"\n";
+
+        for (int ie=0; ie<Nelem;ie++){
+                plotfile <<"ZONE I ="<<ngl<<",J="<<ngl<<",F=POINT\n";
+                  for(int j=0;j<ngl;++j){
+                    for(int i=0;i<ngl;++i){
+                        int id = ie*ngl2*Neq   +j*ngl+i;
+                        int xid = ie*ngl2   +j*ngl+i;
+                               plotfile <<x[xid]<<" "<<y[xid]<<" "<<Eps[ie]<<" \n";
+
+
+                }
+                  }
+        }
+
+
+
+
+
+
+
+
+
+plotfile << "Test";
+plotfile.close();
+
+
+
+
+
+}

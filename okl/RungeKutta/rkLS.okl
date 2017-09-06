@@ -1,0 +1,62 @@
+
+kernel void calcRK(const int Nelem,const dfloat * Qt,const dfloat rkA,const dfloat rkB,dfloat * gRK)
+{
+
+
+    for(int ie = 0; ie < Nelem; ie++; outer0)
+    {
+
+        shared dfloat s_Qt1[ngl2];
+        shared dfloat s_Qt2[ngl2];
+        shared dfloat s_Qt3[ngl2];
+
+
+
+            for (int i=0; i<ngl; ++i;inner1){
+                for (int j=0; j<ngl;++j;inner0){
+                        int id=j*ngl+i;
+                        int Fid = ie*ngl2*Neq   +j*ngl+i;
+                        int xid = ie*ngl2   +j*ngl+i;
+
+
+                        s_Qt1[id] = Qt[Fid];
+                        s_Qt2[id] = Qt[Fid+ngl2];
+                        s_Qt3[id] = Qt[Fid+ngl2+ngl2];
+
+
+
+
+                    }
+                }
+
+            barrier(localMemFence);
+        // calc Source Term and update gRK
+
+          for(int j=0;j<ngl;++j;inner1){
+            for(int i=0;i<ngl;++i;inner0){
+                int id = ie*ngl2*Neq   +j*ngl+i;
+                int idLoc=j*ngl+i;
+
+
+
+
+
+                  gRK[id]=rkA*gRK[id]+ s_Qt1[idLoc]  ;
+                  gRK[id+ngl2]=rkA*gRK[id+ngl2]+ s_Qt2[idLoc]  ;
+                  gRK[id+ngl2+ngl2]=rkA*gRK[id+ngl2+ngl2]+ s_Qt3[idLoc]  ;
+            }
+          }
+
+
+
+
+
+
+
+
+    }
+
+
+
+}
+

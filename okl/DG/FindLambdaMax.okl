@@ -1,0 +1,68 @@
+
+
+kernel void FindLambdaMax(const int Nelem, const dfloat * Q, dfloat * LambdaMax)
+{
+
+
+
+    for(int ie = 0; ie < Nelem; ie++; outer0)
+    {
+
+
+        shared dfloat s_MaxLambda[ngl][ngl];
+
+
+
+
+        for (int i=0; i<ngl; ++i;inner1){
+            for (int j=0; j<ngl;++j;inner0){
+                        const int Fid = ie*ngl2*Neq   +j*ngl+i;
+
+                        dfloat c;
+
+                        dfloat Qinv;
+                        if (Q[Fid]>=PosPresTOL){
+                            Qinv =  1.f/Q[Fid];
+                            c=sqrt(g_const*Q[Fid]);
+                        }else{
+                            Qinv = 0.0;
+                            c=0.0;
+                        }
+
+                        const dfloat u =Q[Fid+ngl2]*Qinv;
+                        const dfloat v =Q[Fid+ngl2+ngl2]*Qinv;
+
+                        s_MaxLambda[i][j] =  c + max(fabs(u),fabs(v));
+
+            }
+        }
+
+            barrier(localMemFence);
+
+
+
+            for (int k=0; k<1; ++k;inner0){
+
+                    LambdaMax[ie]=0.0;
+
+
+                        occaUnroll(ngl)
+                         for (int i=0; i<ngl; ++i){
+                            occaUnroll(ngl)
+                            for (int j=0; i<ngl; ++i){
+                                    LambdaMax[ie] = max(LambdaMax[ie], s_MaxLambda[i][j]);
+                            }
+                         }
+
+
+            }
+
+
+
+    }\\elem
+
+
+
+}//kernel
+
+

@@ -1,0 +1,162 @@
+
+
+
+kernel void SurfaceKernelViscose(const int Nelem, const dfloat *Jac,const int * ElemEdgeMasterSlave,const int * ElemEdgeOrientation,const int * ElemToEdge, const dfloat * FStar,dfloat * Qt)
+{
+
+    for(int ie = 0; ie < Nelem; ie++; outer0)
+    {
+        shared dfloat s_FStar[4*ngl*Neq];
+        shared dfloat s_Jac[4*ngl];
+
+
+
+
+
+
+
+        for(int is=0;is<4;is++;inner1){
+           for (int j=0; j<ngl;++j;inner0){
+
+            int ifa = ElemToEdge[ie*4 + is]-1;        //get id of element side
+
+
+            // is the numerical flux stored in reversed order for this element?
+            // "1" means the order is correct, 0 means it is not
+            int reversedOrder = ElemEdgeOrientation[ie*4 + is];
+            //increment = j if order is correct, else increment = ngl-1-j
+            int increment  = reversedOrder*j + (1-reversedOrder)*(ngl-1 -j);
+
+            //THIS WAY THE STORAGE IN THE SHARED VARIABLES SHOULD ALWAYS BE IN THE CORRECT ORDER FOR THE LOCAL COORDINATES
+
+            int idFaceLoc = ifa*ngl*Neq + increment;        //get local id on the side storage SurfaceParts
+
+
+
+            int id=is*ngl*Neq+j;                // get id for surface parts for THIS element
+            int id2 = is*ngl+j;
+            int xid;
+
+         switch(is){
+            case 0: //bottom side
+                xid = ie*ngl2+j;
+                break;
+            case 2: //top side
+                xid = ie*ngl2+ngl2-ngl+j;
+                break;
+            case 3: //left side
+                xid = ie*ngl2+j*ngl;
+                break;
+            case 1: //right side
+                xid = ie*ngl2+(j+1)*ngl-1;
+                break;
+
+            }
+            s_Jac[id2]=Jac[xid];
+
+
+
+            s_FStar[id] = FStar[idFaceLoc];
+            s_FStar[id+ngl] = FStar[idFaceLoc+ngl];          //LOOPS OVER EQUATIONS HERE
+            s_FStar[id+2*ngl] = FStar[idFaceLoc+2*ngl];
+
+
+
+
+            }
+        }
+
+
+        barrier(localMemFence);
+
+        //SIDE 1 (BOTTOM)
+        for (int j=0; j<ngl; ++j;inner0){
+                int id= ie*ngl2*Neq+j;
+                int MasterSlave = ElemEdgeMasterSlave[ie*4];
+
+                int idfaceloc = j;
+                int idxfaceloc = j;
+
+                Qt[id]              +=    - MasterSlave* s_FStar[idfaceloc] * s_Jac[idxfaceloc];
+                Qt[id+ngl2]         +=    - MasterSlave*s_FStar[idfaceloc+ngl] * s_Jac[idxfaceloc];
+                Qt[id+ngl2+ngl2]    +=    - MasterSlave*s_FStar[idfaceloc+ngl+ngl] * s_Jac[idxfaceloc];
+
+        }
+
+
+
+
+        barrier(localMemFence);
+         // SIDE 3 (TOP)
+
+        for (int j=0; j<ngl; ++j;inner0){
+
+                int id= ie*ngl2*Neq+ngl2-ngl+j;
+                int MasterSlave = ElemEdgeMasterSlave[ie*4+2];
+
+                int idfaceloc = 2*ngl*Neq+j;
+                int idxfaceloc = 2*ngl+j;
+
+                Qt[id]              +=  - MasterSlave*s_Jac[idxfaceloc] *  s_FStar[idfaceloc]  ;
+                Qt[id+ngl2]         +=  - MasterSlave*s_Jac[idxfaceloc] *  s_FStar[idfaceloc+ngl]  ;
+                Qt[id+ngl2+ngl2]    +=  - MasterSlave*s_Jac[idxfaceloc] *  s_FStar[idfaceloc+ngl+ngl]  ;
+
+
+        }
+
+
+
+        barrier(localMemFence);
+        //SIDE 2 (RIGHT)
+        //Then do sides 1 and 3
+            for (int j=0; j<ngl; ++j;inner0){
+                int MasterSlave = ElemEdgeMasterSlave[ie*4+1];
+                int id= ie*ngl2*Neq+(ngl-1) +j*ngl;
+
+                int idfaceloc = 1*ngl*Neq+j;
+                int idxfaceloc = 1*ngl+j;
+
+                Qt[id]              +=  - MasterSlave*s_Jac[idxfaceloc] *  s_FStar[idfaceloc]  ;
+                Qt[id+ngl2]         +=  - MasterSlave*s_Jac[idxfaceloc] *  s_FStar[idfaceloc+ngl]  ;
+                Qt[id+ngl2+ngl2]    +=  - MasterSlave*s_Jac[idxfaceloc] *  s_FStar[idfaceloc+ngl+ngl]  ;
+            }
+
+
+
+         barrier(localMemFence);
+
+        //SIDE 4 (LEFT)
+
+            for (int j=0; j<ngl; ++j;inner0){
+                int MasterSlave = ElemEdgeMasterSlave[ie*4+3];
+                int id= ie*ngl2*Neq + j*ngl;
+
+                int idfaceloc = 3*ngl*Neq+j;
+                int idxfaceloc = 3*ngl+j;
+
+                Qt[id]              +=  - MasterSlave*s_Jac[idxfaceloc] *  s_FStar[idfaceloc]  ;
+                Qt[id+ngl2]         +=  - MasterSlave*s_Jac[idxfaceloc] *  s_FStar[idfaceloc+ngl]  ;
+                Qt[id+ngl2+ngl2]    +=  - MasterSlave*s_Jac[idxfaceloc] *  s_FStar[idfaceloc+ngl+ngl]  ;
+
+
+
+
+
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+
+
+}

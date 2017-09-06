@@ -1,0 +1,45 @@
+kernel void UpdateKernel(const int Nelem,const dfloat RKCoeff,const dfloat dt,const dfloat * gRK, dfloat * q)
+{
+
+
+    for(int ie = 0; ie < Nelem; ie++; outer0)
+    {
+
+        shared dfloat s_gRK1[ngl2];
+        shared dfloat s_gRK2[ngl2];
+        shared dfloat s_gRK3[ngl2];
+
+
+            for (int i=0; i<ngl; ++i;inner1){
+                for (int j=0; j<ngl;++j;inner0){
+                        int id=j*ngl+i;
+                        int Fid = ie*ngl2*Neq   +j*ngl+i;
+                        s_gRK1[id] = gRK[Fid];
+                        s_gRK2[id] = gRK[Fid+ngl2];
+                        s_gRK3[id] = gRK[Fid+ngl2+ngl2];
+
+
+
+                    }
+                }
+
+            barrier(localMemFence);
+
+
+        for (int i=0; i<ngl; ++i;inner1){
+            for (int j=0; j<ngl;++j;inner0){
+                int id = ie*ngl2*Neq   +j*ngl+i;
+                int idLoc = j*ngl+i;
+                q[id]          += RKCoeff*dt*s_gRK1[idLoc] ;
+                q[id+ngl2]     += RKCoeff*dt*s_gRK2[idLoc] ;
+                q[id+ngl2+ngl2]+= RKCoeff*dt*s_gRK3[idLoc] ;
+            }
+          }
+
+
+
+    }
+
+
+
+}
