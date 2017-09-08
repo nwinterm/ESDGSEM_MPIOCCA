@@ -18,6 +18,7 @@ class MPI_setup
 {
     public:
         MPI_setup(int argc, char *argv[]);
+//        MPI_setup();
    int  numtasks, rank, len, rc;
    char hostname[MPI_MAX_PROCESSOR_NAME];
    MPI_Request *reqs;   // required variable for non-blocking calls

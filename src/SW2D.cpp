@@ -17,7 +17,7 @@ int globalEleID;
 
 for(int ie=0;ie<Nelem;++ie){
         if (IsMeshSplit==1){
-                globalEleID  = MeshSplit.MyElementLocalToGlobal(ie+1,1);
+                globalEleID  = MeshSplit.MyElementLocalToGlobal[ie];
             }else{
                 globalEleID  = ie+1;
             }
@@ -389,7 +389,7 @@ case 45: {    //curved dam NO BREAK
 int globalEleID;
 for(int ie=0;ie<Nelem;++ie){
             if (IsMeshSplit==1){
-                globalEleID  = MeshSplit.MyElementLocalToGlobal(ie+1,1);
+                globalEleID  = MeshSplit.MyElementLocalToGlobal[ie];
             }else{
                 globalEleID  = ie+1;
             }

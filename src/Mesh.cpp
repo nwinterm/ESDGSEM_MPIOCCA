@@ -1,11 +1,24 @@
 #include "Mesh.h"
 
 
-Mesh::Mesh(const fmatrix fm_x_GL,const int int_ngl)
+Mesh::Mesh(const dfloat * fm_x_GL,const int int_ngl)
 {
-    x_GL=fm_x_GL;
+//    x_GL=fm_x_GL;
     ngl=int_ngl;
+    ngl2 = ngl*ngl;
+//    x_GL.resize(ngl);
+    x_GL= (dfloat*) calloc(ngl,sizeof(dfloat));
 
+    for (int i=0;i<ngl;i++){
+
+        x_GL[i] = fm_x_GL[i];
+
+    }
+//cout << "LGL Nodes: ";
+//for(int i = 0; i < ngl; ++i){
+//cout << " " << x_GL(i+1) << " " ;
+//}
+//cout << " \n";
 }
 Mesh::~Mesh()
 {
@@ -26,26 +39,34 @@ if (Cartesian){
     InitDomain(Testcase, &fixedDomain,&fixedDisc,&NelemX, &NelemY,&PeriodicBD_X, &PeriodicBD_Y, &xL, &xR, &yL, &yR);
     ReadCartesianData(fixedDomain,fixedDisc,&xL,&xR,&yL,&yR,&NelemX,&NelemY,&PeriodicBD_X,&PeriodicBD_Y);
     GenerateMesh(xL,xR,yL,yR,PeriodicBD_X,PeriodicBD_Y);
-    }
-    else{
+}
+else{
     ReadMesh(meshFile);
-    }
+    cout << "Mesh read in.\n";
+}
 
-    ElemEdgeMasterSlave.resize(4,m_num_elements);
-    ElemEdgeOrientation.resize(4,m_num_elements);
 
-    for(int ie=1;ie<=m_num_elements;++ie){
-            for (int is=1;is<=4;is++){
-                int ifa  = ElementToEdge(is,ie);
 
-                if (EdgeInfo(3,ifa)==ie-1){
+
+//    ElemEdgeMasterSlave.resize(4,m_num_elements);
+//    ElemEdgeOrientation.resize(4,m_num_elements);
+
+    ElemEdgeMasterSlave = (int*) calloc(m_num_elements*4,sizeof(int));
+    ElemEdgeOrientation = (int*) calloc(m_num_elements*4,sizeof(int));
+
+    for(int ie=0;ie<m_num_elements;++ie){
+            for (int is=0;is<4;is++){
+                int id = ie*4+is;
+                int ifa  = ElementToEdge[id];
+
+                if (EdgeInfo[(ifa-1)*7+2]==ie){
                     //this is the left element to this edge!
-                    ElemEdgeMasterSlave(is,ie)=+1;
-                    ElemEdgeOrientation(is,ie)=1;   //order is never reversed for left element! as it is master
+                    ElemEdgeMasterSlave[id]=+1;
+                    ElemEdgeOrientation[id]=1;   //order is never reversed for left element! as it is master
 
                 }else{
-                    ElemEdgeMasterSlave(is,ie)=-1;
-                    ElemEdgeOrientation(is,ie)=EdgeInfo(7,ifa);
+                    ElemEdgeMasterSlave[id]=-1;
+                    ElemEdgeOrientation[id]=EdgeInfo[(ifa-1)*7+6];
                 }
 
             }
@@ -61,41 +82,51 @@ if (Cartesian){
 
 
     if(Testcase ==43){   //PARTIAL CURVED DAM BREAK
+                cout << "Doing extra boundaries for Testcase 43, partial curved dam...\n";
         int ExtraEdges=36;
         int ghostCounter = 0;
-        imatrix EdgeInfo_TMP(7,m_num_edges);
+//        int EdgeInfo_TMP(7,m_num_edges);
 
-        for(int is=1;is<=m_num_edges;++is){
-                for (int i=1;i<=7;i++){
-                    EdgeInfo_TMP(i,is) = EdgeInfo(i,is);
+        int * EdgeInfo_TMP  = (int*) calloc(m_num_edges*7,sizeof(int));
+
+        for(int is=0;is<m_num_edges;++is){
+                for (int i=0;i<7;i++){
+                    int id = is*7+i;
+                    EdgeInfo_TMP[id] = EdgeInfo[id];
                 }
         }
 
-        EdgeInfo.resize(7,m_num_edges+ExtraEdges);
+        free(EdgeInfo);
+        EdgeInfo = (int*) calloc((m_num_edges+ExtraEdges)*7,sizeof(int));
+//        EdgeInfo.resize(7,m_num_edges+ExtraEdges);
 
-        for(int is=1;is<=m_num_edges;++is){
-                for (int i=1;i<=7;i++){
-                      EdgeInfo(i,is) = EdgeInfo_TMP(i,is);
+        for(int is=0;is<m_num_edges;++is){
+                for (int i=0;i<7;i++){
+                    int id = is*7+i;
+                      EdgeInfo[id] = EdgeInfo_TMP[id];
                 }
         }
 //
 //
-        for(int is=1;is<=m_num_edges;++is){
+        for(int is=0;is<m_num_edges;++is){
+            int id = is*7;
 
-            if( (EdgeInfo(3,is) % 20 == 2) && (EdgeInfo(3,is) % 40 != 2) && (EdgeInfo(4,is) % 20 == 3)&& (EdgeInfo(4,is) % 40 != 3)){
-                if ( (is!=1544) && (is!=1625) && (is != 1706) && (is!=1787) ){  //&& (is !=1868)
+            if( (EdgeInfo[id+2] % 20 == 2) && (EdgeInfo[id+2] % 40 != 2) && (EdgeInfo[id+3] % 20 == 3)&& (EdgeInfo[id+3] % 40 != 3)){
+                if ( (is!=1543) && (is!=1624) && (is != 1705) && (is!=1786) ){  //&& (is !=1868)
 
+
+                int ghostID = (m_num_edges+ghostCounter)*7;
                 ghostCounter = ghostCounter+1;
-                EdgeInfo(1,m_num_edges+ghostCounter)= EdgeInfo(1,is);
-                EdgeInfo(2,m_num_edges+ghostCounter)= EdgeInfo(2,is);
-                EdgeInfo(3,m_num_edges+ghostCounter)= EdgeInfo(4,is);
-                EdgeInfo(4,m_num_edges+ghostCounter)= -1;
-                EdgeInfo(5,m_num_edges+ghostCounter)= EdgeInfo(6,is);
-                EdgeInfo(6,m_num_edges+ghostCounter)= -1;
-                EdgeInfo(7,m_num_edges+ghostCounter)= EdgeInfo(7,is);
+                EdgeInfo[ghostID]= EdgeInfo[id];
+                EdgeInfo[ghostID+1]= EdgeInfo[id+1];
+                EdgeInfo[ghostID+2]= EdgeInfo[id+3];
+                EdgeInfo[ghostID+3]= -1;
+                EdgeInfo[ghostID+4]= EdgeInfo[id+5];
+                EdgeInfo[ghostID+5]= -1;
+                EdgeInfo[ghostID+6]= EdgeInfo[id+6];
 
-                EdgeInfo(4,is) = -1 ;
-                EdgeInfo(6,is)=-1;
+                EdgeInfo[id+3] = -1 ;
+                EdgeInfo[id+5]=-1;
                 }
             }
         }
@@ -103,9 +134,10 @@ if (Cartesian){
         ghostCounter = 1;
         for(int ie=24;ie<=1584;ie=ie+40){
             if ( (ie!=744) && (ie!=784) && (ie != 824) && (ie!=864) ){  //&& (ie !=903)
-            ElementToEdge(4,ie)   = m_num_edges + ghostCounter;
-            ElemEdgeMasterSlave(4,ie)=+1;
-            ElemEdgeOrientation(4,ie)=1;   //order is never reversed for left element! as it is master
+                int id = (ie-1)*4 + 3;
+            ElementToEdge[id]   = m_num_edges + ghostCounter;
+            ElemEdgeMasterSlave[id]=+1;
+            ElemEdgeOrientation[id]=1;   //order is never reversed for left element! as it is master
 
             ghostCounter = ghostCounter+1;
             }
@@ -114,52 +146,62 @@ if (Cartesian){
 //
 //        cout << "ghostcounter is " << ghostCounter <<"\n";
         m_num_edges=m_num_edges+ExtraEdges;
+                        cout << "... finished\n";
     }
 
     if(Testcase ==45){   //PARTIAL CURVED DAM BREAK
         int ExtraEdges = 40;
         int ghostCounter = 0;
-        imatrix EdgeInfo_TMP(7,m_num_edges);
+        int * EdgeInfo_TMP  = (int*) calloc(m_num_edges*7,sizeof(int));
 
-        for(int is=1;is<=m_num_edges;++is){
-                for (int i=1;i<=7;i++){
-                    EdgeInfo_TMP(i,is) = EdgeInfo(i,is);
+        for(int is=0;is<m_num_edges;++is){
+                for (int i=0;i<7;i++){
+                    int id = is*7+i;
+                    EdgeInfo_TMP[id] = EdgeInfo[id];
                 }
         }
 
-        EdgeInfo.resize(7,m_num_edges+ExtraEdges);
 
-        for(int is=1;is<=m_num_edges;++is){
-                for (int i=1;i<=7;i++){
-                      EdgeInfo(i,is) = EdgeInfo_TMP(i,is);
+        free(EdgeInfo);
+        EdgeInfo = (int*) calloc((m_num_edges+ExtraEdges)*7,sizeof(int));
+//        EdgeInfo.resize(7,m_num_edges+ExtraEdges);
+
+        for(int is=0;is<m_num_edges;++is){
+                for (int i=0;i<7;i++){
+                    int id = is*7+i;
+                      EdgeInfo[id] = EdgeInfo_TMP[id];
                 }
         }
 //
 //
-        for(int is=1;is<=m_num_edges;++is){
-            if( (EdgeInfo(3,is) % 20 == 2) && (EdgeInfo(3,is) % 40 != 2) && (EdgeInfo(4,is) % 20 == 3)&& (EdgeInfo(4,is) % 40 != 3)){
+//
+        for(int is=0;is<m_num_edges;++is){
+            int id = is*7;
+            if( (EdgeInfo[id+2] % 20 == 2) && (EdgeInfo[id+2] % 40 != 2) && (EdgeInfo[id+3] % 20 == 3)&& (EdgeInfo[id+3] % 40 != 3)){
 
+
+                int ghostID = (m_num_edges+ghostCounter)*7;
                 ghostCounter = ghostCounter+1;
-                EdgeInfo(1,m_num_edges+ghostCounter)= EdgeInfo(1,is);
-                EdgeInfo(2,m_num_edges+ghostCounter)= EdgeInfo(2,is);
-                EdgeInfo(3,m_num_edges+ghostCounter)= EdgeInfo(4,is);
-                EdgeInfo(4,m_num_edges+ghostCounter)= -1;
-                EdgeInfo(5,m_num_edges+ghostCounter)= EdgeInfo(6,is);
-                EdgeInfo(6,m_num_edges+ghostCounter)= -1;
-                EdgeInfo(7,m_num_edges+ghostCounter)= EdgeInfo(7,is);
+                EdgeInfo[ghostID]= EdgeInfo[id];
+                EdgeInfo[ghostID+1]= EdgeInfo[id+1];
+                EdgeInfo[ghostID+2]= EdgeInfo[id+3];
+                EdgeInfo[ghostID+3]= -1;
+                EdgeInfo[ghostID+4]= EdgeInfo[id+5];
+                EdgeInfo[ghostID+5]= -1;
+                EdgeInfo[ghostID+6]= EdgeInfo[id+6];
 
-                EdgeInfo(4,is) = -1 ;
-                EdgeInfo(6,is)=-1;
+                EdgeInfo[id+3] = -1 ;
+                EdgeInfo[id+5]=-1;
 
             }
         }
 //        cout << "ghostcounter is " << ghostCounter <<"\n";
         ghostCounter = 1;
         for(int ie=24;ie<=1584;ie=ie+40){
-
-            ElementToEdge(4,ie)   = m_num_edges + ghostCounter;
-            ElemEdgeMasterSlave(4,ie)=+1;
-            ElemEdgeOrientation(4,ie)=1;   //order is never reversed for left element! as it is master
+            int id = (ie-1)*4 + 3;
+            ElementToEdge[id]   = m_num_edges + ghostCounter;
+            ElemEdgeMasterSlave[id]=+1;
+            ElemEdgeOrientation[id]=1;   //order is never reversed for left element! as it is master
 
             ghostCounter = ghostCounter+1;
 
@@ -182,31 +224,38 @@ if (Cartesian){
         int ExtraEdges= int(0.9*NelemX); // the dam is supposed to have length of 1, so 1/10 of the elements
         int CutEdges = int(0.1*NelemX);
         int ghostCounter = 0;
-        imatrix EdgeInfo_TMP(7,m_num_edges);
 
-        for(int is=1;is<=m_num_edges;++is){
-                for (int i=1;i<=7;i++){
-                    EdgeInfo_TMP(i,is) = EdgeInfo(i,is);
+
+        int * EdgeInfo_TMP  = (int*) calloc(m_num_edges*7,sizeof(int));
+
+        for(int is=0;is<m_num_edges;++is){
+                for (int i=0;i<7;i++){
+                    int id = is*7+i;
+                    EdgeInfo_TMP[id] = EdgeInfo[id];
                 }
         }
 
-        EdgeInfo.resize(7,m_num_edges+ExtraEdges);
 
-        for(int is=1;is<=m_num_edges;++is){
-                for (int i=1;i<=7;i++){
-                      EdgeInfo(i,is) = EdgeInfo_TMP(i,is);
+        free(EdgeInfo);
+        EdgeInfo = (int*) calloc((m_num_edges+ExtraEdges)*7,sizeof(int));
+//        EdgeInfo.resize(7,m_num_edges+ExtraEdges);
+
+        for(int is=0;is<m_num_edges;++is){
+                for (int i=0;i<7;i++){
+                    int id = is*7+i;
+                      EdgeInfo[id] = EdgeInfo_TMP[id];
                 }
         }
 //
 //
 //        for(int is=1;is<=m_num_edges;++is){
 
-         int startIndex = (NelemX+1)*NelemY + NelemY/2 +1;
+         int startIndex = (NelemX+1)*NelemY + NelemY/2;
          int endIndex = m_num_edges - NelemY/2 ;
          int increment =NelemX+1;
 
          int MidIndex = startIndex + increment*(ExtraEdges/2-1);
-         int startIndex2 = MidIndex + (CutEdges+1) * increment;
+         int startIndex2 = MidIndex + (CutEdges+1) * increment-1;
 
 //
 //        cout << " startIndex: " << startIndex <<"\n";
@@ -215,30 +264,42 @@ if (Cartesian){
 //        cout << " MidIndex: " << MidIndex<<"\n";
 //        cout << " startIndex2: " << startIndex2<<"\n";
 //        for(int is=1661;is<=3260;is+=41){       //40x40 case
-        for(int is=startIndex;is<=MidIndex;is+=increment){
+        for(int is=startIndex;is<MidIndex;is+=increment){
+                int id = is*7;
+                int ghostID = (m_num_edges+ghostCounter)*7;
                 ghostCounter = ghostCounter+1;
-                EdgeInfo(1,m_num_edges+ghostCounter)= EdgeInfo(1,is);
-                EdgeInfo(2,m_num_edges+ghostCounter)= EdgeInfo(2,is);
-                EdgeInfo(3,m_num_edges+ghostCounter)= EdgeInfo(4,is);
-                EdgeInfo(4,m_num_edges+ghostCounter)= -1;
-                EdgeInfo(5,m_num_edges+ghostCounter)= EdgeInfo(6,is);
-                EdgeInfo(6,m_num_edges+ghostCounter)= -1;
-                EdgeInfo(7,m_num_edges+ghostCounter)= EdgeInfo(7,is);
-                EdgeInfo(4,is) = -1 ;
-                EdgeInfo(6,is)=-1;
+
+                EdgeInfo[ghostID]= EdgeInfo[id];
+                EdgeInfo[ghostID+1]= EdgeInfo[id+1];
+                EdgeInfo[ghostID+2]= EdgeInfo[id+3];
+                EdgeInfo[ghostID+3]= -1;
+                EdgeInfo[ghostID+4]= EdgeInfo[id+5];
+                EdgeInfo[ghostID+5]= -1;
+                EdgeInfo[ghostID+6]= EdgeInfo[id+6];
+
+                EdgeInfo[id+3] = -1 ;
+                EdgeInfo[id+5]=-1;
+
+
+
 }
 
-        for(int is=startIndex2;is<=endIndex;is+=increment){
+        for(int is=startIndex2;is<endIndex;is+=increment){
+                int id = is*7;
+                int ghostID = (m_num_edges+ghostCounter)*7;
                 ghostCounter = ghostCounter+1;
-                EdgeInfo(1,m_num_edges+ghostCounter)= EdgeInfo(1,is);
-                EdgeInfo(2,m_num_edges+ghostCounter)= EdgeInfo(2,is);
-                EdgeInfo(3,m_num_edges+ghostCounter)= EdgeInfo(4,is);
-                EdgeInfo(4,m_num_edges+ghostCounter)= -1;
-                EdgeInfo(5,m_num_edges+ghostCounter)= EdgeInfo(6,is);
-                EdgeInfo(6,m_num_edges+ghostCounter)= -1;
-                EdgeInfo(7,m_num_edges+ghostCounter)= EdgeInfo(7,is);
-                EdgeInfo(4,is) = -1 ;
-                EdgeInfo(6,is)=-1;
+
+                EdgeInfo[ghostID]= EdgeInfo[id];
+                EdgeInfo[ghostID+1]= EdgeInfo[id+1];
+                EdgeInfo[ghostID+2]= EdgeInfo[id+3];
+                EdgeInfo[ghostID+3]= -1;
+                EdgeInfo[ghostID+4]= EdgeInfo[id+5];
+                EdgeInfo[ghostID+5]= -1;
+                EdgeInfo[ghostID+6]= EdgeInfo[id+6];
+
+                EdgeInfo[id+3] = -1 ;
+                EdgeInfo[id+5]=-1;
+
 }
 ////        cout << "ghostcounter is " << ghostCounter <<"\n";
         ghostCounter = 1;
@@ -261,43 +322,44 @@ if (Cartesian){
 
 
           for(int ie=eleStartIndex;ie<=eleMidIndex;ie=ie+eleIncrement){
-                ElementToEdge(4,ie)   = m_num_edges + ghostCounter;
-                ElemEdgeMasterSlave(4,ie)=+1;
-                ElemEdgeOrientation(4,ie)=1;   //order is never reversed for left element! as it is master
+                int id = (ie-1)*4 + 3;
+                ElementToEdge[id]   = m_num_edges + ghostCounter;
+                ElemEdgeMasterSlave[id]=+1;
+                ElemEdgeOrientation[id]=1;   //order is never reversed for left element! as it is master
                 ghostCounter = ghostCounter+1;
         }
           for(int ie=eleStartIndex2;ie<=eleEndIndex;ie=ie+eleIncrement){
-                ElementToEdge(4,ie)   = m_num_edges + ghostCounter;
-                ElemEdgeMasterSlave(4,ie)=+1;
-                ElemEdgeOrientation(4,ie)=1;   //order is never reversed for left element! as it is master
+                int id = (ie-1)*4 + 3;
+                ElementToEdge[id]   = m_num_edges + ghostCounter;
+                ElemEdgeMasterSlave[id]=+1;
+                ElemEdgeOrientation[id]=1;   //order is never reversed for left element! as it is master
                 ghostCounter = ghostCounter+1;
         }
 
 
 
-//
-//
-//        cout << "ghostcounter is " << ghostCounter <<"\n";
+
         m_num_edges=m_num_edges+ExtraEdges;
-//        cout << " WE NOW HAVE " << m_num_edges << " total edges!\n";
+
     }
 
 
 
-  NormalsX.resize(ngl*m_num_edges,1);
-  NormalsY.resize(ngl*m_num_edges,1);
-  Scal.resize(ngl*m_num_edges,1);
 
-  for (int is = 1; is<=m_num_edges;is++){
-    for (int i =1; i<=ngl;i++){
-        int id = (is-1)*ngl + i;
-        NormalsX(id,1)	=   nx_global(EdgeInfo(5,is)*ngl+i,EdgeInfo(3,is)+1);
-        NormalsY(id,1)	=   ny_global(EdgeInfo(5,is)*ngl+i,EdgeInfo(3,is)+1);
-        Scal(id,1) 	    =   scal_global(EdgeInfo(5,is)*ngl+i,EdgeInfo(3,is)+1);
+    NormalsX = (dfloat*) calloc(m_num_edges*ngl,sizeof(dfloat));
+    NormalsY = (dfloat*) calloc(m_num_edges*ngl,sizeof(dfloat));
+    Scal = (dfloat*) calloc(m_num_edges*ngl,sizeof(dfloat));
+  for (int is = 0; is<m_num_edges;is++){
+    for (int i =0; i<ngl;i++){
+        int id = is*ngl + i;
+        int idLoc = EdgeInfo[is*7+2]*4*ngl + EdgeInfo[is*7+4]*ngl  +i;
+        NormalsX[id]	=   nx_global[idLoc];
+        NormalsY[id]	=   ny_global[idLoc];
+        Scal[id] 	    =   scal_global[idLoc];
     }
 
   }
-
+                        cout << "Mesh Reading/Generating  completed.\n";
 }
 
 
@@ -330,20 +392,22 @@ void Mesh::GenerateMesh(const dfloat xL,const dfloat xR,const dfloat yL,const df
 
     dfloat nx,ny;
 
-    x_global.resize(m_num_elements*ngl*ngl,1);
-    y_global.resize(m_num_elements*ngl*ngl,1);
-    xXi_global.resize(m_num_elements*ngl*ngl,1);
-    xEta_global.resize(m_num_elements*ngl*ngl,1);
-    yXi_global.resize(m_num_elements*ngl*ngl,1);
-    yEta_global.resize(m_num_elements*ngl*ngl,1);
-    J_global.resize(m_num_elements*ngl*ngl,1);
-    nx_global.resize(4*ngl,m_num_elements);
-    ny_global.resize(4*ngl,m_num_elements);
-    scal_global.resize(4*ngl,m_num_elements);
+    x_global = (dfloat*) calloc(m_num_elements*ngl2,sizeof(dfloat));
+    y_global = (dfloat*) calloc(m_num_elements*ngl2,sizeof(dfloat));
+    xXi_global = (dfloat*) calloc(m_num_elements*ngl2,sizeof(dfloat));
+    xEta_global = (dfloat*) calloc(m_num_elements*ngl2,sizeof(dfloat));
+    yXi_global = (dfloat*) calloc(m_num_elements*ngl2,sizeof(dfloat));
+    yEta_global = (dfloat*) calloc(m_num_elements*ngl2,sizeof(dfloat));
+    J_global = (dfloat*) calloc(m_num_elements*ngl2,sizeof(dfloat));
+    nx_global = (dfloat*) calloc(m_num_elements*4*ngl,sizeof(dfloat));
+    ny_global = (dfloat*) calloc(m_num_elements*4*ngl,sizeof(dfloat));
+    scal_global = (dfloat*) calloc(m_num_elements*4*ngl,sizeof(dfloat));
 
-    EdgeInfo.resize(7,m_num_edges);
+    EdgeInfo = (int*) calloc(m_num_edges*7,sizeof(int));
+
     //store global edge number for element local sides 1-4
-    ElementToEdge.resize(4,m_num_elements);
+    ElementToEdge = (int*) calloc(m_num_elements*4,sizeof(int));
+//    ElementToEdge.resize(4,m_num_elements);
 
 
     dfloat x_xi=0.5*deltaX;
@@ -355,9 +419,9 @@ void Mesh::GenerateMesh(const dfloat xL,const dfloat xR,const dfloat yL,const df
         for(int ieX=0;ieX<NelemX;++ieX){
           for(int j=0;j<ngl;++j){
             for(int i=0;i<ngl;++i){
-                int id = (ieY*NelemX+ieX)*ngl2   +j*ngl+i+1;
-                x_global(id) = xL + (x_GL(i+1)+1.0)/2.0 * deltaX + ieX* deltaX;
-                y_global(id) = yL + (x_GL(j+1)+1.0)/2.0 * deltaY + ieY* deltaY;
+                int id = (ieY*NelemX+ieX)*ngl2   +j*ngl+i;
+                x_global[id] = xL + (x_GL[i]+1.0)/2.0 * deltaX + ieX* deltaX;
+                y_global[id] = yL + (x_GL[j]+1.0)/2.0 * deltaY + ieY* deltaY;
 //                cout <<"ID: " <<id <<" (x,y) = ("<<x_global(id)<<" , "<<y_global(id)<<")\n";
             }
           }
@@ -367,16 +431,16 @@ void Mesh::GenerateMesh(const dfloat xL,const dfloat xR,const dfloat yL,const df
 
 
     for (unsigned ie = 0; ie < m_num_elements; ++ie){
-        for(int j=1;j<=ngl;++j){
-            for(int i=1;i<=ngl;++i){
+        for(int j=0;j<ngl;++j){
+            for(int i=0;i<ngl;++i){
 
-                int id = ie*ngl2   +(j-1)*ngl+i;
+                int id = ie*ngl2   +j*ngl+i;
 
-                xXi_global(id) = x_xi;
-                xEta_global(id) = 0.0;
-                yXi_global(id) = 0.0;
-                yEta_global(id) = y_eta;
-                J_global(id) = Jac;
+                xXi_global[id] = x_xi;
+                xEta_global[id] = 0.0;
+                yXi_global[id] = 0.0;
+                yEta_global[id] = y_eta;
+                J_global[id] = Jac;
             }
           }
 
@@ -397,31 +461,40 @@ void Mesh::GenerateMesh(const dfloat xL,const dfloat xR,const dfloat yL,const df
             if (j==0){
                 // WE SWAP THE USUAL CONVENTION OF NUMBERING HERE, SUCH THAT THE LEFT ELEMENT ON EACH EDGE IS NOT -1
 
+                    EdgeInfo[(is-1)*7+2] = i; //left element
+                    EdgeInfo[(is-1)*7+4] =0;  // side left element
+                    EdgeInfo[(is-1)*7+3] =-1; // right element . HERE: outer boundary
+                    EdgeInfo[(is-1)*7+5] =-1; // side right element . HERE: outer boundary
 
-                    EdgeInfo(3,is) = i;
-                    EdgeInfo(5,is) =0;
-                    EdgeInfo(4,is) =-1;
-                    EdgeInfo(6,is) =-1;
 
-
-                for(int iloc=1;iloc<=ngl;++iloc){
-                    int id = EdgeInfo(5,is)*ngl  +iloc;
-                    ny_global(id,EdgeInfo(3,is)+1) = -1.0;
-                    nx_global(id,EdgeInfo(3,is)+1) = 0.0;
-                    scal_global(id,EdgeInfo(3,is)+1) = x_xi;
-//                     cout << "nx_global (" << id << " , " <<EdgeInfo(3,is)+1 <<" ) : " <<nx_global(id,EdgeInfo(3,is)+1)  <<"\n";
+//                for(int iloc=1;iloc<=ngl;++iloc){
+//                    int id = EdgeInfo(5,is)*ngl  +iloc;
+//                    ny_global(id,EdgeInfo(3,is)+1) = -1.0;
+//                    nx_global(id,EdgeInfo(3,is)+1) = 0.0;
+//                    scal_global(id,EdgeInfo(3,is)+1) = x_xi;
+//                }
+                for(int iloc=0;iloc<ngl;++iloc){
+                    // determine index by EleNumber*StorageAmountPerElement + SideinElement*StoragePerSide + IndexOnSide
+                    int id = EdgeInfo[(is-1)*7+2]*4*ngl + EdgeInfo[(is-1)*7+4]*ngl  +iloc;
+                    ny_global[id] = -1.0;
+                    nx_global[id] = 0.0;
+                    scal_global[id] = x_xi;
                 }
 
 
-                if (PeriodicBD_X){
-                    EdgeInfo(4,is) = (NelemY-1)*NelemX+i;
-                    EdgeInfo(6,is) =2;
 
-                    for(int iloc=1;iloc<=ngl;++iloc){
-                        int id = EdgeInfo(6,is)*ngl  +iloc;
-                        ny_global(id,EdgeInfo(4,is)+1) = 1.0;
-                        nx_global(id,EdgeInfo(4,is)+1) = 0.0;
-                        scal_global(id,EdgeInfo(4,is)+1) = x_xi;
+
+
+                if (PeriodicBD_X){
+                    EdgeInfo[(is-1)*7+3] = (NelemY-1)*NelemX+i;
+                    EdgeInfo[(is-1)*7+5] =2;
+
+                    for(int iloc=0;iloc<ngl;++iloc){
+                        int id = EdgeInfo[(is-1)*7+3]*4*ngl + EdgeInfo[(is-1)*7+5]*ngl  +iloc;
+//                        int id = EdgeInfo(6,is)*ngl  +iloc;
+                        ny_global[id] = 1.0;
+                        nx_global[id] = 0.0;
+                        scal_global[id] = x_xi;
                     }
                 }
 
@@ -433,70 +506,57 @@ void Mesh::GenerateMesh(const dfloat xL,const dfloat xR,const dfloat yL,const df
 
                 if (!PeriodicBD_X){
 
-                    EdgeInfo(3,is) =(NelemY-1)*NelemX+i;
-                    EdgeInfo(5,is) =2;
-                    EdgeInfo(4,is) =-1;
-                    EdgeInfo(6,is) =-1;
-                    for(int iloc=1;iloc<=ngl;++iloc){
-                        int id = EdgeInfo(5,is)*ngl  +iloc;
-                        ny_global(id,EdgeInfo(3,is)+1) = 1.0;
-                        nx_global(id,EdgeInfo(3,is)+1) = 0.0;
-                        scal_global(id,EdgeInfo(3,is)+1) = x_xi;
+                    EdgeInfo[(is-1)*7+2] =(NelemY-1)*NelemX+i;
+                    EdgeInfo[(is-1)*7+4] =2;
+                    EdgeInfo[(is-1)*7+3] =-1;
+                    EdgeInfo[(is-1)*7+5] =-1;
+                    for(int iloc=0;iloc<ngl;++iloc){
+                        int id = EdgeInfo[(is-1)*7+2]*4*ngl + EdgeInfo[(is-1)*7+4]*ngl  +iloc;
+                        ny_global[id] = 1.0;
+                        nx_global[id] = 0.0;
+                        scal_global[id] = x_xi;
 //                        cout << "nx_global (" << id << " , " <<EdgeInfo(3,is)+1 <<" ) : " <<nx_global(id,EdgeInfo(3,is)+1)  <<"\n";
                     }
 
                 }
 
 
-//
-//                if (PeriodicBD_X){
-//
-//                    EdgeInfo(4,is) = (NelemY-1)*NelemX+i;
-//                    EdgeInfo(6,is) =2;
-//
-////                    for(int iloc=1;iloc<=ngl;++iloc){
-////                        int id = EdgeInfo(6,is)*ngl  +iloc;
-////                        ny_global(id,EdgeInfo(4,is)+1) = 1.0;
-////                        nx_global(id,EdgeInfo(4,is)+1) = 0.0;
-////                        scal_global(id,EdgeInfo(4,is)+1) = x_xi;
-////                    }
-//                }
-
-
 
 
             }
             else{
-                EdgeInfo(3,is) =(j-1)*NelemX+i;
-                EdgeInfo(4,is)= j   *NelemX+i;
-                EdgeInfo(5,is) =2;
-                EdgeInfo(6,is) =0;
-                for(int iloc=1;iloc<=ngl;++iloc){
-                    int id = EdgeInfo(5,is)*ngl  +iloc;
-                    ny_global(id,EdgeInfo(3,is)+1) = 1.0;
-                    nx_global(id,EdgeInfo(3,is)+1) = 0.0;
-                    scal_global(id,EdgeInfo(3,is)+1) = x_xi;
+                EdgeInfo[(is-1)*7+2] =(j-1)*NelemX+i;
+                EdgeInfo[(is-1)*7+3]= j   *NelemX+i;
+                EdgeInfo[(is-1)*7+4] =2;
+                EdgeInfo[(is-1)*7+5] =0;
+                for(int iloc=0;iloc<ngl;++iloc){
+                    int id = EdgeInfo[(is-1)*7+2]*4*ngl + EdgeInfo[(is-1)*7+4]*ngl  +iloc;
+                    ny_global[id] = 1.0;
+                    nx_global[id] = 0.0;
+                    scal_global[id] = x_xi;
                 }
-                for(int iloc=1;iloc<=ngl;++iloc){
-                    int id = EdgeInfo(6,is)*ngl  +iloc;
-                    ny_global(id,EdgeInfo(4,is)+1) = -1.0;
-                    nx_global(id,EdgeInfo(4,is)+1) = 0.0;
-                    scal_global(id,EdgeInfo(4,is)+1) = x_xi;
+                for(int iloc=0;iloc<ngl;++iloc){
+                    int id = EdgeInfo[(is-1)*7+3]*4*ngl + EdgeInfo[(is-1)*7+5]*ngl  +iloc;
+                    ny_global[id] = -1.0;
+                    nx_global[id] = 0.0;
+                    scal_global[id]= x_xi;
                 }
 
             };
-            EdgeInfo(1,is)=0;
-            EdgeInfo(2,is)=0;
+            EdgeInfo[(is-1)*7]=0;
+            EdgeInfo[(is-1)*7+1]=0;
 
-            EdgeInfo(7,is) =1;
+            EdgeInfo[(is-1)*7+6] =1;
+
+            int id = EdgeInfo[(is-1)*7+2]*4 + EdgeInfo[(is-1)*7+4];
+            ElementToEdge[id]=is;
+//            ElementToEdge(EdgeInfo(5,is)+1,EdgeInfo(3,is)+1)=is;
 
 
-            ElementToEdge(EdgeInfo(5,is)+1,EdgeInfo(3,is)+1)=is;
-
-
-            if ( EdgeInfo(4,is) != -1){
+            if ( EdgeInfo[(is-1)*7+3] != -1){
 //                cout <<"Element: " <<EdgeInfo(4,is)+1 <<"   side 1 is edge  "<<is <<"\n" ;
-                ElementToEdge(EdgeInfo(6,is)+1,EdgeInfo(4,is)+1)=is;
+                int id = EdgeInfo[(is-1)*7+3]*4 + EdgeInfo[(is-1)*7+5];
+                ElementToEdge[id]=is;
 
             }
 
@@ -519,27 +579,27 @@ void Mesh::GenerateMesh(const dfloat xL,const dfloat xR,const dfloat yL,const df
 
 
 
-                    EdgeInfo(3,is)  = j*NelemX;
-                    EdgeInfo(5,is) =3;
-                    EdgeInfo(4,is)  = -1;
-                    EdgeInfo(6,is) =-1;
+                    EdgeInfo[(is-1)*7+2]  = j*NelemX;
+                    EdgeInfo[(is-1)*7+4] =3;
+                    EdgeInfo[(is-1)*7+3]  = -1;
+                    EdgeInfo[(is-1)*7+5] =-1;
 
-                for(int iloc=1;iloc<=ngl;++iloc){
-                    int id = EdgeInfo(5,is)*ngl  +iloc;
-                    ny_global(id,EdgeInfo(3,is)+1) = 0.0;
-                    nx_global(id,EdgeInfo(3,is)+1) = -1.0;
-                    scal_global(id,EdgeInfo(3,is)+1) = y_eta;
+                for(int iloc=0;iloc<ngl;++iloc){
+                    int id = EdgeInfo[(is-1)*7+2]*4*ngl + EdgeInfo[(is-1)*7+4]*ngl  +iloc;
+                    ny_global[id] = 0.0;
+                    nx_global[id] = -1.0;
+                    scal_global[id] = y_eta;
                 }
 
                 if (PeriodicBD_Y){
 
-                    EdgeInfo(4,is)  =  (j+1)*NelemX-1;
-                    EdgeInfo(6,is) =1;
-                    for(int iloc=1;iloc<=ngl;++iloc){
-                        int id = EdgeInfo(6,is)*ngl  +iloc;
-                        ny_global(id,EdgeInfo(4,is)+1) = 0.0;
-                        nx_global(id,EdgeInfo(4,is)+1) = 1.0;
-                        scal_global(id,EdgeInfo(4,is)+1) = y_eta;
+                    EdgeInfo[(is-1)*7+3]  =  (j+1)*NelemX-1;
+                    EdgeInfo[(is-1)*7+5]=1;
+                    for(int iloc=0;iloc<ngl;++iloc){
+                        int id = EdgeInfo[(is-1)*7+3]*4*ngl + EdgeInfo[(is-1)*7+5]*ngl  +iloc;
+                        ny_global[id] = 0.0;
+                        nx_global[id] = 1.0;
+                        scal_global[id] = y_eta;
                     }
                 }
 
@@ -551,15 +611,15 @@ void Mesh::GenerateMesh(const dfloat xL,const dfloat xR,const dfloat yL,const df
 
             // these edges dont exist if Periodic Y boundaries are chosen
                  if (!PeriodicBD_Y){
-                    EdgeInfo(3,is)  =  (j+1)*NelemX-1;
-                    EdgeInfo(5,is) =1;
-                    EdgeInfo(4,is)  = -1;
-                    EdgeInfo(6,is) =-1;
-                    for(int iloc=1;iloc<=ngl;++iloc){
-                        int id = EdgeInfo(5,is)*ngl  +iloc;
-                        ny_global(id,EdgeInfo(3,is)+1) = 0.0;
-                        nx_global(id,EdgeInfo(3,is)+1) = 1.0;
-                        scal_global(id,EdgeInfo(3,is)+1) = y_eta;
+                    EdgeInfo[(is-1)*7+2]  =  (j+1)*NelemX-1;
+                    EdgeInfo[(is-1)*7+4] =1;
+                    EdgeInfo[(is-1)*7+3]  = -1;
+                    EdgeInfo[(is-1)*7+5] =-1;
+                    for(int iloc=0;iloc<ngl;++iloc){
+                        int id = EdgeInfo[(is-1)*7+2]*4*ngl + EdgeInfo[(is-1)*7+4]*ngl  +iloc;
+                        ny_global[id]= 0.0;
+                        nx_global[id] = 1.0;
+                        scal_global[id] = y_eta;
                     }
                  }
 
@@ -571,37 +631,39 @@ void Mesh::GenerateMesh(const dfloat xL,const dfloat xR,const dfloat yL,const df
 
             }
             else{
-                EdgeInfo(3,is)  =  j*NelemX+i-1;
-                EdgeInfo(4,is)  =  j*NelemX+i;
-                EdgeInfo(5,is) =1;
-                EdgeInfo(6,is) =3;
-                for(int iloc=1;iloc<=ngl;++iloc){
-                     int id = EdgeInfo(5,is)*ngl  +iloc;
-                    ny_global(id,EdgeInfo(3,is)+1) = 0.0;
-                    nx_global(id,EdgeInfo(3,is)+1) = 1.0;
-                    scal_global(id,EdgeInfo(3,is)+1) = y_eta;
+                EdgeInfo[(is-1)*7+2]  =  j*NelemX+i-1;
+                EdgeInfo[(is-1)*7+3]  =  j*NelemX+i;
+                EdgeInfo[(is-1)*7+4] =1;
+                EdgeInfo[(is-1)*7+5] =3;
+                for(int iloc=0;iloc<ngl;++iloc){
+                    int id = EdgeInfo[(is-1)*7+2]*4*ngl + EdgeInfo[(is-1)*7+4]*ngl  +iloc;
+                    ny_global[id] = 0.0;
+                    nx_global[id] = 1.0;
+                    scal_global[id]= y_eta;
                 }
-                for(int iloc=1;iloc<=ngl;++iloc){
-                    int id = EdgeInfo(6,is)*ngl  +iloc;
-                    ny_global(id,EdgeInfo(4,is)+1) = 0.0;
-                    nx_global(id,EdgeInfo(4,is)+1) = -1.0;
-                    scal_global(id,EdgeInfo(4,is)+1) = y_eta;
+                for(int iloc=0;iloc<ngl;++iloc){
+                    int id = EdgeInfo[(is-1)*7+3]*4*ngl + EdgeInfo[(is-1)*7+5]*ngl  +iloc;
+                    ny_global[id] = 0.0;
+                    nx_global[id] = -1.0;
+                    scal_global[id] = y_eta;
                 }
 
 
             };
-            EdgeInfo(1,is)=0;
-            EdgeInfo(2,is)=0;
+            EdgeInfo[(is-1)*7]=0;
+            EdgeInfo[(is-1)*7+1]=0;
 
-            EdgeInfo(7,is) =1;
+            EdgeInfo[(is-1)*7+6] =1;
 
 //            cout <<"Element: " <<EdgeInfo(3,is)+1 <<"   side 2 is edge  "<<is <<"\n" ;
-                ElementToEdge(EdgeInfo(5,is)+1,EdgeInfo(3,is)+1)=is;
+                int id = EdgeInfo[(is-1)*7+2]*4 + EdgeInfo[(is-1)*7+4];
+                ElementToEdge[id]=is;
 
 
-            if ( EdgeInfo(4,is) != -1){
+            if ( EdgeInfo[(is-1)*7+3] != -1){
 //            cout <<"Element: " <<EdgeInfo(4,is)+1 <<"   side 4 is edge  "<<is <<"\n" ;
-                ElementToEdge(EdgeInfo(6,is)+1,EdgeInfo(4,is)+1)=is;
+                int id = EdgeInfo[(is-1)*7+3]*4 + EdgeInfo[(is-1)*7+5];
+                ElementToEdge[id]=is;
 
             }
         }
@@ -653,19 +715,14 @@ void Mesh::ReadMesh(const string meshFile)
 
 //,dfloat T, dfloat g_const
 
-    corners.resize(4,2);
-    x_phy.resize(ngl,ngl);
-    y_phy.resize(ngl,ngl);
-    x_xi.resize(ngl,ngl);
-    x_eta.resize(ngl,ngl);
-    y_xi.resize(ngl,ngl);
-    y_eta.resize(ngl,ngl);
-    J.resize(ngl,ngl);
-    x_bndy.resize(ngl,4);
-    y_bndy.resize(ngl,4);
-    scal.resize(ngl,4);
-    nx.resize(ngl,4);
-    ny.resize(ngl,4);
+//    corners.resize(4,2);
+//    x_phy.resize(ngl,ngl);
+//    y_phy.resize(ngl,ngl);
+
+
+
+
+
 
 
 
@@ -705,22 +762,24 @@ void Mesh::ReadMesh(const string meshFile)
     dfloat x_nodes[m_num_nodes];
     dfloat y_nodes[m_num_nodes];
     //initialise chebyshev nodes immediately
-    x_cheby.resize(m_order_of_boundary_edges+1);
-    w_bary.resize(m_order_of_boundary_edges+1);
+    x_cheby= (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
+    w_bary= (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
+
+
     for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k)
-    {x_cheby(k+1) = -cos(k * PI / m_order_of_boundary_edges);}  // k = m_order_of_boundary_edges/2 => x_cheby(k+1) = -cos(PI/2) = 0
+    {x_cheby[k]= -cos(k * PI / m_order_of_boundary_edges);}  // k = m_order_of_boundary_edges/2 => x_cheby(k+1) = -cos(PI/2) = 0
     //calculate barycentric weights for chebyshev nodes
     BarycentricWeights();
-
-//    for (unsigned k = 1; k <= m_order_of_boundary_edges+1; ++k){
-//        cout << "Bary Weights ("<<k<<") : "<<w_bary(k) <<"\n";
+//cout << "m_order_of_bd_edges " <<m_order_of_boundary_edges <<"\n";
+//    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k){
+//        cout << "Bary Weights ("<<k<<") : "<<w_bary[k] <<"\n";
 //
 //   }
-//    for (unsigned k = 1; k <= m_order_of_boundary_edges+1; ++k){
-//        cout << "x_cheby ("<<k<<") : "<<x_cheby(k) <<"\n";
+//    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k){
+//        cout << "x_cheby ("<<k<<") : "<<x_cheby[k] <<"\n";
 //
 //   }
-
+//cout << "Continuing \n";
 
 
     for (unsigned i = 0; i < m_num_nodes; ++i)
@@ -747,11 +806,13 @@ void Mesh::ReadMesh(const string meshFile)
     //7 = is orientation swapped?
 //    int EdgeData[7*m_num_edges];
 
-    EdgeInfo.resize(7,m_num_edges);
-    //store global edge number for element local sides 1-4
-    ElementToEdge.resize(4,m_num_elements);
 
-    for (int is = 1; is <= m_num_edges; ++is)
+    EdgeInfo = (int*) calloc(m_num_edges*7,sizeof(int));
+    //store global edge number for element local sides 1-4
+    ElementToEdge = (int*) calloc(m_num_elements*4,sizeof(int));
+//    ElementToEdge.resize(4,m_num_elements);
+
+    for (int is = 0; is < m_num_edges; ++is)
     {
       std::getline(InputStream, current_string);
       current_line.clear();
@@ -766,23 +827,16 @@ void Mesh::ReadMesh(const string meshFile)
               error_message += filename;
               throw std::invalid_argument(error_message);
       }
-      EdgeInfo(1,is)=start_node_id-1;
-      EdgeInfo(2,is)= end_node_id-1;
-      EdgeInfo(3,is)= element_id_on_left-1;
-      EdgeInfo(4,is)= element_id_on_right-1;
-      EdgeInfo(5,is)= side_of_left_element-1;
+      int idEdgeInfo = is*7;
+      EdgeInfo[idEdgeInfo]=start_node_id-1;
+      EdgeInfo[idEdgeInfo+1]= end_node_id-1;
+      EdgeInfo[idEdgeInfo+2]= element_id_on_left-1;
+      EdgeInfo[idEdgeInfo+3]= element_id_on_right-1;
+      EdgeInfo[idEdgeInfo+4]= side_of_left_element-1;
 
-      ElementToEdge(side_of_left_element,element_id_on_left)=is;
-//      ElementToEdge(EdgeInfo(5,is)+1,EdgeInfo(3,is)+1)=is;
+      int id = (element_id_on_left-1)*4 + side_of_left_element -1;
+      ElementToEdge[id]=is+1;
 
-
-
-
-//      EdgeData[7*is+0]= start_node_id-1;
-//      EdgeData[7*is+1]= end_node_id-1;
-//      EdgeData[7*is+2]= element_id_on_left-1;
-//      EdgeData[7*is+3]= element_id_on_right-1;
-//      EdgeData[7*is+4]= side_of_left_element-1;
 
 
       // sgn(side_of_right_element)
@@ -791,20 +845,21 @@ void Mesh::ReadMesh(const string meshFile)
       if (side_of_right_element<0){
             //SIDE IS REVERSED
             index_direction=0;
-            EdgeInfo(6,is)= -side_of_right_element-1;
+            EdgeInfo[idEdgeInfo+5]= -side_of_right_element-1;
         }else{
             index_direction=1;
-            EdgeInfo(6,is)= side_of_right_element-1;
+            EdgeInfo[idEdgeInfo+5]= side_of_right_element-1;
         }
-        EdgeInfo(7,is)= index_direction;
+        EdgeInfo[idEdgeInfo+6]= index_direction;
 
-      if (EdgeInfo(4,is)!=-1){
+      if (EdgeInfo[idEdgeInfo+3]!=-1){
           if (side_of_right_element<0){
                 //SIDE IS REVERSED
-                ElementToEdge(-side_of_right_element,element_id_on_right)=is;
+                int id = (element_id_on_right-1)*4 - side_of_right_element -1;
+                ElementToEdge[id]=is+1;
             }else{
-
-                ElementToEdge(side_of_right_element,element_id_on_right)=is;
+                int id = (element_id_on_right-1)*4 + side_of_right_element -1;
+                ElementToEdge[id]=is+1;
             }
         }
 
@@ -842,21 +897,23 @@ void Mesh::ReadMesh(const string meshFile)
 //    int ElementData[eleInfoNo*m_num_elements];
 
     string ElementBoundaryNames[4*m_num_elements];
-    Gamma1.resize(m_order_of_boundary_edges+1,2);
-    Gamma2.resize(m_order_of_boundary_edges+1,2);
-    Gamma3.resize(m_order_of_boundary_edges+1,2);
-    Gamma4.resize(m_order_of_boundary_edges+1,2);
+//    Gamma1.resize(m_order_of_boundary_edges+1,2);
+//    Gamma2.resize(m_order_of_boundary_edges+1,2);
+//    Gamma3.resize(m_order_of_boundary_edges+1,2);
 
-    x_global.resize(m_num_elements*ngl*ngl,1);
-    y_global.resize(m_num_elements*ngl*ngl,1);
-    xXi_global.resize(m_num_elements*ngl*ngl,1);
-    xEta_global.resize(m_num_elements*ngl*ngl,1);
-    yXi_global.resize(m_num_elements*ngl*ngl,1);
-    yEta_global.resize(m_num_elements*ngl*ngl,1);
-    J_global.resize(m_num_elements*ngl*ngl,1);
-    nx_global.resize(4*ngl,m_num_elements);
-    ny_global.resize(4*ngl,m_num_elements);
-    scal_global.resize(4*ngl,m_num_elements);
+
+
+    x_global = (dfloat*) calloc(m_num_elements*ngl2,sizeof(dfloat));
+    y_global = (dfloat*) calloc(m_num_elements*ngl2,sizeof(dfloat));
+    xXi_global = (dfloat*) calloc(m_num_elements*ngl2,sizeof(dfloat));
+    xEta_global = (dfloat*) calloc(m_num_elements*ngl2,sizeof(dfloat));
+    yXi_global = (dfloat*) calloc(m_num_elements*ngl2,sizeof(dfloat));
+    yEta_global = (dfloat*) calloc(m_num_elements*ngl2,sizeof(dfloat));
+    J_global = (dfloat*) calloc(m_num_elements*ngl2,sizeof(dfloat));
+    nx_global = (dfloat*) calloc(m_num_elements*4*ngl,sizeof(dfloat));
+    ny_global = (dfloat*) calloc(m_num_elements*4*ngl,sizeof(dfloat));
+    scal_global = (dfloat*) calloc(m_num_elements*4*ngl,sizeof(dfloat));
+
 
 
 //    double GammaCurvesX[m_num_elements*4*(m_order_of_boundary_edges+1)];
@@ -871,17 +928,48 @@ void Mesh::ReadMesh(const string meshFile)
 
     for (unsigned ie = 0; ie < m_num_elements; ++ie)
     {
+
+//            x_xi.resize(ngl,ngl);
+//    x_eta.resize(ngl,ngl);
+//    y_xi.resize(ngl,ngl);
+//    y_eta.resize(ngl,ngl);
+//    J.resize(ngl,ngl);
+//    x_bndy.resize(ngl,4);
+//    y_bndy.resize(ngl,4);
+//    scal.resize(ngl,4);
+//    nx.resize(ngl,4);
+//    ny.resize(ngl,4);
+
+        //    Gamma4.resize(m_order_of_boundary_edges+1,2);
+        dfloat * Gamma1X = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
+        dfloat * Gamma1Y = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
+        dfloat * Gamma2X = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
+        dfloat * Gamma2Y = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
+        dfloat * Gamma3X = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
+        dfloat * Gamma3Y = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
+        dfloat * Gamma4X = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
+        dfloat * Gamma4Y = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
+        dfloat * cornersX = (dfloat*) calloc(4,sizeof(dfloat));
+        dfloat * cornersY = (dfloat*) calloc(4,sizeof(dfloat));
+
+        x_phy= (dfloat*) calloc(ngl2,sizeof(dfloat));
+        y_phy= (dfloat*) calloc(ngl2,sizeof(dfloat));
+        x_xi= (dfloat*) calloc(ngl2,sizeof(dfloat));
+        x_eta= (dfloat*) calloc(ngl2,sizeof(dfloat));
+        y_xi= (dfloat*) calloc(ngl2,sizeof(dfloat));
+        y_eta= (dfloat*) calloc(ngl2,sizeof(dfloat));
+        J= (dfloat*) calloc(ngl2,sizeof(dfloat));
+
+        x_bndy= (dfloat*) calloc(4*ngl,sizeof(dfloat));
+        y_bndy= (dfloat*) calloc(4*ngl,sizeof(dfloat));
+        scal= (dfloat*) calloc(4*ngl,sizeof(dfloat));
+        nx= (dfloat*) calloc(4*ngl,sizeof(dfloat));
+        ny= (dfloat*) calloc(4*ngl,sizeof(dfloat));
+
+
+
        bool curved=false;
-       for (unsigned i=1;i<(m_order_of_boundary_edges+1);i++){
-            Gamma1(i,1)=0.0;
-            Gamma1(i,2)=0.0;
-            Gamma2(i,1)=0.0;
-            Gamma2(i,2)=0.0;
-            Gamma3(i,1)=0.0;
-            Gamma3(i,2)=0.0;
-            Gamma4(i,1)=0.0;
-            Gamma4(i,2)=0.0;
-        }
+
         int CornerIDs[4];
       // Get the corner nodes.
       std::getline(InputStream, current_string);
@@ -930,9 +1018,11 @@ void Mesh::ReadMesh(const string meshFile)
         // If it is, simply copy over the boundary curve information to the intermediate storage class.
         for (unsigned j = 0; j < 4; ++j)
         {
-            //initialise the corners fmatrix or set it to the current corner nodes
-            corners(j+1,1)=    x_nodes[CornerIDs[j]];
-            corners(j+1,2)=    y_nodes[CornerIDs[j]];
+            //initialise the corners arrays or set it to the current corner nodes
+            cornersX[j] = x_nodes[CornerIDs[j]];
+            cornersY[j] = y_nodes[CornerIDs[j]];
+//            corners(j+1,1)=    x_nodes[CornerIDs[j]];
+//            corners(j+1,2)=    y_nodes[CornerIDs[j]];
 
 
           //if we dont have a given Gamma curve, we get one by interpolation (chebychev)
@@ -975,26 +1065,26 @@ void Mesh::ReadMesh(const string meshFile)
             {
 
 
-              double interpolated_x = ((x_final - x_initial) * x_cheby(k+1) + x_initial + x_final)/2.0;
-              double interpolated_y = ((y_final - y_initial) * x_cheby(k+1) + y_initial + y_final)/2.0;
+              dfloat interpolated_x = ((x_final - x_initial) * x_cheby[k]+ x_initial + x_final)/2.0;
+              dfloat interpolated_y = ((y_final - y_initial) * x_cheby[k] + y_initial + y_final)/2.0;
 
 
               switch(j){
               case 0:
-                Gamma1(k+1,1)= interpolated_x;
-                Gamma1(k+1,2)= interpolated_y;
+                Gamma1X[k]= interpolated_x;
+                Gamma1Y[k]= interpolated_y;
                break;
                 case 1:
-                Gamma2(k+1,1)= interpolated_x;
-                Gamma2(k+1,2)= interpolated_y;
+                Gamma2X[k]= interpolated_x;
+                Gamma2Y[k]= interpolated_y;
                  break;
               case 2:
-                Gamma3(k+1,1)= interpolated_x;
-                Gamma3(k+1,2)= interpolated_y;
+                Gamma3X[k]= interpolated_x;
+                Gamma3Y[k]= interpolated_y;
                  break;
               case 3:
-                Gamma4(k+1,1)= interpolated_x;
-                Gamma4(k+1,2)= interpolated_y;
+                Gamma4X[k]= interpolated_x;
+                Gamma4Y[k]= interpolated_y;
                  break;
 
               }
@@ -1013,7 +1103,7 @@ void Mesh::ReadMesh(const string meshFile)
 //                                 >> GammaCurvesY[i*4*(m_order_of_boundary_edges+1)+j*(m_order_of_boundary_edges+1)+k]))
               switch(j){
               case 0:
-               if (!(current_line >> Gamma1(k+1,1)>> Gamma1(k+1,2)))          {
+               if (!(current_line >> Gamma1X[k]>> Gamma1Y[k]))          {
                 std::string error_message("ERROR: Cant read in given Gamma1 Curve! ");
                   error_message += filename;
                   cout << "Error in Line : "<<k <<"\n";
@@ -1021,7 +1111,7 @@ void Mesh::ReadMesh(const string meshFile)
                 }
                break;
                 case 1:
-                if (!(current_line >> Gamma2(k+1,1)>> Gamma2(k+1,2)))          {
+                if (!(current_line >> Gamma2X[k]>> Gamma2Y[k]))          {
                 std::string error_message("ERROR: Cant read in given Gamma2 Curve! ");
                   error_message += filename;
                   cout << "Error in Line : "<<k <<"\n";
@@ -1029,7 +1119,7 @@ void Mesh::ReadMesh(const string meshFile)
                 }
                  break;
               case 2:
-                if (!(current_line >> Gamma3(k+1,1)>> Gamma3(k+1,2)))          {
+                if (!(current_line >> Gamma3X[k]>> Gamma3Y[k]))          {
                 std::string error_message("ERROR: Cant read in given Gamma3 Curve! ");
                   error_message += filename;
                   cout << "Error in Line : "<<k <<"\n";
@@ -1037,7 +1127,7 @@ void Mesh::ReadMesh(const string meshFile)
                 }
                  break;
               case 3:
-                if (!(current_line >> Gamma4(k+1,1)>> Gamma4(k+1,2)))          {
+                if (!(current_line >> Gamma4X[k]>> Gamma4Y[k]))          {
                 std::string error_message("ERROR: Cant read in given Gamma4 Curve! ");
                   error_message += filename;
                   cout << "Error in Line : "<<k <<"\n";
@@ -1065,41 +1155,80 @@ void Mesh::ReadMesh(const string meshFile)
                   throw std::invalid_argument(error_message);
           }}
 
+//    cout << "\n Printing Gamma Curves \n";
+//                cout << " Gamma1X: ";
+//    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k){
+//
+//            cout << " "<<Gamma1X[k] <<" " ;
+//    }
+//                    cout << "\n Gamma1Y: ";
+//    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k){
+//
+//            cout << " "<<Gamma1Y[k] <<" " ;
+//    }
+      ConstructMappedGeometry(cornersX,cornersY,Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,curved);
 
 
-      ConstructMappedGeometry(curved);
+      for(int j=0;j<ngl;++j){
+        for(int i=0;i<ngl;++i){
+            int locID = j*ngl+i;
+            int id = ie*ngl2   +locID;
 
-
-      for(int j=1;j<=ngl;++j){
-        for(int i=1;i<=ngl;++i){
-
-            int id = ie*ngl*ngl   +(j-1)*ngl+i;
-            x_global(id) = x_phy(i,j);
-            y_global(id) = y_phy(i,j);
-            xXi_global(id) = x_xi(i,j);
-            xEta_global(id) = x_eta(i,j);
-            yXi_global(id) = y_xi(i,j);
-            yEta_global(id) = y_eta(i,j);
-            J_global(id) = J(i,j);
+            x_global[id] = x_phy[locID];
+            y_global[id] = y_phy[locID];
+//            x_global(id) = x_phy(i,j);
+//            y_global(id) = y_phy(i,j);
+            xXi_global[id] = x_xi[locID];
+            xEta_global[id] = x_eta[locID];
+            yXi_global[id] = y_xi[locID];
+            yEta_global[id] = y_eta[locID];
+            J_global[id] = J[locID];
         }
       }
 
-      for(int is=1;is<=4;++is){
-        for(int i=1;i<=ngl;++i){
+      for(int is=0;is<4;++is){
+        for(int i=0;i<ngl;++i){
 
-            int id = (is-1)*ngl  +i;
+            int id = is*ngl  +i;
+            int eleLocID = ie * ngl * 4 + id;
 
-            nx_global(id,ie+1) = nx(i,is);
-            ny_global(id,ie+1) = ny(i,is);
-            scal_global(id,ie+1) = scal(i,is);
+            nx_global[eleLocID] = nx[id];
+            ny_global[eleLocID] = ny[id];
+            scal_global[eleLocID] = scal[id];
         }
       }
+
+
+
+      free(Gamma1X);
+      free(Gamma1Y);
+      free(Gamma2X);
+      free(Gamma2Y);
+      free(Gamma3X);
+      free(Gamma3Y);
+      free(Gamma4X);
+      free(Gamma4Y);
+      free(cornersX);
+      free(cornersY);
+      free(x_phy);
+      free(y_phy);
+      free(x_xi);
+      free(x_eta);
+      free(y_xi);
+      free(y_eta);
+      free(J);
+      free(x_bndy);
+      free(y_bndy);
+      free(scal);
+      free(nx);
+      free(ny);
 
 
 
     }//ele loop
 
-
+free(w_bary);
+free(x_cheby);
 
 
 }
@@ -1109,43 +1238,52 @@ void Mesh::ReadMesh(const string meshFile)
 
 
 
-void Mesh :: TransfiniteQuadMetrics(const dfloat psi,const dfloat eta,dfloat *X_psi,dfloat *X_eta,dfloat *Y_psi,dfloat *Y_eta){
+void Mesh :: TransfiniteQuadMetrics(const dfloat * Gamma1X,const dfloat * Gamma1Y,const dfloat * Gamma2X,const dfloat * Gamma2Y,const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,const dfloat psi,const dfloat eta,dfloat *X_psi,dfloat *X_eta,dfloat *Y_psi,dfloat *Y_eta){
 // Computation of the metric terms on a curve-bounded quadrilateral
 
+      dfloat * Xref1 = (dfloat*) calloc(4,sizeof(dfloat));
+      dfloat * Xcomp1 = (dfloat*) calloc(4,sizeof(dfloat));
+      dfloat * Xpcomp1 = (dfloat*) calloc(4,sizeof(dfloat));
+      dfloat * Xref2 = (dfloat*) calloc(4,sizeof(dfloat));
+      dfloat * Xcomp2 = (dfloat*) calloc(4,sizeof(dfloat));
+      dfloat * Xpcomp2 = (dfloat*) calloc(4,sizeof(dfloat));
 
-      fmatrix Xref,Xcomp,Xpcomp;
-      Xref.resize(4,2);
-      Xcomp.resize(4,2);
-      Xpcomp.resize(4,2);
 
-      EvaluateAt(Gamma1,-1.0,&Xref(1,1),&Xref(1,2));
-      EvaluateAt(Gamma1, 1.0,&Xref(2,1),&Xref(2,2));
-      EvaluateAt(Gamma3, 1.0,&Xref(3,1),&Xref(3,2));
-      EvaluateAt(Gamma3,-1.0,&Xref(4,1),&Xref(4,2));
 
-      EvaluateAt(Gamma1,psi,&Xcomp(1,1),&Xcomp(1,2));
-      EvaluateAt(Gamma2,eta,&Xcomp(2,1),&Xcomp(2,2));
-      EvaluateAt(Gamma3,psi,&Xcomp(3,1),&Xcomp(3,2));
-      EvaluateAt(Gamma4,eta,&Xcomp(4,1),&Xcomp(4,2));
+      EvaluateAt(Gamma1X,Gamma1Y,-1.0,&Xref1[0],&Xref2[0]);
+      EvaluateAt(Gamma1X,Gamma1Y, 1.0,&Xref1[1],&Xref2[1]);
+      EvaluateAt(Gamma3X,Gamma3Y, 1.0,&Xref1[2],&Xref2[2]);
+      EvaluateAt(Gamma3X,Gamma3Y,-1.0,&Xref1[3],&Xref2[3]);
 
-      DerivativeAt(Gamma1,psi,&Xpcomp(1,1),&Xpcomp(1,2));
-      DerivativeAt(Gamma2,eta,&Xpcomp(2,1),&Xpcomp(2,2));
-      DerivativeAt(Gamma3,psi,&Xpcomp(3,1),&Xpcomp(3,2));
-      DerivativeAt(Gamma4,eta,&Xpcomp(4,1),&Xpcomp(4,2));
+      EvaluateAt(Gamma1X,Gamma1Y,psi,&Xcomp1[0],&Xcomp2[0]);
+      EvaluateAt(Gamma2X,Gamma2Y,eta,&Xcomp1[1],&Xcomp2[1]);
+      EvaluateAt(Gamma3X,Gamma3Y,psi,&Xcomp1[2],&Xcomp2[2]);
+      EvaluateAt(Gamma4X,Gamma4Y,eta,&Xcomp1[3],&Xcomp2[3]);
 
-      *X_psi = 0.5*(Xcomp(2,1)-Xcomp(4,1)+(1.0-eta)*Xpcomp(1,1)+(1.0+eta)*Xpcomp(3,1)) -  0.25*((1.0-eta)*(Xref(2,1)-Xref(1,1))+(1.0+eta)*(Xref(3,1)-Xref(4,1)));
+      DerivativeAt(Gamma1X,Gamma1Y,psi,&Xpcomp1[0],&Xpcomp2[0]);
+      DerivativeAt(Gamma2X,Gamma2Y,eta,&Xpcomp1[1],&Xpcomp2[1]);
+      DerivativeAt(Gamma3X,Gamma3Y,psi,&Xpcomp1[2],&Xpcomp2[2]);
+      DerivativeAt(Gamma4X,Gamma4Y,eta,&Xpcomp1[3],&Xpcomp2[3]);
 
-      *Y_psi = 0.5*(Xcomp(2,2)-Xcomp(4,2)+(1.0-eta)*Xpcomp(1,2)+(1.0+eta)*Xpcomp(3,2)) -0.25*((1.0-eta)*(Xref(2,2)-Xref(1,2))+(1.0+eta)*(Xref(3,2)-Xref(4,2)));
+      *X_psi = 0.5*(Xcomp1[1]-Xcomp1[3]+(1.0-eta)*Xpcomp1[0]+(1.0+eta)*Xpcomp1[2]) -  0.25*((1.0-eta)*(Xref1[1]-Xref1[0])+(1.0+eta)*(Xref1[2]-Xref1[3]));
 
-      *X_eta = 0.5*((1.0-psi)*Xpcomp(4,1)+(1.0+psi)*Xpcomp(2,1)+Xcomp(3,1)-Xcomp(1,1)) -  0.25*((1.0-psi)*(Xref(4,1)-Xref(1,1))+(1.0+psi)*(Xref(3,1)-Xref(2,1)));
+      *Y_psi = 0.5*(Xcomp2[1]-Xcomp2[3]+(1.0-eta)*Xpcomp2[0]+(1.0+eta)*Xpcomp2[2]) -0.25*((1.0-eta)*(Xref2[1]-Xref2[0])+(1.0+eta)*(Xref2[2]-Xref2[3]));
 
-      *Y_eta = 0.5*((1.0-psi)*Xpcomp(4,2)+(1.0+psi)*Xpcomp(2,2)+Xcomp(3,2)-Xcomp(1,2)) - 0.25*((1.0-psi)*(Xref(4,2)-Xref(1,2))+(1.0+psi)*(Xref(3,2)-Xref(2,2)));
+      *X_eta = 0.5*((1.0-psi)*Xpcomp1[3]+(1.0+psi)*Xpcomp1[1]+Xcomp1[2]-Xcomp1[0]) -  0.25*((1.0-psi)*(Xref1[3]-Xref1[0])+(1.0+psi)*(Xref1[2]-Xref1[1]));
 
+      *Y_eta = 0.5*((1.0-psi)*Xpcomp2[3]+(1.0+psi)*Xpcomp2[1]+Xcomp2[2]-Xcomp2[0]) - 0.25*((1.0-psi)*(Xref2[3]-Xref2[0])+(1.0+psi)*(Xref2[2]-Xref2[1]));
+
+        free(Xref1);
+        free(Xcomp1);
+        free(Xpcomp1);
+        free(Xref2);
+        free(Xcomp2);
+        free(Xpcomp2);
 }
 
 
 
-void Mesh :: TransfiniteQuadMap(const dfloat psi,const dfloat eta,dfloat *x_out,dfloat *y_out){
+void Mesh :: TransfiniteQuadMap(const dfloat * Gamma1X,const dfloat * Gamma1Y,const dfloat * Gamma2X,const dfloat * Gamma2Y,const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,const dfloat psi,const dfloat eta,dfloat *x_out,dfloat *y_out){
 // Mapping of the reference square to a curve-bounded quadrilateral
 //      IMPLICIT NONE
 //      TYPE(CurveInterpolant),DIMENSION(4),INTENT(IN)  :: GammaCurves
@@ -1158,15 +1296,15 @@ void Mesh :: TransfiniteQuadMap(const dfloat psi,const dfloat eta,dfloat *x_out,
       dfloat x3_ref, y3_ref,x3_cp, y3_cp;
       dfloat x4_ref, y4_ref,x4_cp, y4_cp;
 
-      EvaluateAt(Gamma1,-1.0,&x1_ref, &y1_ref);
-      EvaluateAt(Gamma1, 1.0,&x2_ref, &y2_ref);
-      EvaluateAt(Gamma3, 1.0,&x3_ref, &y3_ref);
-      EvaluateAt(Gamma3,-1.0,&x4_ref, &y4_ref);
+      EvaluateAt(Gamma1X,Gamma1Y,-1.0,&x1_ref, &y1_ref);
+      EvaluateAt(Gamma1X,Gamma1Y, 1.0,&x2_ref, &y2_ref);
+      EvaluateAt(Gamma3X,Gamma3Y, 1.0,&x3_ref, &y3_ref);
+      EvaluateAt(Gamma3X,Gamma3Y,-1.0,&x4_ref, &y4_ref);
 
-      EvaluateAt(Gamma1,psi,&x1_cp, &y1_cp);
-      EvaluateAt(Gamma2,eta,&x2_cp, &y2_cp);
-      EvaluateAt(Gamma3,psi,&x3_cp, &y3_cp);
-      EvaluateAt(Gamma4,eta,&x4_cp, &y4_cp);
+      EvaluateAt(Gamma1X,Gamma1Y,psi,&x1_cp, &y1_cp);
+      EvaluateAt(Gamma2X,Gamma2Y,eta,&x2_cp, &y2_cp);
+      EvaluateAt(Gamma3X,Gamma3Y,psi,&x3_cp, &y3_cp);
+      EvaluateAt(Gamma4X,Gamma4Y,eta,&x4_cp, &y4_cp);
 
       *x_out = 1.0/2.0*((1.0-psi)*x4_cp+(1.0+psi)*x2_cp+(1.0-eta)*x1_cp+(1.0+eta)*x3_cp) - 1.0/4.0*((1.0-psi)*((1.0-eta)*x1_ref+(1.0+eta)*x4_ref)+(1.0+psi)*((1.0-eta)*x2_ref+(1.0+eta)*x3_ref));
 
@@ -1174,11 +1312,12 @@ void Mesh :: TransfiniteQuadMap(const dfloat psi,const dfloat eta,dfloat *x_out,
 
 }
 
-void Mesh :: QuadMap(const dfloat psi,const dfloat eta,dfloat *x_out,dfloat *y_out){
+void Mesh :: QuadMap(const dfloat * cornersX,const dfloat * cornersY,const dfloat psi,const dfloat eta,dfloat *x_out,dfloat *y_out){
 // Mapping of the reference square to a straight sided quadrilateral
+      *x_out = 0.25*(cornersX[0]*(1.0-psi)*(1.0-eta)+cornersX[1]*(1.0+psi)*(1.0-eta)+ cornersX[2]*(1.0+psi)*(1.0+eta)+cornersX[3]*(1.0-psi)*(1.0+eta));
+      *y_out = 0.25*(cornersY[0]*(1.0-psi)*(1.0-eta)+cornersY[1]*(1.0+psi)*(1.0-eta)+ cornersY[2]*(1.0+psi)*(1.0+eta)+cornersY[3]*(1.0-psi)*(1.0+eta));
 
-      *x_out = 0.25*(corners(1,1)*(1.0-psi)*(1.0-eta)+corners(2,1)*(1.0+psi)*(1.0-eta)+ corners(3,1)*(1.0+psi)*(1.0+eta)+corners(4,1)*(1.0-psi)*(1.0+eta));
-      *y_out = 0.25*(corners(1,2)*(1.0-psi)*(1.0-eta)+corners(2,2)*(1.0+psi)*(1.0-eta)+ corners(3,2)*(1.0+psi)*(1.0+eta)+corners(4,2)*(1.0-psi)*(1.0+eta));
+
 
 }
 
@@ -1188,14 +1327,14 @@ void Mesh :: QuadMap(const dfloat psi,const dfloat eta,dfloat *x_out,dfloat *y_o
 
 
 
-void Mesh :: QuadMapMetrics(const dfloat xi,const dfloat eta,dfloat *X_psi,dfloat *X_eta,dfloat *Y_psi,dfloat *Y_eta){
+void Mesh :: QuadMapMetrics(const dfloat * cornersX,const dfloat * cornersY,const dfloat xi,const dfloat eta,dfloat *X_psi,dfloat *X_eta,dfloat *Y_psi,dfloat *Y_eta){
 // Metric terms on a straight sided quadrilateral
 
-//we assume we have the correct corners stored in the corners fmatrix
-      *X_psi = 0.25*((1.0-eta)*(corners(2,1)-corners(1,1))+(1.0+eta)*(corners(3,1)-corners(4,1)));
-      *Y_psi = 0.25*((1.0-eta)*(corners(2,2)-corners(1,2))+(1.0+eta)*(corners(3,2)-corners(4,2)));
-      *X_eta = 0.25*((1.0-xi)*(corners(4,1)-corners(1,1))+(1.0+xi)*(corners(3,1)-corners(2,1)));
-      *Y_eta = 0.25*((1.0-xi)*(corners(4,2)-corners(1,2))+(1.0+xi)*(corners(3,2)-corners(2,2)));
+//we assume we have the correct corners stored in the corner arrays
+      *X_psi = 0.25*((1.0-eta)*(cornersX[1]-cornersX[0])+(1.0+eta)*(cornersX[2]-cornersX[3]));
+      *Y_psi = 0.25*((1.0-eta)*(cornersY[1]-cornersY[0])+(1.0+eta)*(cornersY[2]-cornersY[3]));
+      *X_eta = 0.25*((1.0-xi)*(cornersX[3]-cornersX[0])+(1.0+xi)*(cornersX[2]-cornersX[1]));
+      *Y_eta = 0.25*((1.0-xi)*(cornersY[3]-cornersY[0])+(1.0+xi)*(cornersY[2]-cornersY[1]));
 
 }
 
@@ -1203,82 +1342,84 @@ void Mesh :: QuadMapMetrics(const dfloat xi,const dfloat eta,dfloat *X_psi,dfloa
 
 //const double GammaX1[],const double GammaX2[],const double GammaX3[],const double GammaX4[],
 //                                     const double GammaY1[],const double GammaY2[],const double GammaY3[],const double GammaY4[],
-void Mesh :: ConstructMappedGeometry(const bool Curved){
+void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * cornersY,const dfloat * Gamma1X,const dfloat * Gamma1Y,const dfloat * Gamma2X,const dfloat * Gamma2Y,const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,const bool Curved){
 // Constructor of geometry and metric terms for quadrilateral domains
+
+
 
 
 dfloat xXi,xEta,yXi,yEta,Jtemp;
 dfloat x_tmp, y_tmp;
 
-     for (int j = 1;j<=ngl;j++){
-         for (int i = 1;i<=ngl;i++){
+     for (int j = 0;j<ngl;j++){
+         for (int i = 0;i<ngl;i++){
+            int ij = j*ngl+i;
             if (Curved){
-               TransfiniteQuadMap(x_GL(i),x_GL(j),&x_phy(i,j),&y_phy(i,j));
-               TransfiniteQuadMetrics(x_GL(i),x_GL(j),&x_xi(i,j),&x_eta(i,j),&y_xi(i,j),&y_eta(i,j));
+               TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],x_GL[j],&x_phy[ij],&y_phy[ij]);
+               TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],x_GL[j],&x_xi[ij],&x_eta[ij],&y_xi[ij],&y_eta[ij]);
             }else{
-               QuadMap(x_GL(i),x_GL(j),&x_phy(i,j),&y_phy(i,j));
-               QuadMapMetrics(x_GL(i),x_GL(j),&x_xi(i,j),&x_eta(i,j),&y_xi(i,j),&y_eta(i,j));
+               QuadMap(cornersX,cornersY,x_GL[i],x_GL[j],&x_phy[ij],&y_phy[ij]);
+               QuadMapMetrics(cornersX,cornersY,x_GL[i],x_GL[j],&x_xi[ij],&x_eta[ij],&y_xi[ij],&y_eta[ij]);
                 }
-            J(i,j)= x_xi(i,j)*y_eta(i,j)-x_eta(i,j)*y_xi(i,j);
+            J[ij]= x_xi[ij]*y_eta[ij]-x_eta[ij]*y_xi[ij];
         }
      }
 
 
-//     for (int j = 1;j<=ngl;j++){
-//         for (int i = 1;i<=ngl;i++){
-//            cout <<"(x,y) = (" << x_phy(i,j)<< "," << y_phy(i,j) <<")\n";
-//        }
-//        cout <<"\n";
-//     }
 
 
-     for (int j = 1;j<=ngl;j++){
+
+     for (int j = 0;j<ngl;j++){
+        int idSide2 = ngl+j;
+        int idSide4 = 3*ngl+j;
             if (Curved){
-                TransfiniteQuadMap(1.0,x_GL(j),&x_bndy(j,2),&y_bndy(j,2));
-                TransfiniteQuadMetrics(1.0,x_GL(j),&xXi,&xEta,&yXi,&yEta);
+                TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,1.0,x_GL[j],&x_bndy[idSide2],&y_bndy[idSide2]);
+                TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,1.0,x_GL[j],&xXi,&xEta,&yXi,&yEta);
             }else{
-                QuadMap(1.0,x_GL(j),&x_bndy(j,2),&y_bndy(j,2));
-                QuadMapMetrics(1.0,x_GL(j),&xXi,&xEta,&yXi,&yEta);
+                QuadMap(cornersX,cornersY,1.0,x_GL[j],&x_bndy[idSide2],&y_bndy[idSide2]);
+                QuadMapMetrics(cornersX,cornersY,1.0,x_GL[j],&xXi,&xEta,&yXi,&yEta);
                 }
          Jtemp = xXi*yEta-xEta*yXi;
-         scal(j,2)      = sqrt(yEta*yEta + xEta*xEta);
-         nx(j,2) = copysign(1.0,Jtemp)*(yEta/scal(j,2));
-         ny(j,2) = copysign(1.0,Jtemp)*(-xEta/scal(j,2));
+         scal[idSide2]     = sqrt(yEta*yEta + xEta*xEta);
+         nx[idSide2] = copysign(1.0,Jtemp)*(yEta/scal[idSide2]);
+         ny[idSide2] = copysign(1.0,Jtemp)*(-xEta/scal[idSide2]);
              if (Curved){
-                TransfiniteQuadMap(-1.0,x_GL(j),&x_bndy(j,4),&y_bndy(j,4));
-                TransfiniteQuadMetrics(-1.0,x_GL(j),&xXi,&xEta,&yXi,&yEta);
+                TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,-1.0,x_GL[j],&x_bndy[idSide4],&y_bndy[idSide4]);
+                TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,-1.0,x_GL[j],&xXi,&xEta,&yXi,&yEta);
             }else{
-                QuadMap(-1.0,x_GL(j),&x_bndy(j,4),&y_bndy(j,4));
-                QuadMapMetrics(-1.0,x_GL(j),&xXi,&xEta,&yXi,&yEta);
+                QuadMap(cornersX,cornersY,-1.0,x_GL[j],&x_bndy[idSide4],&y_bndy[idSide4]);
+                QuadMapMetrics(cornersX,cornersY,-1.0,x_GL[j],&xXi,&xEta,&yXi,&yEta);
             }
          Jtemp = xXi*yEta-xEta*yXi;
-         scal(j,4)      =  sqrt(yEta*yEta + xEta*xEta);
-         nx(j,4) = -copysign(1.0,Jtemp)*(yEta/scal(j,4));
-         ny(j,4) = -copysign(1.0,Jtemp)*(-xEta/scal(j,4));
+         scal[idSide4]      =  sqrt(yEta*yEta + xEta*xEta);
+         nx[idSide4] = -copysign(1.0,Jtemp)*(yEta/scal[idSide4]);
+         ny[idSide4] = -copysign(1.0,Jtemp)*(-xEta/scal[idSide4]);
      }
-     for (int i = 1;i<=ngl;i++){
+     for (int i = 0;i<ngl;i++){
+        int idSide1 = i;
+        int idSide3 = 2*ngl+i;
             if (Curved){
-                TransfiniteQuadMap(x_GL(i),-1.0,&x_bndy(i,1),&y_bndy(i,1));
-                TransfiniteQuadMetrics(x_GL(i),-1.0,&xXi,&xEta,&yXi,&yEta);
+                TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],-1.0,&x_bndy[idSide1],&y_bndy[idSide1]);
+                TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],-1.0,&xXi,&xEta,&yXi,&yEta);
             }else{
-                QuadMap(x_GL(i),-1.0,&x_bndy(i,1),&y_bndy(i,1));
-                QuadMapMetrics(x_GL(i),-1.0,&xXi,&xEta,&yXi,&yEta);
+                QuadMap(cornersX,cornersY,x_GL[i],-1.0,&x_bndy[idSide1],&y_bndy[idSide1]);
+                QuadMapMetrics(cornersX,cornersY,x_GL[i],-1.0,&xXi,&xEta,&yXi,&yEta);
             }
          Jtemp = xXi*yEta-xEta*yXi;
-         scal(i,1)      =  sqrt(yXi*yXi + xXi*xXi);
-         nx(i,1) = -copysign(1.0,Jtemp)*(-yXi/scal(i,1));
-         ny(i,1) = -copysign(1.0,Jtemp)*(xXi/scal(i,1));
+         scal[idSide1]      =  sqrt(yXi*yXi + xXi*xXi);
+         nx[idSide1]= -copysign(1.0,Jtemp)*(-yXi/scal[idSide1]);
+         ny[idSide1] = -copysign(1.0,Jtemp)*(xXi/scal[idSide1]);
             if (Curved){
-                TransfiniteQuadMap(x_GL(i),1.0,&x_bndy(i,3),&y_bndy(i,3));
-                TransfiniteQuadMetrics(x_GL(i),1.0,&xXi,&xEta,&yXi,&yEta);
+                TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],1.0,&x_bndy[idSide3],&y_bndy[idSide3]);
+                TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],1.0,&xXi,&xEta,&yXi,&yEta);
             }else{
-                QuadMap(x_GL(i),1.0,&x_bndy(i,3),&y_bndy(i,3));
-                QuadMapMetrics(x_GL(i),1.0,&xXi,&xEta,&yXi,&yEta);
+                QuadMap(cornersX,cornersY,x_GL[i],1.0,&x_bndy[idSide3],&y_bndy[idSide3]);
+                QuadMapMetrics(cornersX,cornersY,x_GL[i],1.0,&xXi,&xEta,&yXi,&yEta);
             }
          Jtemp = xXi*yEta-xEta*yXi;
-         scal(i,3)      = sqrt(yXi*yXi + xXi*xXi);
-         nx(i,3) = copysign(1.0,Jtemp)*(-yXi/scal(i,3));
-         ny(i,3) = copysign(1.0,Jtemp)*(xXi/scal(i,3));
+         scal[idSide3]      = sqrt(yXi*yXi + xXi*xXi);
+         nx[idSide3] = copysign(1.0,Jtemp)*(-yXi/scal[idSide3]);
+         ny[idSide3] = copysign(1.0,Jtemp)*(xXi/scal[idSide3]);
      }
 
 }
@@ -1308,49 +1449,37 @@ dfloat x_tmp, y_tmp;
 void Mesh :: BarycentricWeights(){
 
 
-        for(int i=1;i<=m_order_of_boundary_edges+1;i++){
-        w_bary(i)=1.0;
+        for(int i=0;i<=m_order_of_boundary_edges;i++){
+        w_bary[i]=1.0;
         };
 
 
-        for (int j=2;j<=m_order_of_boundary_edges+1;j++){
-             for (int k=1;k<j;k++){
-                w_bary(k)=w_bary(k)*(x_cheby(k)-x_cheby(j));
-                w_bary(j)=w_bary(j)*(x_cheby(j)-x_cheby(k));
+        for (int j=1;j<=m_order_of_boundary_edges;j++){
+             for (int k=0;k<j;k++){
+                w_bary[k]=w_bary[k]*(x_cheby[k]-x_cheby[j]);
+                w_bary[j]=w_bary[j]*(x_cheby[j]-x_cheby[k]);
             };
         };
 
-        for (int j=1;j<=m_order_of_boundary_edges+1;j++){
-         w_bary(j)=1.0/w_bary(j);
+        for (int j=0;j<=m_order_of_boundary_edges;j++){
+         w_bary[j]=1.0/w_bary[j];
         };
-
+//cout <<"bary weights computed!\n";
 };
 
 
 
 
-void Mesh :: EvaluateAt(const fmatrix Gamma,const dfloat s,dfloat *x_point,dfloat *y_point){
+void Mesh :: EvaluateAt(const dfloat * GammaX,const dfloat * GammaY,const dfloat s,dfloat *x_point,dfloat *y_point){
 // Evaluates a member of the CurveInterpolant type at a point s
-dfloat GammaX[ngl],GammaY[ngl];
 
-for (int i = 0; i<ngl;i++){
-    GammaX[i] = Gamma(i+1,1);
-    GammaY[i] = Gamma(i+1,2);
-
-}
       LagrangeInterpolation(s,GammaX,x_point);
       LagrangeInterpolation(s,GammaY,y_point);
 }
 
-void Mesh :: DerivativeAt(const fmatrix Gamma,const dfloat s,dfloat *x_point_prime,dfloat *y_point_prime){
+void Mesh :: DerivativeAt(const dfloat * GammaX,const dfloat * GammaY,const dfloat s,dfloat *x_point_prime,dfloat *y_point_prime){
 // Evaluates the derivative of a member of the CurveInterpolant type at a point s
-dfloat GammaX[ngl],GammaY[ngl];
 
-for (int i = 0; i<ngl;i++){
-    GammaX[i] = Gamma(i+1,1);
-    GammaY[i] = Gamma(i+1,2);
-
-}
 
 LagrangeInterpolantDerivative(s,GammaX,x_point_prime);
 LagrangeInterpolantDerivative(s,GammaY,y_point_prime);
@@ -1359,7 +1488,7 @@ LagrangeInterpolantDerivative(s,GammaY,y_point_prime);
 
 
 
-void Mesh :: LagrangeInterpolantDerivative(const dfloat xpt,const dfloat functionvals[],dfloat *p_prime){
+void Mesh :: LagrangeInterpolantDerivative(const dfloat xpt,const dfloat* functionvals,dfloat *p_prime){
 
       bool atNode      = false;
       dfloat numerator   = 0.0;
@@ -1368,10 +1497,10 @@ void Mesh :: LagrangeInterpolantDerivative(const dfloat xpt,const dfloat functio
       int k;
 
      for (int j = 0; j<=m_order_of_boundary_edges;j++){
-        if(fabs(xpt-x_cheby(j+1))<pow(10.0,-14)){
+        if(fabs(xpt-x_cheby[j])<pow(10.0,-14)){
             atNode = true;
             p = functionvals[j];
-            denominator = -1.0*w_bary(j+1);
+            denominator = -1.0*w_bary[j];
             k = j;
 
          }
@@ -1379,15 +1508,15 @@ void Mesh :: LagrangeInterpolantDerivative(const dfloat xpt,const dfloat functio
       if (atNode){
         for (int j = 0; j<=m_order_of_boundary_edges;j++){
             if(j!=k){
-               numerator = numerator + w_bary(j+1)*(p-functionvals[j])/(xpt-x_cheby(j+1));
+               numerator = numerator + w_bary[j]*(p-functionvals[j])/(xpt-x_cheby[j]);
             }
         }
         }else{
              denominator = 0.0;
              LagrangeInterpolation(xpt,functionvals,&p);
              for (int j = 0; j<=m_order_of_boundary_edges;j++){
-                t = w_bary(j+1)/(xpt-x_cheby(j+1));
-                numerator +=  t*(p-functionvals[j])/(xpt-x_cheby(j+1));
+                t = w_bary[j]/(xpt-x_cheby[j]);
+                numerator +=  t*(p-functionvals[j])/(xpt-x_cheby[j]);
                 denominator += t;
              }
          }
@@ -1396,7 +1525,7 @@ void Mesh :: LagrangeInterpolantDerivative(const dfloat xpt,const dfloat functio
 }
 
 
-void Mesh :: LagrangeInterpolation(const dfloat xpt,const dfloat functionvals[],dfloat *output){
+void Mesh :: LagrangeInterpolation(const dfloat xpt,const dfloat* functionvals,dfloat *output){
 // Barycentric two formulation of Lagrange interpolant
 
 
@@ -1408,12 +1537,12 @@ void Mesh :: LagrangeInterpolation(const dfloat xpt,const dfloat functionvals[],
       denominator = 0.0;
 
      for (int j = 0; j<=m_order_of_boundary_edges;j++){
-         if(fabs(xpt-x_cheby(j+1))<pow(10.0,-14)){
+         if(fabs(xpt-x_cheby[j])<pow(10.0,-14)){
             var1=true;
             *output = functionvals[j];
             break;
          }else{
-            t = w_bary(j+1)/(xpt-x_cheby(j+1));
+            t = w_bary[j]/(xpt-x_cheby[j]);
             numerator +=  t*functionvals[j];
             denominator +=  t;
          }

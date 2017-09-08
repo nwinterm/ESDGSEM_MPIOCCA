@@ -6,13 +6,13 @@ using namespace std;
 MeshPartitioning::MeshPartitioning( const int procs, const int N)
 {
 NumProcessors=procs;
-    ngl = N;
+    ngl = N;// N passed here is really N+1
     ngl2 = N*N;
-    CommTags.resize(NumProcessors,NumProcessors);
+    CommTags = (int*) calloc(NumProcessors*NumProcessors,sizeof(int)); //.resize(NumProcessors,NumProcessors);
     int counter=0;
-    for (int i=1;i<=NumProcessors;i++){
-        for (int j=1;j<=NumProcessors;j++){
-            CommTags(i,j) = counter;
+    for (int i=0;i<NumProcessors;i++){
+        for (int j=0;j<NumProcessors;j++){
+            CommTags[i*NumProcessors + j ] = counter;
             counter++;
         }
     }
@@ -39,72 +39,68 @@ void MeshPartitioning::DivideMesh(const Mesh GlobalMesh,const MPI_setup MPI)
 
    global_NumEdges=GlobalMesh.m_num_edges;
 
-    ElementsPerProc.resize(NumProcessors);
-    EdgesPerProc.resize(NumProcessors);
+    ElementsPerProc= (int*) calloc(NumProcessors,sizeof(int));
+    EdgesPerProc = (int*) calloc(NumProcessors,sizeof(int));
 
 
       cout <<"using " << NumProcessors <<" processors for a problem with "<< global_NumElements <<" Elements.\n";
-      for (int i=1;i<=NumProcessors;i++){
-        ElementsPerProc(i) = global_NumElements / NumProcessors;
+      for (int i=0;i<NumProcessors;i++){
+        ElementsPerProc[i] = global_NumElements / NumProcessors;
       }
 
       int RestElements = global_NumElements % NumProcessors;
 
-	 for (int i=1;i<=RestElements;i++){
-			ElementsPerProc(i)=ElementsPerProc(i)+1;
+	 for (int i=0;i<RestElements;i++){
+			ElementsPerProc[i]=ElementsPerProc[i]+1;
 	 }
 
 
-	 NumElements=ElementsPerProc(1); // set number of elements for host
+	 NumElements=ElementsPerProc[0]; // set number of elements for host
 	 //SEND number of elements to other tasks
 	 for (int i=1;i<NumProcessors;i++){
-            cout << "Elements in processor " << i+1 <<" : " << ElementsPerProc(i+1) <<"\n";
-            MPI_Isend (&ElementsPerProc(i+1),1,MPI_INT,i,i,MPI_COMM_WORLD,&MPI.reqs[i]);
+            cout << "Elements in processor " << i+1 <<" : " << ElementsPerProc[i] <<"\n";
+            MPI_Send (&ElementsPerProc[i],1,MPI_INT,i,i,MPI_COMM_WORLD);
 
 	 }
-    MPI_Waitall(NumProcessors,MPI.reqs, MPI.stats);
+//    MPI_Waitall(NumProcessors,MPI.reqs, MPI.stats);
 
 
 
 
 
-    ElementLocalToGlobal.resize(ElementsPerProc(1),NumProcessors);  //Link LOCAL Elements for EACH Processors to GLOBAL ELEMENT ID
-    ElementGlobalToLocal.resize(2,global_NumElements); //Link each GLOBAL element to LOCALELEMENT + PROCESSOR
+    ElementLocalToGlobal= (int*) calloc(ElementsPerProc[0]*NumProcessors,sizeof(int));
+    //.resize(ElementsPerProc[0],NumProcessors);  //Link LOCAL Elements for EACH Processors to GLOBAL ELEMENT ID
+    int * ElementGlobalToLocal = (int*) calloc(2*global_NumElements,sizeof(int));
+    //.resize(2,global_NumElements); //Link each GLOBAL element to LOCALELEMENT + PROCESSOR
 
     int eleID_global=1;
     for (int iproc=1;iproc<=NumProcessors;iproc++){
-        for (int ie=1;ie<=ElementsPerProc(iproc);ie++){
+        for (int ie=1;ie<=ElementsPerProc[iproc-1];ie++){
 
-			ElementLocalToGlobal(ie,iproc) = eleID_global;
-			ElementGlobalToLocal(1,eleID_global) = ie;
-			ElementGlobalToLocal(2,eleID_global) = iproc;
+			ElementLocalToGlobal[(iproc-1)*ElementsPerProc[0] + ie-1]= eleID_global; //(ie,iproc)
+			ElementGlobalToLocal[eleID_global-1]=ie;//(1,eleID_global) = ie;
+			ElementGlobalToLocal[global_NumElements + eleID_global-1] = iproc;
             eleID_global++;
 
         }
     }
 
-    MyElementLocalToGlobal.resize(NumElements);
-    for( int ie = 1; ie<=ElementsPerProc(1);ie++){
-        MyElementLocalToGlobal(ie) = ElementLocalToGlobal(ie,1);
+    MyElementLocalToGlobal = (int*) calloc(NumElements,sizeof(int));
+    for( int ie = 0; ie<ElementsPerProc[0];ie++){
+        MyElementLocalToGlobal[ie] = ElementLocalToGlobal[ie];
     }
 
     for (int iproc=1;iproc<NumProcessors;iproc++){
-            MPI_Isend (&ElementLocalToGlobal(1,iproc+1),ElementsPerProc(iproc+1),MPI_INT,iproc,iproc,MPI_COMM_WORLD,&MPI.reqs[iproc]);
-//        MyElementLocalToGlobal(ie) = ElementLocalToGlobal(ie,1)
+            MPI_Send (&ElementLocalToGlobal[iproc*ElementsPerProc[0] ],ElementsPerProc[iproc],MPI_INT,iproc,iproc,MPI_COMM_WORLD);
     }
 
-    MPI_Waitall(NumProcessors,MPI.reqs, MPI.stats);
+//    MPI_Waitall(NumProcessors,MPI.reqs, MPI.stats);
 
 
 //cout << "ELEMENT SPLITTING FINISHED! \n" ;
 
 
-// ///////////////////////////////////////////////////////////////////////////  EDGES ///////////////////////////////////////////////
 
-//    for (int i=1;i<=global_NumElements;i++){
-//     cout << "global ID: " << i << "\n";
-//     cout << " Side 1: " << GlobalMesh.ElementToEdge(1,i) << " Side 2: " << GlobalMesh.ElementToEdge(2,i) <<" Side 3: " << GlobalMesh.ElementToEdge(3,i) <<" Side 4: " << GlobalMesh.ElementToEdge(4,i) <<"\n";
-//    }
 
 
 int * EdgeArray_proc = (int*) calloc(global_NumEdges,sizeof(int));
@@ -112,21 +108,17 @@ int * EdgeArray_proc = (int*) calloc(global_NumEdges,sizeof(int));
 //int EdgeArray_proc[global_NumEdges];
 int LocatedAt;
 int maxEdgesLocal=0;
-    EdgeLocalToGlobal.resize(global_NumEdges,NumProcessors);
-    EdgeGlobalToLocal.resize(4,global_NumEdges);
+    EdgeLocalToGlobal= (int*) calloc(global_NumEdges*NumProcessors,sizeof(int));  //.resize(global_NumEdges,NumProcessors);
+    int * EdgeGlobalToLocal= (int*) calloc(global_NumEdges*4,sizeof(int));  //.resize(4,global_NumEdges);
 
     for (int i=1;i<=global_NumEdges;i++){
             EdgeArray_proc[i-1]=-1;
-            EdgeGlobalToLocal(1,i)=0;
-            EdgeGlobalToLocal(2,i)=0;
-            EdgeGlobalToLocal(3,i)=0;
-            EdgeGlobalToLocal(4,i)=0;
         for (int iproc=1;iproc<=NumProcessors;iproc++){
-            EdgeLocalToGlobal(i,iproc)=-1;
+            EdgeLocalToGlobal[(iproc-1)*global_NumEdges + i-1]=-1;   //(i,iproc)
         }
     }
-    for (int iproc=1;iproc<=NumProcessors;iproc++){
-        EdgesPerProc(iproc) = 0;
+    for (int iproc=0;iproc<NumProcessors;iproc++){
+        EdgesPerProc[iproc] = 0;
     }
 
     for (int iproc=1;iproc<=NumProcessors;iproc++){
@@ -136,12 +128,13 @@ int maxEdgesLocal=0;
             EdgeArray_proc[i-1] = -1; //EdgeLocalToGlobal(i,iproc);
         }
 
-        for (int ie=1;ie<=ElementsPerProc(iproc);ie++){
-            eleID_global = ElementLocalToGlobal(ie,iproc);
+        for (int ie=1;ie<=ElementsPerProc[iproc-1];ie++){
+            eleID_global = ElementLocalToGlobal[(iproc-1)*ElementsPerProc[0] + ie-1];
 
             for (int is=1;is<=4;is++){
                 //get global side ID
-                int sideID_global=GlobalMesh.ElementToEdge(is,eleID_global);
+                int id = (eleID_global-1)*4 + is-1;
+                int sideID_global=GlobalMesh.ElementToEdge[id];
 
 
 
@@ -149,7 +142,7 @@ int maxEdgesLocal=0;
 //                cout << "sideID_global: " <<sideID_global <<"\n";
 
                 // CHECK IF WE ALREADY FOUND THIS EDGE ON THIS PROCESSOR
-                isInArray(sideID_global,EdgeArray_proc,EdgesPerProc(iproc),&LocatedAt);
+                isInArray(sideID_global,EdgeArray_proc,EdgesPerProc[iproc-1],&LocatedAt);
 //                cout << "LocatedAt: " <<LocatedAt <<"\n";
 //                if (sideID_global == 3316) {
 //                    cout << "EDGE: " << sideID_global <<" was found at "<< LocatedAt <<"\n";
@@ -158,37 +151,37 @@ int maxEdgesLocal=0;
 //                cout << "EdgeInfo(3,sideID_global)" << GlobalMesh.EdgeInfo(3,sideID_global)+1 <<"\n";
                 if (LocatedAt == 0) {
                     //PRINT*, 'SIDE NOT FOUND: ', sideID_global
-                    EdgesPerProc(iproc) = EdgesPerProc(iproc)+1;
+                    EdgesPerProc[iproc-1] = EdgesPerProc[iproc-1]+1;
 //                    cout << " EDGE ADDED : " << sideID_global << "Element: " << eleID_global << " side " << is <<"\n" ;
 
-                    EdgeLocalToGlobal(EdgesPerProc(iproc),iproc) = sideID_global;
-                    EdgeArray_proc[EdgesPerProc(iproc)-1] = sideID_global; //EdgeLocalToGlobal(i,iproc);
+                    EdgeLocalToGlobal[(iproc-1)*global_NumEdges + EdgesPerProc[iproc-1]-1] = sideID_global; //(EdgesPerProc[iproc-1],iproc)
+                    EdgeArray_proc[EdgesPerProc[iproc-1]-1] = sideID_global; //EdgeLocalToGlobal(i,iproc);
                     //check if this element is LEFT or RIGHT element to the edge
-                    if (GlobalMesh.EdgeInfo(3,sideID_global)==eleID_global-1){
-                          EdgeGlobalToLocal(1,sideID_global) = EdgesPerProc(iproc);
-                          EdgeGlobalToLocal(3,sideID_global) = iproc;
+                    if (GlobalMesh.EdgeInfo[(sideID_global-1)*7+2]==eleID_global-1){
+                          EdgeGlobalToLocal[(sideID_global-1)*4] = EdgesPerProc[iproc-1];    //(1,sideID_global)
+                          EdgeGlobalToLocal[(sideID_global-1)*4+2] = iproc;
                     }else{
 
-                          EdgeGlobalToLocal(2,sideID_global) = EdgesPerProc(iproc);
-                          EdgeGlobalToLocal(4,sideID_global) = iproc;
+                          EdgeGlobalToLocal[(sideID_global-1)*4+1] = EdgesPerProc[iproc-1];
+                          EdgeGlobalToLocal[(sideID_global-1)*4+3] = iproc;
                     }
                 }else{
 
-                    if (GlobalMesh.EdgeInfo(3,sideID_global)==eleID_global-1){
+                    if (GlobalMesh.EdgeInfo[(sideID_global-1)*7+2]==eleID_global-1){
 //                        cout << " WE ACTUALLY GET IN WEIRD CASE WHERE RIGHT ELE WAS FOUND FIRST\n";
-                          EdgeGlobalToLocal(1,sideID_global) = EdgeGlobalToLocal(2,sideID_global);
-                          EdgeGlobalToLocal(3,sideID_global) = EdgeGlobalToLocal(4,sideID_global);
+                          EdgeGlobalToLocal[(sideID_global-1)*4+0] = EdgeGlobalToLocal[(sideID_global-1)*4+1];
+                          EdgeGlobalToLocal[(sideID_global-1)*4+2] = EdgeGlobalToLocal[(sideID_global-1)*4+3];
                     }else{
 //                        if (sideID_global>3280){cout <<"STIMMT WAS NICHT!";}
-                          EdgeGlobalToLocal(2,sideID_global) = EdgeGlobalToLocal(1,sideID_global);
-                          EdgeGlobalToLocal(4,sideID_global) = EdgeGlobalToLocal(3,sideID_global);
+                          EdgeGlobalToLocal[(sideID_global-1)*4+1] = EdgeGlobalToLocal[(sideID_global-1)*4];
+                          EdgeGlobalToLocal[(sideID_global-1)*4+3] = EdgeGlobalToLocal[(sideID_global-1)*4+2];
                     }
                 }
 
             }
 
         }
-        maxEdgesLocal = max(maxEdgesLocal,EdgesPerProc(iproc))	;
+        maxEdgesLocal = max(maxEdgesLocal,EdgesPerProc[iproc-1])	;
     }
 
 
@@ -215,12 +208,12 @@ for (int iproc=0;iproc<NumProcessors;iproc++){
 
 
 for (int is=1;is<=global_NumEdges;is++){
-  int edgeIDlocal_LEFT  = EdgeGlobalToLocal(1,is);		// 1=LOCAL SIDE ID PROC LEFT,  2=LOCAL SIDE ID PROC RIGHT,  3=LEFT PROCESSOR, 4=RIGHT PROCESSOR
-  int edgeIDlocal_RIGHT = EdgeGlobalToLocal(2,is);
-  int proc_LEFT	    = EdgeGlobalToLocal(3,is);
-  int proc_RIGHT	    = EdgeGlobalToLocal(4,is);
+  int edgeIDlocal_LEFT  = EdgeGlobalToLocal[(is-1)*4];		// 1=LOCAL SIDE ID PROC LEFT,  2=LOCAL SIDE ID PROC RIGHT,  3=LEFT PROCESSOR, 4=RIGHT PROCESSOR
+  int edgeIDlocal_RIGHT = EdgeGlobalToLocal[(is-1)*4+1];
+  int proc_LEFT	    = EdgeGlobalToLocal[(is-1)*4+2];
+  int proc_RIGHT	    = EdgeGlobalToLocal[(is-1)*4+3];
   localEdgeCounter[proc_LEFT-1]++;
-
+    int glbEdgeInfoID=(is-1)*7;
 
 //  cout << "global edge id: " << is <<"\n";
 //  cout << "edgeIDlocal_LEFT: " << edgeIDlocal_LEFT <<"\n";
@@ -232,13 +225,14 @@ for (int is=1;is<=global_NumEdges;is++){
 	if (proc_LEFT != proc_RIGHT) {
 		if (proc_RIGHT == 0 ) {
             int id1 = 10*maxEdgesLocal*(proc_LEFT-1)+ 10*(edgeIDlocal_LEFT-1);
-            globalEdgeInfo[id1+0] = GlobalMesh.EdgeInfo(1,is);//				!these are not even used after the inital mesh generation
-			globalEdgeInfo[id1+1] = GlobalMesh.EdgeInfo(2,is);//			! ""
-			globalEdgeInfo[id1+2] = ElementGlobalToLocal(1,GlobalMesh.EdgeInfo(3,is)+1)-1	;//this is changed to be the local element on left processor
+
+            globalEdgeInfo[id1+0] = GlobalMesh.EdgeInfo[glbEdgeInfoID];//				!these are not even used after the inital mesh generation
+			globalEdgeInfo[id1+1] = GlobalMesh.EdgeInfo[glbEdgeInfoID+1];//			! ""
+			globalEdgeInfo[id1+2] = ElementGlobalToLocal[GlobalMesh.EdgeInfo[glbEdgeInfoID+2]] -1;//(1,GlobalMesh.EdgeInfo[glbEdgeInfoID+2]+1)-1	;//this is changed to be the local element on left processor
 			globalEdgeInfo[id1+3] = -1; //neighbour element is zero since its a boundary
-			globalEdgeInfo[id1+4] = GlobalMesh.EdgeInfo(5,is)	;//local side left element <- fine as is
-			globalEdgeInfo[id1+5] = GlobalMesh.EdgeInfo(6,is);	//local side right element <- fine as is
-			globalEdgeInfo[id1+6] = GlobalMesh.EdgeInfo(7,is);
+			globalEdgeInfo[id1+4] = GlobalMesh.EdgeInfo[glbEdgeInfoID+4]	;//local side left element <- fine as is
+			globalEdgeInfo[id1+5] = GlobalMesh.EdgeInfo[glbEdgeInfoID+5];	//local side right element <- fine as is
+			globalEdgeInfo[id1+6] = GlobalMesh.EdgeInfo[glbEdgeInfoID+6];
 			globalEdgeInfo[id1+7] = proc_LEFT -1;
 			globalEdgeInfo[id1+8] = proc_RIGHT -1;
 			globalEdgeInfo[id1+9] = is -1	;	//global side id
@@ -248,24 +242,24 @@ for (int is=1;is<=global_NumEdges;is++){
             int id1 = 10*maxEdgesLocal*(proc_LEFT-1)+ 10*(edgeIDlocal_LEFT-1);
             int id2 = 10*maxEdgesLocal*(proc_RIGHT-1)+ 10*(edgeIDlocal_RIGHT-1);
 
-			globalEdgeInfo[id1+0] = GlobalMesh.EdgeInfo(1,is);				//these are not even used after the inital mesh generation
-			globalEdgeInfo[id1+1] = GlobalMesh.EdgeInfo(2,is)		;		//! ""
-			globalEdgeInfo[id1+2] = ElementGlobalToLocal(1,GlobalMesh.EdgeInfo(3,is)+1)-1	;//!this is changed to be the local element on left processor
-			globalEdgeInfo[id1+3] = GlobalMesh.EdgeInfo(4,is) 	;//!this is changed to be the GLOBAL ELEMENT ID of the right element!!!!
-			globalEdgeInfo[id1+4] = GlobalMesh.EdgeInfo(5,is)	;//!local side left element <- fine as is
-			globalEdgeInfo[id1+5] = GlobalMesh.EdgeInfo(6,is)	;//!local side right element <- fine as is
-			globalEdgeInfo[id1+6] = GlobalMesh.EdgeInfo(7,is);
+			globalEdgeInfo[id1+0] = GlobalMesh.EdgeInfo[glbEdgeInfoID];				//these are not even used after the inital mesh generation
+			globalEdgeInfo[id1+1] = GlobalMesh.EdgeInfo[glbEdgeInfoID+1];		//! ""
+			globalEdgeInfo[id1+2] = ElementGlobalToLocal[GlobalMesh.EdgeInfo[glbEdgeInfoID+2]]-1;//(1,GlobalMesh.EdgeInfo[glbEdgeInfoID+2]+1)-1	;//!this is changed to be the local element on left processor
+			globalEdgeInfo[id1+3] = GlobalMesh.EdgeInfo[glbEdgeInfoID+3] 	;//!this is changed to be the GLOBAL ELEMENT ID of the right element!!!!
+			globalEdgeInfo[id1+4] = GlobalMesh.EdgeInfo[glbEdgeInfoID+4]	;//!local side left element <- fine as is
+			globalEdgeInfo[id1+5] = GlobalMesh.EdgeInfo[glbEdgeInfoID+5]	;//!local side right element <- fine as is
+			globalEdgeInfo[id1+6] = GlobalMesh.EdgeInfo[glbEdgeInfoID+6];
 			globalEdgeInfo[id1+7] = proc_LEFT -1;
 			globalEdgeInfo[id1+8] = proc_RIGHT -1;
 			globalEdgeInfo[id1+9] = is -1 	;	//!global side id
 
-			globalEdgeInfo[id2+0] = GlobalMesh.EdgeInfo(1,is)	;	//		!these are not even used after the inital mesh generation
-			globalEdgeInfo[id2+1]  = GlobalMesh.EdgeInfo(2,is);			//	! ""
-			globalEdgeInfo[id2+2]  = GlobalMesh.EdgeInfo(3,is),	//!this is changed to be the GLOBAL ELEMENT ID on left processor
-			globalEdgeInfo[id2+3]  = ElementGlobalToLocal(1,GlobalMesh.EdgeInfo(4,is)+1)-1;//	!this is changed to be the local element on right processor
-			globalEdgeInfo[id2+4]  = GlobalMesh.EdgeInfo(5,is);	//!local side left element <- fine as is
-			globalEdgeInfo[id2+5]  = GlobalMesh.EdgeInfo(6,is);//!local side right element <- fine as is
-			globalEdgeInfo[id2+6]  = GlobalMesh.EdgeInfo(7,is);
+			globalEdgeInfo[id2+0] = GlobalMesh.EdgeInfo[glbEdgeInfoID+0]	;	//		!these are not even used after the inital mesh generation
+			globalEdgeInfo[id2+1]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+1];			//	! ""
+			globalEdgeInfo[id2+2]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+2],	//!this is changed to be the GLOBAL ELEMENT ID on left processor
+			globalEdgeInfo[id2+3]  = ElementGlobalToLocal[GlobalMesh.EdgeInfo[glbEdgeInfoID+3]]-1;//(1,GlobalMesh.EdgeInfo[glbEdgeInfoID+3]+1)-1;//	!this is changed to be the local element on right processor
+			globalEdgeInfo[id2+4]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+4];	//!local side left element <- fine as is
+			globalEdgeInfo[id2+5]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+5];//!local side right element <- fine as is
+			globalEdgeInfo[id2+6]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+6];
 			globalEdgeInfo[id2+7]  = proc_LEFT -1;
 			globalEdgeInfo[id2+8]  = proc_RIGHT -1;
 			globalEdgeInfo[id2+9]  = is -1	;	//!global side id
@@ -273,13 +267,13 @@ for (int is=1;is<=global_NumEdges;is++){
 	}else{
 
             int id1 = 10*maxEdgesLocal*(proc_LEFT-1)+ 10*(edgeIDlocal_LEFT-1);
-			globalEdgeInfo[id1+0]= GlobalMesh.EdgeInfo(1,is)	;		//	!these are not even used after the inital mesh generation
-			globalEdgeInfo[id1+1] = GlobalMesh.EdgeInfo(2,is)	;		//	! ""
-			globalEdgeInfo[id1+2] = ElementGlobalToLocal(1,GlobalMesh.EdgeInfo(3,is)+1)-1	; //!this is changed to be the local element on left processor
-			globalEdgeInfo[id1+3] = ElementGlobalToLocal(1,GlobalMesh.EdgeInfo(4,is)+1)-1 ;	//!this is changed to be the local element on right processor
-			globalEdgeInfo[id1+4] = GlobalMesh.EdgeInfo(5,is);	//!local side left element <- fine as is
-			globalEdgeInfo[id1+5] = GlobalMesh.EdgeInfo(6,is)	;//!local side right element <- fine as is
-			globalEdgeInfo[id1+6] = GlobalMesh.EdgeInfo(7,is);
+			globalEdgeInfo[id1+0]= GlobalMesh.EdgeInfo[glbEdgeInfoID+0]	;		//	!these are not even used after the inital mesh generation
+			globalEdgeInfo[id1+1] = GlobalMesh.EdgeInfo[glbEdgeInfoID+1]	;		//	! ""
+			globalEdgeInfo[id1+2] = ElementGlobalToLocal[GlobalMesh.EdgeInfo[glbEdgeInfoID+2] ]-1;//1,GlobalMesh.EdgeInfo[glbEdgeInfoID+2]+1)-1	; //!this is changed to be the local element on left processor
+			globalEdgeInfo[id1+3] = ElementGlobalToLocal[GlobalMesh.EdgeInfo[glbEdgeInfoID+3] ]-1;//(1,GlobalMesh.EdgeInfo[glbEdgeInfoID+3]+1)-1 ;	//!this is changed to be the local element on right processor
+			globalEdgeInfo[id1+4] = GlobalMesh.EdgeInfo[glbEdgeInfoID+4];	//!local side left element <- fine as is
+			globalEdgeInfo[id1+5] = GlobalMesh.EdgeInfo[glbEdgeInfoID+5]	;//!local side right element <- fine as is
+			globalEdgeInfo[id1+6] = GlobalMesh.EdgeInfo[glbEdgeInfoID+6];
 			globalEdgeInfo[id1+7]= proc_LEFT -1;
 			globalEdgeInfo[id1+8]= proc_LEFT -1;
 			globalEdgeInfo[id1+9] = is -1	;	//!global side id
@@ -289,176 +283,205 @@ for (int is=1;is<=global_NumEdges;is++){
 
 
 
-NumEdges=EdgesPerProc(1);// set edge number for host
+NumEdges=EdgesPerProc[0];// set edge number for host
 
 //cout << "My NumEdges is " << NumEdges <<"\n";
-cout << "Edges in processor " << 1 <<" : " << EdgesPerProc(1) <<"\n";
+cout << "Edges in processor " << 1 <<" : " << EdgesPerProc[0] <<"\n";
  for (int i=1;i<NumProcessors;i++){
-        cout << "Edges in processor " << i+1 <<" : " << EdgesPerProc(i+1) <<"\n";
-        MPI_Isend (&EdgesPerProc(i+1),1,MPI_INT,i,i,MPI_COMM_WORLD,&MPI.reqs[i]);
+        cout << "Edges in processor " << i+1 <<" : " << EdgesPerProc[i] <<"\n";
+        MPI_Send (&EdgesPerProc[i],1,MPI_INT,i,i,MPI_COMM_WORLD);
  }
-MPI_Waitall(NumProcessors,MPI.reqs, MPI.stats);
+//MPI_Waitall(NumProcessors,MPI.reqs, MPI.stats);
   for (int i=1;i<NumProcessors;i++){
-        MPI_Isend (&global_NumEdges,1,MPI_INT,i,i,MPI_COMM_WORLD,&MPI.reqs[i]);
+        MPI_Send (&global_NumEdges,1,MPI_INT,i,i,MPI_COMM_WORLD);
  }
-MPI_Waitall(NumProcessors,MPI.reqs, MPI.stats);
+//MPI_Waitall(NumProcessors,MPI.reqs, MPI.stats);
 
-MyEdgesLocalToGlobal.resize(NumEdges);
-MyEdgeInfo.resize(10,NumEdges);
+MyEdgesLocalToGlobal= (int*) calloc(NumEdges,sizeof(int));
 
-for (int i=1;i<=EdgesPerProc(1);i++){
-   int id1 = i-1;
+MyEdgeInfo = (int*) calloc(10*NumEdges,sizeof(int));
 
-    MyEdgesLocalToGlobal(i) = EdgeLocalToGlobal(i,1);
+for (int is=1;is<=EdgesPerProc[0];is++){
 
-    int id =  10*(i-1);
-    for (int j=1;j<=10;j++){
-        MyEdgeInfo(j,i)= globalEdgeInfo[id+j-1];
+    MyEdgesLocalToGlobal[is-1] = EdgeLocalToGlobal[is-1]; //(is,1);
+
+    int id =  10*(is-1);
+    for (int j=0;j<10;j++){
+        MyEdgeInfo[id+j]= globalEdgeInfo[id+j];
     }
 
 }
 
 
     for (int iproc=1;iproc<NumProcessors;iproc++){
-        MPI_Isend (&EdgeLocalToGlobal(1,iproc+1),EdgesPerProc(iproc+1),MPI_INT,iproc,iproc,MPI_COMM_WORLD,&MPI.reqs[iproc]);
+        MPI_Send (&EdgeLocalToGlobal[iproc*global_NumEdges],EdgesPerProc[iproc],MPI_INT,iproc,iproc,MPI_COMM_WORLD);
     }
-    MPI_Waitall(NumProcessors,MPI.reqs, MPI.stats);
+//    MPI_Waitall(NumProcessors,MPI.reqs, MPI.stats);
 
     for (int iproc=1;iproc<NumProcessors;iproc++){
-        imatrix globalEdgeInfo_TMP(10,EdgesPerProc(iproc+1));
-        for (int i=1;i<=EdgesPerProc(iproc+1);i++){
-            int id = 10*maxEdgesLocal*iproc+ 10*(i-1);
-            for (int j=1;j<=10;j++){
-                globalEdgeInfo_TMP(j,i)= globalEdgeInfo[id+j-1];
+
+        int * globalEdgeInfo_TMP= (int*) calloc(10*EdgesPerProc[iproc],sizeof(int));
+        for (int i=0;i<EdgesPerProc[iproc];i++){
+            int id = 10*maxEdgesLocal*iproc+ 10*i;
+            for (int j=0;j<10;j++){
+                globalEdgeInfo_TMP[i*10+j]= globalEdgeInfo[id+j];
             }
 
         }
-        MPI_Isend (&globalEdgeInfo_TMP(1,1),10*EdgesPerProc(iproc+1),MPI_INT,iproc,iproc,MPI_COMM_WORLD,&MPI.reqs[iproc]);
-        MPI_Wait(&MPI.reqs[iproc], MPI.stats);
+        MPI_Send (&globalEdgeInfo_TMP[0],10*EdgesPerProc[iproc],MPI_INT,iproc,iproc,MPI_COMM_WORLD);
+//        MPI_Wait(&MPI.reqs[iproc], MPI.stats);
+        free(globalEdgeInfo_TMP);
     }
 
 
 
 
-x_global.resize(ngl*ngl*NumElements,1);
+//x_global.resize(ngl*ngl*NumElements,1);
+//y_global.resize(ngl*ngl*NumElements,1);
+//yEta_global.resize(ngl*ngl*NumElements,1);
+//xEta_global.resize(ngl*ngl*NumElements,1);
+//yXi_global.resize(ngl*ngl*NumElements,1);
+//xXi_global.resize(ngl*ngl*NumElements,1);
+//J_global.resize(ngl*ngl*NumElements,1);
+
+
+x_global = (dfloat*) calloc(NumElements*ngl2,sizeof(dfloat));
+y_global = (dfloat*) calloc(NumElements*ngl2,sizeof(dfloat));
+xXi_global = (dfloat*) calloc(NumElements*ngl2,sizeof(dfloat));
+xEta_global = (dfloat*) calloc(NumElements*ngl2,sizeof(dfloat));
+yXi_global = (dfloat*) calloc(NumElements*ngl2,sizeof(dfloat));
+yEta_global = (dfloat*) calloc(NumElements*ngl2,sizeof(dfloat));
+J_global = (dfloat*) calloc(NumElements*ngl2,sizeof(dfloat));
+
+
+
 SplitRealValuesBetweenProcs( MPI,GlobalMesh.x_global , x_global);
 
-
-y_global.resize(ngl*ngl*NumElements,1);
 SplitRealValuesBetweenProcs( MPI,GlobalMesh.y_global , y_global);
 
-yEta_global.resize(ngl*ngl*NumElements,1);
 SplitRealValuesBetweenProcs( MPI,GlobalMesh.yEta_global , yEta_global);
-xEta_global.resize(ngl*ngl*NumElements,1);
+
 SplitRealValuesBetweenProcs( MPI,GlobalMesh.xEta_global , xEta_global);
-yXi_global.resize(ngl*ngl*NumElements,1);
+
 SplitRealValuesBetweenProcs( MPI,GlobalMesh.yXi_global , yXi_global);
-xXi_global.resize(ngl*ngl*NumElements,1);
+
 SplitRealValuesBetweenProcs( MPI,GlobalMesh.xXi_global , xXi_global);
-J_global.resize(ngl*ngl*NumElements,1);
+
 SplitRealValuesBetweenProcs( MPI,GlobalMesh.J_global , J_global);
 
 
-//    for(int ie=0;ie<NumElements;++ie){
-//    cout <<"\nELE: " << ie <<"\n";
-//      for(int j=0;j<ngl;++j){
-//        for(int i=0;i<ngl;++i){
-//            int id = ie*ngl*ngl   +j*ngl+i +1;
-//
-//            cout << J_global(id,1) << " ";
-//
-//      }
-//       cout  <<"\n";
-//    }
-//}
+
 
 
 
 //cout  <<" EDGE STUFF   \n";
-nx_global.resize(ngl*NumEdges,1);
+//nx_global.resize(ngl*NumEdges,1);
+//ny_global.resize(ngl*NumEdges,1);
+//scal_global.resize(ngl*NumEdges,1);
+
+
+nx_global = (dfloat*) calloc(ngl*NumEdges,sizeof(dfloat));
+ny_global = (dfloat*) calloc(ngl*NumEdges,sizeof(dfloat));
+scal_global = (dfloat*) calloc(ngl*NumEdges,sizeof(dfloat));
+
 SplitEdgeRealValuesBetweenProcs( MPI,GlobalMesh.NormalsX , nx_global);
 
-//    for(int ie=0;ie<NumEdges;++ie){
-//    cout <<"\n EDGE: " << ie <<"\n";
-//      for(int j=0;j<ngl;++j){
-//            int id = ie*ngl   +j +1;
-//
-//            cout << nx_global(id,1) << " ";
-//
-//
-//       cout  <<"\n";
-//    }
-//}
-
-ny_global.resize(ngl*NumEdges,1);
 SplitEdgeRealValuesBetweenProcs( MPI,GlobalMesh.NormalsY , ny_global);
-scal_global.resize(ngl*NumEdges,1);
+
 SplitEdgeRealValuesBetweenProcs( MPI,GlobalMesh.Scal , scal_global);
 
 
+//for(int ie=0;ie<10;++ie){
+//    cout <<"\n EDGE: " << ie <<"\n";
+//      for(int j=0;j<ngl;++j){
+//            int id = ie*ngl   +j ;
+//
+//            cout << nx_global[id] << " ";
+//
+//    }
+//    cout  <<"\n";
+//}
+//for(int ie=0;ie<10;++ie){
+//    cout <<"\n EDGE: " << ie <<"\n";
+//      for(int j=0;j<ngl;++j){
+//            int id = ie*ngl   +j ;
+//
+//            cout << ny_global[id] << " ";
+//
+//    }
+//    cout  <<"\n";
+//}
 
-
-
-int * SplitElementToEdge = (int*) calloc(4*ElementsPerProc(1)*NumProcessors,sizeof(int));
-int * SplitElemEdgeMasterSlave = (int*) calloc(4*ElementsPerProc(1)*NumProcessors,sizeof(int));
-//int SplitElementToEdge[4][ElementsPerProc(1)][NumProcessors];
-//int SplitElemEdgeMasterSlave[4][ElementsPerProc(1)][NumProcessors];
+int * SplitElementToEdge = (int*) calloc(4*ElementsPerProc[0]*NumProcessors,sizeof(int));
+int * SplitElemEdgeMasterSlave = (int*) calloc(4*ElementsPerProc[0]*NumProcessors,sizeof(int));
+//int SplitElementToEdge[4][ElementsPerProc[0]][NumProcessors];
+//int SplitElemEdgeMasterSlave[4][ElementsPerProc[0]][NumProcessors];
 
 for (int ie=1;ie<=global_NumElements;ie++){
 
-    int eleID_local=ElementGlobalToLocal(1,ie);
-    int iproc= ElementGlobalToLocal(2,ie);
+    int eleID_local=ElementGlobalToLocal[(ie-1)];//(1,ie);
+    int iproc= ElementGlobalToLocal[global_NumElements+(ie-1)];//(2,ie);
 
     for (int is=1;is<=4;is++){
-        int edgeID = GlobalMesh.ElementToEdge(is,ie);
-        int id = 4*(iproc-1)*ElementsPerProc(1) + 4*(eleID_local-1) + (is-1);
-        if (GlobalMesh.EdgeInfo(3,edgeID) == ie-1){
-            SplitElementToEdge[id] = EdgeGlobalToLocal(1,edgeID);
+        int edgeID = GlobalMesh.ElementToEdge[(ie-1)*4+is-1];
+        int id = 4*(iproc-1)*ElementsPerProc[0] + 4*(eleID_local-1) + (is-1);
+        if (GlobalMesh.EdgeInfo[(edgeID-1)*7+2] == ie-1){
+            SplitElementToEdge[id] = EdgeGlobalToLocal[(edgeID-1)*4];
 //            SplitElementToEdge[is-1][eleID_local-1][iproc-1]  = EdgeGlobalToLocal(1,edgeID);
         }else{
-            SplitElementToEdge[id] = EdgeGlobalToLocal(2,edgeID);
+            SplitElementToEdge[id] = EdgeGlobalToLocal[(edgeID-1)*4+1];
 //            SplitElementToEdge[is-1][eleID_local-1][iproc-1]  = EdgeGlobalToLocal(2,edgeID);
         }
-        SplitElemEdgeMasterSlave[id] = GlobalMesh.ElemEdgeMasterSlave(is,ie);
+        SplitElemEdgeMasterSlave[id] = GlobalMesh.ElemEdgeMasterSlave[(ie-1)*4+is-1];
 
     }
 }
 
 
-ElementToEdge.resize(4,ElementsPerProc(1));
-ElemEdgeMasterSlave.resize(4,ElementsPerProc(1));
+MyElementToEdge = (int*) calloc(4*ElementsPerProc[0],sizeof(int));    //.resize(4,ElementsPerProc[0]);
+MyElemEdgeMasterSlave= (int*) calloc(4*ElementsPerProc[0],sizeof(int));    //.resize(4,ElementsPerProc[0]);
 
 
 
 
-
-for (int ie=1;ie<=ElementsPerProc(1);ie++){
-    for (int is=1;is<=4;is++){
-        int id =  4*(ie-1) + (is-1);
-        ElementToEdge(is,ie) = SplitElementToEdge[id];
+for (int ie=0;ie<ElementsPerProc[0];ie++){
+    for (int is=0;is<4;is++){
+        int id =  4*ie + is;
+        MyElementToEdge[id] = SplitElementToEdge[id];
 //        ElementToEdge(is,ie) = SplitElementToEdge[is-1][ie-1][0];
-        ElemEdgeMasterSlave(is,ie) = SplitElemEdgeMasterSlave[id];
+        MyElemEdgeMasterSlave[id] = SplitElemEdgeMasterSlave[id];
     }
 }
+//    for (int i=0;i<NumElements;i++){
+//        cout << "rank: " << MPI.rank << " Local Ele ID: " << i << "   edge 1: " << MyElementToEdge[i*4] << "   edge 2: " << MyElementToEdge[i*4+1] << "   edge 3: " << MyElementToEdge[i*4+2] << "   edge 2: " << MyElementToEdge[i*4+3] << "\n" ;
+//
+//    }
+
+
 
 for (int iproc=2;iproc<=NumProcessors;iproc++){
-    imatrix EleToEdge_TMP(4,ElementsPerProc(iproc));
-    imatrix EleToEdgeMS_TMP(4,ElementsPerProc(iproc));
-    for (int ie=1;ie<=ElementsPerProc(iproc);ie++){
-        for (int is=1;is<=4;is++){
-             int id = 4*(iproc-1)*ElementsPerProc(1) + 4*(ie-1) + (is-1);
-            EleToEdge_TMP(is,ie) = SplitElementToEdge[id];
+    int * EleToEdge_TMP = (int*) calloc(4*ElementsPerProc[iproc-1],sizeof(int));    // (4,ElementsPerProc[iproc-1]);
+    int * EleToEdgeMS_TMP= (int*) calloc(4*ElementsPerProc[iproc-1],sizeof(int));    //(4,ElementsPerProc[iproc-1]);
+    for (int ie=0;ie<ElementsPerProc[iproc-1];ie++){
+        for (int is=0;is<4;is++){
+             int id1 =  4*ie + is;
+             int id = 4*(iproc-1)*ElementsPerProc[0] + 4*ie + is;
+            EleToEdge_TMP[id1] = SplitElementToEdge[id];
 //            EleToEdge_TMP(is,ie) = SplitElementToEdge[is-1][ie-1][iproc-1];
-            EleToEdgeMS_TMP(is,ie) = SplitElemEdgeMasterSlave[id];
+            EleToEdgeMS_TMP[id1] = SplitElemEdgeMasterSlave[id];
         }
     }
 
-     MPI_Isend (&EleToEdge_TMP(1,1),4*ElementsPerProc(iproc),MPI_INT,iproc-1,iproc-1,MPI_COMM_WORLD,&MPI.reqs[iproc-1]);
-    MPI_Wait(&MPI.reqs[iproc-1], MPI.stats);
-     MPI_Isend (&EleToEdgeMS_TMP(1,1),4*ElementsPerProc(iproc),MPI_INT,iproc-1,iproc-1,MPI_COMM_WORLD,&MPI.reqs[iproc-1]);
-     MPI_Wait(&MPI.reqs[iproc-1], MPI.stats);
-}
+//     MPI_Isend (&EleToEdge_TMP[0],4*ElementsPerProc[iproc-1],MPI_INT,iproc-1,iproc-1,MPI_COMM_WORLD,&MPI.reqs[iproc-1]);
+//    MPI_Wait(&MPI.reqs[iproc-1], MPI.stats);
+    MPI_Send (&EleToEdge_TMP[0],4*ElementsPerProc[iproc-1],MPI_INT,iproc-1,iproc-1,MPI_COMM_WORLD);
+    free(EleToEdge_TMP);
 
+//     MPI_Isend (&EleToEdgeMS_TMP[0],4*ElementsPerProc[iproc-1],MPI_INT,iproc-1,iproc-1,MPI_COMM_WORLD,&MPI.reqs[iproc-1]);
+//     MPI_Wait(&MPI.reqs[iproc-1], MPI.stats);
+    MPI_Send (&EleToEdgeMS_TMP[0],4*ElementsPerProc[iproc-1],MPI_INT,iproc-1,iproc-1,MPI_COMM_WORLD);
+     free(EleToEdgeMS_TMP);
+}
 
 
 
@@ -481,18 +504,20 @@ free(globalEdgeInfo);
 free(SplitElementToEdge);
 free(SplitElemEdgeMasterSlave);
 
+free(ElementGlobalToLocal);
+free(EdgeGlobalToLocal);
 
 }
 
-void MeshPartitioning::SplitRealValuesBetweenProcs(const MPI_setup MPI,const fmatrix Values, fmatrix &HostValues){
+void MeshPartitioning::SplitRealValuesBetweenProcs(const MPI_setup MPI,const dfloat * Values, dfloat *HostValues){
 
 
-    for (int ie=1;ie<=ElementsPerProc(1);ie++){
-        for (int i=1;i<=ngl;i++){
-            for (int j=1;j<=ngl;j++){
-                int id = (ElementLocalToGlobal(ie,1)-1)*ngl*ngl   +(j-1)*ngl+i;
-                int idLoc = (ie-1)*ngl*ngl   +(j-1)*ngl+i;
-                HostValues(idLoc,1) = Values(id,1);
+    for (int ie=0;ie<ElementsPerProc[0];ie++){
+        for (int i=0;i<ngl;i++){
+            for (int j=0;j<ngl;j++){
+                int id = (ElementLocalToGlobal[ie]-1)*ngl2   +j*ngl+i;
+                int idLoc = ie*ngl2   +j*ngl+i;
+                HostValues[idLoc] = Values[id];
             }
         }
     }
@@ -502,165 +527,223 @@ void MeshPartitioning::SplitRealValuesBetweenProcs(const MPI_setup MPI,const fma
 
 
 for (int iproc=2;iproc<=NumProcessors;iproc++){
-    fmatrix tmpValues(ngl*ngl*ElementsPerProc(iproc));
-    for (int ie=1;ie<=ElementsPerProc(iproc);ie++){
-        for (int i=1;i<=ngl;i++){
-            for (int j=1;j<=ngl;j++){
-                int id = (ElementLocalToGlobal(ie,iproc)-1)*ngl*ngl   +(j-1)*ngl+i;
-                int idLoc = (ie-1)*ngl*ngl   +(j-1)*ngl+i;
-                tmpValues(idLoc,1) = Values(id,1);
+
+     dfloat * tmpValues =    (dfloat*) calloc(ngl2*ElementsPerProc[iproc-1],sizeof(dfloat));
+    for (int ie=0;ie<ElementsPerProc[iproc-1];ie++){
+        for (int i=0;i<ngl;i++){
+            for (int j=0;j<ngl;j++){
+                int id = (ElementLocalToGlobal[(iproc-1)*ElementsPerProc[0] + ie]-1)*ngl2   +j*ngl+i;
+                int idLoc = ie*ngl2   +j*ngl+i;
+                tmpValues[idLoc] = Values[id];
             }
         }
     }
 
-        MPI_Isend (&tmpValues(1,1),ngl*ngl*ElementsPerProc(iproc),MPI_DOUBLE,iproc-1,iproc-1,MPI_COMM_WORLD,&MPI.reqs[iproc-1]);
-        MPI_Wait(&MPI.reqs[iproc-1], MPI.stats);
-
+        MPI_Send (&tmpValues[0],ngl2*ElementsPerProc[iproc-1],MPI_DOUBLE,iproc-1,iproc-1,MPI_COMM_WORLD);
+//        MPI_Wait(&MPI.reqs[iproc-1], MPI.stats);
+    free(tmpValues);
 
 }
 }
 
-void MeshPartitioning::SplitEdgeRealValuesBetweenProcs(const MPI_setup MPI,const fmatrix Values, fmatrix &HostValues){
+void MeshPartitioning::SplitEdgeRealValuesBetweenProcs(const MPI_setup MPI,const dfloat * Values, dfloat * HostValues){
 
 
-    for (int ie=1;ie<=EdgesPerProc(1);ie++){
-        for (int i=1;i<=ngl;i++){
-                int id = (EdgeLocalToGlobal(ie,1)-1)*ngl   +i;
-                int idLoc = (ie-1)*ngl  +i;
-                HostValues(idLoc,1) = Values(id,1);
+    for (int ie=0;ie<EdgesPerProc[0];ie++){
+        for (int i=0;i<ngl;i++){
+                int id = (EdgeLocalToGlobal[ie]-1)*ngl   +i;
+                int idLoc = ie*ngl  +i;
+                HostValues[idLoc] = Values[id];
         }
     }
 
 
-//    for(int ie=0;ie<EdgesPerProc(1);++ie){
-//    cout <<"\n EDGE: " << ie <<"\n";
-//      for(int j=0;j<ngl;++j){
-//            int id = ie*ngl   +j +1;
-//
-//            cout << HostValues(id,1) << " ";
-//
-//
-//       cout  <<"\n";
-//    }
-//}
 
 
 
 for (int iproc=2;iproc<=NumProcessors;iproc++){
-    fmatrix tmpValues(ngl*EdgesPerProc(iproc));
-    for (int ie=1;ie<=EdgesPerProc(iproc);ie++){
-        for (int i=1;i<=ngl;i++){
-                int id = (EdgeLocalToGlobal(ie,iproc)-1)*ngl   +i;
-                int idLoc = (ie-1)*ngl  +i;
-                tmpValues(idLoc,1) = Values(id,1);
+    dfloat * tmpValues =    (dfloat*) calloc(ngl*EdgesPerProc[iproc-1],sizeof(dfloat));
+    for (int ie=0;ie<EdgesPerProc[iproc-1];ie++){
+        for (int i=0;i<ngl;i++){
+                int id = (EdgeLocalToGlobal[(iproc-1)*global_NumEdges +ie]-1)*ngl   +i;   // (ie+1,iproc)
+                int idLoc = ie*ngl  +i;
+                tmpValues[idLoc] = Values[id];
         }
     }
 
-        MPI_Isend (&tmpValues(1,1),ngl*EdgesPerProc(iproc),MPI_DOUBLE,iproc-1,iproc-1,MPI_COMM_WORLD,&MPI.reqs[iproc-1]);
-        MPI_Wait(&MPI.reqs[iproc-1], MPI.stats);
+        MPI_Send (&tmpValues[0],ngl*EdgesPerProc[iproc-1],MPI_DOUBLE,iproc-1,iproc-1,MPI_COMM_WORLD);
+//        MPI_Wait(&MPI.reqs[iproc-1], MPI.stats);
+        free(tmpValues);
+
+}
 
 
 }
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 void MeshPartitioning::ReceiveMesh(const MPI_setup MPI){
 
-    MPI_Irecv(&global_NumElements,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
+    MPI_Recv(&global_NumElements,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&reqs[MPI.rank], stats);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
 
-    MPI_Irecv(&NumElements,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
+    MPI_Recv(&NumElements,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&reqs[MPI.rank], stats);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 //    MPI_Waitall(NumProcessors,MPI.reqs, MPI.stats);
 
-    MyElementLocalToGlobal.resize(NumElements);
+    MyElementLocalToGlobal = (int*) calloc(NumElements,sizeof(int));
 
 
-    MPI_Irecv(&MyElementLocalToGlobal(1),NumElements,MPI_INT,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
+    MPI_Recv(&MyElementLocalToGlobal[0],NumElements,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
 
 
-    MPI_Irecv(&NumEdges,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
+    MPI_Recv(&NumEdges,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&reqs[MPI.rank], stats);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
-    MPI_Irecv(&global_NumEdges,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
+    MPI_Recv(&global_NumEdges,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&reqs[MPI.rank], stats);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
 //    cout << " IAM RANK: " << MPI.rank << " AND THER ARE " << global_NumEdges << " EDGES GLOBALLY!\n";
 
 
-    MyEdgeInfo.resize(10,NumEdges);
-    MyEdgesLocalToGlobal.resize(NumEdges);
-    MPI_Irecv(&MyEdgesLocalToGlobal(1),NumEdges,MPI_INT,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+    MyEdgeInfo = (int*) calloc(10*NumEdges,sizeof(int));
+    MyEdgesLocalToGlobal = (int*) calloc(NumEdges,sizeof(int));
+    MPI_Recv(&MyEdgesLocalToGlobal[0],NumEdges,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
-    MPI_Irecv(&MyEdgeInfo(1,1),10*NumEdges,MPI_INT,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
-
-
-    x_global.resize(ngl*ngl*NumElements,1);
-    MPI_Irecv(&x_global(1,1),ngl*ngl*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
-
-    y_global.resize(ngl*ngl*NumElements,1);
-    MPI_Irecv(&y_global(1,1),ngl*ngl*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
-
-    yEta_global.resize(ngl*ngl*NumElements,1);
-    MPI_Irecv(&yEta_global(1,1),ngl*ngl*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
-
-    xEta_global.resize(ngl*ngl*NumElements,1);
-    MPI_Irecv(&xEta_global(1,1),ngl*ngl*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
-
-    yXi_global.resize(ngl*ngl*NumElements,1);
-    MPI_Irecv(&yXi_global(1,1),ngl*ngl*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
-
-    xXi_global.resize(ngl*ngl*NumElements,1);
-    MPI_Irecv(&xXi_global(1,1),ngl*ngl*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
-
-    J_global.resize(ngl*ngl*NumElements,1);
-    MPI_Irecv(&J_global(1,1),ngl*ngl*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+    MPI_Recv(&MyEdgeInfo[0],10*NumEdges,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
 
 
-nx_global.resize(ngl*NumEdges,1);
-MPI_Irecv(&nx_global(1,1),ngl*NumEdges,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
-ny_global.resize(ngl*NumEdges,1);
-MPI_Irecv(&ny_global(1,1),ngl*NumEdges,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
-scal_global.resize(ngl*NumEdges,1);
-MPI_Irecv(&scal_global(1,1),ngl*NumEdges,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+
+x_global = (dfloat*) calloc(NumElements*ngl2,sizeof(dfloat));
+y_global = (dfloat*) calloc(NumElements*ngl2,sizeof(dfloat));
+xXi_global = (dfloat*) calloc(NumElements*ngl2,sizeof(dfloat));
+xEta_global = (dfloat*) calloc(NumElements*ngl2,sizeof(dfloat));
+yXi_global = (dfloat*) calloc(NumElements*ngl2,sizeof(dfloat));
+yEta_global = (dfloat*) calloc(NumElements*ngl2,sizeof(dfloat));
+J_global = (dfloat*) calloc(NumElements*ngl2,sizeof(dfloat));
 
 
 
-ElementToEdge.resize(4,NumElements);
-ElemEdgeMasterSlave.resize(4,NumElements);
+    MPI_Recv(&x_global[0],ngl2*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
-    MPI_Irecv(&ElementToEdge(1,1),4*NumElements,MPI_INT,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
-    MPI_Irecv(&ElemEdgeMasterSlave(1,1),4*NumElements,MPI_INT,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
-//    for (int i=1;i<=NumEdges;i++){
-//        cout << "rank: " << MPI.rank << " Local Ele ID: " << i << "   Global ID: " << MyElementLocalToGlobal(i) << "\n" ;
-//        for (int j=1;j<=10;j++){
-//            cout << "rank: " << MPI.rank << " Local Edge ID " << i << "   EdgeInfo: "<<j <<" : " << MyEdgeInfo(j,i) << "\n" ;
-//        }
+
+    MPI_Recv(&y_global[0],ngl2*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+
+
+    MPI_Recv(&yEta_global[0],ngl2*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+
+
+    MPI_Recv(&xEta_global[0],ngl2*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+
+
+    MPI_Recv(&yXi_global[0],ngl2*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+
+
+    MPI_Recv(&xXi_global[0],ngl2*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+
+
+    MPI_Recv(&J_global[0],ngl2*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+
+
+nx_global = (dfloat*) calloc(ngl*NumEdges,sizeof(dfloat));
+ny_global = (dfloat*) calloc(ngl*NumEdges,sizeof(dfloat));
+scal_global = (dfloat*) calloc(ngl*NumEdges,sizeof(dfloat));
+
+
+
+
+MPI_Recv(&nx_global[0],ngl*NumEdges,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+
+MPI_Recv(&ny_global[0],ngl*NumEdges,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+
+MPI_Recv(&scal_global[0],ngl*NumEdges,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+
+
+
+//ElementToEdge.resize(4,NumElements);
+//ElemEdgeMasterSlave.resize(4,NumElements);
+
+MyElementToEdge = (int*) calloc(4*NumElements,sizeof(int));    //.resize(4,ElementsPerProc[0]);
+MyElemEdgeMasterSlave= (int*) calloc(4*NumElements,sizeof(int));    //.resize(4,ElementsPerProc[0]);
+
+//    MPI_Irecv(&MyElementToEdge[0],4*NumElements,MPI_INT,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+//    MPI_Irecv(&MyElemEdgeMasterSlave[0],4*NumElements,MPI_INT,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+
+    MPI_Recv(&MyElementToEdge[0],4*NumElements,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+    MPI_Recv(&MyElemEdgeMasterSlave[0],4*NumElements,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+//    for (int i=0;i<NumElements;i++){
+//        cout << "rank: " << MPI.rank << " Local Ele ID: " << i << "   edge 1: " << MyElementToEdge[i*4] << "   edge 2: " << MyElementToEdge[i*4+1] << "   edge 3: " << MyElementToEdge[i*4+2] << "   edge 2: " << MyElementToEdge[i*4+3] << "\n" ;
+//
 //
 //    }
 
@@ -676,108 +759,132 @@ void MeshPartitioning::SortMPIEdges(const MPI_setup MPI){
 
 
 
-    MPIEdges.resize(2,NumProcessors);
+//    MPIEdges.resize(2,NumProcessors);
+    int * MPIEdges = (int*) calloc(2*NumProcessors,sizeof(int));
+    // MPIEdges(1,:) = MPIEdges[0:NumProcessors-1]
+    // MPIEdges(2,:) = MPIEdges[NumProcessors:2*NumProcessors-1]
     for (int i=1;i<=NumProcessors;i++){
-        MPIEdges(1,i) = 0;
-        MPIEdges(2,i) = i-1;
+        MPIEdges[i-1] = 0;
+        MPIEdges[NumProcessors+i-1] = i-1;
 
     }
 
 
 
   for (int is = 1; is<=NumEdges; is++){
-//    cout << "Ele Local: "<< ie+1 << " Ele Global: "  << MeshSplit.ElementLocalToGlobal(ie+1,1) << "\n";
-      int cpuL	        =	MyEdgeInfo(8,is);
-      int cpuR	        =   MyEdgeInfo(9,is);
-      int globalEdgeID  = 	MyEdgeInfo(10,is);
+//    cout << "Ele Local: "<< ie+1 << " Ele Global: "  << MeshSplit.ElementLocalToGlobal(ie+1,1) << "\n";+
+    int id = (is-1)*10;
+      int cpuL	        =	MyEdgeInfo[id+7];
+      int cpuR	        =   MyEdgeInfo[id+8];
+      int globalEdgeID  = 	MyEdgeInfo[id+9];
       // CHECK IF THIS IS A MPI EDGE!
       if ((cpuL != cpuR) && (cpuL!=-1) && (cpuR!=-1)){
         if (MPI.rank == cpuL){
-            MPIEdges(1,cpuR+1) ++;
-            MPIEdges(2,cpuR+1) = cpuR;
+            MPIEdges[cpuR] ++;
+            MPIEdges[NumProcessors+cpuR] = cpuR;
 
         }else{
-            MPIEdges(1,cpuL+1) ++;
-            MPIEdges(2,cpuL+1) = cpuL;
+            MPIEdges[cpuL] ++;
+            MPIEdges[NumProcessors+cpuL] = cpuL;
 
         }
       }else{
-            MPIEdges(1,MPI.rank+1) ++;
-            MPIEdges(2,MPI.rank+1) =MPI.rank;
+            MPIEdges[MPI.rank] ++;
+            MPIEdges[NumProcessors+MPI.rank] =MPI.rank;
       }
   }
 
 
+//  ProcIndex.resize(2,NumProcessors);
+//  ProcIndex(1,1) = 0;
+//  ProcIndex(2,NumProcessors) = NumEdges-1;
+//    for (int i=1;i<NumProcessors;i++){
+//        ProcIndex(2,i) = ProcIndex(1,i) + MPIEdges(1,i)-1;
+//        ProcIndex(1,i+1) = ProcIndex(2,i) + 1;
+//
+//    }
+//
 
 
-  ProcIndex.resize(2,NumProcessors);
-  ProcIndex(1,1) = 0;
-  ProcIndex(2,NumProcessors) = NumEdges-1;
+  //ProcIndex stores the Edge IDs (first and last) for each processors
+  ProcIndex = (int*) calloc(2*NumProcessors,sizeof(int));//.resize(2,NumProcessors);
+  ProcIndex[0] = 0;
+  ProcIndex[2*NumProcessors-1] = NumEdges-1;
+
+  // 0 to NumProcessors-1  for start indices
+  // NumProcessors to 2*NumProcessors-1 for end indices
     for (int i=1;i<NumProcessors;i++){
-        ProcIndex(2,i) = ProcIndex(1,i) + MPIEdges(1,i)-1;
-        ProcIndex(1,i+1) = ProcIndex(2,i) + 1;
+        ProcIndex[NumProcessors + i-1] = ProcIndex[i-1] + MPIEdges[i-1]-1;
+        ProcIndex[i] = ProcIndex[NumProcessors + i-1] + 1;
 
     }
 
 //  for (int i=1;i<=NumProcessors;i++){
-//    cout << "I am Rank "<<MPI.rank <<" and i have "<< MPIEdges(1,i) <<  " MPI Edges with Processor " <<MPIEdges(2,i) <<" storing edges from "<< ProcIndex(1,i) <<" to "<< ProcIndex(2,i) <<"\n";
+//    cout << "I am Rank "<<MPI.rank <<" and i have "<< MPIEdges(1,i) <<  " MPI Edges with Processor " <<MPIEdges(2,i) <<" storing edges from "<< ProcIndex[i-1] <<" to "<< ProcIndex[NumProcessors+i-1] <<"\n";
 //
 //  }
 
-    imatrix EdgeCounterPerProc(NumProcessors);
-    for (int i=1;i<=NumProcessors;i++){
-        EdgeCounterPerProc(i)= 0;
-    }
 
-    imatrix newEdgeIndex(NumEdges);
-    imatrix oldEdgeIndex(NumEdges);
-    imatrix EdgeInfoTMP(10,NumEdges);
-    imatrix MyEdgesLocalToGlobalTMP(NumEdges);
-    fmatrix nx_globalTMP(ngl*NumEdges);
-    fmatrix ny_globalTMP(ngl*NumEdges);
-    fmatrix scal_globalTMP(ngl*NumEdges);
-    imatrix ElementToEdgeTMP(4,NumElements);
-    imatrix ElemEdgeMasterSlaveTMP(4,NumElements);
-    imatrix SwitchLeftRight(NumEdges);
+   int * EdgeInfoTMP= (int*) calloc(10*NumEdges,sizeof(int));
+
+     int *  EdgeCounterPerProc = (int*) calloc(NumProcessors,sizeof(int));
+
+    int *  newEdgeIndex = (int*) calloc(NumEdges,sizeof(int));
+    int *  oldEdgeIndex = (int*) calloc(NumEdges,sizeof(int));
+    int *  MyEdgesLocalToGlobalTMP = (int*) calloc(NumEdges,sizeof(int));
+    int *  SwitchLeftRight = (int*) calloc(NumEdges,sizeof(int));
+
+
+    dfloat * nx_globalTMP = (dfloat*) calloc(ngl*NumEdges,sizeof(dfloat));
+    dfloat * ny_globalTMP = (dfloat*) calloc(ngl*NumEdges,sizeof(dfloat));
+    dfloat * scal_globalTMP = (dfloat*) calloc(ngl*NumEdges,sizeof(dfloat));
+
+
+
+
+
+
 
 
 
     int sortCPU;
     for (int is = 1; is<=NumEdges; is++){
+        int id = (is-1)*10;
     //    cout << "Ele Local: "<< ie+1 << " Ele Global: "  << MeshSplit.ElementLocalToGlobal(ie+1,1) << "\n";
-        int cpuL	        =	MyEdgeInfo(8,is);
-        int cpuR	        =   MyEdgeInfo(9,is);
-        int globalEdgeID  = 	MyEdgeInfo(10,is);
-        SwitchLeftRight(is) = 0;
+        int cpuL	        =	MyEdgeInfo[id+7];
+        int cpuR	        =   MyEdgeInfo[id+8];
+        int globalEdgeID  = 	MyEdgeInfo[id+9];
+        SwitchLeftRight[is-1] = 0;
 
 
 
-        if (cpuL==-1){sortCPU = cpuR+1;SwitchLeftRight(is)=1;}
+        if (cpuL==-1){sortCPU = cpuR+1;SwitchLeftRight[is-1]=1;}
         else if (cpuR==-1){sortCPU = cpuL+1;}
         else if (MPI.rank ==cpuL){sortCPU=cpuR+1;}
-        else { sortCPU=cpuL+1;SwitchLeftRight(is)=1;}       // WE ARE RIGHT CPU! CHANGE THAT!!
+        else { sortCPU=cpuL+1;SwitchLeftRight[is-1]=1;}       // WE ARE RIGHT CPU! CHANGE THAT!!
 
 
 
 
-        newEdgeIndex(is) =ProcIndex(1,sortCPU)+EdgeCounterPerProc(sortCPU)+1;
-        oldEdgeIndex(newEdgeIndex(is))= is;
-        EdgeCounterPerProc(sortCPU)++;
+        newEdgeIndex[is-1] =ProcIndex[sortCPU-1]+EdgeCounterPerProc[sortCPU-1]+1;
+        oldEdgeIndex[newEdgeIndex[is-1]-1]= is;
+        EdgeCounterPerProc[sortCPU-1]++;
     }
 
-
+free(EdgeCounterPerProc);
 
 
 
 int newOrderGlobal[NumEdges];
 for (int iproc = 1; iproc <= NumProcessors;iproc++){
-    int NumberEdges = ProcIndex(2,iproc)-ProcIndex(1,iproc)+1;
+    int NumberEdges = ProcIndex[NumProcessors+iproc-1]-ProcIndex[iproc-1]+1;
 
 
     for (int j=0;j<NumberEdges;j++){
-        newOrderGlobal[ProcIndex(1,iproc)+j] = MyEdgeInfo(10,oldEdgeIndex(ProcIndex(1,iproc)+j+1));
+        int id = (oldEdgeIndex[ProcIndex[iproc-1]+j]-1)*10;
+        newOrderGlobal[ProcIndex[iproc-1]+j] = MyEdgeInfo[id+9];
     }
-    sort(newOrderGlobal + ProcIndex(1,iproc),newOrderGlobal + ProcIndex(1,iproc)+NumberEdges);
+    sort(newOrderGlobal + ProcIndex[iproc-1],newOrderGlobal + ProcIndex[iproc-1]+NumberEdges);
 
 }
 
@@ -786,8 +893,8 @@ for (int iproc = 1; iproc <= NumProcessors;iproc++){
 // RESORT newEdgeIndex array via the found global edge ordering on this processor
 for (int is = 1; is<=NumEdges; is++){
     for (int j =0; j<NumEdges;j++){
-        if (MyEdgeInfo(10,is) == newOrderGlobal[j]){
-            newEdgeIndex(is) = j+1;
+        if (MyEdgeInfo[(is-1)*10+9] == newOrderGlobal[j]){
+            newEdgeIndex[is-1] = j+1;
         }
     }
 }
@@ -798,65 +905,103 @@ for (int is = 1; is<=NumEdges; is++){
 
 
     for (int is = 1; is<=NumEdges; is++){
-      EdgeInfoTMP(1,newEdgeIndex(is)) = MyEdgeInfo(1,is);
-      EdgeInfoTMP(2,newEdgeIndex(is)) = MyEdgeInfo(2,is);
-      if (SwitchLeftRight(is)==0){
-          for (int info = 3; info<=10;info++){
-                EdgeInfoTMP(info,newEdgeIndex(is)) = MyEdgeInfo(info,is);
+      int id = (is-1)*10;
+      int idTMP = (newEdgeIndex[is-1]-1)*10;
+      EdgeInfoTMP[idTMP] = MyEdgeInfo[id];             //(1,newEdgeIndex[is-1])
+      EdgeInfoTMP[idTMP+1] = MyEdgeInfo[id+1];
+      if (SwitchLeftRight[is-1]==0){
+          for (int info = 2; info<10;info++){
+                EdgeInfoTMP[idTMP+info]= MyEdgeInfo[id+info];
             }
 
       }else{
     //            cout << "we switch left right!\n";
-            EdgeInfoTMP(3,newEdgeIndex(is)) = MyEdgeInfo(4,is);
-            EdgeInfoTMP(4,newEdgeIndex(is)) = MyEdgeInfo(3,is);
-            EdgeInfoTMP(5,newEdgeIndex(is)) = MyEdgeInfo(6,is);
-            EdgeInfoTMP(6,newEdgeIndex(is)) = MyEdgeInfo(5,is);
-            EdgeInfoTMP(7,newEdgeIndex(is)) = MyEdgeInfo(7,is);
-            EdgeInfoTMP(8,newEdgeIndex(is)) = MyEdgeInfo(9,is);
-            EdgeInfoTMP(9,newEdgeIndex(is)) = MyEdgeInfo(8,is);
-            EdgeInfoTMP(10,newEdgeIndex(is)) = MyEdgeInfo(10,is);
+
+            EdgeInfoTMP[idTMP+2] = MyEdgeInfo[id+3];
+            EdgeInfoTMP[idTMP+3] = MyEdgeInfo[id+2];
+            EdgeInfoTMP[idTMP+4] = MyEdgeInfo[id+5];
+            EdgeInfoTMP[idTMP+5] = MyEdgeInfo[id+4];
+            EdgeInfoTMP[idTMP+6] = MyEdgeInfo[id+6];
+            EdgeInfoTMP[idTMP+7] = MyEdgeInfo[id+8];
+            EdgeInfoTMP[idTMP+8] = MyEdgeInfo[id+7];
+            EdgeInfoTMP[idTMP+9] = MyEdgeInfo[id+9];
       }
 
-      MyEdgesLocalToGlobalTMP(newEdgeIndex(is)) = EdgeInfoTMP(10,newEdgeIndex(is));
+      MyEdgesLocalToGlobalTMP[newEdgeIndex[is-1]-1]= EdgeInfoTMP[idTMP+9];
 
 
-      for (int i = 1;i<=ngl;i++){
-        if (SwitchLeftRight(is) ==0){
-            nx_globalTMP((newEdgeIndex(is)-1)*ngl+i) = nx_global((is-1)*ngl+i);
-            ny_globalTMP((newEdgeIndex(is)-1)*ngl+i) = ny_global((is-1)*ngl+i);
+      for (int i = 0;i<ngl;i++){
+        int oldID = (is-1)*ngl+i;
+        int newID = (newEdgeIndex[is-1]-1)*ngl+i;
+        if (SwitchLeftRight[is-1] ==0){
+            nx_globalTMP[newID] = nx_global[oldID];
+            ny_globalTMP[newID] = ny_global[oldID];
         }else{
-            nx_globalTMP((newEdgeIndex(is)-1)*ngl+i) = -nx_global((is-1)*ngl+i);
-            ny_globalTMP((newEdgeIndex(is)-1)*ngl+i) = -ny_global((is-1)*ngl+i);
+            nx_globalTMP[newID] = -nx_global[oldID];
+            ny_globalTMP[newID] = -ny_global[oldID];
         }
 
-        scal_globalTMP((newEdgeIndex(is)-1)*ngl+i) = scal_global((is-1)*ngl+i);
+        scal_globalTMP[newID] = scal_global[oldID];
       }
 
   }
 
-  for (int ie=1;ie<=NumElements;ie++){
-    for (int is=1;is<=4;is++){
-        ElementToEdgeTMP(is,ie) = newEdgeIndex(ElementToEdge(is,ie));
-        if (SwitchLeftRight(ElementToEdge(is,ie)) ==0){
-            ElemEdgeMasterSlaveTMP(is,ie) = ElemEdgeMasterSlave(is,ie);
+
+
+  int * MyElementToEdgeTMP        = (int*) calloc(4*NumElements,sizeof(int));  //(4,NumElements);
+  int * MyElemEdgeMasterSlaveTMP  = (int*) calloc(4*NumElements,sizeof(int));
+  for (int ie=0;ie<NumElements;ie++){
+    for (int is=0;is<4;is++){
+        int id = ie*4 + is;
+        MyElementToEdgeTMP[id] = newEdgeIndex[MyElementToEdge[id]-1];
+        if (SwitchLeftRight[MyElementToEdge[id]-1] ==0){
+            MyElemEdgeMasterSlaveTMP[id] = MyElemEdgeMasterSlave[id];
         }else{
-            ElemEdgeMasterSlaveTMP(is,ie) = -ElemEdgeMasterSlave(is,ie);
+            MyElemEdgeMasterSlaveTMP[id] = -MyElemEdgeMasterSlave[id];
+        }
+    }
+  }
+
+    for (int is = 0; is<NumEdges; is++){
+        for (int info = 0; info<10;info++){
+            int id = is*10+info;
+                MyEdgeInfo[id]=EdgeInfoTMP[id];
         }
     }
 
+    for (int is = 0; is<NumEdges; is++){
+        for (int i = 0; i<ngl; i++){
+            int id= is*ngl+i;
+            nx_global[id]=nx_globalTMP[id];
+            ny_global[id]=ny_globalTMP[id];
+            scal_global[id]=scal_globalTMP[id];
+        }
+    }
+
+  for (int ie=0;ie<NumElements;ie++){
+    for (int is=0;is<4;is++){
+        int id = ie*4 + is;
+        MyElementToEdge[id]       = MyElementToEdgeTMP[id];
+        MyElemEdgeMasterSlave[id] = MyElemEdgeMasterSlaveTMP[id];
+    }
   }
 
-    MyEdgeInfo=EdgeInfoTMP;
-    nx_global=nx_globalTMP;
-    ny_global=ny_globalTMP;
-    scal_global=scal_globalTMP;
-    ElementToEdge = ElementToEdgeTMP;
-    ElemEdgeMasterSlave= ElemEdgeMasterSlaveTMP;
-    MyEdgesLocalToGlobal= MyEdgesLocalToGlobalTMP;
+    for (int is = 0; is<NumEdges; is++){
+        MyEdgesLocalToGlobal[is]= MyEdgesLocalToGlobalTMP[is];
+    }
 
 
-
-
+    free(nx_globalTMP);
+    free(ny_globalTMP);
+    free(scal_globalTMP);
+    free(MPIEdges);
+    free(MyElementToEdgeTMP);
+    free(MyElemEdgeMasterSlaveTMP);
+    free(newEdgeIndex);
+    free(oldEdgeIndex);
+    free(MyEdgesLocalToGlobalTMP);
+    free(SwitchLeftRight);
+    free(EdgeInfoTMP);
 
 }
 
@@ -884,41 +1029,4 @@ for (int i=1;i<=ArraySize;i++){
 }
 
 
-
-
-// Find some approximation to each element size
-void MeshPartitioning :: ApproximateElementSizes(const int NumElements,const int ngl2, const dfloat x_phy[], const dfloat y_phy[], dfloat ElementSizes[]){
-
-for (int ie=0;ie<NumElements;ie++){
-//IDEA: find shortest edge and approximate element size as a square with that edge length
-int id = ie*ngl2;
-//Eck1
-dfloat x1 = x_phy[id];
-dfloat y1 = y_phy[id];
-//Eck2
-dfloat x2 = x_phy[id+ngl-1];
-dfloat y2 = y_phy[id+ngl-1];
-//Eck3
-dfloat x3 = x_phy[id+(ngl-1)*ngl+ngl-1];
-dfloat y3 = y_phy[id+(ngl-1)*ngl+ngl-1];
-//Eck3
-dfloat x4 = x_phy[id+(ngl-1)*ngl];
-dfloat y4 = y_phy[id+(ngl-1)*ngl];
-
-
-dfloat LengthEdge1 = sqrt(pow((x2-x1),2) + pow((y2-y1),2));
-dfloat LengthEdge2 = sqrt(pow((x3-x2),2) + pow((y3-y2),2));
-dfloat LengthEdge3 = sqrt(pow((x4-x3),2) + pow((y4-y3),2));
-dfloat LengthEdge4 = sqrt(pow((x4-x1),2) + pow((y4-y1),2));
-
-dfloat MinLength = min(min(LengthEdge1,LengthEdge2),min(LengthEdge3,LengthEdge4));
-
-ElementSizes[ie] = MinLength;//*MinLength;
-
-}
-
-
-
-
-}
 

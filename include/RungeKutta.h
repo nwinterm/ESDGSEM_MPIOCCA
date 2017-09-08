@@ -9,7 +9,9 @@ class RungeKutta
     public:
         RungeKutta(int,bool);
         int rkStages;
-        fmatrix Coeffs;
+        dfloat * CoeffsA;
+        dfloat * CoeffsB;
+        dfloat * CoeffsC;
         virtual ~RungeKutta();
 
 

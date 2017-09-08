@@ -32,7 +32,7 @@ int main(int argc, char *argv[]){
 
 
 MPI_setup MPI(argc, argv);
-
+//MPI_setup MPI;
 
     if(argc<2){
       printf("usage:   ./main [model] \n");
@@ -267,11 +267,7 @@ DGBasis.setNelem(Nelem,Nelem_global);
 NoDofs=ngl2*Nelem*Neq;
 NoSpaceDofs=ngl2*Nelem;
 
-//dfloat *Q_global;
-//dfloat * J_global;
-//dfloat * b_global;
-//dfloat * x_phy_global;
-//dfloat * y_phy_global
+
 
 
 DGMeshPartition.SortMPIEdges(MPI);
@@ -323,9 +319,9 @@ for(int ie=0;ie<Nelem_global;++ie){
             int id = ie*ngl2   +j*ngl+i;
             int Qid =ie*ngl2*Neq + j*ngl+i;
         //        int id = (ieY*NelemX+ieX)*ngl2   +j*ngl+i+1;
-            J_global[id] = 1.0/DGMesh.J_global(id+1,1);
-            x_phy_global[id] = DGMesh.x_global(id+1,1);
-            y_phy_global[id] = DGMesh.y_global(id+1,1);
+            J_global[id] = 1.0/DGMesh.J_global[id];
+            x_phy_global[id] = DGMesh.x_global[id];
+            y_phy_global[id] = DGMesh.y_global[id];
 
 
         }
@@ -395,22 +391,20 @@ if(MPI.rank==0){cout <<"... finished.\n";}
 
 
 if(MPI.rank==0){cout <<"Loading Mesh Data into global arrays on HOST... \n";}
-    for(int is=1;is<=Nfaces;++is){
-            int id = (is-1)*8;
-            EdgeData[id] = DGMeshPartition.MyEdgeInfo(3,is);  //left element
-            EdgeData[id+1] = DGMeshPartition.MyEdgeInfo(4,is);  //right element
-            EdgeData[id+2] = DGMeshPartition.MyEdgeInfo(5,is);  //side of left element
-            EdgeData[id+3] = DGMeshPartition.MyEdgeInfo(6,is);  //side of right element
-            EdgeData[id+4] = DGMeshPartition.MyEdgeInfo(7,is);  //is order reversed? 1=no, 0=yes
-            EdgeData[id+5] = DGMeshPartition.MyEdgeInfo(8,is);  //    procID of left Element
-            EdgeData[id+6] = DGMeshPartition.MyEdgeInfo(9,is);  //    procID of right Element
-            EdgeData[id+7] = DGMeshPartition.MyEdgeInfo(10,is);  //    global Side ID
+    for(int is=0;is<Nfaces;++is){
+            for (int info=0;info<8;info++){
+                int id = is*8 + info;
+                int id2 = is*10 + info;
+                EdgeData[id] = DGMeshPartition.MyEdgeInfo[id2+2];  //left element
+
+            }
+
       }
     for(int ie=1;ie<=Nelem;++ie){
             int id = (ie-1)*4;
             int idFace;
             for (int is=0;is<4;is++){
-                int ifa  = DGMeshPartition.ElementToEdge(is+1,ie);
+                int ifa  = DGMeshPartition.MyElementToEdge[id+is];//(is+1,ie);
                 idFace = (ifa-1)*8;
                 if ((EdgeData[idFace+5] == MPI.rank) && (EdgeData[idFace]==ie-1)){
                         //this is the left element to this edge!
@@ -427,32 +421,155 @@ if(MPI.rank==0){cout <<"Loading Mesh Data into global arrays on HOST... \n";}
       for(int j=0;j<ngl;++j){
         for(int i=0;i<ngl;++i){
             int id = ie*ngl2   +j*ngl+i;
-            x_phy[id] = DGMeshPartition.x_global(id+1,1);
-            y_phy[id] = DGMeshPartition.y_global(id+1,1);
-            x_xi[id] = DGMeshPartition.xXi_global(id+1,1);
-            y_xi[id] = DGMeshPartition.yXi_global(id+1,1);
-            x_eta[id] = DGMeshPartition.xEta_global(id+1,1);
-            y_eta[id] = DGMeshPartition.yEta_global(id+1,1);
-            J[id] = 1.0/DGMeshPartition.J_global(id+1,1);
+            x_phy[id] = DGMeshPartition.x_global[id];
+            y_phy[id] = DGMeshPartition.y_global[id];
+            x_xi[id] = DGMeshPartition.xXi_global[id];
+            y_xi[id] = DGMeshPartition.yXi_global[id];
+            x_eta[id] = DGMeshPartition.xEta_global[id];
+            y_eta[id] = DGMeshPartition.yEta_global[id];
+            J[id] = 1.0/DGMeshPartition.J_global[id];
         }
      }
     }
     for(int is=0;is<Nfaces;++is){
             for (int i=0;i<ngl;i++){
                 int id = is*ngl+i;
-                normalsX[id]=DGMeshPartition.nx_global(id+1,1);
-                normalsY[id]=DGMeshPartition.ny_global(id+1,1);
-                Scal[id] = DGMeshPartition.scal_global(id+1,1);
+                normalsX[id]=DGMeshPartition.nx_global[id];
+                normalsY[id]=DGMeshPartition.ny_global[id];
+                Scal[id] = DGMeshPartition.scal_global[id];
             }
      }
+//    for(int ie=0;ie<Nfaces;++ie){
+//    cout <<"\nELE: " << ie <<"\n";
+//        for(int i=0;i<ngl;++i){
+//            int id = ie*ngl  +i ;
+//            cout << normalsX[id] << " ";
+//      }
+//       cout  <<"\n";
+//    }
+
 
 if(MPI.rank==0){cout <<"          ...finished.\n";}
 
 
     DGBasis.calcElementSizes(J,ElementSizes,&minEleSize);
+    if(MPI.rank==0){cout <<" Element Sizes calculated... \n";}
 //    cout << "RANK: " << MPI.rank << " now entering GetGlobalMinEleSize \n" ;
     GetGlobalMinEleSize(MPI,  DGMeshPartition,minEleSize, &globalMinEleSize);
+    if(MPI.rank==0){cout <<" ... and distributed \n";}
 //    cout << "RANK: " << MPI.rank << " local min ele Size: "<< minEleSize << " global min Ele Size: " << globalMinEleSize<< "\n";
+
+
+
+
+dfloat Dmat[ngl2];
+dfloat Dmat0[ngl2];
+dfloat Dhat[ngl2];
+dfloat VdmInv[ngl2];
+//dfloat SubCellMat[ngl2];
+dfloat GLw[ngl];
+for (int i=0; i<ngl; i++){
+    for (int l=0; l<ngl; l++){
+        int Did =   i*ngl + l;
+            Dmat[Did] =DGBasis.D[Did];
+            Dmat0[Did] =DGBasis.D0[Did];;
+            Dhat[Did] = DGBasis.Dhat[Did];
+            VdmInv[Did] = DGBasis.VdmInv[Did];
+//            SubCellMat[Did] = DGBasis.SubCellMat(i+1,l+1);
+    }
+    GLw[i] = DGBasis.w_GL[i];
+}
+
+
+
+//initialise time integrator
+RungeKutta RK(rkorder,rkSSP);
+
+//INITIALIZE SOLUTION
+InitB(1,DGMeshPartition,Testcase,Nelem,ngl,ngl2,x_phy,y_phy,b);
+
+CalcBDerivatives(Nelem,ngl,ngl2,g_const,x_phy,y_phy,b,Dmat0,y_eta,y_xi,x_eta,x_xi,Bx,By,J);
+
+InitQ(1,DGMeshPartition,Testcase,Nelem,ngl,ngl2,x_phy,y_phy,q,0.0,b, g_const);
+
+
+//dfloat * q_modal = (dfloat*) malloc(NoDofs*sizeof(dfloat));
+//dfloat * q_exakt = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
+//DGBasis.ConvertToModal(q, q_modal);
+//       cout <<"\n Modal Coefficients: \n";
+//for (int ie=0;ie<Nelem;ie++){
+//        cout <<"Ele: " << ie <<"\n";
+//    for(int j=0;j<ngl;++j){
+//        for(int i=0;i<ngl;++i){
+//            int id = ie*ngl2*Neq +  j*ngl+i;
+//
+//           cout <<q_modal[id]<<"  ";
+//
+//      }
+//        cout <<"\n";
+//    }
+//
+//
+//}
+//
+//
+//DGBasis.EvaluteModalPolynomial(q_modal, q_exakt);
+//       cout <<"\n q_init : \n";
+//for (int ie=0;ie<1;ie++){
+//        cout <<"Ele: " << ie <<"\n";
+//    for(int j=0;j<ngl;++j){
+//        for(int i=0;i<ngl;++i){
+//            int id = ie*ngl2*Neq +  j*ngl+i;
+//
+//           cout <<q[id]<<"  ";
+//      }
+//        cout <<"\n";
+//    }
+//
+//
+//}
+//
+//       cout <<"\n q_exakt : \n";
+//for (int ie=0;ie<1;ie++){
+//        cout <<"Ele: " << ie <<"\n";
+//    for(int j=0;j<ngl;++j){
+//        for(int i=0;i<ngl;++i){
+//            int id = ie*ngl2*Neq +  j*ngl+i;
+//
+//           cout <<q_exakt[id]<<"  ";
+//      }
+//        cout <<"\n";
+//    }
+//
+//
+//}
+
+
+//
+//    dfloat L2modalVnodal[Neq];
+//    dfloat LinfmodalVnodal[Neq];
+//    for(int ik=0;ik<Neq;ik++){
+//        L2modalVnodal[ik]=0.0;
+//        LinfmodalVnodal[ik]=0.0;
+//    }
+//    DGBasis.L2Norm(q,q_exakt,J,L2modalVnodal);
+//    DGBasis.LinfNorm(q,q_exakt,LinfmodalVnodal);
+//    for(int ik=0;ik<Neq;ik++){
+//        L2modalVnodal[ik]= sqrt(L2modalVnodal[ik]);
+//    }
+//
+//    for(int ik=0;ik<Neq;ik++){
+//        cout <<"L2modalVnodal["<<ik<<"] is: " <<  L2modalVnodal[ik] <<"\n";
+//
+//    }
+//    for(int ik=0;ik<Neq;ik++){
+//        cout <<"LinfmodalVnodal["<<ik<<"] is: " <<  LinfmodalVnodal[ik] <<"\n";
+//
+//    }
+//
+//
+//free(q_modal);
+
 if(MPI.rank==0){cout <<"Allocating Memory on the device...      ";}
 
 
@@ -557,135 +674,11 @@ info.addDefine("dfloat", dfloatString);
 info.addDefine("dfloat4", dfloat4String);
 info.addDefine("ES", ES);
 info.addDefine("Testcase", Testcase);
-info.addDefine("geomFace", 1.0/DGBasis.w_GL(1));
+info.addDefine("geomFace", 1.0/DGBasis.w_GL[0]);
 info.addDefine("eps0",epsilon_0);
 info.addDefine("sigmaMax",sigma_max);
 info.addDefine("sigmaMin",sigma_min);
 info.addDefine("PosPresTOL",pow(10.0,-3));
-
-
-
-dfloat Dmat[ngl2];
-dfloat Dmat0[ngl2];
-dfloat Dhat[ngl2];
-dfloat VdmInv[ngl2];
-dfloat SubCellMat[ngl2];
-dfloat GLw[ngl];
-for (int i=0; i<ngl; i++){
-    for (int l=0; l<ngl; l++){
-        int Did =   i*ngl + l;
-            Dmat[Did] =DGBasis.D(i+1,l+1);
-            Dmat0[Did] =DGBasis.D0(i+1,l+1);
-            Dhat[Did] = DGBasis.Dhat(i+1,l+1);
-            VdmInv[Did] = DGBasis.VdmInv(i+1,l+1);
-            SubCellMat[Did] = DGBasis.SubCellMat(i+1,l+1);
-    }
-    GLw[i] = DGBasis.w_GL(i+1);
-}
-for(int ie=0;ie<Nelem;++ie){
-  for(int j=0;j<ngl;++j){
-    for(int i=0;i<ngl;++i){
-    int id = ie*ngl2*Neq   +j*ngl+i;
-        gRK[id] = 0.0;
-        gRK[id+ngl2] = 0.0;
-        gRK[id+ngl2+ngl2] = 0.0;
-        Qt[id] = 0.0;
-        Qt[id+ngl2] = 0.0;
-        Qt[id+ngl2+ngl2] = 0.0;
-    }
-  }
-}
-
-
-//initialise time integrator
-RungeKutta RK(rkorder,rkSSP);
-
-//INITIALIZE SOLUTION
-InitB(1,DGMeshPartition,Testcase,Nelem,ngl,ngl2,x_phy,y_phy,b);
-
-CalcBDerivatives(Nelem,ngl,ngl2,g_const,x_phy,y_phy,b,Dmat0,y_eta,y_xi,x_eta,x_xi,Bx,By,J);
-
-InitQ(1,DGMeshPartition,Testcase,Nelem,ngl,ngl2,x_phy,y_phy,q,0.0,b, g_const);
-
-
-//dfloat * q_modal = (dfloat*) malloc(NoDofs*sizeof(dfloat));
-//dfloat * q_exakt = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
-//DGBasis.ConvertToModal(q, q_modal);
-//       cout <<"\n Modal Coefficients: \n";
-//for (int ie=0;ie<Nelem;ie++){
-//        cout <<"Ele: " << ie <<"\n";
-//    for(int j=0;j<ngl;++j){
-//        for(int i=0;i<ngl;++i){
-//            int id = ie*ngl2*Neq +  j*ngl+i;
-//
-//           cout <<q_modal[id]<<"  ";
-//
-//      }
-//        cout <<"\n";
-//    }
-//
-//
-//}
-//
-//
-//DGBasis.EvaluteModalPolynomial(q_modal, q_exakt);
-//       cout <<"\n q_init : \n";
-//for (int ie=0;ie<1;ie++){
-//        cout <<"Ele: " << ie <<"\n";
-//    for(int j=0;j<ngl;++j){
-//        for(int i=0;i<ngl;++i){
-//            int id = ie*ngl2*Neq +  j*ngl+i;
-//
-//           cout <<q[id]<<"  ";
-//      }
-//        cout <<"\n";
-//    }
-//
-//
-//}
-//
-//       cout <<"\n q_exakt : \n";
-//for (int ie=0;ie<1;ie++){
-//        cout <<"Ele: " << ie <<"\n";
-//    for(int j=0;j<ngl;++j){
-//        for(int i=0;i<ngl;++i){
-//            int id = ie*ngl2*Neq +  j*ngl+i;
-//
-//           cout <<q_exakt[id]<<"  ";
-//      }
-//        cout <<"\n";
-//    }
-//
-//
-//}
-
-
-//
-//    dfloat L2modalVnodal[Neq];
-//    dfloat LinfmodalVnodal[Neq];
-//    for(int ik=0;ik<Neq;ik++){
-//        L2modalVnodal[ik]=0.0;
-//        LinfmodalVnodal[ik]=0.0;
-//    }
-//    DGBasis.L2Norm(q,q_exakt,J,L2modalVnodal);
-//    DGBasis.LinfNorm(q,q_exakt,LinfmodalVnodal);
-//    for(int ik=0;ik<Neq;ik++){
-//        L2modalVnodal[ik]= sqrt(L2modalVnodal[ik]);
-//    }
-//
-//    for(int ik=0;ik<Neq;ik++){
-//        cout <<"L2modalVnodal["<<ik<<"] is: " <<  L2modalVnodal[ik] <<"\n";
-//
-//    }
-//    for(int ik=0;ik<Neq;ik++){
-//        cout <<"LinfmodalVnodal["<<ik<<"] is: " <<  LinfmodalVnodal[ik] <<"\n";
-//
-//    }
-//
-//
-//free(q_modal);
-
-
 
 //copy all permanent data onto the device
 if(MPI.rank==0){cout <<"Copy Necessary Data onto Device...";}
@@ -962,8 +955,8 @@ dfloat globalLambdaMax=0.0;
 dfloat maxViscPara=0.0;
 dfloat dt_i, dt_v;
 dfloat LocalLambdas[DGMeshPartition.NumElements];
-    bool isnaned=false;
-    int NaNid;
+//    bool isnaned=false;
+//    int NaNid;
 while (t<T){
 //        reset Qt
 //device.finish();
@@ -998,6 +991,7 @@ if ( ArtificialViscosity==1){
     dt = min(dt_i,dt_v);
 }else{
     dt=dt_i;
+    dt_v=0.0;
 }
 
 
@@ -1017,7 +1011,7 @@ if ( ArtificialViscosity==1){
 
 
     dfloat rkD=0.0;
-    for (int rkstage=1;rkstage<=RK.rkStages;rkstage++){
+    for (int rkstage=0;rkstage<RK.rkStages;rkstage++){
 
 //    o_q.copyTo(q);
 //    DGBasis.CheckWhereItNaNed(q,&isnaned,&NaNid);
@@ -1028,19 +1022,19 @@ if ( ArtificialViscosity==1){
 //    }
 
 
-    dfloat rkA=RK.Coeffs(1,rkstage);
-    dfloat rkB=RK.Coeffs(2,rkstage);
-    dfloat rkC=RK.Coeffs(3,rkstage);
+    dfloat rkA=RK.CoeffsA[rkstage];
+    dfloat rkB=RK.CoeffsB[rkstage];
+    dfloat rkC=RK.CoeffsC[rkstage];
 
     if (rkSSP){
         switch(rkstage){
-        case 1:
+        case 0:
             rkD=0.0;
             break;
-        case 2:
+        case 1:
             rkD=1.0;
             break;
-        case 3:
+        case 2:
             rkD=1.0/2.0;
             break;
         }
@@ -1249,25 +1243,25 @@ if(PositivityPreserving==1){
 
 
 
-    if (not(isnaned)){
-        o_q.copyTo(q);
-        DGBasis.CheckWhereItNaNed(q,&isnaned,&NaNid);
-        if (isnaned){
-            cout << "The Code has naned !\n";
-                    o_q.copyTo(q);
-
-
-            for(int i=0;i<ngl;i++){
-                for(int j=0;j<ngl;j++){
-                        int id = NaNid*Neq*ngl2 + j*ngl+i;
-                        cout << "h: " << q[id] << "\n";
-                        cout << "hu: " << q[id+ngl2] << "\n";
-                        cout << "hv: " << q[id+ngl2+ngl2] << "\n";
-                }
-            }
-        }
-    }
-
+//    if (not(isnaned)){
+//        o_q.copyTo(q);
+//        DGBasis.CheckWhereItNaNed(q,&isnaned,&NaNid);
+//        if (isnaned){
+//            cout << "The Code has naned !\n";
+//                    o_q.copyTo(q);
+//
+//
+//            for(int i=0;i<ngl;i++){
+//                for(int j=0;j<ngl;j++){
+//                        int id = NaNid*Neq*ngl2 + j*ngl+i;
+//                        cout << "h: " << q[id] << "\n";
+//                        cout << "hu: " << q[id+ngl2] << "\n";
+//                        cout << "hv: " << q[id+ngl2+ngl2] << "\n";
+//                }
+//            }
+//        }
+//    }
+//
 
 
 

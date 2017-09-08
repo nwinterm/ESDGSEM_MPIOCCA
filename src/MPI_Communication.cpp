@@ -16,15 +16,15 @@
 
 
     if (MPI.rank +1 != i ) {
-        int startIndex = MeshSplit.ProcIndex(1,i);
-        int endIndex = MeshSplit.ProcIndex(2,i);
+        int startIndex = MeshSplit.ProcIndex[i-1];
+        int endIndex = MeshSplit.ProcIndex[MeshSplit.NumProcessors+i-1];
         int EdgesToSend = endIndex-startIndex+1;
         int cpuR = i-1;
 
         if (EdgesToSend > 0){
             int id = (startIndex) * ngl*Neq;
-            int tagSend = MeshSplit.CommTags(MPI.rank+1,cpuR+1);
-            int tagRecv = MeshSplit.CommTags(cpuR+1,MPI.rank+1);
+            int tagSend = MeshSplit.CommTags[MPI.rank*MeshSplit.NumProcessors + cpuR];//(MPI.rank+1,cpuR+1);
+            int tagRecv = MeshSplit.CommTags[cpuR*MeshSplit.NumProcessors + MPI.rank];//(cpuR+1,MPI.rank+1);
 //            int PackSizeQ = EdgesToSend*ngl*Neq;
 //            int PackSizeB = EdgesToSend*ngl;
 //            dfloat * q_Recv = (dfloat*) calloc(PackSizeQ,sizeof(dfloat));
@@ -73,16 +73,18 @@
 
 
     if (MPI.rank +1 != i ) {
-        int startIndex = MeshSplit.ProcIndex(1,i);
-        int endIndex = MeshSplit.ProcIndex(2,i);
+        int startIndex = MeshSplit.ProcIndex[i-1];
+        int endIndex = MeshSplit.ProcIndex[MeshSplit.NumProcessors+i-1];
         int EdgesToSend = endIndex-startIndex+1;
         int cpuR = i-1;
 
         if (EdgesToSend > 0){
 
             int idx = (startIndex) * ngl;
-            int tagSend = MeshSplit.CommTags(MPI.rank+1,cpuR+1);
-            int tagRecv = MeshSplit.CommTags(cpuR+1,MPI.rank+1);
+            int tagSend = MeshSplit.CommTags[MPI.rank*MeshSplit.NumProcessors + cpuR];//(MPI.rank+1,cpuR+1);
+            int tagRecv = MeshSplit.CommTags[cpuR*MeshSplit.NumProcessors + MPI.rank];//(cpuR+1,MPI.rank+1);
+//            int tagSend = MeshSplit.CommTags(MPI.rank+1,cpuR+1);
+//            int tagRecv = MeshSplit.CommTags(cpuR+1,MPI.rank+1);
 //            int PackSizeQ = EdgesToSend*ngl*Neq;
 //            int PackSizeB = EdgesToSend*ngl;
 //            dfloat * q_Recv = (dfloat*) calloc(PackSizeQ,sizeof(dfloat));
@@ -134,16 +136,18 @@
 
 
     if (MPI.rank +1 != i ) {
-        int startIndex = MeshSplit.ProcIndex(1,i);
-        int endIndex = MeshSplit.ProcIndex(2,i);
+        int startIndex = MeshSplit.ProcIndex[i-1];
+        int endIndex = MeshSplit.ProcIndex[MeshSplit.NumProcessors+i-1];
         int EdgesToSend = endIndex-startIndex+1;
         int cpuR = i-1;
 
         if (EdgesToSend > 0){
             int id = (startIndex) * ngl*Neq;
             int idx = (startIndex) * ngl;
-            int tagSend = MeshSplit.CommTags(MPI.rank+1,cpuR+1);
-            int tagRecv = MeshSplit.CommTags(cpuR+1,MPI.rank+1);
+            int tagSend = MeshSplit.CommTags[MPI.rank*MeshSplit.NumProcessors + cpuR];//(MPI.rank+1,cpuR+1);
+            int tagRecv = MeshSplit.CommTags[cpuR*MeshSplit.NumProcessors + MPI.rank];//(cpuR+1,MPI.rank+1);
+//            int tagSend = MeshSplit.CommTags(MPI.rank+1,cpuR+1);
+//            int tagRecv = MeshSplit.CommTags(cpuR+1,MPI.rank+1);
 
 
             MPI_Isend(&qGradXL[id],EdgesToSend*ngl*Neq,MPI_DOUBLE,cpuR,  tagSend   ,MPI_COMM_WORLD,&MPI.Send_qX_reqs[cpuR]);
@@ -176,9 +180,9 @@
 //
 //    cout << "Num Elements: " << MeshSplit.ElementsPerProc(1,1) << "\n";
 
-  for (int ie = 0; ie<MeshSplit.ElementsPerProc(1,1); ie++){
+  for (int ie = 0; ie<MeshSplit.ElementsPerProc[0]; ie++){
 //    cout << "Ele Local: "<< ie+1 << " Ele Global: "  << MeshSplit.ElementLocalToGlobal(ie+1,1) << "\n";
-    int eleID = MeshSplit.ElementLocalToGlobal(ie+1,1)-1;
+    int eleID = MeshSplit.ElementLocalToGlobal[ie]-1;
     for (int i = 0; i<ngl;i++){
         for (int j=0;j<ngl;j++){
             int Gid = eleID*ngl2*Neq   +j*ngl+i;
@@ -195,7 +199,7 @@
 
   for (int iproc = 1; iproc <MeshSplit.NumProcessors;iproc++){
 
-    int varDim = ngl2*Neq * MeshSplit.ElementsPerProc(iproc+1,1);
+    int varDim = ngl2*Neq * MeshSplit.ElementsPerProc[iproc];
 
     dfloat * q_tmp = (dfloat*) calloc(varDim,sizeof(dfloat));
 //    dfloat q_tmp[varDim];
@@ -205,9 +209,9 @@
 
 
 
-      for (int ie = 0; ie<MeshSplit.ElementsPerProc(iproc+1,1); ie++){
+      for (int ie = 0; ie<MeshSplit.ElementsPerProc[iproc]; ie++){
 
-        int eleID = MeshSplit.ElementLocalToGlobal(ie+1,iproc+1)-1;
+        int eleID = MeshSplit.ElementLocalToGlobal[iproc*MeshSplit.ElementsPerProc[0]+ie]-1;
         for (int i = 0; i<ngl;i++){
             for (int j=0;j<ngl;j++){
                 int Gid = eleID*ngl2*Neq   +j*ngl+i;
@@ -375,9 +379,9 @@
 //
 //    cout << "Num Elements: " << MeshSplit.ElementsPerProc(1,1) << "\n";
 
-  for (int ie = 0; ie<MeshSplit.ElementsPerProc(1,1); ie++){
+  for (int ie = 0; ie<MeshSplit.ElementsPerProc[0]; ie++){
 //    cout << "Ele Local: "<< ie+1 << " Ele Global: "  << MeshSplit.ElementLocalToGlobal(ie+1,1) << "\n";
-    int eleID = MeshSplit.ElementLocalToGlobal(ie+1,1)-1;
+    int eleID = MeshSplit.ElementLocalToGlobal[ie]-1;
             ViscPara_global[eleID] = ViscPara[ie];
   }
 
@@ -385,7 +389,7 @@
 
   for (int iproc = 1; iproc <MeshSplit.NumProcessors;iproc++){
 
-    int varDim = MeshSplit.ElementsPerProc(iproc+1,1);
+    int varDim = MeshSplit.ElementsPerProc[iproc];
 
     dfloat * q_tmp = (dfloat*) calloc(varDim,sizeof(dfloat));
 //    dfloat q_tmp[varDim];
@@ -395,9 +399,9 @@
 
 
 
-      for (int ie = 0; ie<MeshSplit.ElementsPerProc(iproc+1,1); ie++){
+      for (int ie = 0; ie<MeshSplit.ElementsPerProc[iproc]; ie++){
 
-        int eleID = MeshSplit.ElementLocalToGlobal(ie+1,iproc+1)-1;
+        int eleID = MeshSplit.ElementLocalToGlobal[iproc*MeshSplit.ElementsPerProc[0]+ie]-1;
 
                 ViscPara_global[eleID] = q_tmp[ie];
 
@@ -441,9 +445,9 @@
 //
 //    cout << "Num Elements: " << MeshSplit.ElementsPerProc(1,1) << "\n";
 
-  for (int ie = 0; ie<MeshSplit.ElementsPerProc(1,1); ie++){
+  for (int ie = 0; ie<MeshSplit.ElementsPerProc[0]; ie++){
 //    cout << "Ele Local: "<< ie+1 << " Ele Global: "  << MeshSplit.ElementLocalToGlobal(ie+1,1) << "\n";
-    int eleID = MeshSplit.ElementLocalToGlobal(ie+1,1)-1;
+    int eleID = MeshSplit.ElementLocalToGlobal[ie]-1;
     for (int i = 0; i<ngl;i++){
         for (int j=0;j<ngl;j++){
             int Gid = eleID*ngl2*Neq   +j*ngl+i;
@@ -465,7 +469,7 @@
 
   for (int iproc = 1; iproc <MeshSplit.NumProcessors;iproc++){
 
-    int varDim = ngl2*Neq * MeshSplit.ElementsPerProc(iproc+1,1);
+    int varDim = ngl2*Neq * MeshSplit.ElementsPerProc[iproc];
 
     dfloat * qx_tmp = (dfloat*) calloc(varDim,sizeof(dfloat));
     dfloat * qy_tmp = (dfloat*) calloc(varDim,sizeof(dfloat));
@@ -477,9 +481,9 @@
     MPI_Wait(&MPI.reqs[iproc], MPI.stats);
 
 
-      for (int ie = 0; ie<MeshSplit.ElementsPerProc(iproc+1,1); ie++){
+      for (int ie = 0; ie<MeshSplit.ElementsPerProc[iproc]; ie++){
 
-        int eleID = MeshSplit.ElementLocalToGlobal(ie+1,iproc+1)-1;
+        int eleID = MeshSplit.ElementLocalToGlobal[iproc*MeshSplit.ElementsPerProc[0]+ie]-1;
         for (int i = 0; i<ngl;i++){
             for (int j=0;j<ngl;j++){
                 int Gid = eleID*ngl2*Neq   +j*ngl+i;

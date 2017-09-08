@@ -25,81 +25,97 @@ ngl2=ngl*ngl;
 
 //const int N=5;
 
-D.resize(ngl,ngl);
-Dhat.resize(ngl,ngl);
-D0.resize(ngl,ngl);
-x_GL.resize(ngl);
-w_GL.resize(ngl);
-x_Gauss.resize(ngl);
-w_Gauss.resize(ngl);
-w_bary.resize(ngl);
-VdmInv.resize(ngl,ngl);
-Vdm.resize(ngl,ngl);
-L_at_Gauss.resize(ngl,ngl);
-//double x_GL[N+1],w_GL[N+1],w_bary[N+1];
+//D.resize(ngl,ngl);
+D = (dfloat*) calloc(ngl2,sizeof(dfloat));
+Dhat = (dfloat*) calloc(ngl2,sizeof(dfloat));
+D0 = (dfloat*) calloc(ngl2,sizeof(dfloat));
+//Dhat.resize(ngl,ngl);
+//D0.resize(ngl,ngl);
+
+x_GL= (dfloat*) calloc(ngl,sizeof(dfloat));
+w_GL= (dfloat*) calloc(ngl,sizeof(dfloat));
+x_Gauss= (dfloat*) calloc(ngl,sizeof(dfloat));
+w_Gauss= (dfloat*) calloc(ngl,sizeof(dfloat));
+w_bary= (dfloat*) calloc(ngl,sizeof(dfloat));
+VdmInv= (dfloat*) calloc(ngl2,sizeof(dfloat));
+Vdm= (dfloat*) calloc(ngl2,sizeof(dfloat));
+//L_at_Gauss = (dfloat*) calloc(ngl2,sizeof(dfloat));
 
 
 
-for(int i = 1; i <= ngl; ++i){
-x_GL(i)=0.;
-w_GL(i)=0.;
-x_Gauss(i)=0.0;
-w_Gauss(i)=0.0;
-w_bary(i)=0.;
-}
+
 
 LGLNodesAndWeights();
 GaussNodesAndWeights();
 
 //cout << "LGL Nodes: ";
-//for(int i = 1; i <= ngl; ++i){
-//cout << " " << x_GL(i) << " " ;
+//for(int i = 0; i < ngl; ++i){
+//cout << " " << x_GL[i] << " " ;
 //}
 //cout << " \n";
 //
 //cout << "LGL Weights: ";
-//for(int i = 1; i <= ngl; ++i){
-//cout << " " << w_GL(i) << " " ;
+//for(int i = 0; i < ngl; ++i){
+//cout << " " << w_GL[i] << " " ;
+//}
+//cout << " \n";
+//
+//cout << "LG Nodes: ";
+//for(int i = 0; i < ngl; ++i){
+//cout << " " << x_Gauss[i] << " " ;
+//}
+//cout << " \n";
+//
+//cout << "LG Weights: ";
+//for(int i = 0; i < ngl; ++i){
+//cout << " " << w_Gauss[i] << " " ;
 //}
 //cout << " \n";
 
+
+
 BarycentricWeights();
+
 
 PolynomialDerivativeMatrix();
 //include surface terms for strong form DG
-for (int i=1;i<=ngl;++i){
-    for(int j=1;j<=ngl;++j){
-        D0(i,j)=D(i,j);
+for (int i=0;i<ngl;++i){
+    for(int j=0;j<ngl;++j){
+        D0[i*ngl+j]=D[i*ngl+j];
         if (FluxDifferencing){
-            D(i,j)=2*D(i,j);
-        }else{
-            D(i,j)=D(i,j);
+            D[i*ngl+j]=2*D[i*ngl+j];
         }
 
     }
 }
 // Dhat = - M^(-1) * D0^T * M
-for (int i=1;i<=ngl;++i){
-    for(int j=1;j<=ngl;++j){
-        Dhat(i,j) = - w_GL(j)*D0(j,i)/w_GL(i);
+for (int i=0;i<ngl;++i){
+    for(int j=0;j<ngl;++j){
+        Dhat[i*ngl+j] = - w_GL[j]*D0[j*ngl+i]/w_GL[i];
     }
 }
 
-D(1,1) = D(1,1) + 1.0/w_GL(1);
-D(ngl,ngl) = D(ngl,ngl) - 1.0/w_GL(ngl);
-
+D[0] = D[0] + 1.0/w_GL[0];
+D[ngl2-1] = D[ngl2-1] - 1.0/w_GL[ngl-1];
+//cout << "D: ";
+//for(int i = 0; i < ngl; ++i){
+//        for(int j = 0; j < ngl; ++j){
+//cout << " " << D[i*ngl+j] << " " ;
+//}
+//cout << " \n";
+//}
 
 ModalTrafoMatrix();
-SubCellAverageMatrix();
+//SubCellAverageMatrix();
 
-dfloat InterpolLagrange[N+1];
-for (int i=1;i<=ngl;++i){
-    LagrangeInterpolatingPolynomial(x_Gauss(i),N,x_GL,w_bary,InterpolLagrange);
-    for (int j=1;j<=ngl;j++){
-        L_at_Gauss(i,j) = InterpolLagrange[j-1];
-//        cout << "L_at_Gauss(i,j) " << L_at_Gauss(i,j) << "\n" ;
-    }
-}
+//dfloat InterpolLagrange[N+1];
+//for (int i=0;i<ngl;++i){
+//    LagrangeInterpolatingPolynomial(x_Gauss[i],N,x_GL,w_bary,InterpolLagrange);
+//    for (int j=0;j<ngl;j++){
+//        L_at_Gauss[i*ngl+j] = InterpolLagrange[j];
+////        cout << "L_at_Gauss(i,j) " << L_at_Gauss[i*ngl+j] << "\n" ;
+//    }
+//}
 
 
 //L_at_Gauss ::  (i,j) = j-tes LagrangePolynom ausgewertet an Gauss Punkt i!!
@@ -140,13 +156,14 @@ for (int ie=0;ie<Nelem;ie++){
             int id = ie*ngl2*Neq   +j*ngl+i;
             for (int l=0; l<ngl; l++){
                 int idLoc = ie*ngl2*Neq   +j*ngl+l;
+                int il = i*ngl+l;
 //                Qtmp[id] += VdmInv(l+1,i+1) * Q_nodal[idLoc];
 //                Qtmp[id+ngl2] += VdmInv(l+1,i+1) * Q_nodal[idLoc+ngl2];
 //                Qtmp[id+ngl2+ngl2] += VdmInv(l+1,i+1) * Q_nodal[idLoc+ngl2+ngl2];
 
-                Qtmp[id] += VdmInv(i+1,l+1) * Q_nodal[idLoc];
-                Qtmp[id+ngl2] += VdmInv(i+1,l+1) * Q_nodal[idLoc+ngl2];
-                Qtmp[id+ngl2+ngl2] += VdmInv(i+1,l+1) * Q_nodal[idLoc+ngl2+ngl2];
+                Qtmp[id] += VdmInv[il] * Q_nodal[idLoc];
+                Qtmp[id+ngl2] += VdmInv[il] * Q_nodal[idLoc+ngl2];
+                Qtmp[id+ngl2+ngl2] += VdmInv[il] * Q_nodal[idLoc+ngl2+ngl2];
             }
 
         }
@@ -160,13 +177,14 @@ for (int ie=0;ie<Nelem;ie++){
             int id = ie*ngl2*Neq   +j*ngl+i;
             for (int l=0; l<ngl; l++){
                 int idLoc = ie*ngl2*Neq   +l*ngl+i;
+                int jl = j*ngl+l;
 //                Q_modal[id]+= Qtmp[idLoc] * VdmInv(l+1,j+1) ;
 //                Q_modal[id+ngl2]+= Qtmp[idLoc+ngl2] * VdmInv(l+1,j+1) ;
 //                Q_modal[id+ngl2+ngl2]+= Qtmp[idLoc+ngl2+ngl2] * VdmInv(l+1,j+1) ;
 
-                Q_modal[id]+= Qtmp[idLoc] * VdmInv(j+1,l+1) ;
-                Q_modal[id+ngl2]+= Qtmp[idLoc+ngl2] * VdmInv(j+1,l+1) ;
-                Q_modal[id+ngl2+ngl2]+= Qtmp[idLoc+ngl2+ngl2] * VdmInv(j+1,l+1) ;
+                Q_modal[id]+= Qtmp[idLoc] * VdmInv[jl] ;
+                Q_modal[id+ngl2]+= Qtmp[idLoc+ngl2] * VdmInv[jl] ;
+                Q_modal[id+ngl2+ngl2]+= Qtmp[idLoc+ngl2+ngl2] * VdmInv[jl] ;
             }
 
         }
@@ -215,15 +233,15 @@ for (int ie=0;ie<Nelem;ie++){
             for (int l=0; l<ngl; ++l){  //loop thru Xi
                 int idLoc = ie*ngl2*Neq   +j*ngl+l;
 
-
+                int il = i*ngl+l;
 
 //                Qtmp[id]+= Vdm(l+1,i+1) * Q_modal[idLoc]   ;
 //                Qtmp[id+ngl2]+= Vdm(l+1,i+1) * Q_modal[idLoc+ngl2]   ;
 //                Qtmp[id+ngl2+ngl2]+= Vdm(l+1,i+1) * Q_modal[idLoc+ngl2+ngl2]  ;
 
-                Qtmp[id]+= Vdm(i+1,l+1) * Q_modal[idLoc]   ;
-                Qtmp[id+ngl2]+= Vdm(i+1,l+1) * Q_modal[idLoc+ngl2]   ;
-                Qtmp[id+ngl2+ngl2]+= Vdm(i+1,l+1) * Q_modal[idLoc+ngl2+ngl2]  ;
+                Qtmp[id]+= Vdm[il] * Q_modal[idLoc]   ;
+                Qtmp[id+ngl2]+= Vdm[il] * Q_modal[idLoc+ngl2]   ;
+                Qtmp[id+ngl2+ngl2]+= Vdm[il] * Q_modal[idLoc+ngl2+ngl2]  ;
             }
 
         }
@@ -238,15 +256,15 @@ for (int ie=0;ie<Nelem;ie++){
 
             for (int l=0; l<ngl; ++l){  //loop thru Xi
                 int idLoc = ie*ngl2*Neq   +l*ngl+i;
-
+                int jl = j*ngl+l;
 
 //                Q_nodal[id]+=  Qtmp[idLoc]   * Vdm(l+1,j+1) ;
 //                Q_nodal[id+ngl2]+=  Qtmp[idLoc+ngl2]   * Vdm(l+1,j+1) ;
 //                Q_nodal[id+ngl2+ngl2]+=  Qtmp[idLoc+ngl2+ngl2]   * Vdm(l+1,j+1) ;
 
-                Q_nodal[id]+=  Qtmp[idLoc]   * Vdm(j+1,l+1) ;
-                Q_nodal[id+ngl2]+=  Qtmp[idLoc+ngl2]   * Vdm(j+1,l+1) ;
-                Q_nodal[id+ngl2+ngl2]+=  Qtmp[idLoc+ngl2+ngl2]   * Vdm(j+1,l+1) ;
+                Q_nodal[id]+=  Qtmp[idLoc]   * Vdm[jl] ;
+                Q_nodal[id+ngl2]+=  Qtmp[idLoc+ngl2]   * Vdm[jl] ;
+                Q_nodal[id+ngl2+ngl2]+=  Qtmp[idLoc+ngl2+ngl2]   * Vdm[jl] ;
 
                 }
             }
@@ -259,90 +277,91 @@ for (int ie=0;ie<Nelem;ie++){
 free(Qtmp);
 }
 
-
-void basis :: SubCellAverageMatrix(){
-
-dfloat InterpolNodes[ngl];
-dfloat SubCellEdges[ngl+1];
-dfloat LagrangeAtInterpolNodes[ngl][ngl];
-dfloat InterpolLagrange[N+1];
-dfloat subCellSize;
-SubCellMat.resize(ngl,ngl);
-for(int i=1;i<=ngl;i++){
-        for(int j=1;j<=ngl;j++){
-    SubCellMat(i,j) = 0.0;}
-}
-
-SubCellEdges[0] = -1.0;
-for (int i=1; i<=ngl;i++){
-    SubCellEdges[i] = SubCellEdges[i-1] + w_GL(i);
-
-}
-
-
-//GaussNodesAndWeights();
-for (int i=0;i<ngl;++i){
-    subCellSize = SubCellEdges[i+1] - SubCellEdges[i];
-
-    for (int j=0;j<ngl;j++){
-        InterpolNodes[j] = SubCellEdges[i] + subCellSize * (x_Gauss(j+1) + 1.0) /2.0;
-
-        LagrangeInterpolatingPolynomial(InterpolNodes[j],N,x_GL,w_bary,InterpolLagrange);
-        for (int l=0;l<ngl;l++){
-            LagrangeAtInterpolNodes[l][j] = InterpolLagrange[l];
-
-        }
-    }
-
-    for (int j=0;j<ngl;j++){
-        for (int l=0;l<ngl;l++){
-            SubCellMat(i+1,j+1) +=   subCellSize / (w_GL(i+1) *2.0) * LagrangeAtInterpolNodes[j][l] *w_Gauss(l+1);
-        }
-    }
-
-}
-
+//
+//void basis :: SubCellAverageMatrix(){
+//
+//dfloat InterpolNodes[ngl];
+//dfloat SubCellEdges[ngl+1];
+//dfloat LagrangeAtInterpolNodes[ngl][ngl];
+//dfloat InterpolLagrange[N+1];
+//dfloat subCellSize;
+//SubCellMat.resize(ngl,ngl);
 //for(int i=1;i<=ngl;i++){
 //        for(int j=1;j<=ngl;j++){
-//    cout << SubCellMat(i,j) << "  " ;
-//
-//    }
-//cout <<"\n";
+//    SubCellMat(i,j) = 0.0;}
 //}
-
-};
+//
+//SubCellEdges[0] = -1.0;
+//for (int i=1; i<=ngl;i++){
+//    SubCellEdges[i] = SubCellEdges[i-1] + w_GL(i);
+//
+//}
+//
+//
+////GaussNodesAndWeights();
+//for (int i=0;i<ngl;++i){
+//    subCellSize = SubCellEdges[i+1] - SubCellEdges[i];
+//
+//    for (int j=0;j<ngl;j++){
+//        InterpolNodes[j] = SubCellEdges[i] + subCellSize * (x_Gauss(j+1) + 1.0) /2.0;
+//
+//        LagrangeInterpolatingPolynomial(InterpolNodes[j],N,x_GL,w_bary,InterpolLagrange);
+//        for (int l=0;l<ngl;l++){
+//            LagrangeAtInterpolNodes[l][j] = InterpolLagrange[l];
+//
+//        }
+//    }
+//
+//    for (int j=0;j<ngl;j++){
+//        for (int l=0;l<ngl;l++){
+//            SubCellMat(i+1,j+1) +=   subCellSize / (w_GL(i+1) *2.0) * LagrangeAtInterpolNodes[j][l] *w_Gauss(l+1);
+//        }
+//    }
+//
+//}
+//
+////for(int i=1;i<=ngl;i++){
+////        for(int j=1;j<=ngl;j++){
+////    cout << SubCellMat(i,j) << "  " ;
+////
+////    }
+////cout <<"\n";
+////}
+//
+//};
 
 
 void basis :: ModalTrafoMatrix(){
 dfloat LN,dLN;
 dfloat InterpolLagrange[N+1];
-fmatrix InterpolTmpMatrix,VdmTmpMatrix;
-InterpolTmpMatrix.resize(ngl,ngl);
-VdmTmpMatrix.resize(ngl,ngl);
+dfloat * InterpolTmpMatrix = (dfloat*) calloc(ngl2,sizeof(dfloat));
+dfloat * VdmTmpMatrix = (dfloat*) calloc(ngl2,sizeof(dfloat));
+
 
 //GaussNodesAndWeights();
 for (int i=0;i<ngl;++i){
     InterpolLagrange[i] = 0.0;
     for(int j=0;j<ngl;++j){
-        legendrePolynomialAndDerivative(j,x_Gauss(i+1),&LN,&dLN);
-        VdmTmpMatrix(j+1,i+1)=LN * sqrt(j+0.5) * w_Gauss(i+1);
-        VdmInv(i+1,j+1)=0.0;
-        legendrePolynomialAndDerivative(j,x_GL(i+1),&LN,&dLN);
-        Vdm(i+1,j+1) = LN * sqrt(j+0.5);
+        int ij = i*ngl+j;
+        int ji = j*ngl+i;
+        legendrePolynomialAndDerivative(j,x_Gauss[i],&LN,&dLN);
+        VdmTmpMatrix[ji]=LN * sqrt(j+0.5) * w_Gauss[i];
+        legendrePolynomialAndDerivative(j,x_GL[i],&LN,&dLN);
+        Vdm[ij] = LN * sqrt(j+0.5);
     }
 }
 for (int i=0;i<=N;i++){
 
 //LagrangeInterpolatingPolynomial(const dfloat x0,const int N,const dfloat x[],const dfloat w[],dfloat Polynomial[])
-    LagrangeInterpolatingPolynomial(x_Gauss(i+1),N,x_GL,w_bary,InterpolLagrange);
-    for (int j=1;j<=ngl;j++){
-        InterpolTmpMatrix(i+1,j) = InterpolLagrange[j-1];
+    LagrangeInterpolatingPolynomial(x_Gauss[i],N,x_GL,w_bary,InterpolLagrange);
+    for (int j=0;j<ngl;j++){
+        InterpolTmpMatrix[i*ngl+j] = InterpolLagrange[j];
     }
 }
-for (int i=1;i<=ngl;++i){
-    for(int j=1;j<=ngl;++j){
-        for (int l=1;l<=ngl;l++){
-                VdmInv(i,j) += VdmTmpMatrix(i,l) * InterpolTmpMatrix(l,j);
+for (int i=0;i<ngl;++i){
+    for(int j=0;j<ngl;++j){
+        for (int l=0;l<ngl;l++){
+                VdmInv[i*ngl+j] += VdmTmpMatrix[i*ngl+l] * InterpolTmpMatrix[l*ngl+j];
         }
 
     }
@@ -371,6 +390,8 @@ for (int i=1;i<=ngl;++i){
 //    }
 //    cout <<" \n";
 //}
+free(InterpolTmpMatrix);
+free(VdmTmpMatrix);
 };
 
 void basis :: legendrePolynomialAndDerivative(const int N_in,const dfloat x,dfloat *L_N,dfloat *dL_N){
@@ -467,50 +488,50 @@ dfloat delta=0.0;
 //cout <<"TOL: "<<TOL;
 
 if (N==1) {
-    x_GL(1)=-1.0;
-	w_GL(1)=1.0;
-	x_GL(2)=1.0;
-	w_GL(2)=w_GL(1);
+    x_GL[0]=-1.0;
+	w_GL[0]=1.0;
+	x_GL[1]=1.0;
+	w_GL[1]=w_GL[0];
 }
 else if (N==2){
 
-	x_GL(1)=-1.0;
-	w_GL(1)=2.0/(N*(N+1.0));
-	x_GL(ngl)=1.0;
-	w_GL(ngl)=w_GL(1);
+	x_GL[0]=-1.0;
+	w_GL[0]=2.0/(N*(N+1.0));
+	x_GL[ngl-1]=1.0;
+	w_GL[ngl-1]=w_GL[0];
     qAndLEvaluation(0.0,&q,&del_q,&L_N);
-    x_GL(2) 	=0.0;
-    w_GL(2)	= 2.0/(N*(N+1)*pow(L_N,2));
+    x_GL[1] 	=0.0;
+    w_GL[1]	= 2.0/(N*(N+1)*pow(L_N,2));
 
 }
 else{
-	x_GL(1)=-1.0;
-	w_GL(1)=2.0/(N*(N+1.0));
-	x_GL(ngl)=1.0;
-	w_GL(ngl)=w_GL(1);
+	x_GL[0]=-1.0;
+	w_GL[0]=2.0/(N*(N+1.0));
+	x_GL[ngl-1]=1.0;
+	w_GL[ngl-1]=w_GL[0];
 
 	for (int j=1;j<=floor((N)/2.0);j++){
-		x_GL(j+1) = -cos((j+1.0/4.0)*PI/N - 3.0/(8.0*N*PI)*1.0/(j+1.0/4.0));
+		x_GL[j] = -cos((j+1.0/4.0)*PI/N - 3.0/(8.0*N*PI)*1.0/(j+1.0/4.0));
 
 		for (int k=0;k<=newton_it;k++){
-			qAndLEvaluation(x_GL(j+1),&q,&del_q,&L_N);
+			qAndLEvaluation(x_GL[j],&q,&del_q,&L_N);
 
 			delta = -q/del_q;
-			x_GL(j+1) = x_GL(j+1) + delta;
-			if(abs(delta)<=TOL*abs(x_GL(j+1)))break;
+			x_GL[j] = x_GL[j] + delta;
+			if(abs(delta)<=TOL*abs(x_GL[j]))break;
 		};
 
 
-        qAndLEvaluation(x_GL(j+1),&q,&del_q,&L_N);
-        x_GL(ngl-j) 	=-x_GL(j+1);
-        w_GL(j+1)	= 2.0/(N*(N+1)*pow(L_N,2));
-        w_GL(ngl-j)	=w_GL(j+1);
+        qAndLEvaluation(x_GL[j],&q,&del_q,&L_N);
+        x_GL[ngl-j-1] 	=-x_GL[j];
+        w_GL[j]	= 2.0/(N*(N+1)*pow(L_N,2));
+        w_GL[ngl-j-1]	=w_GL[j];
 	};
 	//if the middle point 0.0 is included, also calculated it.
     if(N%2==0){
         qAndLEvaluation(0.0,&q,&del_q,&L_N);
-        x_GL(N/2+1) 	=0.0;
-        w_GL(N/2+1)	= 2.0/(N*(N+1)*pow(L_N,2));
+        x_GL[N/2] 	=0.0;
+        w_GL[N/2]	= 2.0/(N*(N+1)*pow(L_N,2));
     };
 
 };
@@ -529,39 +550,39 @@ dfloat delta=0.0;
 
 
 if (N==0) {
-    x_Gauss(1)=0.0;
-	w_Gauss(1)=2.0;
+    x_Gauss[0]=0.0;
+	w_Gauss[0]=2.0;
 }
 else if (N==1) {
-    x_Gauss(1)=-sqrt(1.0/3.0);
-	w_Gauss(1)=1.0;
-	x_Gauss(2)=-x_Gauss(1);
-	w_Gauss(2)=w_Gauss(1);
+    x_Gauss[0]=-sqrt(1.0/3.0);
+	w_Gauss[0]=1.0;
+	x_Gauss[1]=-x_Gauss[0];
+	w_Gauss[1]=w_Gauss[0];
 }
 else{
 
-	for (int j=1;j<=floor((N+1.0)/2.0);j++){
-		x_Gauss(j) = -cos((2.0*(j-1.0)+1.0)/(2.0*N+2.0)*PI);
+	for (int j=0;j<floor((N+1.0)/2.0);j++){
+		x_Gauss[j] = -cos((2.0*j+1.0)/(2.0*N+2.0)*PI);
 
 		for (int k=0;k<=newton_it;k++){
-			legendrePolynomialAndDerivative(N+1,x_Gauss(j),&L1,&L2);
+			legendrePolynomialAndDerivative(N+1,x_Gauss[j],&L1,&L2);
 			delta = -L1/L2;
-			x_Gauss(j) = x_Gauss(j) + delta;
-			if(abs(delta)<=TOL*abs(x_Gauss(j)))break;
+			x_Gauss[j] = x_Gauss[j] + delta;
+			if(abs(delta)<=TOL*abs(x_Gauss[j]))break;
 		};
 
 
-        legendrePolynomialAndDerivative(N+1,x_Gauss(j),&L1,&L2);
+        legendrePolynomialAndDerivative(N+1,x_Gauss[j],&L1,&L2);
 
-        x_Gauss(ngl-j+1) 	=-x_Gauss(j);
-        w_Gauss(j)	= 2.0/((1.0-pow(x_Gauss(j),2))*pow(L2,2));
-        w_Gauss(ngl-j+1)	=w_Gauss(j);
+        x_Gauss[ngl-j-1] 	=-x_Gauss[j];
+        w_Gauss[j]	= 2.0/((1.0-pow(x_Gauss[j],2))*pow(L2,2));
+        w_Gauss[ngl-j-1]	=w_Gauss[j];
 	};
 	//if the middle point 0.0 is included, also calculated it.
     if(N%2==0){
         legendrePolynomialAndDerivative(N+1,0.0,&L1,&L2);
-        x_Gauss(N/2+1) 	=0.0;
-        w_Gauss(N/2+1)	= 2.0/(pow(L2,2));
+        x_Gauss[N/2] 	=0.0;
+        w_Gauss[N/2]	= 2.0/(pow(L2,2));
     };
 
 }
@@ -571,74 +592,63 @@ else{
 
 
 
-void basis :: LagrangeInterpolatingPolynomial(const dfloat x0,const int N,fmatrix x,fmatrix w,dfloat Polynomial[]){
+void basis :: LagrangeInterpolatingPolynomial(const dfloat x0,const int N,const dfloat * x,const dfloat * w,dfloat Polynomial[]){
 
 bool xMatchesNode=0;
 dfloat TOL=4.*pow(10.,-16);
 dfloat t =0.0;
-for (int j=1;j<=N+1;j++){
-    Polynomial[j-1]=0.0;
-    if (abs(x0 - x(j))<TOL){
+for (int j=0;j<N+1;j++){
+    Polynomial[j]=0.0;
+    if (abs(x0 - x[j])<TOL){
         xMatchesNode=1;
-        Polynomial[j-1]=1;
+        Polynomial[j]=1;
     }
 }
 if(!xMatchesNode){
     dfloat s=0.0;
-    for(int j=1;j<=N+1;j++){
-        t = w(j)/(x0-x(j));
-        Polynomial[j-1]=t;
+    for(int j=0;j<N+1;j++){
+        t = w[j]/(x0-x[j]);
+        Polynomial[j]=t;
         s=s+t;
     }
-    for(int j=1;j<=N+1;j++){
-        Polynomial[j-1] = Polynomial[j-1]/s;
+    for(int j=0;j<N+1;j++){
+        Polynomial[j] = Polynomial[j]/s;
     }
 }
-//cout <<"xMatchesNode: "<< xMatchesNode <<"\n";
-//cout <<"x: "<< x <<"\n";
-//cout <<"w: "<< w <<"\n";
-//cout <<"Polynomial: ";
-//for (int j=0;j<=N;j++){
-//cout << Polynomial[j] <<" ";
-//}
-//cout <<"\n";
-
 
 }
+
+
 void basis :: BarycentricWeights(){
 
 
-        for(int i=1;i<=ngl;i++){
-        w_bary(i)=1.0;
+        for(int i=0;i<ngl;i++){
+        w_bary[i]=1.0;
         };
 
 
-        for (int j=2;j<=ngl;j++){
-             for (int k=1;k<j;k++){
-                w_bary(k)=w_bary(k)*(x_GL(k)-x_GL(j));
-                w_bary(j)=w_bary(j)*(x_GL(j)-x_GL(k));
+        for (int j=1;j<ngl;j++){
+             for (int k=0;k<j;k++){
+                w_bary[k]=w_bary[k]*(x_GL[k]-x_GL[j]);
+                w_bary[j]=w_bary[j]*(x_GL[j]-x_GL[k]);
             };
         };
 
-        for (int j=1;j<=ngl;j++){
-         w_bary(j)=1.0/w_bary(j);
+        for (int j=0;j<ngl;j++){
+         w_bary[j]=1.0/w_bary[j];
         };
 
 };
 
 void basis :: PolynomialDerivativeMatrix(){
 
-    for(int i=1;i<=ngl;i++){
-        for(int j=1;j<=ngl;j++){
-            D(i,j)=0.0;
-        };
-    };
 
-    for (int i=1;i<=ngl;i++){
-        for (int j=1;j<=ngl;j++){
+    for (int i=0;i<ngl;i++){
+        for (int j=0;j<ngl;j++){
             if (i!=j){
-                D(i,j)=(w_bary(j)/w_bary(i))*(1.0/(x_GL(i)-x_GL(j)));
-                D(i,i)=D(i,i) -D(i,j);
+                const int id = i*ngl+j;
+                D[id]=(w_bary[j]/w_bary[i])*(1.0/(x_GL[i]-x_GL[j]));
+                D[i*ngl+i]=D[i*ngl+i] -D[id];
             };
         };
     };
@@ -659,9 +669,9 @@ for (int ie=0; ie<Nelem_global;ie++){
                 int id = ie*ngl2*Neq   +j*ngl+i;
                 int xid = ie*ngl2   +j*ngl+i;
 
-            L2Error[0]  +=  pow(Q[id] - Q_exakt[id],2) /J[xid]* w_GL(i+1)* w_GL(j+1);id+=ngl2;
-            L2Error[1]  +=  pow(Q[id] - Q_exakt[id],2) /J[xid]* w_GL(i+1)* w_GL(j+1);id+=ngl2;
-            L2Error[2]  +=  pow(Q[id] - Q_exakt[id],2) /J[xid]* w_GL(i+1)* w_GL(j+1);
+            L2Error[0]  +=  pow(Q[id] - Q_exakt[id],2) /J[xid]* w_GL[i]* w_GL[j];id+=ngl2;
+            L2Error[1]  +=  pow(Q[id] - Q_exakt[id],2) /J[xid]* w_GL[i]* w_GL[j];id+=ngl2;
+            L2Error[2]  +=  pow(Q[id] - Q_exakt[id],2) /J[xid]* w_GL[i]* w_GL[j];
         }
           }
 }
@@ -698,7 +708,7 @@ dfloat tmpMinEleSize;
             for(int i=0;i<ngl;++i){
 
                 int xid = ie*ngl2   +j*ngl+i;
-                EleSize[ie]  +=  1.0 /J[xid]* w_GL(i+1)* w_GL(j+1);
+                EleSize[ie]  +=  1.0 /J[xid]* w_GL[i]* w_GL[j];
 
 
             }
@@ -734,8 +744,8 @@ for (int ie=0; ie<Nelem_global;ie++){
                 calcEntropyPointwise(g_const,Q_init[id],Q_init[id+ngl2],Q_init[id+ngl2+ngl2],b[xid],&E_init);
 //            cout <<"Entropy final: "<<E_final <<"\n";
 //            cout <<"Entropy init: "<<E_init <<"\n";
-            TotalEntropy_Final  +=  E_final /J[xid]* w_GL(i+1)* w_GL(j+1);
-            TotalEntropy_Init   +=  E_init /J[xid]* w_GL(i+1)* w_GL(j+1);
+            TotalEntropy_Final  +=  E_final /J[xid]* w_GL[i]* w_GL[j];
+            TotalEntropy_Init   +=  E_init /J[xid]* w_GL[i]* w_GL[j];
 
         }
           }
@@ -767,267 +777,153 @@ if (h>pow(10,-12)){
 
 
 
-
-void basis :: PosPreservation(const dfloat J[],const dfloat EleSize[],dfloat Q[]){
-
-
-for (int ie=0; ie<Nelem;ie++){
-    dfloat Havg =0.0;
-    dfloat HUavg = 0.0;
-    dfloat HVavg = 0.0;
-    dfloat Hmin = 0.0;
-    dfloat Hmin_interpol=0.0;
-    dfloat Hmin_temp=0.0;
-
-
-    dfloat Q_interpolXi[ngl][ngl];
-    dfloat Q_interpolEta[ngl][ngl];
-    for(int i=0;i<ngl;++i){
-       for(int j=0;j<ngl;++j){
-            Q_interpolXi[i][j] = 0.0;
-            Q_interpolEta[i][j] = 0.0;
-       }
-    }
-    // for better approximation to the minimum we want to interpolate the polynomial to additional nodes.
-    // -> we choose the Gauss nodes for this
-
-
-
-//L_at_Gauss ::  (i,j) = j-tes LagrangePolynom ausgewertet an Gauss Punkt i!!
-
-    for(int j=0;j<ngl;++j){
-        for(int i=0;i<ngl;++i){
-           for(int l=0;l<ngl;++l){
-                    int id = ie*ngl2*Neq   +l*ngl+i;
-                    Q_interpolEta[i][j] += L_at_Gauss(i+1,l+1) * Q[id];
-            }
-         }
-    }
-
-
-    for(int i=0;i<ngl;++i){
-        for(int j=0;j<ngl;++j){
-           for(int l=0;l<ngl;++l){
-                    int id = ie*ngl2*Neq   +j*ngl+l;
-                    Q_interpolXi[i][j] += L_at_Gauss(i+1,l+1) * Q[id];
-            }
-         }
-    }
-
-
-      for(int j=0;j<ngl;++j){
-        for(int i=0;i<ngl;++i){
-            int id = ie*ngl2*Neq   +j*ngl+i;
-            int xid = ie*ngl2   +j*ngl+i;
-
-            Havg  +=  Q[id] /J[xid]* w_GL(i+1)* w_GL(j+1);
-
-//            Hmin_interpol = min(Q_interpolEta[i][j],Q_interpolXi[i][j]);
-//            Hmin_temp = min(Hmin_interpol,Q[id]);
-//            Hmin = min(Hmin_temp,Hmin);
-
-            Hmin = min(Q[id],Hmin);
-
-
-            id+=ngl2;
-            HUavg  +=  Q[id] /J[xid]* w_GL(i+1)* w_GL(j+1);
-            id+=ngl2;
-            HVavg  +=  Q[id] /J[xid]* w_GL(i+1)* w_GL(j+1);
-
-
-        }
-    }
-
-    Havg = Havg / EleSize[ie];
-    HUavg = HUavg / EleSize[ie];
-    HVavg = HVavg / EleSize[ie];
-    dfloat theta = min(1.0,Havg/(Havg-Hmin)); // setzt exakt auf 0, könnte ein problem sein ! -4.*pow(10.,-16)
-
-//    if (Havg<0.0) {
-//            cout.precision(17);
-//        cout << "Element: " << ie << " has minH: " << Hmin << " and Havg: " << Havg <<  " theta: " << theta <<" !\n" ;
-//    }
-    for(int j=0;j<ngl;++j){
-        for(int i=0;i<ngl;++i){
-                int id = ie*ngl2*Neq   +j*ngl+i;
-
-                if (Havg<0.0){
-                    Q[id] = 0.0;
-                    Q[id+ngl2] = 0.0;
-                    Q[id+ngl2+ngl2] = 0.0;
-                }else{
-                    Q[id] = abs(theta * (Q[id] - Havg) + Havg);
-
-
-                    if (Q[id]>pow(10.0,-6)){
-                        Q[id+ngl2] = theta * (Q[id+ngl2] -  HUavg) +  HUavg;
-                        Q[id+ngl2+ngl2] = theta * (Q[id+ngl2+ngl2] -  HVavg) +  HVavg;
-                    }else{
-                        Q[id+ngl2] = 0.0;
-                        Q[id+ngl2+ngl2] = 0.0;
-                    }
-
-
-                }
-
-        }
-    }
-
-
-
-
-
-
-
-    }
-}
-
-
-
-
-void basis :: CheckWhereItNaNed(const dfloat Q[],bool *isnaned,int *NaNid){
-
-
-for (int ie=0; ie<Nelem;ie++){
-
-    for(int i=0;i<ngl;++i){
-       for(int j=0;j<ngl;++j){
-            int id = ie*ngl2*Neq   +j*ngl+i;
-            if (!(Q[id] ==Q[id])){
-                cout << "NaN at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 1 \n";
-                *isnaned=true;
-                *NaNid = ie;
-            }
-
-            if (!(Q[id+ngl2] ==Q[id+ngl2])){
-                cout << "NaN at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 2 \n";
-                *isnaned=true;
-                *NaNid = ie;
-            }
-            if (!(Q[id+ngl2+ngl2] ==Q[id+ngl2+ngl2])){
-                cout << "NaN at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 3 \n";
-                *isnaned=true;
-                *NaNid = ie;
-            }
-
-
-            if (Q[id] > pow(10.0,2)){
-//                cout << "To high value at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 1 \n";
-                *isnaned=true;
-                *NaNid = ie;
-            }
-            if (Q[id+ngl2] > pow(10.0,8)){
-//                cout << "To high value at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 2 \n";
-                *isnaned=true;
-                *NaNid = ie;
-            }
-            if (Q[id+ngl2+ngl2] > pow(10.0,8)){
-//                cout << "To high value at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 3 \n";
-                *isnaned=true;
-                *NaNid = ie;
-            }
-        }
-    }
-
-
-
-    }
-}
-
-
-void basis :: CheckWhereItNaNedTimeDeriv(const dfloat Q[],bool *isnaned,int *NaNid){
-
-
-for (int ie=0; ie<Nelem;ie++){
-
-    for(int i=0;i<ngl;++i){
-       for(int j=0;j<ngl;++j){
-            int id = ie*ngl2*Neq   +j*ngl+i;
-            if (!(Q[id] ==Q[id])){
-                cout << "NaN at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 1 \n";
-                *isnaned=true;
-                *NaNid = ie;
-            }
-
-            if (!(Q[id+ngl2] ==Q[id+ngl2])){
-                cout << "NaN at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 2 \n";
-                *isnaned=true;
-                *NaNid = ie;
-            }
-            if (!(Q[id+ngl2+ngl2] ==Q[id+ngl2+ngl2])){
-                cout << "NaN at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 3 \n";
-                *isnaned=true;
-                *NaNid = ie;
-            }
-
-
-//            if (Q[id] > pow(10.0,4)){
-//                cout << "To high value at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 1 \n";
+//
+//
+//
+//
+//void basis :: CheckWhereItNaNed(const dfloat Q[],bool *isnaned,int *NaNid){
+//
+//
+//for (int ie=0; ie<Nelem;ie++){
+//
+//    for(int i=0;i<ngl;++i){
+//       for(int j=0;j<ngl;++j){
+//            int id = ie*ngl2*Neq   +j*ngl+i;
+//            if (!(Q[id] ==Q[id])){
+//                cout << "NaN at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 1 \n";
+//                *isnaned=true;
+//                *NaNid = ie;
+//            }
+//
+//            if (!(Q[id+ngl2] ==Q[id+ngl2])){
+//                cout << "NaN at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 2 \n";
+//                *isnaned=true;
+//                *NaNid = ie;
+//            }
+//            if (!(Q[id+ngl2+ngl2] ==Q[id+ngl2+ngl2])){
+//                cout << "NaN at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 3 \n";
+//                *isnaned=true;
+//                *NaNid = ie;
+//            }
+//
+//
+//            if (Q[id] > pow(10.0,2)){
+////                cout << "To high value at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 1 \n";
 //                *isnaned=true;
 //                *NaNid = ie;
 //            }
 //            if (Q[id+ngl2] > pow(10.0,8)){
-//                cout << "To high value at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 2 \n";
+////                cout << "To high value at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 2 \n";
 //                *isnaned=true;
 //                *NaNid = ie;
 //            }
 //            if (Q[id+ngl2+ngl2] > pow(10.0,8)){
-//                cout << "To high value at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 3 \n";
+////                cout << "To high value at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 3 \n";
 //                *isnaned=true;
 //                *NaNid = ie;
 //            }
-        }
-    }
-
-
-
-    }
-}
-
-
-
-
-void basis :: EdgesCheckWhereItNaNed(const int Nfaces,const dfloat Q[],bool *isnaned,int *NaNid){
-
-
-for (int ie=0; ie<Nfaces;ie++){
-
-    for(int i=0;i<ngl;++i){
-            int id = ie*ngl*Neq   +i;
-            if (!(Q[id] ==Q[id])){
-                cout << "NaN at edge: " <<ie << " (i) =  " <<i<< " Equation: 1 \n";
-                *isnaned=true;
-                *NaNid = ie;
-            }
-            if (!(Q[id+ngl] ==Q[id+ngl])){
-                cout << "NaN at edge: " <<ie << " (i) =  " <<i<<" Equation: 2 \n";
-                *isnaned=true;
-                *NaNid = ie;
-            }
-            if (!(Q[id+ngl+ngl] ==Q[id+ngl+ngl])){
-                cout << "NaN at edge: " <<ie << " (i) =  " <<i<<" Equation: 3 \n";
-                *isnaned=true;
-                *NaNid = ie;
-            }
-
-//            if (Q[id] > pow(10.0,4)){
-//                cout << "To high value at ele: " <<ie << " (i) =  " <<i<<" Equation: 1 \n";
+//        }
+//    }
+//
+//
+//
+//    }
+//}
+//
+//
+//void basis :: CheckWhereItNaNedTimeDeriv(const dfloat Q[],bool *isnaned,int *NaNid){
+//
+//
+//for (int ie=0; ie<Nelem;ie++){
+//
+//    for(int i=0;i<ngl;++i){
+//       for(int j=0;j<ngl;++j){
+//            int id = ie*ngl2*Neq   +j*ngl+i;
+//            if (!(Q[id] ==Q[id])){
+//                cout << "NaN at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 1 \n";
 //                *isnaned=true;
 //                *NaNid = ie;
 //            }
-//            if (Q[id+ngl] > pow(10.0,8)){
-//                cout << "To high value at ele: " <<ie << " (i) =  " <<i<<" Equation: 2 \n";
+//
+//            if (!(Q[id+ngl2] ==Q[id+ngl2])){
+//                cout << "NaN at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 2 \n";
 //                *isnaned=true;
 //                *NaNid = ie;
 //            }
-//            if (Q[id+ngl+ngl] > pow(10.0,8)){
-//                cout << "To high value at ele: " <<ie << " (i) =  " <<i<<" Equation: 3 \n";
+//            if (!(Q[id+ngl2+ngl2] ==Q[id+ngl2+ngl2])){
+//                cout << "NaN at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 3 \n";
 //                *isnaned=true;
 //                *NaNid = ie;
 //            }
-    }
-
-
-
-    }
-}
+//
+//
+////            if (Q[id] > pow(10.0,4)){
+////                cout << "To high value at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 1 \n";
+////                *isnaned=true;
+////                *NaNid = ie;
+////            }
+////            if (Q[id+ngl2] > pow(10.0,8)){
+////                cout << "To high value at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 2 \n";
+////                *isnaned=true;
+////                *NaNid = ie;
+////            }
+////            if (Q[id+ngl2+ngl2] > pow(10.0,8)){
+////                cout << "To high value at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 3 \n";
+////                *isnaned=true;
+////                *NaNid = ie;
+////            }
+//        }
+//    }
+//
+//
+//
+//    }
+//}
+//
+//
+//
+//
+//void basis :: EdgesCheckWhereItNaNed(const int Nfaces,const dfloat Q[],bool *isnaned,int *NaNid){
+//
+//
+//for (int ie=0; ie<Nfaces;ie++){
+//
+//    for(int i=0;i<ngl;++i){
+//            int id = ie*ngl*Neq   +i;
+//            if (!(Q[id] ==Q[id])){
+//                cout << "NaN at edge: " <<ie << " (i) =  " <<i<< " Equation: 1 \n";
+//                *isnaned=true;
+//                *NaNid = ie;
+//            }
+//            if (!(Q[id+ngl] ==Q[id+ngl])){
+//                cout << "NaN at edge: " <<ie << " (i) =  " <<i<<" Equation: 2 \n";
+//                *isnaned=true;
+//                *NaNid = ie;
+//            }
+//            if (!(Q[id+ngl+ngl] ==Q[id+ngl+ngl])){
+//                cout << "NaN at edge: " <<ie << " (i) =  " <<i<<" Equation: 3 \n";
+//                *isnaned=true;
+//                *NaNid = ie;
+//            }
+//
+////            if (Q[id] > pow(10.0,4)){
+////                cout << "To high value at ele: " <<ie << " (i) =  " <<i<<" Equation: 1 \n";
+////                *isnaned=true;
+////                *NaNid = ie;
+////            }
+////            if (Q[id+ngl] > pow(10.0,8)){
+////                cout << "To high value at ele: " <<ie << " (i) =  " <<i<<" Equation: 2 \n";
+////                *isnaned=true;
+////                *NaNid = ie;
+////            }
+////            if (Q[id+ngl+ngl] > pow(10.0,8)){
+////                cout << "To high value at ele: " <<ie << " (i) =  " <<i<<" Equation: 3 \n";
+////                *isnaned=true;
+////                *NaNid = ie;
+////            }
+//    }
+//
+//
+//
+//    }
+//}

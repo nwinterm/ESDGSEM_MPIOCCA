@@ -23,38 +23,41 @@ class MeshPartitioning
 
         int ngl,ngl2;
 
-        fmatrix x_global;
-        fmatrix y_global;
-        fmatrix xXi_global,xEta_global;
-        fmatrix yXi_global,yEta_global;
-        fmatrix J_global;
-        fmatrix nx_global,ny_global,scal_global;
+        dfloat * x_global;
+        dfloat * y_global;
+        dfloat * xXi_global;
+        dfloat * xEta_global;
+        dfloat * yXi_global;
+        dfloat * yEta_global;
+        dfloat * J_global;
+        dfloat * nx_global;
+        dfloat * ny_global;
+        dfloat * scal_global;
 
-        imatrix MyElementLocalToGlobal;
-        imatrix MyEdgesLocalToGlobal;
-        imatrix MyEdgeInfo;
+        int * MyEdgeInfo;
+        int * MyElementLocalToGlobal;
+        int * MyEdgesLocalToGlobal;
 
-        imatrix ElementGlobalToLocal;
-        imatrix ElementLocalToGlobal;
-        imatrix EdgeLocalToGlobal;
-        imatrix EdgeGlobalToLocal;
-        imatrix ElementToEdge;
-        imatrix ElemEdgeMasterSlave;
 
-        imatrix ElementsPerProc;
+
+        int * ElementLocalToGlobal;
+
+
+        int * MyElementToEdge;
+        int * MyElemEdgeMasterSlave;
+
+        int * ElementsPerProc;
 
         // store edge indices with each processor for MPI communication!
-        imatrix ProcIndex;
-        imatrix CommTags;
+        int * ProcIndex;
+        int * CommTags;
 
-        // for MPI edge resorting
-        imatrix MPIEdges;
 
         virtual ~MeshPartitioning();
 
         void DivideMesh(const Mesh ,const MPI_setup );
         void ReceiveMesh(const MPI_setup );
-        void ApproximateElementSizes(const int ,const int , const dfloat [], const dfloat [], dfloat []);
+
         void SortMPIEdges(const MPI_setup);
 
     protected:
@@ -64,14 +67,15 @@ class MeshPartitioning
 
 //        fmatrix x_GL;
 
-        imatrix EdgesPerProc;
-
+        int * EdgesPerProc;
+        int * EdgeLocalToGlobal;
+//        int * EdgeGlobalToLocal;
 
 
 //        imatrix globalEdgeInfo;
         void isInArray(const int , const int[]  ,const int , int* );
-        void SplitRealValuesBetweenProcs(const MPI_setup,const fmatrix, fmatrix &);
-        void SplitEdgeRealValuesBetweenProcs(const MPI_setup ,const fmatrix , fmatrix& );
+        void SplitRealValuesBetweenProcs(const MPI_setup,const dfloat *, dfloat *);
+        void SplitEdgeRealValuesBetweenProcs(const MPI_setup ,const dfloat * , dfloat *);
 
 };
 

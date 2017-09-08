@@ -7,19 +7,6 @@
 using namespace Constants;
 
 
-//fmatrix D;
-//fmatrix x_GL;
-//fmatrix w_GL;
-//fmatrix w_bary;
-//
-//void initBasis();
-//void LGLNodesAndWeights( );
-//void qAndLEvaluation( const double x_GL,double *q, double *del_q, double *L_N);
-//void BarycentricWeights();
-//void PolynomialDerivativeMatrix();
-
-
-
 
 class basis
 {
@@ -33,19 +20,21 @@ class basis
 //        int NoDofs;
 //        int NoSpaceDofs;
 
-        fmatrix D;
-        fmatrix D0;
-        fmatrix Dhat;
-        fmatrix x_GL;
-        fmatrix w_GL;
-        fmatrix x_Gauss;
-        fmatrix w_Gauss;
-        fmatrix w_bary;
-        fmatrix Vdm;
-        fmatrix VdmInv;
-        fmatrix SubCellMat;
 
-        fmatrix L_at_Gauss;
+        dfloat * D;
+//        fmatrix D;
+        dfloat * D0;
+        dfloat *  Dhat;
+        dfloat *  x_GL;
+        dfloat *  w_GL;
+        dfloat *  x_Gauss;
+        dfloat *  w_Gauss;
+        dfloat *  w_bary;
+        dfloat *  Vdm;
+        dfloat *  VdmInv;
+        dfloat *  SubCellMat;
+
+//        dfloat *  L_at_Gauss;
 //        void L2Norm(const dfloat[NoDofs],const dfloat[NoDofs],dfloat[Neq]);
 //        void LinfNorm(const dfloat[NoDofs],const dfloat[NoDofs],dfloat[Neq]);
 
@@ -56,10 +45,9 @@ class basis
         void  calcEntropyDelta(const dfloat g_const,const dfloat Q[],const dfloat Q_init[],const dfloat b[],const dfloat J[],dfloat *EntropyDelta);
         void ConvertToModal(const dfloat *Q_nodal, dfloat *Q_modal);
         void EvaluteModalPolynomial(const dfloat Q_modal[], dfloat Q_nodal[]);
-        void PosPreservation(const dfloat [],const dfloat [],dfloat []);
-        void  CheckWhereItNaNed(const dfloat [],bool*, int*);
-        void  CheckWhereItNaNedTimeDeriv(const dfloat [],bool*, int*);
-        void  EdgesCheckWhereItNaNed(const int, const dfloat [],bool*, int*);
+//        void  CheckWhereItNaNed(const dfloat [],bool*, int*);
+//        void  CheckWhereItNaNedTimeDeriv(const dfloat [],bool*, int*);
+//        void  EdgesCheckWhereItNaNed(const int, const dfloat [],bool*, int*);
 
     private:
         void LGLNodesAndWeights( );
@@ -69,9 +57,9 @@ class basis
         void BarycentricWeights();
         void PolynomialDerivativeMatrix();
         void ModalTrafoMatrix();
-        void SubCellAverageMatrix();
+//        void SubCellAverageMatrix();
         void calcEntropyPointwise(const dfloat g_const,const dfloat h,const dfloat hu,const dfloat hv,const dfloat b,dfloat *Entropy);
-        void LagrangeInterpolatingPolynomial(const dfloat x0,const int N,const fmatrix x,const fmatrix w,dfloat Polynomial[]);
+        void LagrangeInterpolatingPolynomial(const dfloat x0,const int N,const dfloat*,const dfloat*,dfloat Polynomial[]);
 };
 
 #endif // BASIS_H
