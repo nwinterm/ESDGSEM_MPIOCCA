@@ -1,0 +1,8 @@
+DGSEM2D.cbp
+DGSEM2D.layout
+esdgsem.sh
+movie/*
+obj/*
+nohup.out
+Results.txt
+
