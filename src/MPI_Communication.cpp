@@ -25,27 +25,8 @@
             int id = (startIndex) * ngl*Neq;
             int tagSend = MeshSplit.CommTags[MPI.rank*MeshSplit.NumProcessors + cpuR];//(MPI.rank+1,cpuR+1);
             int tagRecv = MeshSplit.CommTags[cpuR*MeshSplit.NumProcessors + MPI.rank];//(cpuR+1,MPI.rank+1);
-//            int PackSizeQ = EdgesToSend*ngl*Neq;
-//            int PackSizeB = EdgesToSend*ngl;
-//            dfloat * q_Recv = (dfloat*) calloc(PackSizeQ,sizeof(dfloat));
-//            dfloat * q_Send = (dfloat*) calloc(PackSizeQ,sizeof(dfloat));
-//            dfloat * b_Recv = (dfloat*) calloc(PackSizeB,sizeof(dfloat));
-//            dfloat * b_Send = (dfloat*) calloc(PackSizeB,sizeof(dfloat));
-//
-//            for (int is = 1;is<=EdgesToSend;is++){
-//                int qid = (is-1) * ngl*Neq;
-//                int bid = (is-1) * ngl;
-//                if ( MPI.rank = MeshSplit.MyEdgeInfo(8,is)){
-//                    // we are left to the edge
-//                } else{
-//
-//                }
-//            }
 
-//            cout << "MPI CASE! cpuL = " << MPI.rank << " cpuR= " << cpuR <<"\n";
-//            cout <<"i am: "<< MPI.rank << " Sending " << EdgesToSend <<" Edges to " << cpuR << "with send Tag: " << tagSend << " and receive tag: "<< tagRecv <<"\n";
-//            cout <<"startindex: " << startIndex << " endIndex: "<< endIndex << " id: "<< id  <<"\n";
-//            cout <<"idx: "<< idx  <<"\n";
+
             MPI_Isend(&qL[id],EdgesToSend*ngl*Neq,MPI_DOUBLE,cpuR,tagSend,MPI_COMM_WORLD,&MPI.Send_q_reqs[cpuR]);
 
             MPI_Irecv(&qR[id],EdgesToSend*ngl*Neq,MPI_DOUBLE,cpuR,tagRecv,MPI_COMM_WORLD,&MPI.Recv_q_reqs[cpuR]);
@@ -83,29 +64,8 @@
             int idx = (startIndex) * ngl;
             int tagSend = MeshSplit.CommTags[MPI.rank*MeshSplit.NumProcessors + cpuR];//(MPI.rank+1,cpuR+1);
             int tagRecv = MeshSplit.CommTags[cpuR*MeshSplit.NumProcessors + MPI.rank];//(cpuR+1,MPI.rank+1);
-//            int tagSend = MeshSplit.CommTags(MPI.rank+1,cpuR+1);
-//            int tagRecv = MeshSplit.CommTags(cpuR+1,MPI.rank+1);
-//            int PackSizeQ = EdgesToSend*ngl*Neq;
-//            int PackSizeB = EdgesToSend*ngl;
-//            dfloat * q_Recv = (dfloat*) calloc(PackSizeQ,sizeof(dfloat));
-//            dfloat * q_Send = (dfloat*) calloc(PackSizeQ,sizeof(dfloat));
-//            dfloat * b_Recv = (dfloat*) calloc(PackSizeB,sizeof(dfloat));
-//            dfloat * b_Send = (dfloat*) calloc(PackSizeB,sizeof(dfloat));
-//
-//            for (int is = 1;is<=EdgesToSend;is++){
-//                int qid = (is-1) * ngl*Neq;
-//                int bid = (is-1) * ngl;
-//                if ( MPI.rank = MeshSplit.MyEdgeInfo(8,is)){
-//                    // we are left to the edge
-//                } else{
-//
-//                }
-//            }
 
-//            cout << "MPI CASE! cpuL = " << MPI.rank << " cpuR= " << cpuR <<"\n";
-//            cout <<"i am: "<< MPI.rank << " Sending " << EdgesToSend <<" Edges to " << cpuR << "with send Tag: " << tagSend << " and receive tag: "<< tagRecv <<"\n";
-//            cout <<"startindex: " << startIndex << " endIndex: "<< endIndex << " id: "<< id  <<"\n";
-//            cout <<"idx: "<< idx  <<"\n";
+
             MPI_Isend(&bL[idx],EdgesToSend*ngl,MPI_DOUBLE,cpuR,MeshSplit.NumProcessors*MeshSplit.NumProcessors+tagSend,MPI_COMM_WORLD,&MPI.Send_b_reqs[cpuR]);
 
             MPI_Irecv(&bR[idx],EdgesToSend*ngl,MPI_DOUBLE,cpuR,MeshSplit.NumProcessors*MeshSplit.NumProcessors+tagRecv,MPI_COMM_WORLD,&MPI.Recv_b_reqs[cpuR]);
@@ -204,8 +164,8 @@
     dfloat * q_tmp = (dfloat*) calloc(varDim,sizeof(dfloat));
 //    dfloat q_tmp[varDim];
 
-    MPI_Irecv(&q_tmp[0],varDim,MPI_DOUBLE,iproc,iproc,MPI_COMM_WORLD,&MPI.reqs[iproc]);
-    MPI_Wait(&MPI.reqs[iproc], MPI.stats);
+    MPI_Recv(&q_tmp[0],varDim,MPI_DOUBLE,iproc,iproc,MPI_COMM_WORLD, MPI.stats);
+
 
 
 
@@ -240,8 +200,7 @@
 
     int varDim = ngl2*Neq * MeshSplit.NumElements;
 
-    MPI_Isend(&Q[0],varDim,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+    MPI_Send(&Q[0],varDim,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD);
 
 
 
@@ -260,60 +219,17 @@
 
 
 
-    dfloat * AllLambdas = (dfloat*) calloc(MeshSplit.NumProcessors,sizeof(dfloat));
-
-
-
-
     dfloat LocalLambdaMax=0.0;
     for (int ie=0;ie<MeshSplit.NumElements;ie++){
         LocalLambdaMax = max(LocalLambdaMax,LocalLambdas[ie]);
 
     }
 
+    MPI_Allreduce(&LocalLambdaMax, &*LambdaMax, 1, MPI_DOUBLE, MPI_MAX,
+              MPI_COMM_WORLD);
 
 
 
-    AllLambdas[MPI.rank] = LocalLambdaMax;
-
-
-    if (MPI.rank == 0){
-          for (int i=1;i<MeshSplit.NumProcessors;i++){
-                MPI_Irecv(&AllLambdas[i],1,MPI_DOUBLE,i,i,MPI_COMM_WORLD,&MPI.reqs[i]);
-            }
-
-    }else{
-
-        MPI_Isend(&LocalLambdaMax,1,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-
-    }
-
-
-
-    MPI_Waitall(MeshSplit.NumProcessors,MPI.reqs, MPI.stats);
-
-    if (MPI.rank == 0){
-        dfloat globalLambdaMax=0.0;
-        for (int i=0;i<MeshSplit.NumProcessors;i++){
-            globalLambdaMax = max(globalLambdaMax,AllLambdas[i]);
-
-        }
-        for (int i=1;i<MeshSplit.NumProcessors;i++){
-            int cpuR = i;
-            MPI_Isend(&globalLambdaMax,1,MPI_DOUBLE,cpuR,cpuR,MPI_COMM_WORLD,&MPI.reqs[cpuR]);
-        }
-        *LambdaMax=globalLambdaMax;
-
-    }else{
-        MPI_Irecv(&*LambdaMax,1,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-
-    }
-
-
-    MPI_Waitall(MeshSplit.NumProcessors,MPI.reqs, MPI.stats);
-
-
-    free(AllLambdas);
 
 
   }
@@ -324,51 +240,9 @@
 
 
 
-    dfloat * AllEleSizes;
-
-
-//    cout << "RANK: " << MPI.rank << " now in GetGlobalMinEleSize \n" ;
-
-    if (MPI.rank == 0){
-        AllEleSizes = (dfloat*) calloc(MeshSplit.NumProcessors,sizeof(dfloat));
-        AllEleSizes[0] = minEleSize;
-          for (int i=1;i<MeshSplit.NumProcessors;i++){
-                MPI_Irecv(&AllEleSizes[i],1,MPI_DOUBLE,i,i,MPI_COMM_WORLD,&MPI.reqs[i]);
-            }
-
-    }else{
-        dfloat LocalMinEleSize = minEleSize;
-        MPI_Isend(&LocalMinEleSize,1,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-
-    }
-
-
-//    cout << "RANK: " << MPI.rank << " now Waiting for first SendReceive \n" ;
-    MPI_Waitall(MeshSplit.NumProcessors,MPI.reqs, MPI.stats);
-//    cout << "RANK: " << MPI.rank << " now Resuming after first SendReceive \n" ;
-    if (MPI.rank == 0){
-        dfloat glbMinEleSize=AllEleSizes[0];
-        for (int i=1;i<MeshSplit.NumProcessors;i++){
-            glbMinEleSize = min(glbMinEleSize,AllEleSizes[i]);
-
-        }
-        for (int i=1;i<MeshSplit.NumProcessors;i++){
-            int cpuR = i;
-            MPI_Isend(&glbMinEleSize,1,MPI_DOUBLE,cpuR,cpuR,MPI_COMM_WORLD,&MPI.reqs[cpuR]);
-        }
-        *globalMinEleSize=glbMinEleSize;
-
-    }else{
-        MPI_Irecv(&*globalMinEleSize,1,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-
-    }
-
-//    cout << "RANK: " << MPI.rank << " now Waiting for 2nd SendReceive \n" ;
-    MPI_Waitall(MeshSplit.NumProcessors,MPI.reqs, MPI.stats);
-//    cout << "RANK: " << MPI.rank << " now Resuming after 2nd SendReceive \n" ;
-     if (MPI.rank == 0){
-        free(AllEleSizes);
-     }
+ dfloat localMinEleSize = minEleSize;
+    MPI_Allreduce(&localMinEleSize, &*globalMinEleSize, 1, MPI_DOUBLE, MPI_MIN,
+              MPI_COMM_WORLD);
 
   }
 
@@ -394,8 +268,8 @@
     dfloat * q_tmp = (dfloat*) calloc(varDim,sizeof(dfloat));
 //    dfloat q_tmp[varDim];
 
-    MPI_Irecv(&q_tmp[0],varDim,MPI_DOUBLE,iproc,iproc,MPI_COMM_WORLD,&MPI.reqs[iproc]);
-    MPI_Wait(&MPI.reqs[iproc], MPI.stats);
+    MPI_Recv(&q_tmp[0],varDim,MPI_DOUBLE,iproc,iproc,MPI_COMM_WORLD, MPI.stats);
+
 
 
 
@@ -422,9 +296,7 @@
 
     int varDim = MeshSplit.NumElements;
 
-    MPI_Isend(&ViscPara[0],varDim,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
-
+    MPI_Send(&ViscPara[0],varDim,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD);
 
 
 
@@ -475,10 +347,10 @@
     dfloat * qy_tmp = (dfloat*) calloc(varDim,sizeof(dfloat));
 //    dfloat q_tmp[varDim];
 
-    MPI_Irecv(&qx_tmp[0],varDim,MPI_DOUBLE,iproc,iproc,MPI_COMM_WORLD,&MPI.reqs[iproc]);
-    MPI_Wait(&MPI.reqs[iproc], MPI.stats);
-    MPI_Irecv(&qy_tmp[0],varDim,MPI_DOUBLE,iproc,iproc,MPI_COMM_WORLD,&MPI.reqs[iproc]);
-    MPI_Wait(&MPI.reqs[iproc], MPI.stats);
+    MPI_Recv(&qx_tmp[0],varDim,MPI_DOUBLE,iproc,iproc,MPI_COMM_WORLD, MPI.stats);
+//    MPI_Wait(&MPI.reqs[iproc], MPI.stats);
+    MPI_Recv(&qy_tmp[0],varDim,MPI_DOUBLE,iproc,iproc,MPI_COMM_WORLD, MPI.stats);
+//    MPI_Wait(&MPI.reqs[iproc], MPI.stats);
 
 
       for (int ie = 0; ie<MeshSplit.ElementsPerProc[iproc]; ie++){
@@ -518,11 +390,11 @@
 
     int varDim = ngl2*Neq * MeshSplit.NumElements;
 
-    MPI_Isend(&Qx[0],varDim,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+    MPI_Send(&Qx[0],varDim,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
-    MPI_Isend(&Qy[0],varDim,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
+    MPI_Send(&Qy[0],varDim,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD);
+//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
 
   }
@@ -538,61 +410,16 @@
 
 
 
-    dfloat * AllViscParas;
-
-
-
-
     dfloat LocalViscParaMax=0.0;
     for (int ie=0;ie<MeshSplit.NumElements;ie++){
         LocalViscParaMax = max(LocalViscParaMax,LocalViscPara[ie]);
 
     }
 
+    MPI_Allreduce(&LocalViscParaMax, &*ViscParaMax, 1, MPI_DOUBLE, MPI_MIN,
+              MPI_COMM_WORLD);
 
 
-
-    if (MPI.rank == 0){
-
-         AllViscParas = (dfloat*) calloc(MeshSplit.NumProcessors,sizeof(dfloat));
-         AllViscParas[0] = LocalViscParaMax;
-          for (int i=1;i<MeshSplit.NumProcessors;i++){
-                MPI_Irecv(&AllViscParas[i],1,MPI_DOUBLE,i,i,MPI_COMM_WORLD,&MPI.reqs[i]);
-            }
-
-    }else{
-
-        MPI_Isend(&LocalViscParaMax,1,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-
-    }
-
-
-
-    MPI_Waitall(MeshSplit.NumProcessors,MPI.reqs, MPI.stats);
-
-    if (MPI.rank == 0){
-        dfloat globalViscParaMax=0.0;
-        for (int i=0;i<MeshSplit.NumProcessors;i++){
-            globalViscParaMax = max(globalViscParaMax,AllViscParas[i]);
-
-        }
-        for (int i=1;i<MeshSplit.NumProcessors;i++){
-            int cpuR = i;
-            MPI_Isend(&globalViscParaMax,1,MPI_DOUBLE,cpuR,cpuR,MPI_COMM_WORLD,&MPI.reqs[cpuR]);
-        }
-        *ViscParaMax=globalViscParaMax;
-
-    }else{
-        MPI_Irecv(&*ViscParaMax,1,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD,&MPI.reqs[MPI.rank]);
-
-    }
-
-
-    MPI_Waitall(MeshSplit.NumProcessors,MPI.reqs, MPI.stats);
-
-    if (MPI.rank==0){
-        free(AllViscParas);
-    }
 
 
 
