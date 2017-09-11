@@ -1,6 +1,6 @@
 
 
-kernel void CollectEdgeDataGradient(const int Nfaces,const int * EdgeData,const dfloat * qGradientX,const dfloat * qGradientY,const dfloat * ViscPara,dfloat * ViscParaL,dfloat * ViscParaR, dfloat * qGradientXL, dfloat * qGradientXR,dfloat * qGradientYL, dfloat * qGradientYR,dfloat t)
+kernel void CollectEdgeDataGradient(const int Nfaces,const int * EdgeData,const dfloat * qGradientX,const dfloat * qGradientY,const dfloat * ViscPara,dfloat * ViscParaL,dfloat * ViscParaR, dfloat * qGradientXL, dfloat * qGradientXR,dfloat * qGradientYL, dfloat * qGradientYR)
 {
         for (int ifa=0;ifa<Nfaces;ifa++;outer0){
 

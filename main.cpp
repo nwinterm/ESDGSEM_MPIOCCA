@@ -778,7 +778,7 @@ if(Fluxdifferencing){
     VolumeKernel=device.buildKernelFromSource("okl/DG/VolumeKernel.okl","VolumeKernel",info);
 }
 switch(NumFlux){
-    //Roe Type Entropy Stable Flux
+    // ENTROPY STABLE FLUX FROM PAPERS
 case 0:{
 
     calcNumFluxes=device.buildKernelFromSource("okl/RiemannSolvers/calcESFlux.okl","calcNumFluxes",info);
@@ -786,14 +786,13 @@ case 0:{
 }
 
 
-    //Lax Friedrich Flux
+    //Lax Friedrich Flux (MAXIMUM EIGENVALUES ON EDGE ARE EVALUATED POINT WISE
 case 1:{
     calcNumFluxes=device.buildKernelFromSource("okl/RiemannSolvers/calcLaxFriedrich.okl","calcNumFluxes",info);
     break;
 
-
     }
-        //Lax Friedrich Type Entropy Stable Flux
+        //Lax Friedrich Type Entropy Stable Flux   // NOT WORKING PROPERLY ATM
 case 2:{
     calcNumFluxes=device.buildKernelFromSource("okl/RiemannSolvers/calcLFTypeESFlux.okl","calcNumFluxes",info);
     break;
@@ -1037,7 +1036,7 @@ if ( ArtificialViscosity==1){
     dfloat rkA=RK.CoeffsA[rkstage];
     dfloat rkB=RK.CoeffsB[rkstage];
     dfloat rkC=RK.CoeffsC[rkstage];
-
+    dfloat intermediatetime;
     if (rkSSP){
         switch(rkstage){
         case 0:
@@ -1050,28 +1049,14 @@ if ( ArtificialViscosity==1){
             rkD=1.0/2.0;
             break;
         }
+        intermediatetime = t +rkD*dt;
+    }else{
+        intermediatetime = t +rkB*dt;
     }
 
 
 
-// if we use the Global Lax Friedrich Riemann Solver we need to share the maximum eigenvalues across all mpi processes
-if (NumFlux == 1){
-    globalLambdaMax=0.0;
-    // find maximum eigenvalue for this mpi process
-    FindLambdaMax(Nelem, o_q, o_LambdaMax);
-    o_LambdaMax.copyTo(LocalLambdas);
-    GetGlobalLambdaMax(MPI,  DGMeshPartition,LocalLambdas, &globalLambdaMax);
-}
-
-
-
-if (rkSSP){
-    CollectEdgeData(Nfaces,o_EdgeData,o_q,o_x,o_y,o_nx,o_ny, o_bL,o_bR, o_qL, o_qR, t +rkD*dt);
-
-}else{
-    CollectEdgeData(Nfaces,o_EdgeData,o_q,o_x,o_y,o_nx,o_ny, o_bL,o_bR, o_qL, o_qR, t +rkB*dt);
-}
-
+    CollectEdgeData(Nfaces,o_EdgeData,o_q,o_x,o_y,o_nx,o_ny, o_bL,o_bR, o_qL, o_qR, intermediatetime);
 
 
 
@@ -1103,18 +1088,8 @@ o_qR.copyFrom(qR);
 
 
 
-device.finish();
 
-
-if (NumFlux==1){
-    calcNumFluxes(Nfaces,o_nx,o_ny,o_scal,o_qL,o_qR,o_bL,o_bR,o_SurfaceParts,globalLambdaMax);
-
-}else{
-    calcNumFluxes(Nfaces,o_nx,o_ny,o_scal,o_qL,o_qR,o_bL,o_bR,o_SurfaceParts);
-}
-
-//calcNumFluxes(Nfaces,o_nx,o_ny,o_scal,o_qL,o_qR,o_bL,o_bR,o_SurfaceParts);
-device.finish();
+calcNumFluxes(Nfaces,o_nx,o_ny,o_scal,o_qL,o_qR,o_bL,o_bR,o_SurfaceParts);
 
 
 
@@ -1167,7 +1142,7 @@ scaleGradient(Nelem,o_q,o_qGradientX,o_qGradientY);
 
 
 
-CollectEdgeDataGradient(Nfaces,o_EdgeData,o_qGradientX,o_qGradientY,o_ViscPara,o_ViscParaL,o_ViscParaR, o_qGradientXL, o_qGradientXR,o_qGradientYL, o_qGradientYR, t +rkB*dt);
+CollectEdgeDataGradient(Nfaces,o_EdgeData,o_qGradientX,o_qGradientY,o_ViscPara,o_ViscParaL,o_ViscParaR, o_qGradientXL, o_qGradientXR,o_qGradientYL, o_qGradientYR);
 
 o_ViscParaL.copyTo(ViscParaL);
 o_ViscParaR.copyTo(ViscParaR);
@@ -1221,22 +1196,16 @@ UpdateQt(Nelem,o_QtVisc,o_Qt);
 
 
 
-
-
+    // add manufactured source term for convergence test
+    if (Testcase==1){
+        addS(Nelem,o_Bx,o_By,o_B,o_x,o_y,intermediatetime,o_Qt);
+    }
 
 
     if (rkSSP){
-//        calcRK(Nelem,o_Qt,rkA,rkB,o_gRK);
-        if (Testcase==1){
-            addS(Nelem,o_Bx,o_By,o_B,o_x,o_y,t +rkD*dt,o_Qt);
-        }
         UpdateKernel(Nelem,rkA,rkB,rkC,dt,o_Qt,o_Qtmp,o_q);
     }else{
         calcRK(Nelem,o_Qt,rkA,rkB,o_gRK);
-        // add manufactured source term for convergence test
-        if (Testcase==1){
-            addS(Nelem,o_Bx,o_By,o_B,o_x,o_y,t +rkB*dt,o_gRK);
-        }
         UpdateKernel(Nelem,rkC,dt,o_gRK,o_q);
     }
 
@@ -1338,6 +1307,10 @@ if (MPI.rank==0){
 o_q.copyTo(q);
 
 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////ANALYSIS OF SOLUTION ///////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 

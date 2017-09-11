@@ -1,5 +1,5 @@
 
-kernel void calcNumFluxes(const int Nfaces,const dfloat * normalx,const dfloat * normaly,const dfloat *Scal, const dfloat * qL,const dfloat * qR,const dfloat * BL,const dfloat * BR,dfloat * SurfaceParts,dfloat GlobalLambdaMax)
+kernel void calcNumFluxes(const int Nfaces,const dfloat * normalx,const dfloat * normaly,const dfloat *Scal, const dfloat * qL,const dfloat * qR,const dfloat * BL,const dfloat * BR,dfloat * SurfaceParts)
 {
         for (int ifa=0;ifa<Nfaces;ifa++;outer0){
 
@@ -31,40 +31,45 @@ kernel void calcNumFluxes(const int Nfaces,const dfloat * normalx,const dfloat *
                 dfloat vL;
                 dfloat huL;
                 dfloat hvL;
+                dfloat cL;
                 if(hL>PosPresTOL){
                     uL=qL[edgeID+ngl]/hL;
                     vL=qL[edgeID+ngl+ngl]/hL;
                     huL=qL[edgeID+ngl];
                     hvL=qL[edgeID+ngl+ngl];
+                    cL=sqrt(g_const*hL);
                 }else{
 
                     uL =0.0;
                     vL =0.0;
                     huL=0.0;
                     hvL=0.0;
+                    cL=0.0;
                 }
 
                 dfloat uR;
                 dfloat vR;
                 dfloat huR;
                 dfloat hvR;
+                dfloat cR;
                 if(hR>PosPresTOL){
                     uR=qR[edgeID+ngl]/hR;
                     vR=qR[edgeID+ngl+ngl]/hR;
                     huR=qR[edgeID+ngl];
                     hvR=qR[edgeID+ngl+ngl];
+                    cR=sqrt(g_const*hR);
 
                 }else{
                     uR =0.0;
                     vR =0.0;
                     huR=0.0;
                     hvR=0.0;
+                    cR=0.0;
                 }
 
 
 
-//                const dfloat cL=sqrt(g_const*hL);
-//                const dfloat cR=sqrt(g_const*hR);
+
 
 
 
@@ -79,19 +84,18 @@ kernel void calcNumFluxes(const int Nfaces,const dfloat * normalx,const dfloat *
                 const dfloat F3L = nx * huL*vL + ny * (hvL*vL + 0.5 *g_const * hL*hL) ;
                 const dfloat F3R = nx * huR*vR + ny * (hvR*vR + 0.5 *g_const * hR*hR) ;
 
-//                const dfloat maxLambdaL = cL + max(fabs(uL),fabs(vL));
-//                const dfloat maxLambdaR = cR + max(fabs(uR),fabs(vR));
-//                const dfloat maxLambda = max(maxLambdaL,maxLambdaR);
+                const dfloat maxLambdaL = cL + max(fabs(uL),fabs(vL));
+                const dfloat maxLambdaR = cR + max(fabs(uR),fabs(vR));
+                const dfloat maxLambda = max(maxLambdaL,maxLambdaR);
 
-//                const dfloat maxLambda = 0.0;
 
-//                NumFlux[0]=0.5*(F1L+F1R - maxLambda*(hR-hL));
-//                NumFlux[1]=0.5*(F2L+F2R - maxLambda*(huR-huL));
-//                NumFlux[2]=0.5*(F3L+F3R - maxLambda*(hvR-hvL));
+                NumFlux[0]=0.5*(F1L+F1R - maxLambda*(hR-hL));
+                NumFlux[1]=0.5*(F2L+F2R - maxLambda*(huR-huL));
+                NumFlux[2]=0.5*(F3L+F3R - maxLambda*(hvR-hvL));
 
-                NumFlux[0]=0.5*(F1L+F1R - GlobalLambdaMax*(hR-hL));
-                NumFlux[1]=0.5*(F2L+F2R - GlobalLambdaMax*(huR-huL));
-                NumFlux[2]=0.5*(F3L+F3R - GlobalLambdaMax*(hvR-hvL));
+//                NumFlux[0]=0.5*(F1L+F1R - GlobalLambdaMax*(hR-hL));
+//                NumFlux[1]=0.5*(F2L+F2R - GlobalLambdaMax*(huR-huL));
+//                NumFlux[2]=0.5*(F3L+F3R - GlobalLambdaMax*(hvR-hvL));
 
 
 
