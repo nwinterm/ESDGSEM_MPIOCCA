@@ -11,7 +11,7 @@ using namespace Constants;
 class basis
 {
     public:
-        basis(const int,const bool);
+        basis(const int,const int);
         int N,ngl,ngl2;//,NelemX,NelemY;
         int Nelem;
         int Nelem_global;
@@ -41,7 +41,8 @@ class basis
         void L2Norm(const dfloat[],const dfloat[],const dfloat[],dfloat[]);
         void calcElementSizes(const dfloat [],dfloat [],dfloat *minEleSize);
         void LinfNorm(const dfloat[],const dfloat[],dfloat[]);
-        void setNelem(const int,const int);
+        void setNelemLocal(const int);
+        void setNelemGlobal(const int);
         void  calcEntropyDelta(const dfloat g_const,const dfloat Q[],const dfloat Q_init[],const dfloat b[],const dfloat J[],dfloat *EntropyDelta);
         void ConvertToModal(const dfloat *Q_nodal, dfloat *Q_modal);
         void EvaluteModalPolynomial(const dfloat Q_modal[], dfloat Q_nodal[]);

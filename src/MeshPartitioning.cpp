@@ -32,10 +32,10 @@ void MeshPartitioning::DivideMesh(const Mesh GlobalMesh,const MPI_setup MPI)
 
    global_NumElements=GlobalMesh.m_num_elements;
 
-   	 for (int i=1;i<NumProcessors;i++){
-        MPI_Isend (&global_NumElements,1,MPI_INT,i,i,MPI_COMM_WORLD,&MPI.reqs[i]);
-	 }
-    MPI_Waitall(NumProcessors,MPI.reqs, MPI.stats);
+//   	 for (int i=1;i<NumProcessors;i++){
+//        MPI_Isend (&global_NumElements,1,MPI_INT,i,i,MPI_COMM_WORLD,&MPI.reqs[i]);
+//	 }
+//    MPI_Waitall(NumProcessors,MPI.reqs, MPI.stats);
 
    global_NumEdges=GlobalMesh.m_num_edges;
 
@@ -55,16 +55,25 @@ void MeshPartitioning::DivideMesh(const Mesh GlobalMesh,const MPI_setup MPI)
 	 }
 
 
-	 NumElements=ElementsPerProc[0]; // set number of elements for host
-	 //SEND number of elements to other tasks
-	 for (int i=1;i<NumProcessors;i++){
-            cout << "Elements in processor " << i+1 <<" : " << ElementsPerProc[i] <<"\n";
-            MPI_Send (&ElementsPerProc[i],1,MPI_INT,i,i,MPI_COMM_WORLD);
-
-	 }
+//	 NumElements=ElementsPerProc[0]; // set number of elements for host
+//	 //SEND number of elements to other tasks
+//	 for (int i=1;i<NumProcessors;i++){
+//            cout << "Elements in processor " << i+1 <<" : " << ElementsPerProc[i] <<"\n";
+//            MPI_Send (&ElementsPerProc[i],1,MPI_INT,i,i,MPI_COMM_WORLD);
+//
+//	 }
+	 MPI_Scatter (&ElementsPerProc[0],1,MPI_INT,&NumElements,1,MPI_INT,0,MPI_COMM_WORLD);
 //    MPI_Waitall(NumProcessors,MPI.reqs, MPI.stats);
 
-
+//MPI_Scatter(
+//    void* send_data,
+//    int send_count,
+//    MPI_Datatype send_datatype,
+//    void* recv_data,
+//    int recv_count,
+//    MPI_Datatype recv_datatype,
+//    int root,
+//    MPI_Comm communicator)
 
 
 
@@ -283,18 +292,19 @@ for (int is=1;is<=global_NumEdges;is++){
 
 
 
-NumEdges=EdgesPerProc[0];// set edge number for host
+//NumEdges=EdgesPerProc[0];// set edge number for host
+//
+//cout << "Edges in processor " << 1 <<" : " << EdgesPerProc[0] <<"\n";
+// for (int i=1;i<NumProcessors;i++){
+//        cout << "Edges in processor " << i+1 <<" : " << EdgesPerProc[i] <<"\n";
+//        MPI_Send (&EdgesPerProc[i],1,MPI_INT,i,i,MPI_COMM_WORLD);
+// }
 
-//cout << "My NumEdges is " << NumEdges <<"\n";
-cout << "Edges in processor " << 1 <<" : " << EdgesPerProc[0] <<"\n";
- for (int i=1;i<NumProcessors;i++){
-        cout << "Edges in processor " << i+1 <<" : " << EdgesPerProc[i] <<"\n";
-        MPI_Send (&EdgesPerProc[i],1,MPI_INT,i,i,MPI_COMM_WORLD);
- }
+ MPI_Scatter (&EdgesPerProc[0],1,MPI_INT,&NumEdges,1,MPI_INT,0,MPI_COMM_WORLD);
 //MPI_Waitall(NumProcessors,MPI.reqs, MPI.stats);
-  for (int i=1;i<NumProcessors;i++){
-        MPI_Send (&global_NumEdges,1,MPI_INT,i,i,MPI_COMM_WORLD);
- }
+//  for (int i=1;i<NumProcessors;i++){
+//        MPI_Send (&global_NumEdges,1,MPI_INT,i,i,MPI_COMM_WORLD);
+// }
 //MPI_Waitall(NumProcessors,MPI.reqs, MPI.stats);
 
 MyEdgesLocalToGlobal= (int*) calloc(NumEdges,sizeof(int));
@@ -631,12 +641,15 @@ for (int iproc=2;iproc<=NumProcessors;iproc++){
 
 void MeshPartitioning::ReceiveMesh(const MPI_setup MPI){
 
-    MPI_Recv(&global_NumElements,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+//    MPI_Recv(&global_NumElements,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&reqs[MPI.rank], stats);
 //    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
 
-    MPI_Recv(&NumElements,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+//    MPI_Recv(&NumElements,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+     MPI_Scatter (&ElementsPerProc[0],1,MPI_INT,&NumElements,1,MPI_INT,0,MPI_COMM_WORLD);
+
+//cout << "MPI rank: " << MPI.rank << " my elements: " << NumElements << "\n";
 //    MPI_Wait(&reqs[MPI.rank], stats);
 //    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 //    MPI_Waitall(NumProcessors,MPI.reqs, MPI.stats);
@@ -650,11 +663,14 @@ void MeshPartitioning::ReceiveMesh(const MPI_setup MPI){
 
 
 
-    MPI_Recv(&NumEdges,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+//    MPI_Recv(&NumEdges,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+
+     MPI_Scatter (&EdgesPerProc[0],1,MPI_INT,&NumEdges,1,MPI_INT,0,MPI_COMM_WORLD);
+//     cout << "MPI rank: " << MPI.rank << " my NumEdges: " << NumEdges << "\n";
 //    MPI_Wait(&reqs[MPI.rank], stats);
 //    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
-    MPI_Recv(&global_NumEdges,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+//    MPI_Recv(&global_NumEdges,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&reqs[MPI.rank], stats);
 //    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 

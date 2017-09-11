@@ -9,7 +9,7 @@ using namespace std;
 
 
 
-basis::basis(const int Ninput, const bool FluxDifferencing){
+basis::basis(const int Ninput, const int FluxDifferencing){
 
 N=Ninput;
 //NelemX=NelemXinput;
@@ -438,9 +438,14 @@ else{
 
 
 
-void basis :: setNelem(const int input_Nelem,const int input_Nelem_global){
+void basis :: setNelemLocal(const int input_Nelem){
 
 Nelem=input_Nelem;
+
+};
+void basis :: setNelemGlobal(const int input_Nelem_global){
+
+
 Nelem_global=input_Nelem_global;
 };
 

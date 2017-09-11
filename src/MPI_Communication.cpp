@@ -2,7 +2,31 @@
 #include "MPI_Communication.h"
 
 //#include "Constants.hpp"
+  void ShareInputData(MPI_setup MPI, int *N,dfloat *CFL,dfloat *DFL, dfloat *T,dfloat *g_const,int *ArtificialViscosity,int *PositivityPreserving,dfloat *epsilon_0,dfloat *sigma_min,dfloat *sigma_max,int *PlotVar,int *NumPlots,int *NumTimeChecks,int *Testcase, int *ES,int *NumFlux, int *FluxDifferencing, int *rkorder, int *rkSSP){
 
+
+	 MPI_Bcast (&*N,1,MPI_INT,0,MPI_COMM_WORLD);
+     MPI_Bcast (&*CFL,1,MPI_DFLOAT,0,MPI_COMM_WORLD);
+     MPI_Bcast (&*DFL,1,MPI_DFLOAT,0,MPI_COMM_WORLD);
+	 MPI_Bcast (&*T,1,MPI_DFLOAT,0,MPI_COMM_WORLD);
+	 MPI_Bcast (&*g_const,1,MPI_DFLOAT,0,MPI_COMM_WORLD);
+	 MPI_Bcast (&*ArtificialViscosity,1,MPI_INT,0,MPI_COMM_WORLD);
+	 MPI_Bcast (&*PositivityPreserving,1,MPI_INT,0,MPI_COMM_WORLD);
+	 MPI_Bcast (&*epsilon_0,1,MPI_DFLOAT,0,MPI_COMM_WORLD);
+	 MPI_Bcast (&*sigma_min,1,MPI_DFLOAT,0,MPI_COMM_WORLD);
+	 MPI_Bcast (&*sigma_max,1,MPI_DFLOAT,0,MPI_COMM_WORLD);
+	 MPI_Bcast (&*PlotVar,1,MPI_INT,0,MPI_COMM_WORLD);
+	 MPI_Bcast (&*NumPlots,1,MPI_INT,0,MPI_COMM_WORLD);
+     MPI_Bcast (&*NumTimeChecks,1,MPI_INT,0,MPI_COMM_WORLD);
+     MPI_Bcast (&*Testcase,1,MPI_INT,0,MPI_COMM_WORLD);
+     MPI_Bcast (&*ES,1,MPI_INT,0,MPI_COMM_WORLD);
+     MPI_Bcast (&*NumFlux,1,MPI_INT,0,MPI_COMM_WORLD);
+     MPI_Bcast (&*FluxDifferencing,1,MPI_INT,0,MPI_COMM_WORLD);
+     MPI_Bcast (&*rkorder,1,MPI_INT,0,MPI_COMM_WORLD);
+     MPI_Bcast (&*rkSSP,1,MPI_INT,0,MPI_COMM_WORLD);
+
+//int *PlotVar,int *NumPlots,int *NumTimeChecks,int *Testcase, bool *ES,int *NumFlux, bool *FluxDifferencing, bool *Cartesian,int *rkorder, bool *rkSSP
+  }
 
   void CollectEdgeDataMPI(MPI_setup MPI, const MeshPartitioning MeshSplit, dfloat qL[], dfloat qR[]){
 

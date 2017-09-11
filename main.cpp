@@ -173,8 +173,8 @@ int PlotVar;
 int ArtificialViscosity;
 int PositivityPreserving;
 int rkorder;
-bool rkSSP;
-bool ES,Cartesian,Fluxdifferencing;
+int rkSSP;
+int ES,Cartesian,Fluxdifferencing;
 int NumFlux;
 string meshFile;
 dfloat dt,T,CFL,DFL;
@@ -182,7 +182,14 @@ dfloat g_const;
 dfloat epsilon_0,sigma_min,sigma_max;
 dfloat t=0.0;
 int NumPlots,NumTimeChecks,Testcase;
+
+if(MPI.rank==0){
+cout << "rank 0 reading input file \n";
 ReadInputFile(&N, &meshFile,&CFL,&DFL,&T,&g_const,&ArtificialViscosity,&PositivityPreserving,&epsilon_0,&sigma_min,&sigma_max,&PlotVar,&NumPlots,&NumTimeChecks,&Testcase,&ES,&NumFlux,&Fluxdifferencing,&Cartesian,&rkorder, &rkSSP);
+}
+
+ShareInputData(MPI,&N,&CFL,&DFL,&T,&g_const,&ArtificialViscosity,&PositivityPreserving,&epsilon_0,&sigma_min,&sigma_max,&PlotVar,&NumPlots,&NumTimeChecks,&Testcase,&ES,&NumFlux,&Fluxdifferencing,&rkorder, &rkSSP);
+
 if (Testcase == 31){
     dfloat h0 = 0.1;
     dfloat a=1.0;
@@ -262,7 +269,9 @@ if(MPI.rank==0){
 
 Nelem=DGMeshPartition.NumElements;
 Nfaces=DGMeshPartition.NumEdges;
-DGBasis.setNelem(Nelem,Nelem_global);
+DGBasis.setNelemLocal(Nelem);
+if(MPI.rank==0){
+DGBasis.setNelemGlobal(Nelem_global);}
 
 NoDofs=ngl2*Nelem*Neq;
 NoSpaceDofs=ngl2*Nelem;
@@ -950,13 +959,14 @@ if(MPI.rank==0){
 
 
 
-
+// cout << "rank: " << MPI.rank << " Entering Time Loop!\n";
 
 //TIME LOOP!!
 dfloat globalLambdaMax=0.0;
 dfloat maxViscPara=0.0;
 dfloat dt_i, dt_v;
 dfloat LocalLambdas[DGMeshPartition.NumElements];
+
 //    bool isnaned=false;
 //    int NaNid;
 while (t<T){
@@ -1001,7 +1011,7 @@ if ( ArtificialViscosity==1){
 
 
     if(t+dt>T){dt=T-t;};
-
+//cout << "RANK: " << MPI.rank << " time step: " << dt << "\n";
 
 // save solution pre RK for non low storage runge kutta
     if (rkSSP){
@@ -1217,14 +1227,14 @@ UpdateQt(Nelem,o_QtVisc,o_Qt);
 
     if (rkSSP){
 //        calcRK(Nelem,o_Qt,rkA,rkB,o_gRK);
-        if ((Testcase==1)||(Testcase==16)){
+        if (Testcase==1){
             addS(Nelem,o_Bx,o_By,o_B,o_x,o_y,t +rkD*dt,o_Qt);
         }
         UpdateKernel(Nelem,rkA,rkB,rkC,dt,o_Qt,o_Qtmp,o_q);
     }else{
         calcRK(Nelem,o_Qt,rkA,rkB,o_gRK);
         // add manufactured source term for convergence test
-        if ((Testcase==1)||(Testcase==16)){
+        if (Testcase==1){
             addS(Nelem,o_Bx,o_By,o_B,o_x,o_y,t +rkB*dt,o_gRK);
         }
         UpdateKernel(Nelem,rkC,dt,o_gRK,o_q);

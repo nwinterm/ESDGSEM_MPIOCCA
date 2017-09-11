@@ -1,6 +1,6 @@
 #include "RungeKutta.h"
 
-RungeKutta::RungeKutta(int RkOrder, bool rkSSP)
+RungeKutta::RungeKutta(int RkOrder, int rkSSP)
 {
     switch(RkOrder){
 case 3:

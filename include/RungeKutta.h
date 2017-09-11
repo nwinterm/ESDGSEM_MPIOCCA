@@ -7,7 +7,7 @@ using namespace Constants;
 class RungeKutta
 {
     public:
-        RungeKutta(int,bool);
+        RungeKutta(int,int);
         int rkStages;
         dfloat * CoeffsA;
         dfloat * CoeffsB;
