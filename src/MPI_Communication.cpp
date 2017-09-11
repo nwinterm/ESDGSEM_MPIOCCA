@@ -416,7 +416,11 @@
 
     }
 
+<<<<<<< HEAD
     MPI_Allreduce(&LocalViscParaMax, &*ViscParaMax, 1, MPI_DFLOAT, MPI_MIN,
+=======
+    MPI_Allreduce(&LocalViscParaMax, &*ViscParaMax, 1, MPI_DOUBLE, MPI_MAX,
+>>>>>>> 1a070dd51a7f530b80df78bace3ebb5e8ddd35d7
               MPI_COMM_WORLD);
 
 
