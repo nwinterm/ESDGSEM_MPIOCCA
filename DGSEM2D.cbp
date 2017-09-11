@@ -51,16 +51,15 @@
 		<Unit filename="include/RungeKutta.h" />
 		<Unit filename="include/SW2D.h" />
 		<Unit filename="include/basis.h" />
-		<Unit filename="include/blaslapack.hpp" />
-		<Unit filename="include/headers3d.hpp" />
-		<Unit filename="include/matrix.hpp" />
-		<Unit filename="include/matrix.tpp" />
 		<Unit filename="include/plots.h" />
 		<Unit filename="input.dat" />
 		<Unit filename="main.cpp" />
-		<Unit filename="meshFiles/BoxAroundCircle.mesh" />
-		<Unit filename="meshFiles/PeriodicXandY14.mesh" />
+		<Unit filename="meshFiles/CurveDamN3.mesh" />
+		<Unit filename="meshFiles/PeriodicXandY3.mesh" />
+		<Unit filename="meshFiles/PeriodicXandY4.mesh" />
 		<Unit filename="meshFiles/PeriodicXandY5.mesh" />
+		<Unit filename="meshFiles/PeriodicXandY6.mesh" />
+		<Unit filename="meshFiles/PeriodicXandY7.mesh" />
 		<Unit filename="okl/BR1_Gradient/CollectEdgeDataGradient.okl" />
 		<Unit filename="okl/BR1_Gradient/SurfaceKernelGradient.okl" />
 		<Unit filename="okl/BR1_Gradient/calcGradient.okl" />
@@ -98,7 +97,6 @@
 		<Unit filename="src/RungeKutta.cpp" />
 		<Unit filename="src/SW2D.cpp" />
 		<Unit filename="src/basis.cpp" />
-		<Unit filename="src/matrix.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />

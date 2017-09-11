@@ -539,7 +539,7 @@ for (int iproc=2;iproc<=NumProcessors;iproc++){
         }
     }
 
-        MPI_Send (&tmpValues[0],ngl2*ElementsPerProc[iproc-1],MPI_DOUBLE,iproc-1,iproc-1,MPI_COMM_WORLD);
+        MPI_Send (&tmpValues[0],ngl2*ElementsPerProc[iproc-1],MPI_DFLOAT,iproc-1,iproc-1,MPI_COMM_WORLD);
 //        MPI_Wait(&MPI.reqs[iproc-1], MPI.stats);
     free(tmpValues);
 
@@ -571,7 +571,7 @@ for (int iproc=2;iproc<=NumProcessors;iproc++){
         }
     }
 
-        MPI_Send (&tmpValues[0],ngl*EdgesPerProc[iproc-1],MPI_DOUBLE,iproc-1,iproc-1,MPI_COMM_WORLD);
+        MPI_Send (&tmpValues[0],ngl*EdgesPerProc[iproc-1],MPI_DFLOAT,iproc-1,iproc-1,MPI_COMM_WORLD);
 //        MPI_Wait(&MPI.reqs[iproc-1], MPI.stats);
         free(tmpValues);
 
@@ -682,31 +682,31 @@ J_global = (dfloat*) calloc(NumElements*ngl2,sizeof(dfloat));
 
 
 
-    MPI_Recv(&x_global[0],ngl2*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+    MPI_Recv(&x_global[0],ngl2*NumElements,MPI_DFLOAT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
 
-    MPI_Recv(&y_global[0],ngl2*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+    MPI_Recv(&y_global[0],ngl2*NumElements,MPI_DFLOAT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
 
-    MPI_Recv(&yEta_global[0],ngl2*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+    MPI_Recv(&yEta_global[0],ngl2*NumElements,MPI_DFLOAT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
 
-    MPI_Recv(&xEta_global[0],ngl2*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+    MPI_Recv(&xEta_global[0],ngl2*NumElements,MPI_DFLOAT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
 
-    MPI_Recv(&yXi_global[0],ngl2*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+    MPI_Recv(&yXi_global[0],ngl2*NumElements,MPI_DFLOAT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
 
-    MPI_Recv(&xXi_global[0],ngl2*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+    MPI_Recv(&xXi_global[0],ngl2*NumElements,MPI_DFLOAT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
 
-    MPI_Recv(&J_global[0],ngl2*NumElements,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+    MPI_Recv(&J_global[0],ngl2*NumElements,MPI_DFLOAT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
 
@@ -717,13 +717,13 @@ scal_global = (dfloat*) calloc(ngl*NumEdges,sizeof(dfloat));
 
 
 
-MPI_Recv(&nx_global[0],ngl*NumEdges,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+MPI_Recv(&nx_global[0],ngl*NumEdges,MPI_DFLOAT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
-MPI_Recv(&ny_global[0],ngl*NumEdges,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+MPI_Recv(&ny_global[0],ngl*NumEdges,MPI_DFLOAT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
-MPI_Recv(&scal_global[0],ngl*NumEdges,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
+MPI_Recv(&scal_global[0],ngl*NumEdges,MPI_DFLOAT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
 

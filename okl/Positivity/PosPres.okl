@@ -67,11 +67,11 @@ kernel void PosPres(const int Nelem,const dfloat * restrict EleSizes,const dfloa
             s_HUavg =   s_HUavg/ EleSizes[ie];
            s_HVavg =   s_HVavg/ EleSizes[ie];
 
-
+           dfloat fone = 1.0;
            if (s_Havg == s_Hmin){
-            s_theta = 1.0;
+            s_theta = fone;
            }else{
-            s_theta = min(1.0,s_Havg/(s_Havg-(s_Hmin)));
+            s_theta = min(fone,s_Havg/(s_Havg-(s_Hmin)));
            }
 
 
@@ -89,6 +89,8 @@ kernel void PosPres(const int Nelem,const dfloat * restrict EleSizes,const dfloa
             for (int j=0; j<ngl;++j;inner0){
                     const int id = ie*ngl2*Neq   +j*ngl+i;
 
+                    dfloat zero = 0.0;
+
 					dfloat h_new =0.0;
 					dfloat hu_new=0.0;
 					dfloat hv_new=0.0;
@@ -101,7 +103,7 @@ kernel void PosPres(const int Nelem,const dfloat * restrict EleSizes,const dfloa
 					dfloat r_hvAvg = s_HVavg;
 					dfloat r_theta = s_theta;
 
-                    if (r_hAvg>0.0){
+                    if (r_hAvg>zero){
 //                   if (r_hAvg>=PosPresTOL){
 
                         h_new =  fabs(r_theta * ( r_h - r_hAvg ) + r_hAvg);
@@ -129,11 +131,6 @@ kernel void PosPres(const int Nelem,const dfloat * restrict EleSizes,const dfloa
 
                     }
 
-//					if (!(isfinite(hu_new))){hu_new=0.0;}
-//					if (!(isfinite(hv_new))){hv_new=0.0;}
-
-//					if(!(fabs(hu_new)>=0.0)){hu_new=0.0;}
-//					if(!(fabs(hv_new)>=0.0)){hv_new=0.0;}
 
 
 

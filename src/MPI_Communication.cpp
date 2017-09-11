@@ -27,9 +27,9 @@
             int tagRecv = MeshSplit.CommTags[cpuR*MeshSplit.NumProcessors + MPI.rank];//(cpuR+1,MPI.rank+1);
 
 
-            MPI_Isend(&qL[id],EdgesToSend*ngl*Neq,MPI_DOUBLE,cpuR,tagSend,MPI_COMM_WORLD,&MPI.Send_q_reqs[cpuR]);
+            MPI_Isend(&qL[id],EdgesToSend*ngl*Neq,MPI_DFLOAT,cpuR,tagSend,MPI_COMM_WORLD,&MPI.Send_q_reqs[cpuR]);
 
-            MPI_Irecv(&qR[id],EdgesToSend*ngl*Neq,MPI_DOUBLE,cpuR,tagRecv,MPI_COMM_WORLD,&MPI.Recv_q_reqs[cpuR]);
+            MPI_Irecv(&qR[id],EdgesToSend*ngl*Neq,MPI_DFLOAT,cpuR,tagRecv,MPI_COMM_WORLD,&MPI.Recv_q_reqs[cpuR]);
 
 
         }
@@ -66,9 +66,9 @@
             int tagRecv = MeshSplit.CommTags[cpuR*MeshSplit.NumProcessors + MPI.rank];//(cpuR+1,MPI.rank+1);
 
 
-            MPI_Isend(&bL[idx],EdgesToSend*ngl,MPI_DOUBLE,cpuR,MeshSplit.NumProcessors*MeshSplit.NumProcessors+tagSend,MPI_COMM_WORLD,&MPI.Send_b_reqs[cpuR]);
+            MPI_Isend(&bL[idx],EdgesToSend*ngl,MPI_DFLOAT,cpuR,MeshSplit.NumProcessors*MeshSplit.NumProcessors+tagSend,MPI_COMM_WORLD,&MPI.Send_b_reqs[cpuR]);
 
-            MPI_Irecv(&bR[idx],EdgesToSend*ngl,MPI_DOUBLE,cpuR,MeshSplit.NumProcessors*MeshSplit.NumProcessors+tagRecv,MPI_COMM_WORLD,&MPI.Recv_b_reqs[cpuR]);
+            MPI_Irecv(&bR[idx],EdgesToSend*ngl,MPI_DFLOAT,cpuR,MeshSplit.NumProcessors*MeshSplit.NumProcessors+tagRecv,MPI_COMM_WORLD,&MPI.Recv_b_reqs[cpuR]);
 
         }
 
@@ -110,13 +110,13 @@
 //            int tagRecv = MeshSplit.CommTags(cpuR+1,MPI.rank+1);
 
 
-            MPI_Isend(&qGradXL[id],EdgesToSend*ngl*Neq,MPI_DOUBLE,cpuR,  tagSend   ,MPI_COMM_WORLD,&MPI.Send_qX_reqs[cpuR]);
-            MPI_Isend(&qGradYL[id],EdgesToSend*ngl*Neq,MPI_DOUBLE,cpuR,MeshSplit.NumProcessors*MeshSplit.NumProcessors  +tagSend   ,MPI_COMM_WORLD,&MPI.Send_qY_reqs[cpuR]);
-            MPI_Isend(&ViscParaL[startIndex],EdgesToSend,MPI_DOUBLE,cpuR,2*MeshSplit.NumProcessors*MeshSplit.NumProcessors  +tagSend      ,MPI_COMM_WORLD,&MPI.Send_ViscPar_reqs[cpuR]);
+            MPI_Isend(&qGradXL[id],EdgesToSend*ngl*Neq,MPI_DFLOAT,cpuR,  tagSend   ,MPI_COMM_WORLD,&MPI.Send_qX_reqs[cpuR]);
+            MPI_Isend(&qGradYL[id],EdgesToSend*ngl*Neq,MPI_DFLOAT,cpuR,MeshSplit.NumProcessors*MeshSplit.NumProcessors  +tagSend   ,MPI_COMM_WORLD,&MPI.Send_qY_reqs[cpuR]);
+            MPI_Isend(&ViscParaL[startIndex],EdgesToSend,MPI_DFLOAT,cpuR,2*MeshSplit.NumProcessors*MeshSplit.NumProcessors  +tagSend      ,MPI_COMM_WORLD,&MPI.Send_ViscPar_reqs[cpuR]);
 
-            MPI_Irecv(&qGradXR[id],EdgesToSend*ngl*Neq,MPI_DOUBLE,cpuR,tagRecv,MPI_COMM_WORLD,&MPI.Recv_qX_reqs[cpuR]);
-            MPI_Irecv(&qGradYR[id],EdgesToSend*ngl*Neq,MPI_DOUBLE,cpuR,MeshSplit.NumProcessors*MeshSplit.NumProcessors+tagRecv,MPI_COMM_WORLD,&MPI.Recv_qY_reqs[cpuR]);
-            MPI_Irecv(&ViscParaR[startIndex],EdgesToSend,MPI_DOUBLE,cpuR,2*MeshSplit.NumProcessors*MeshSplit.NumProcessors  +tagRecv,MPI_COMM_WORLD,&MPI.Recv_ViscPar_reqs[cpuR]);
+            MPI_Irecv(&qGradXR[id],EdgesToSend*ngl*Neq,MPI_DFLOAT,cpuR,tagRecv,MPI_COMM_WORLD,&MPI.Recv_qX_reqs[cpuR]);
+            MPI_Irecv(&qGradYR[id],EdgesToSend*ngl*Neq,MPI_DFLOAT,cpuR,MeshSplit.NumProcessors*MeshSplit.NumProcessors+tagRecv,MPI_COMM_WORLD,&MPI.Recv_qY_reqs[cpuR]);
+            MPI_Irecv(&ViscParaR[startIndex],EdgesToSend,MPI_DFLOAT,cpuR,2*MeshSplit.NumProcessors*MeshSplit.NumProcessors  +tagRecv,MPI_COMM_WORLD,&MPI.Recv_ViscPar_reqs[cpuR]);
 
 
 
@@ -164,7 +164,7 @@
     dfloat * q_tmp = (dfloat*) calloc(varDim,sizeof(dfloat));
 //    dfloat q_tmp[varDim];
 
-    MPI_Recv(&q_tmp[0],varDim,MPI_DOUBLE,iproc,iproc,MPI_COMM_WORLD, MPI.stats);
+    MPI_Recv(&q_tmp[0],varDim,MPI_DFLOAT,iproc,iproc,MPI_COMM_WORLD, MPI.stats);
 
 
 
@@ -200,7 +200,7 @@
 
     int varDim = ngl2*Neq * MeshSplit.NumElements;
 
-    MPI_Send(&Q[0],varDim,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD);
+    MPI_Send(&Q[0],varDim,MPI_DFLOAT,0,MPI.rank,MPI_COMM_WORLD);
 
 
 
@@ -225,7 +225,7 @@
 
     }
 
-    MPI_Allreduce(&LocalLambdaMax, &*LambdaMax, 1, MPI_DOUBLE, MPI_MAX,
+    MPI_Allreduce(&LocalLambdaMax, &*LambdaMax, 1, MPI_DFLOAT, MPI_MAX,
               MPI_COMM_WORLD);
 
 
@@ -241,7 +241,7 @@
 
 
  dfloat localMinEleSize = minEleSize;
-    MPI_Allreduce(&localMinEleSize, &*globalMinEleSize, 1, MPI_DOUBLE, MPI_MIN,
+    MPI_Allreduce(&localMinEleSize, &*globalMinEleSize, 1, MPI_DFLOAT, MPI_MIN,
               MPI_COMM_WORLD);
 
   }
@@ -268,7 +268,7 @@
     dfloat * q_tmp = (dfloat*) calloc(varDim,sizeof(dfloat));
 //    dfloat q_tmp[varDim];
 
-    MPI_Recv(&q_tmp[0],varDim,MPI_DOUBLE,iproc,iproc,MPI_COMM_WORLD, MPI.stats);
+    MPI_Recv(&q_tmp[0],varDim,MPI_DFLOAT,iproc,iproc,MPI_COMM_WORLD, MPI.stats);
 
 
 
@@ -296,7 +296,7 @@
 
     int varDim = MeshSplit.NumElements;
 
-    MPI_Send(&ViscPara[0],varDim,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD);
+    MPI_Send(&ViscPara[0],varDim,MPI_DFLOAT,0,MPI.rank,MPI_COMM_WORLD);
 
 
 
@@ -347,9 +347,9 @@
     dfloat * qy_tmp = (dfloat*) calloc(varDim,sizeof(dfloat));
 //    dfloat q_tmp[varDim];
 
-    MPI_Recv(&qx_tmp[0],varDim,MPI_DOUBLE,iproc,iproc,MPI_COMM_WORLD, MPI.stats);
+    MPI_Recv(&qx_tmp[0],varDim,MPI_DFLOAT,iproc,iproc,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&MPI.reqs[iproc], MPI.stats);
-    MPI_Recv(&qy_tmp[0],varDim,MPI_DOUBLE,iproc,iproc,MPI_COMM_WORLD, MPI.stats);
+    MPI_Recv(&qy_tmp[0],varDim,MPI_DFLOAT,iproc,iproc,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&MPI.reqs[iproc], MPI.stats);
 
 
@@ -390,10 +390,10 @@
 
     int varDim = ngl2*Neq * MeshSplit.NumElements;
 
-    MPI_Send(&Qx[0],varDim,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD);
+    MPI_Send(&Qx[0],varDim,MPI_DFLOAT,0,MPI.rank,MPI_COMM_WORLD);
 //    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
-    MPI_Send(&Qy[0],varDim,MPI_DOUBLE,0,MPI.rank,MPI_COMM_WORLD);
+    MPI_Send(&Qy[0],varDim,MPI_DFLOAT,0,MPI.rank,MPI_COMM_WORLD);
 //    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
 
@@ -416,7 +416,7 @@
 
     }
 
-    MPI_Allreduce(&LocalViscParaMax, &*ViscParaMax, 1, MPI_DOUBLE, MPI_MIN,
+    MPI_Allreduce(&LocalViscParaMax, &*ViscParaMax, 1, MPI_DFLOAT, MPI_MIN,
               MPI_COMM_WORLD);
 
 

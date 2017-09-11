@@ -448,7 +448,8 @@ case 32:     // Three Mound (4.6)
     dfloat m1 = 1.0-0.1 * sqrt(  Xm30Pow2 + Ym225Pow2  );
     dfloat m2 = 1.0-0.1 * sqrt(  Xm30Pow2 + Ym75Pow2  );
     dfloat m3 = 2.8-0.28 * sqrt(  Xm475Pow2 + Ym15Pow2  );
-    b[xid] = max(max(0.0,m1),max(m2,m3));
+    dfloat zero = 0.0;
+    b[xid] = max(max(zero,m1),max(m2,m3));
 
 
     break;
@@ -466,7 +467,8 @@ case 33:     // Dam Break Three Mound (4.6)
     dfloat m1 = 1.0-0.1 * sqrt(  Xm30Pow2 + Ym225Pow2  );
     dfloat m2 = 1.0-0.1 * sqrt(  Xm30Pow2 + Ym75Pow2  );
     dfloat m3 = 2.8-0.28 * sqrt(  Xm475Pow2 + Ym15Pow2  );
-    b[xid] = max(max(0.0,m1),max(m2,m3));
+    dfloat zero = 0.0;
+    b[xid] = max(max(zero,m1),max(m2,m3));
 
 
     break;
