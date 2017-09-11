@@ -104,13 +104,11 @@ kernel void PosPres(const int Nelem,const dfloat * restrict EleSizes,const dfloa
 					dfloat r_theta = s_theta;
 
                     if (r_hAvg>zero){
-//                   if (r_hAvg>=PosPresTOL){
 
                         h_new =  fabs(r_theta * ( r_h - r_hAvg ) + r_hAvg);
 
 
 
-//h_new =  fabs(r_theta * ( r_h - r_hAvg ) + r_hAvg);
                         if (h_new > PosPresTOL){
                                 hu_new = r_theta * (r_hu -  r_huAvg) +  r_huAvg;
                                 hv_new = r_theta * (r_hv -  r_hvAvg) + r_hvAvg;

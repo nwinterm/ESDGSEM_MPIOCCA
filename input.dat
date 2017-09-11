@@ -2,11 +2,7 @@ meshFile=meshFiles/CurveDamN3.mesh
 N=3
 CFL=0.1
 DFL=0.01
-<<<<<<< HEAD
 T=0.1
-=======
-T=40.0
->>>>>>> 1a070dd51a7f530b80df78bace3ebb5e8ddd35d7
 g_const=9.81
 ArtificialViscosity=1
 PositivityPreserving=1

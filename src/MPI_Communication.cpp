@@ -215,37 +215,6 @@
 
 
 
-  void GetGlobalLambdaMax(MPI_setup MPI, const MeshPartitioning MeshSplit, const dfloat LocalLambdas[], dfloat * LambdaMax){
-
-
-
-    dfloat LocalLambdaMax=0.0;
-    for (int ie=0;ie<MeshSplit.NumElements;ie++){
-        LocalLambdaMax = max(LocalLambdaMax,LocalLambdas[ie]);
-
-    }
-
-    MPI_Allreduce(&LocalLambdaMax, &*LambdaMax, 1, MPI_DFLOAT, MPI_MAX,
-              MPI_COMM_WORLD);
-
-
-
-
-
-  }
-
-
-
-  void GetGlobalMinEleSize(MPI_setup MPI, const MeshPartitioning MeshSplit, const dfloat minEleSize, dfloat * globalMinEleSize){
-
-
-
- dfloat localMinEleSize = minEleSize;
-    MPI_Allreduce(&localMinEleSize, &*globalMinEleSize, 1, MPI_DFLOAT, MPI_MIN,
-              MPI_COMM_WORLD);
-
-  }
-
 
 
     void CollectViscPara(MPI_setup MPI, const MeshPartitioning MeshSplit, const dfloat ViscPara[], dfloat ViscPara_global[]){
@@ -405,6 +374,35 @@
 
 
 
+  void GetGlobalLambdaMax(MPI_setup MPI, const MeshPartitioning MeshSplit, const dfloat LocalLambdas[], dfloat * LambdaMax){
+
+
+
+    dfloat LocalLambdaMax=0.0;
+    for (int ie=0;ie<MeshSplit.NumElements;ie++){
+        LocalLambdaMax = max(LocalLambdaMax,LocalLambdas[ie]);
+
+    }
+
+    MPI_Allreduce(&LocalLambdaMax, &*LambdaMax, 1, MPI_DFLOAT, MPI_MAX,MPI_COMM_WORLD);
+
+
+
+
+
+  }
+
+
+
+  void GetGlobalMinEleSize(MPI_setup MPI, const MeshPartitioning MeshSplit, const dfloat minEleSize, dfloat * globalMinEleSize){
+
+
+
+ dfloat localMinEleSize = minEleSize;
+    MPI_Allreduce(&localMinEleSize, &*globalMinEleSize, 1, MPI_DFLOAT, MPI_MIN,MPI_COMM_WORLD);
+
+  }
+
 
   void GetGlobalViscParaMax(MPI_setup MPI, const MeshPartitioning MeshSplit, const dfloat LocalViscPara[], dfloat * ViscParaMax){
 
@@ -416,12 +414,7 @@
 
     }
 
-<<<<<<< HEAD
-    MPI_Allreduce(&LocalViscParaMax, &*ViscParaMax, 1, MPI_DFLOAT, MPI_MIN,
-=======
-    MPI_Allreduce(&LocalViscParaMax, &*ViscParaMax, 1, MPI_DOUBLE, MPI_MAX,
->>>>>>> 1a070dd51a7f530b80df78bace3ebb5e8ddd35d7
-              MPI_COMM_WORLD);
+    MPI_Allreduce(&LocalViscParaMax, &*ViscParaMax, 1, MPI_DFLOAT, MPI_MAX,MPI_COMM_WORLD);
 
 
 

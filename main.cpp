@@ -674,11 +674,13 @@ info.addDefine("dfloat", dfloatString);
 info.addDefine("dfloat4", dfloat4String);
 info.addDefine("ES", ES);
 info.addDefine("Testcase", Testcase);
-info.addDefine("geomFace", 1.0/DGBasis.w_GL[0]);
+dfloat geomface = 1.0/DGBasis.w_GL[0];
+info.addDefine("geomFace",geomface );
 info.addDefine("eps0",epsilon_0);
 info.addDefine("sigmaMax",sigma_max);
 info.addDefine("sigmaMin",sigma_min);
-info.addDefine("PosPresTOL",pow(10.0,-3));
+dfloat TOL_PosPres = pow(10.0,-3);
+info.addDefine("PosPresTOL",TOL_PosPres);
 
 //copy all permanent data onto the device
 if(MPI.rank==0){cout <<"Copy Necessary Data onto Device...";}
