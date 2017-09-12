@@ -22,7 +22,7 @@ class basis
 
 
         dfloat * D;
-//        fmatrix D;
+        dfloat * Dstrong;
         dfloat * D0;
         dfloat *  Dhat;
         dfloat *  x_GL;

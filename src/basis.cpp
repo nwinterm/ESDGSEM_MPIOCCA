@@ -29,6 +29,7 @@ ngl2=ngl*ngl;
 D = (dfloat*) calloc(ngl2,sizeof(dfloat));
 Dhat = (dfloat*) calloc(ngl2,sizeof(dfloat));
 D0 = (dfloat*) calloc(ngl2,sizeof(dfloat));
+Dstrong = (dfloat*) calloc(ngl2,sizeof(dfloat));
 //Dhat.resize(ngl,ngl);
 //D0.resize(ngl,ngl);
 
@@ -82,6 +83,7 @@ PolynomialDerivativeMatrix();
 for (int i=0;i<ngl;++i){
     for(int j=0;j<ngl;++j){
         D0[i*ngl+j]=D[i*ngl+j];
+        Dstrong[i*ngl+j]=D[i*ngl+j];
         if (FluxDifferencing){
             D[i*ngl+j]=2*D[i*ngl+j];
         }
@@ -97,6 +99,8 @@ for (int i=0;i<ngl;++i){
 
 D[0] = D[0] + 1.0/w_GL[0];
 D[ngl2-1] = D[ngl2-1] - 1.0/w_GL[ngl-1];
+Dstrong[0] = D0[0] + 1.0/w_GL[0];
+Dstrong[ngl2-1] = D0[ngl2-1] - 1.0/w_GL[ngl-1];
 //cout << "D: ";
 //for(int i = 0; i < ngl; ++i){
 //        for(int j = 0; j < ngl; ++j){

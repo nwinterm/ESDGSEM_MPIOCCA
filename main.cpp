@@ -127,7 +127,7 @@ occa::kernel UpdateQt;
 
 //occa::kernel FluxKernel;
 occa::memory o_Qtmp; // for SSP RK
-occa::memory o_D,o_Dhat,o_Qt,o_gRK,o_q;//,o_Neq,o_ngl,o_Jac;
+occa::memory o_D,o_Dstrong,o_Dhat,o_Qt,o_gRK,o_q;//,o_Neq,o_ngl,o_Jac;
 occa::memory o_VdmInv;//,o_SubCellMat,;
 occa::memory o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta;
 //occa::memory o_Ftilde, o_Gtilde;
@@ -594,6 +594,7 @@ if (rkSSP){
 
 
 o_D  = device.malloc(ngl2*sizeof(dfloat));
+o_Dstrong  = device.malloc(ngl2*sizeof(dfloat));
 o_Dhat  = device.malloc(ngl2*sizeof(dfloat));
 o_VdmInv  = device.malloc(ngl2*sizeof(dfloat));
 //o_SubCellMat = device.malloc(ngl2*sizeof(dfloat));
@@ -704,6 +705,7 @@ o_B.copyFrom(b);
 o_Bx.copyFrom(Bx);
 o_By.copyFrom(By);
 o_D.copyFrom(Dmat);
+o_Dstrong.copyFrom(DGBasis.Dstrong);
 o_Dhat.copyFrom(Dhat);
 o_Jac.copyFrom(J);
 o_ElemEdgeMasterSlave.copyFrom(ElemEdgeMasterSlave);
@@ -1158,7 +1160,7 @@ CollectViscoseEdgeDataMPI(MPI, DGMeshPartition, ViscParaL, ViscParaL, qGradientX
 
 
 // Strong Form for Viscose Volume Kernel?!
-VolumeKernelViscose(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_qGradientX,o_qGradientY,o_D,o_ViscPara,o_QtVisc);
+VolumeKernelViscose(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_qGradientX,o_qGradientY,o_Dstrong,o_ViscPara,o_QtVisc);
 //VolumeKernelViscose(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_qGradientX,o_qGradientY,o_Dhat,o_ViscPara,o_QtVisc);
 
 
