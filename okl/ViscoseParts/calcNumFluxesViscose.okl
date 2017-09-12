@@ -31,7 +31,7 @@ kernel void calcNumFluxesViscose(const int Nfaces,const int * EdgeData,const dfl
                 const dfloat fVisc3_R = nx* qXR[edgeID+ngl+ngl] + ny * qYR[edgeID+ngl+ngl] ;
 
 
-                const dfloat viscPara = 0.5*(ViscParaL[ifa] + ViscParaR[ifa]);
+             //   const dfloat viscPara = 0.5*(ViscParaL[ifa] + ViscParaR[ifa]);
 
                 if (cpuL == -1) {
                     NumFlux[0]=0.0;
@@ -45,9 +45,9 @@ kernel void calcNumFluxesViscose(const int Nfaces,const int * EdgeData,const dfl
 
 
 		}else{
-                    NumFlux[0]=0.5*(fVisc1_L+fVisc1_R);
-                    NumFlux[1]=0.5*(fVisc2_L+fVisc2_R);
-                    NumFlux[2]=0.5*(fVisc3_L+fVisc3_R);
+              //      NumFlux[0]=0.5*(fVisc1_L+fVisc1_R);
+              //      NumFlux[1]=0.5*(fVisc2_L+fVisc2_R);
+              //      NumFlux[2]=0.5*(fVisc3_L+fVisc3_R);
 
 
                     NumFlux[0]=0.5*(ViscParaL[ifa]*fVisc1_L+ViscParaR[ifa]*fVisc1_R);
