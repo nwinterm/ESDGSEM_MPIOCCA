@@ -1157,9 +1157,9 @@ CollectViscoseEdgeDataMPI(MPI, DGMeshPartition, ViscParaL, ViscParaL, qGradientX
 
 
 
-
-
-VolumeKernelViscose(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_qGradientX,o_qGradientY,o_Dhat,o_ViscPara,o_QtVisc);
+// Strong Form for Viscose Volume Kernel?!
+VolumeKernelViscose(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_qGradientX,o_qGradientY,o_D,o_ViscPara,o_QtVisc);
+//VolumeKernelViscose(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_qGradientX,o_qGradientY,o_Dhat,o_ViscPara,o_QtVisc);
 
 
 
