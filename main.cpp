@@ -1114,7 +1114,7 @@ if ( ArtificialViscosity==1){
 
 
     // at first RK step we already now o_ViscPara from time step computation!
-    if (rkstage>1){
+    if (rkstage>0){
         ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara);
     }
 
