@@ -41,10 +41,10 @@ kernel void PosPres(const int Nelem,const dfloat * restrict EleSizes,const dfloa
 // Very naive way to integrate over an element
 
         for (int l=0; l<1; ++l;inner0){
-            s_Hmin = 0.0;
-            s_Havg = 0.0;
-            s_HUavg = 0.0;
-            s_HVavg = 0.0;
+            s_Hmin = zero;
+            s_Havg = zero;
+            s_HUavg = zero;
+            s_HVavg = zero;
 
             occaUnroll(ngl) // <- #pragma unroll ngl
             for (int i=0; i<ngl; ++i){
@@ -67,11 +67,10 @@ kernel void PosPres(const int Nelem,const dfloat * restrict EleSizes,const dfloa
             s_HUavg =   s_HUavg/ EleSizes[ie];
            s_HVavg =   s_HVavg/ EleSizes[ie];
 
-           dfloat fone = 1.0;
            if (s_Havg == s_Hmin){
-            s_theta = fone;
+            s_theta = one;
            }else{
-            s_theta = min(fone,s_Havg/(s_Havg-(s_Hmin)));
+            s_theta = min(one,s_Havg/(s_Havg-(s_Hmin)));
            }
 
 
@@ -89,11 +88,10 @@ kernel void PosPres(const int Nelem,const dfloat * restrict EleSizes,const dfloa
             for (int j=0; j<ngl;++j;inner0){
                     const int id = ie*ngl2*Neq   +j*ngl+i;
 
-                    dfloat zero = 0.0;
 
-					dfloat h_new =0.0;
-					dfloat hu_new=0.0;
-					dfloat hv_new=0.0;
+					dfloat h_new =zero;
+					dfloat hu_new=zero;
+					dfloat hv_new=zero;
 
                     dfloat r_h = s_H[i][j];
                     dfloat r_hu = s_Hu[i][j];
@@ -113,8 +111,8 @@ kernel void PosPres(const int Nelem,const dfloat * restrict EleSizes,const dfloa
                                 hu_new = r_theta * (r_hu -  r_huAvg) +  r_huAvg;
                                 hv_new = r_theta * (r_hv -  r_hvAvg) + r_hvAvg;
                         }else{
-                            hu_new = 0.0;
-                            hv_new = 0.0;
+                            hu_new = zero;
+                            hv_new = zero;
 
                         }
 
@@ -123,9 +121,9 @@ kernel void PosPres(const int Nelem,const dfloat * restrict EleSizes,const dfloa
 
 
                     }else{
-                        h_new=0.0;
-                        hu_new = 0.0;
-                        hv_new = 0.0;
+                        h_new=zero;
+                        hu_new = zero;
+                        hv_new = zero;
 
                     }
 

@@ -684,12 +684,19 @@ info.addDefine("dfloat", dfloatString);
 info.addDefine("dfloat4", dfloat4String);
 info.addDefine("ES", ES);
 info.addDefine("Testcase", Testcase);
-dfloat geomface = 1.0/DGBasis.w_GL[0];
-info.addDefine("geomFace",geomface );
+
 info.addDefine("eps0",epsilon_0);
 info.addDefine("sigmaMax",sigma_max);
 info.addDefine("sigmaMin",sigma_min);
 dfloat TOL_PosPres = pow(10.0,-3);
+dfloat geomface = 1.0/DGBasis.w_GL[0];
+dfloat zero = 0.0f;
+dfloat half = 0.5f;
+dfloat one = 1.0f;
+info.addDefine("zero",zero );
+info.addDefine("half",half );
+info.addDefine("one",one );
+info.addDefine("geomFace",geomface );
 info.addDefine("PosPresTOL",TOL_PosPres);
 
 //copy all permanent data onto the device
