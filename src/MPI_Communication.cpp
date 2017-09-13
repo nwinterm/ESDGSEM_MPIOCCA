@@ -2,7 +2,27 @@
 #include "MPI_Communication.h"
 
 //#include "Constants.hpp"
-  void ShareInputData(MPI_setup MPI, int *N,dfloat *CFL,dfloat *DFL, dfloat *T,dfloat *g_const,int *ArtificialViscosity,int *PositivityPreserving,dfloat *epsilon_0,dfloat *sigma_min,dfloat *sigma_max,int *PlotVar,int *NumPlots,int *NumTimeChecks,int *Testcase, int *ES,int *NumFlux, int *FluxDifferencing, int *rkorder, int *rkSSP){
+  void ShareInputData(MPI_setup MPI,
+                      int *N,
+                      dfloat *CFL,
+                      dfloat *DFL,
+                      dfloat *T,
+                      dfloat *g_const,
+                      int *ArtificialViscosity,
+                      int *PositivityPreserving,
+                      dfloat *epsilon_0,
+                      dfloat *sigma_min,
+                      dfloat *sigma_max,
+                      int *PlotVar,
+                      int *NumPlots,
+                      int *NumTimeChecks,
+                      int *Testcase,
+                      int *ES,
+                      int *NumFlux,
+                      int *FluxDifferencing,
+                      int *rkorder,
+                      int *rkSSP,
+                      int *NEpad){
 
 
 	 MPI_Bcast (&*N,1,MPI_INT,0,MPI_COMM_WORLD);
@@ -25,6 +45,7 @@
      MPI_Bcast (&*rkorder,1,MPI_INT,0,MPI_COMM_WORLD);
      MPI_Bcast (&*rkSSP,1,MPI_INT,0,MPI_COMM_WORLD);
 
+     MPI_Bcast (&*NEpad,1,MPI_INT,0,MPI_COMM_WORLD);
 //int *PlotVar,int *NumPlots,int *NumTimeChecks,int *Testcase, bool *ES,int *NumFlux, bool *FluxDifferencing, bool *Cartesian,int *rkorder, bool *rkSSP
   }
 
