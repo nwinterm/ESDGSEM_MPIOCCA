@@ -31,7 +31,7 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
             {
                 for (int j=0; j<ngl; ++j; inner0)
                 {
-                    const int eleID     =   iEo*NEpad + ie;
+                    const int eleID     =   iEo + ie;
                     if (eleID<Nelem)
                     {
                         const int id        =   j*ngl+i;
@@ -80,7 +80,7 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
                 for (int i=0; i<ngl; ++i; inner0)
                 {
 
-                    const int eleID     =   iEo*NEpad + ie;
+                    const int eleID     =   iEo + ie;
                     if (eleID<Nelem)
                     {
                         dfloat FluxDeriv1   =   zero;

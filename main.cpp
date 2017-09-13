@@ -889,8 +889,10 @@ int main(int argc, char *argv[])
     {
 
         std::ostringstream oss;
+	cout << "Kernel Version: V " << KernelVersion << ".\n";
         oss << "okl/DG/VolumeKernelFluxDiffV" << KernelVersion << ".okl";
         std::string var = oss.str();
+//	cout << "Building kernel "<< var << " for the volume part. \n";
         VolumeKernel=device.buildKernelFromSource(var,"VolumeKernelFluxDiff",info);
         //    VolumeKernel=device.buildKernelFromSource("okl/DG/VolumeKernelFluxDiffCentral.okl","VolumeKernelFluxDiff",info);
     }
