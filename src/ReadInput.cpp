@@ -97,7 +97,8 @@ void ReadInputFile(int *N,
                    int *Cartesian,
                    int *rkorder,
                    int *rkSSP,
-                   int *NEpad)
+                   int *NEpad,
+                   int *KernelVersion)
 {
 
 //,dfloat T, dfloat g_const

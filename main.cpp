@@ -207,13 +207,14 @@ int main(int argc, char *argv[])
     dfloat t=0.0;
     int NumPlots,NumTimeChecks,Testcase;
     int NEpad;
+    int KernelVersion;
     if(MPI.rank==0)
     {
         cout << "rank 0 reading input file \n";
-        ReadInputFile(&N, &meshFile,&CFL,&DFL,&T,&g_const,&ArtificialViscosity,&PositivityPreserving,&epsilon_0,&sigma_min,&sigma_max,&PlotVar,&NumPlots,&NumTimeChecks,&Testcase,&ES,&NumFlux,&Fluxdifferencing,&Cartesian,&rkorder, &rkSSP, &NEpad);
+        ReadInputFile(&N, &meshFile,&CFL,&DFL,&T,&g_const,&ArtificialViscosity,&PositivityPreserving,&epsilon_0,&sigma_min,&sigma_max,&PlotVar,&NumPlots,&NumTimeChecks,&Testcase,&ES,&NumFlux,&Fluxdifferencing,&Cartesian,&rkorder, &rkSSP, &NEpad,&KernelVersion);
     }
 
-    ShareInputData(MPI,&N,&CFL,&DFL,&T,&g_const,&ArtificialViscosity,&PositivityPreserving,&epsilon_0,&sigma_min,&sigma_max,&PlotVar,&NumPlots,&NumTimeChecks,&Testcase,&ES,&NumFlux,&Fluxdifferencing,&rkorder, &rkSSP, &NEpad);
+    ShareInputData(MPI,&N,&CFL,&DFL,&T,&g_const,&ArtificialViscosity,&PositivityPreserving,&epsilon_0,&sigma_min,&sigma_max,&PlotVar,&NumPlots,&NumTimeChecks,&Testcase,&ES,&NumFlux,&Fluxdifferencing,&rkorder, &rkSSP, &NEpad,&KernelVersion);
 
     if (Testcase == 31)
     {
@@ -886,7 +887,11 @@ int main(int argc, char *argv[])
     //}
     if(Fluxdifferencing)
     {
-        VolumeKernel=device.buildKernelFromSource("okl/DG/VolumeKernelFluxDiff.okl","VolumeKernelFluxDiff",info);
+
+        std::ostringstream oss;
+        oss << "okl/DG/VolumeKernelFluxDiffV" << KernelVersion << ".okl";
+        std::string var = oss.str();
+        VolumeKernel=device.buildKernelFromSource(var,"VolumeKernelFluxDiff",info);
         //    VolumeKernel=device.buildKernelFromSource("okl/DG/VolumeKernelFluxDiffCentral.okl","VolumeKernelFluxDiff",info);
     }
     else
