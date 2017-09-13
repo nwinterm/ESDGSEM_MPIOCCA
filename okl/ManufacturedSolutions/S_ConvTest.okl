@@ -42,27 +42,27 @@ kernel void addS(const int Nelem,const dfloat * Bx,const dfloat * By,const dfloa
                 int idLoc=j*ngl+i;
 
 
-                dfloat sinY=sin(2.0*PI*s_y[idLoc]);
-                dfloat sinX=sin(2.0*PI*s_x[idLoc]);
-                dfloat cosY=cos(2.0*PI*s_y[idLoc]);
-                dfloat cosX=cos(2.0*PI*s_x[idLoc]);
+                dfloat sinY=sin(2.0f*PI*s_y[idLoc]);
+                dfloat sinX=sin(2.0f*PI*s_x[idLoc]);
+                dfloat cosY=cos(2.0f*PI*s_y[idLoc]);
+                dfloat cosX=cos(2.0f*PI*s_x[idLoc]);
 
-                dfloat H= 8.0+cosX*sinY*cos(t);
+                dfloat H= 8.0f+cosX*sinY*cos(t);
                 dfloat H_t=-cosX*sinY*sin(t);
-                dfloat H_x=-2.0*PI*sinX*sinY*cos(t);
-                dfloat H_y=2.0*PI*cosX*cosY*cos(t);
+                dfloat H_x=-2.0f*PI*sinX*sinY*cos(t);
+                dfloat H_y=2.0f*PI*cosX*cosY*cos(t);
 
 
 
-                dfloat u=0.5;
-                dfloat v=1.5;
+                dfloat u=half;
+                dfloat v=1.5f;
 
-                dfloat u_t=0.0;
-                dfloat u_x=0.0;
-                dfloat u_y=0.0;
-                dfloat v_t=0.0;
-                dfloat v_x=0.0;
-                dfloat v_y=0.0;
+                dfloat u_t=zero;
+                dfloat u_x=zero;
+                dfloat u_y=zero;
+                dfloat v_t=zero;
+                dfloat v_x=zero;
+                dfloat v_y=zero;
 
 
                 gRK[id]             += H_t+u*(H_x-s_Bx[idLoc]) + v*(H_y-s_By[idLoc]);

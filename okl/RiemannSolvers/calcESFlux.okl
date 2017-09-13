@@ -29,9 +29,9 @@ kernel void calcNumFluxes(const int Nfaces,const dfloat * normalx,const dfloat *
                     uL=qL[edgeID+ngl]/hL;
                     vL=qL[edgeID+ngl+ngl]/hL;
                 }else{
-                    hL=0.0;
-                    uL =0.0;
-                    vL =0.0;
+                    hL=zero;
+                    uL =zero;
+                    vL =zero;
                 }
 
 
@@ -45,23 +45,23 @@ kernel void calcNumFluxes(const int Nfaces,const dfloat * normalx,const dfloat *
                     vR=qR[edgeID+ngl+ngl]/hR;
 
                 }else{
-                    hR=0.0;
-                    uR =0.0;
-                    vR =0.0;
+                    hR=zero;
+                    uR =zero;
+                    vR =zero;
                 }
 
 
-                dfloat avgH = 0.5*(hL+hR);
-                dfloat avgH2= 0.5*(hL*hL+hR*hR);
-                dfloat avgU = 0.5*(uL+uR);
-                dfloat avgV = 0.5*(vL+vR);
+                dfloat avgH = half*(hL+hR);
+                dfloat avgH2= half*(hL*hL+hR*hR);
+                dfloat avgU = half*(uL+uR);
+                dfloat avgV = half*(vL+vR);
 
 
                 dfloat normV =  avgU * nx + avgV * ny;
 
                 NumFlux[0]=avgH * normV;
-                NumFlux[1]=avgH*avgU*normV + (0.5*g_const*avgH2 )* nx;
-                NumFlux[2]=avgH*avgV*normV + (0.5*g_const*avgH2) * ny ;
+                NumFlux[1]=avgH*avgU*normV + (half*g_const*avgH2 )* nx;
+                NumFlux[2]=avgH*avgV*normV + (half*g_const*avgH2) * ny ;
 
 
 
@@ -77,18 +77,18 @@ kernel void calcNumFluxes(const int Nfaces,const dfloat * normalx,const dfloat *
                     dfloat cL=g_const*hL;
                     dfloat cR=g_const*hR;
 					dfloat avgC;
-					if (fabs(0.5*(cL+cR))>=PosPresTOL){
-						avgC=sqrt(fabs(0.5*(cL+cR)));
+					if (fabs(half*(cL+cR))>=PosPresTOL){
+						avgC=sqrt(fabs(half*(cL+cR)));
 					}else{
-						avgC=0.0;
+						avgC=zero;
 					}
 
 
 
-                   dfloat q1L=g_const*(hL+bL)-0.5*uL*uL-0.5*vL*vL;
+                   dfloat q1L=g_const*(hL+bL)-half*uL*uL-half*vL*vL;
                    dfloat q2L=uL;
                    dfloat q3L=vL;
-                   dfloat q1R=g_const*(hR+bR)-0.5*uR*uR-0.5*vR*vR;
+                   dfloat q1R=g_const*(hR+bR)-half*uR*uR-half*vR*vR;
                    dfloat q2R=uR;
                    dfloat q3R=vR;
 
@@ -98,29 +98,29 @@ kernel void calcNumFluxes(const int Nfaces,const dfloat * normalx,const dfloat *
 
 
                     //averaged right eigenvectors
-                    dfloat R11 = 1.0;
-                    dfloat R12 = 0.0;
-                    dfloat R13 = 1.0;
+                    dfloat R11 = one;
+                    dfloat R12 = zero;
+                    dfloat R13 = one;
 
 
                     dfloat R21 = avgU + nx*avgC;
-                    dfloat R22 = ny*1.0;
+                    dfloat R22 = ny*one;
                     dfloat R23 = avgU - nx*avgC;
 
 
                     dfloat R31 = avgV+ny*avgC;
-                    dfloat R32 = nx*1.0;
+                    dfloat R32 = nx*one;
                     dfloat R33 = avgV-ny*avgC;
 
 
-                    dfloat SL11 = 0.5/g_const*fabs(nx*avgU + ny*avgV + avgC);
+                    dfloat SL11 = half/g_const*fabs(nx*avgU + ny*avgV + avgC);
                     dfloat SL22 = fabs(avgH*(nx*avgU+ny*avgV));
-                    dfloat SL33 = 0.5/g_const*fabs(nx*avgU + ny*avgV - avgC);
+                    dfloat SL33 = half/g_const*fabs(nx*avgU + ny*avgV - avgC);
 
 
 
                     dfloat RSL11 = R11 * SL11;
-                    dfloat RSL12 = 0.0;
+                    dfloat RSL12 = zero;
                     dfloat RSL13 = R13 * SL33;
 
                     dfloat RSL21 = R21 * SL11;
@@ -145,9 +145,9 @@ kernel void calcNumFluxes(const int Nfaces,const dfloat * normalx,const dfloat *
                     dfloat RSLR33= RSL31*R31 + RSL32*R32 + RSL33 * R33;
 
 
-                    NumFlux[0]+= -0.5*(RSLR11 * jumpQ1 + RSLR12 * jumpQ2 + RSLR13 * jumpQ3);
-                    NumFlux[1]+= -0.5*(RSLR21 * jumpQ1 + RSLR22 * jumpQ2 + RSLR23 * jumpQ3);
-                    NumFlux[2]+= -0.5*(RSLR31 * jumpQ1 + RSLR32 * jumpQ2 + RSLR33 * jumpQ3);
+                    NumFlux[0]+= -half*(RSLR11 * jumpQ1 + RSLR12 * jumpQ2 + RSLR13 * jumpQ3);
+                    NumFlux[1]+= -half*(RSLR21 * jumpQ1 + RSLR22 * jumpQ2 + RSLR23 * jumpQ3);
+                    NumFlux[2]+= -half*(RSLR31 * jumpQ1 + RSLR32 * jumpQ2 + RSLR33 * jumpQ3);
 
 
 

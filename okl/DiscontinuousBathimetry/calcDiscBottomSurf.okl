@@ -15,8 +15,8 @@ kernel void calcDiscBottomSurf(const int Nfaces,const dfloat * normalx,const dfl
                 const dfloat nx=normalx[edgeID];
                 const dfloat ny=normaly[edgeID];
 
-                discBottomSurf1[edgeID]  = fabs(nx)*scaling*geomFace*  0.5*g_const*bJump[edgeID]*hAvg[edgeID];
-                discBottomSurf2[edgeID]  = fabs(ny)*scaling*geomFace*  0.5*g_const*bJump[edgeID]*hAvg[edgeID];
+                discBottomSurf1[edgeID]  = fabs(nx)*scaling*geomFace*  half*g_const*bJump[edgeID]*hAvg[edgeID];
+                discBottomSurf2[edgeID]  = fabs(ny)*scaling*geomFace*  half*g_const*bJump[edgeID]*hAvg[edgeID];
 
 
               }

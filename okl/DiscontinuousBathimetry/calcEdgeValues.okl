@@ -10,7 +10,7 @@ kernel void calcEdgeValues(const int Nfaces,const dfloat * qL,const dfloat * qR,
                 const int edgeIDX=ifa*ngl + i;      //for edge wise spatial values (BOTTOM)
 
 
-                hAvg[edgeIDX] = 0.5* (qL[edgeID] + qR[edgeID]);
+                hAvg[edgeIDX] = half* (qL[edgeID] + qR[edgeID]);
                 bJump[edgeIDX] =  (bR[edgeIDX]-bL[edgeIDX]);
 
 

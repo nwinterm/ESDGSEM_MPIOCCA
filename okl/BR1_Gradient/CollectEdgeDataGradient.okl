@@ -17,7 +17,6 @@ kernel void CollectEdgeDataGradient(const int Nfaces,const int * EdgeData,const 
                 int idL,idR;
 
                 const int edgeID=ifa*ngl*Neq + i;   //for edge wise solution
-//                const int edgeIDX=ifa*ngl + i;
 
 
                 if (ireversed==0){
@@ -26,28 +25,14 @@ kernel void CollectEdgeDataGradient(const int Nfaces,const int * EdgeData,const 
                         increment=i;
                     }
 
-//                const dfloat nx = normx[edgeIDX];
-//                const dfloat ny = normy[edgeIDX];
 
                 dfloat qNodalXL[Neq];
                 dfloat qNodalXR[Neq];
                 dfloat qNodalYL[Neq];
                 dfloat qNodalYR[Neq];
-                qNodalXL[0]=0.0;
-                qNodalXL[1]=0.0;
-                qNodalXL[2]=0.0;
-                qNodalXR[0]=0.0;
-                qNodalXR[1]=0.0;
-                qNodalXR[2]=0.0;
-                qNodalYL[0]=0.0;
-                qNodalYL[1]=0.0;
-                qNodalYL[2]=0.0;
-                qNodalYR[0]=0.0;
-                qNodalYR[1]=0.0;
-                qNodalYR[2]=0.0;
                 if (i==0){
-                    ViscParaL[ifa]=0.0;
-                    ViscParaR[ifa]=0.0;
+                    ViscParaL[ifa]=zero;
+                    ViscParaR[ifa]=zero;
                 }
 
                 if (procID == cpuL){
@@ -123,11 +108,11 @@ kernel void CollectEdgeDataGradient(const int Nfaces,const int * EdgeData,const 
 
 
                     qNodalXL[0]=qGradientX[idR];
-                    qNodalXL[1]=0.0;
-                    qNodalXL[2]=0.0;
+                    qNodalXL[1]=zero;
+                    qNodalXL[2]=zero;
                     qNodalYL[0]=qGradientY[idR];
-                    qNodalYL[1]=0.0;
-                    qNodalYL[2]=0.0;
+                    qNodalYL[1]=zero;
+                    qNodalYL[2]=zero;
                      if (i==0){
                         ViscParaL[ifa]=ViscPara[ier];
                         ViscParaR[ifa]=ViscPara[ier];
@@ -140,11 +125,11 @@ kernel void CollectEdgeDataGradient(const int Nfaces,const int * EdgeData,const 
 
 
                     qNodalXR[0]=qGradientX[idL];
-                    qNodalXR[1]=0.0;
-                    qNodalXR[2]=0.0;
+                    qNodalXR[1]=zero;
+                    qNodalXR[2]=zero;
                     qNodalYR[0]=qGradientY[idL];
-                    qNodalYR[1]=0.0;
-                    qNodalYR[2]=0.0;
+                    qNodalYR[1]=zero;
+                    qNodalYR[2]=zero;
                     if (i==0){
                         ViscParaL[ifa]=ViscPara[iel];
                         ViscParaR[ifa]=ViscPara[iel];

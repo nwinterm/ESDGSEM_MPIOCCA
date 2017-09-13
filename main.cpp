@@ -1111,6 +1111,7 @@ int main(int argc, char *argv[])
     dfloat dt_i=0.0f;
     dfloat dt_v=0.0f;
     dfloat LocalLambdas[DGMeshPartition.NumElements];
+        dfloat rkD=0.0;
 
     //    bool isnaned=false;
     //    int NaNid;
@@ -1136,7 +1137,7 @@ int main(int argc, char *argv[])
 //            dt_i = min(dt_i,dt_v);
         }
 
-        dt_i = 0.001;
+        dt_i = 0.0001;
         dt=min(T-dt,dt_i);
 
 
@@ -1150,7 +1151,6 @@ int main(int argc, char *argv[])
 
 
 
-        dfloat rkD=0.0;
         for (int rkstage=0; rkstage<RK.rkStages; rkstage++)
         {
 

@@ -35,11 +35,11 @@ kernel void ShockCapturing(const int Nelem, const dfloat * Q,const dfloat * rest
 
                         dfloat Qinv;
                         if (Q[Fid]>=PosPresTOL){
-                            Qinv =  1.f/Q[Fid];
+                            Qinv = one/Q[Fid];
                             c=sqrt(g_const*Q[Fid]);
                         }else{
-                            Qinv = 0.0;
-                            c=0.0;
+                            Qinv = zero;
+                            c=zero;
                         }
                         const dfloat u =Q[Fid+ngl2]*Qinv;
                         const dfloat v =Q[Fid+ngl2+ngl2]*Qinv;
@@ -57,7 +57,7 @@ kernel void ShockCapturing(const int Nelem, const dfloat * Q,const dfloat * rest
                 for (int j=0; j<ngl;++j;inner0){
 
 
-                        dfloat Q1modal=0.0;
+                        dfloat Q1modal=zero;
 
 
 
@@ -88,7 +88,7 @@ kernel void ShockCapturing(const int Nelem, const dfloat * Q,const dfloat * rest
                 for (int j=0; j<ngl;++j;inner0){
 
 
-                        dfloat Q1modal=0.0;
+                        dfloat Q1modal=zero;
 
 
 
@@ -116,16 +116,16 @@ kernel void ShockCapturing(const int Nelem, const dfloat * Q,const dfloat * rest
             // CALC DOF ENERGY INDICATOR
 
             for (int k=0; k<1; ++k;inner0){
-                    dfloat sigma_dof = 0.0;
-                    dfloat zaehler1 = 0.0;
-                    dfloat nenner1 = 0.0;
-                    dfloat zaehler2 = 0.0;
-                    dfloat nenner2 = 0.0;
-                    dfloat term1=0.0;
-                    dfloat term2=0.0;
+                    dfloat sigma_dof = zero;
+                    dfloat zaehler1 = zero;
+                    dfloat nenner1 = zero;
+                    dfloat zaehler2 = zero;
+                    dfloat nenner2 = zero;
+                    dfloat term1=zero;
+                    dfloat term2=zero;
 
-                    dfloat viscStar=0.0;
-                    dfloat MaxLambdaTotal=0.0;
+                    dfloat viscStar=zero;
+                    dfloat MaxLambdaTotal=zero;
 
                         occaUnroll(ngl-1)
                         for (int i=0; i<ngl-1; ++i){
@@ -165,10 +165,10 @@ kernel void ShockCapturing(const int Nelem, const dfloat * Q,const dfloat * rest
 
 
                         if (sigmaMin >= sigma_dof){
-                            viscStar    =   0.0;
+                            viscStar    =   zero;
                         } else if(sigmaMax >=sigma_dof){
-                            dfloat delta = 1.0+sin(PI*(sigma_dof - 0.5*(sigmaMax + sigmaMin))/(sigmaMax - sigmaMin)) ;
-                            viscStar    =   eps0 * 0.5 * delta;
+                            dfloat delta = one+sin(PI*(sigma_dof - half*(sigmaMax + sigmaMin))/(sigmaMax - sigmaMin)) ;
+                            viscStar    =   eps0 * half * delta;
                         } else{
                             viscStar    =   eps0;
                         }
