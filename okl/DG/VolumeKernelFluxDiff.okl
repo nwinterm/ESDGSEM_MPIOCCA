@@ -15,6 +15,7 @@ kernel void VolumeKernelFluxDiff(const int Nelem, const dfloat * Jac,const dfloa
         shared dfloat s_Xeta[ngl][ngl];
         shared dfloat s_Xxi[ngl][ngl];
 
+        shared dfloat s_invQ[ngl][ngl];
 
             for (int i=0; i<ngl; ++i;inner1){
                 for (int j=0; j<ngl;++j;inner0){
@@ -23,14 +24,23 @@ kernel void VolumeKernelFluxDiff(const int Nelem, const dfloat * Jac,const dfloa
                         const int Fid = ie*ngl2*Neq   +j*ngl+i;
 
                         s_D[i][j]=D[id];
-                        s_Q1[i][j]=Q[Fid];
-                        s_Q2[i][j]=Q[Fid+ngl2];
-                        s_Q3[i][j]=Q[Fid+ngl2+ngl2];
                         s_Yeta[i][j]=Y_eta[xid];
                         s_Yxi[i][j]=Y_xi[xid];
                         s_Xeta[i][j]=X_eta[xid];
                         s_Xxi[i][j]=X_xi[xid];
 
+
+                         if (Q[Fid]>=PosPresTOL){
+                            s_invQ[i][j] = 1.f/Q[Fid];
+                            s_Q1[i][j]=Q[Fid];
+                            s_Q2[i][j]=Q[Fid+ngl2];
+                            s_Q3[i][j]=Q[Fid+ngl2+ngl2];
+                         }else{
+                            s_invQ[i][j] =  0.0;
+                            s_Q1[i][j] =  0.0;
+                            s_Q2[i][j] =  0.0;
+                            s_Q3[i][j] =  0.0;
+                         }
                     }
                 }
 
@@ -42,38 +52,22 @@ kernel void VolumeKernelFluxDiff(const int Nelem, const dfloat * Jac,const dfloa
                 dfloat FluxDeriv1=0.0;
                 dfloat FluxDeriv2=0.0;
                 dfloat FluxDeriv3=0.0;
-                dfloat invQ1ij=0.0;
+                dfloat invQ1ij=s_invQ[i][j];
                 dfloat H_ij=s_Q1[i][j];
                 dfloat HU_ij= s_Q2[i][j];
                 dfloat HV_ij= s_Q3[i][j];
 
-                 if (H_ij>=PosPresTOL){
-                    invQ1ij = 1.f/H_ij;
-                 }else{
-                    H_ij = 0.0;
-                    invQ1ij = 0.0;
-                    HU_ij = 0.0;
-                    HV_ij = 0.0;
-                 }
 
-//				if (isinf(invQ1ij)){invQ1ij=0.0;}
 
                 occaUnroll(ngl)
                 for (int l=0; l<ngl; ++l){
 
                     dfloat H_lj=s_Q1[l][j];
-                    dfloat invQ1lj=0.0;
+                    dfloat invQ1lj=s_invQ[l][j];
                     dfloat HU_lj=s_Q2[l][j];
                     dfloat HV_lj=s_Q3[l][j];
-                     if (H_lj>=PosPresTOL){
-                        invQ1lj=1.f/H_lj;
-                     }else{
-                        H_lj = 0.0;
-                        invQ1lj=0.0;
-                        HU_lj=0.0;
-                        HV_lj=0.0;
-                     };
-//					if (isinf(invQ1lj)){invQ1lj=0.0;}
+
+
 
 
 
@@ -93,18 +87,10 @@ kernel void VolumeKernelFluxDiff(const int Nelem, const dfloat * Jac,const dfloa
 
 
                      dfloat H_il=s_Q1[i][l];
-                     dfloat invQ1il=0.0;
+                     dfloat invQ1il=s_invQ[i][l];
                      dfloat HU_il=s_Q2[i][l];
                      dfloat HV_il=s_Q3[i][l];
-                     if (H_il>=PosPresTOL){
-                        invQ1il = 1.f/H_il;
-                     }else{
-                        H_il=0.0;
-                        invQ1il = 0.0;
-                        HU_il=0.0;
-                        HV_il=0.0;
-                     };
-//					if (isinf(invQ1il)){invQ1il=0.0;}
+
 
                      const dfloat h_avg_eta = 0.5*(H_ij+H_il) ;
                      const dfloat h2_avg_eta = 0.5*(H_ij*H_ij+H_il*H_il) ;
