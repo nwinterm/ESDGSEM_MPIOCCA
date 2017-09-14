@@ -27,19 +27,12 @@ kernel void CollectEdgeData(const int Nfaces,
 
 
 
-            int increment;
+            const int increment = (1-ireversed)*(ngl-1-i) + ireversed*i;
             int idL,idR;
             const int edgeID=ifa*ngl*Neq + i;   //for edge wise solution
             const int edgeIDX=ifa*ngl + i;
 
-            if (ireversed==0)
-            {
-                increment = (ngl-1)-i;
-            }
-            else
-            {
-                increment=i;
-            }
+
 
             const dfloat nx = normx[edgeIDX];
             const dfloat ny = normy[edgeIDX];
@@ -119,8 +112,8 @@ kernel void CollectEdgeData(const int Nfaces,
 
             if (cpuL==-1)
             {
-                dfloat tx = - ny;
-                dfloat ty = nx;
+                const dfloat tx = - ny;
+                const dfloat ty = nx;
                 dfloat vx;
                 dfloat vy;
                 if(qNodalR[0]>=PosPresTOL)
@@ -133,14 +126,14 @@ kernel void CollectEdgeData(const int Nfaces,
                     vx = zero;
                     vy = zero;
                 }
-                dfloat v_n  = nx * vx + ny * vy;
-                dfloat v_t = tx*vx + ty * vy;
+                const dfloat v_n  = nx * vx + ny * vy;
+                const dfloat v_t = tx*vx + ty * vy;
 
-                dfloat vTilde_n = -v_n;
-                dfloat vTilde_t = v_t;
+                const dfloat vTilde_n = -v_n;
+                const dfloat vTilde_t = v_t;
 
-                dfloat vTilde_x = nx * vTilde_n + tx * vTilde_t;
-                dfloat vTilde_y = ny * vTilde_n + ty * vTilde_t;
+                const dfloat vTilde_x = nx * vTilde_n + tx * vTilde_t;
+                const dfloat vTilde_y = ny * vTilde_n + ty * vTilde_t;
 
                 qNodalL[0]=qNodalR[0];
                 qNodalL[1]=qNodalR[0] * vTilde_x;
@@ -148,8 +141,8 @@ kernel void CollectEdgeData(const int Nfaces,
             }
             if (cpuR==-1)
             {
-                dfloat tx = - ny;
-                dfloat ty = nx;
+                const dfloat tx = - ny;
+                const dfloat ty = nx;
                 dfloat vx;
                 dfloat vy;
                 if(qNodalL[0]>=PosPresTOL)
@@ -162,14 +155,14 @@ kernel void CollectEdgeData(const int Nfaces,
                     vx = zero;
                     vy = zero;
                 }
-                dfloat v_n  = nx * vx + ny * vy;
-                dfloat v_t = tx*vx + ty * vy;
+                const dfloat v_n  = nx * vx + ny * vy;
+                const dfloat v_t = tx*vx + ty * vy;
 
-                dfloat vTilde_n = -v_n;
-                dfloat vTilde_t = v_t;
+                const dfloat vTilde_n = -v_n;
+                const dfloat vTilde_t = v_t;
 
-                dfloat vTilde_x = nx * vTilde_n + tx * vTilde_t;
-                dfloat vTilde_y = ny * vTilde_n + ty * vTilde_t;
+                const dfloat vTilde_x = nx * vTilde_n + tx * vTilde_t;
+                const dfloat vTilde_y = ny * vTilde_n + ty * vTilde_t;
 
                 qNodalR[0]=qNodalL[0];
                 qNodalR[1]=qNodalL[0]*vTilde_x;
