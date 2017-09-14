@@ -28,27 +28,28 @@ kernel void SurfaceKernel(const int Nelem,
             for (int j=0; j<ngl; ++j; inner0)
             {
 
-                int ifa = ElemToEdge[ie*4 + is]-1;        //get id of element side
+                const int ifa = ElemToEdge[ie*4 + is]-1;        //get id of element side
 
 
                 // is the numerical flux stored in reversed order for this element?
                 // "1" means the order is correct, 0 means it is not
-                int reversedOrder = ElemEdgeOrientation[ie*4 + is];
+                const int reversedOrder = ElemEdgeOrientation[ie*4 + is];
                 //increment = j if order is correct, else increment = ngl-1-j
-                int increment  = reversedOrder*j + (1-reversedOrder)*(ngl-1 -j);
+                const int increment  = reversedOrder*j + (1-reversedOrder)*(ngl-1 -j);
 
                 //THIS WAY THE STORAGE IN THE SHARED VARIABLES SHOULD ALWAYS BE IN THE CORRECT ORDER FOR THE LOCAL COORDINATES
 
-                int idFaceLoc = ifa*ngl*Neq + increment;        //get local id on the side storage SurfaceParts
-                int edgeIDx = ifa*ngl+increment;
+                const int idFaceLoc = ifa*ngl*Neq + increment;        //get local id on the side storage SurfaceParts
+                const int edgeIDx = ifa*ngl+increment;
 
 
 
-                int id=is*ngl*Neq+j;                // get id for surface parts for THIS element
-                int id2 = is*ngl+j;
+                const int id=is*ngl*Neq+j;                // get id for surface parts for THIS element
+                const int id2 = is*ngl+j;
+
+                const int idx = is*ngl+j;
+
                 int xid;
-                int idx = is*ngl+j;
-
                 switch(is)
                 {
                 case 0: //bottom side
@@ -85,11 +86,11 @@ kernel void SurfaceKernel(const int Nelem,
         //SIDE 1 (BOTTOM)
         for (int j=0; j<ngl; ++j; inner0)
         {
-            int id= ie*ngl2*Neq+j;
-            int MasterSlave = ElemEdgeMasterSlave[ie*4];
+            const int id= ie*ngl2*Neq+j;
+            const int MasterSlave = ElemEdgeMasterSlave[ie*4];
 
-            int idfaceloc = j;
-            int idxfaceloc = j;
+            const int idfaceloc = j;
+            const int idxfaceloc = j;
 
 
 
@@ -107,11 +108,11 @@ kernel void SurfaceKernel(const int Nelem,
         for (int j=0; j<ngl; ++j; inner0)
         {
 
-            int id= ie*ngl2*Neq+ngl2-ngl+j;
-            int MasterSlave = ElemEdgeMasterSlave[ie*4+2];
+            const int id= ie*ngl2*Neq+ngl2-ngl+j;
+            const int MasterSlave = ElemEdgeMasterSlave[ie*4+2];
 
-            int idfaceloc = 2*ngl*Neq+j;
-            int idxfaceloc = 2*ngl+j;
+            const int idfaceloc = 2*ngl*Neq+j;
+            const int idxfaceloc = 2*ngl+j;
 
 
 
@@ -129,11 +130,11 @@ kernel void SurfaceKernel(const int Nelem,
         //Then do sides 1 and 3
         for (int j=0; j<ngl; ++j; inner0)
         {
-            int MasterSlave = ElemEdgeMasterSlave[ie*4+1];
-            int id= ie*ngl2*Neq+(ngl-1) +j*ngl;
+            const int MasterSlave = ElemEdgeMasterSlave[ie*4+1];
+            const int id= ie*ngl2*Neq+(ngl-1) +j*ngl;
 
-            int idfaceloc = 1*ngl*Neq+j;
-            int idxfaceloc = 1*ngl+j;
+            const int idfaceloc = 1*ngl*Neq+j;
+            const int idxfaceloc = 1*ngl+j;
 
 
 
@@ -150,11 +151,11 @@ kernel void SurfaceKernel(const int Nelem,
 
         for (int j=0; j<ngl; ++j; inner0)
         {
-            int MasterSlave = ElemEdgeMasterSlave[ie*4+3];
-            int id= ie*ngl2*Neq + j*ngl;
+            const int MasterSlave = ElemEdgeMasterSlave[ie*4+3];
+            const int id= ie*ngl2*Neq + j*ngl;
 
-            int idfaceloc = 3*ngl*Neq+j;
-            int idxfaceloc = 3*ngl+j;
+            const int idfaceloc = 3*ngl*Neq+j;
+            const int idxfaceloc = 3*ngl+j;
 
 
 
