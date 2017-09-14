@@ -1,4 +1,3 @@
-
 kernel void SurfaceKernel(const int Nelem,
                           const dfloat * restrict Jac,
                           const int * restrict  ElemEdgeMasterSlave,
@@ -16,6 +15,7 @@ kernel void SurfaceKernel(const int Nelem,
         shared dfloat s_DBSurf1[4*ngl];
         shared dfloat s_DBSurf2[4*ngl];
         shared dfloat s_Jac[4*ngl];
+        shared int    s_ElemEdgeMasterSlave[4];
 
 
 
@@ -77,112 +77,88 @@ kernel void SurfaceKernel(const int Nelem,
                 s_DBSurf1[idx] = DBSurf1[edgeIDx];
                 s_DBSurf2[idx] = DBSurf2[edgeIDx];
 
+                s_ElemEdgeMasterSlave[is] = ElemEdgeMasterSlave[ie*4+is];
+
             }
         }
 
 
         barrier(localMemFence);
 
-        //SIDE 1 (BOTTOM)
-        for (int j=0; j<ngl; ++j; inner0)
+        //SIDE 1 (BOTTOM) and 3 (TOP)
+        for (int is=0; is<4; is++; inner1)
         {
-            const int id= ie*ngl2*Neq+j;
-            const int MasterSlave = ElemEdgeMasterSlave[ie*4];
+            for (int j=0; j<ngl; ++j; inner0)
+            {
+                if (is<2)
+                {
+                    const int iside = 2*is;
+//                    const int id    = ie*ngl2*Neq+j;
+//                    const int MasterSlave = s_ElemEdgeMasterSlave[0];
+//                    const int idfaceloc    =   j;
+//                    const int idxfaceloc    = j;
+//                    const dfloat Jac = s_Jac[idxfaceloc];
 
-            const int idfaceloc = j;
-            const int idxfaceloc = j;
+//                    const int is = 1;
+                    const int id    = ie*ngl2*Neq+ is*(ngl2-ngl) +j;
+                    const int MasterSlave = s_ElemEdgeMasterSlave[iside];
+                    const int idfaceloc    = iside*(ngl*Neq) + j;
+                    const int idxfaceloc    = iside*(ngl)+j;
+                    const dfloat Jac = s_Jac[idxfaceloc];
+
+
+                    Qt[id]              +=    - MasterSlave* s_FStar[idfaceloc] * Jac;
+                    Qt[id+ngl2]         +=    - MasterSlave* Jac * (s_FStar[idfaceloc+ngl]       - s_DBSurf1[idxfaceloc]);
+                    Qt[id+ngl2+ngl2]    +=    - MasterSlave* Jac * (s_FStar[idfaceloc+ngl+ngl]   - s_DBSurf2[idxfaceloc]);
+
+
+                }
 
 
 
-            Qt[id]              +=    - MasterSlave* s_FStar[idfaceloc] * s_Jac[idxfaceloc];
-            Qt[id+ngl2]         +=    - MasterSlave* s_Jac[idxfaceloc] * (s_FStar[idfaceloc+ngl]       - s_DBSurf1[idxfaceloc]);
-            Qt[id+ngl2+ngl2]    +=    - MasterSlave* s_Jac[idxfaceloc] * (s_FStar[idfaceloc+ngl+ngl]    - s_DBSurf2[idxfaceloc]);
+
+            }
 
         }
 
 
         barrier(localMemFence);
 
-        // SIDE 3 (TOP)
-
-        for (int j=0; j<ngl; ++j; inner0)
-        {
-
-            const int id= ie*ngl2*Neq+ngl2-ngl+j;
-            const int MasterSlave = ElemEdgeMasterSlave[ie*4+2];
-
-            const int idfaceloc = 2*ngl*Neq+j;
-            const int idxfaceloc = 2*ngl+j;
-
-
-
-            Qt[id]              +=    - MasterSlave* s_FStar[idfaceloc] * s_Jac[idxfaceloc];
-            Qt[id+ngl2]         +=    - MasterSlave* s_Jac[idxfaceloc] * (s_FStar[idfaceloc+ngl]       + s_DBSurf1[idxfaceloc]);
-            Qt[id+ngl2+ngl2]    +=    - MasterSlave* s_Jac[idxfaceloc] * (s_FStar[idfaceloc+ngl+ngl]    + s_DBSurf2[idxfaceloc]);
-
-
-        }
-
-
-
-        barrier(localMemFence);
-        //SIDE 2 (RIGHT)
+        //SIDE 2 (RIGHT) and 4 (LEFT)
         //Then do sides 1 and 3
-        for (int j=0; j<ngl; ++j; inner0)
+        for (int is=0; is<4; is++; inner1)
         {
-            const int MasterSlave = ElemEdgeMasterSlave[ie*4+1];
-            const int id= ie*ngl2*Neq+(ngl-1) +j*ngl;
+            for (int j=0; j<ngl; ++j; inner0)
+            {
 
-            const int idfaceloc = 1*ngl*Neq+j;
-            const int idxfaceloc = 1*ngl+j;
+                if (is<2)
+                {
+                    const int iside = 2*is+1;
+
+                    const int MasterSlave = s_ElemEdgeMasterSlave[iside];
+
+                    const int id= ie*ngl2*Neq+(1-is)*(ngl-1) +j*ngl;
+
+                    const int idfaceloc = iside*ngl*Neq+j;
+
+                    const int idxfaceloc = iside*ngl+j;
+
+                    const dfloat Jac  = s_Jac[idxfaceloc];
 
 
-
-            Qt[id]              +=    - MasterSlave* s_FStar[idfaceloc] * s_Jac[idxfaceloc];
-            Qt[id+ngl2]         +=    - MasterSlave* s_Jac[idxfaceloc] * (s_FStar[idfaceloc+ngl]        + s_DBSurf1[idxfaceloc]);
-            Qt[id+ngl2+ngl2]    +=    - MasterSlave* s_Jac[idxfaceloc] * (s_FStar[idfaceloc+ngl+ngl]   + s_DBSurf2[idxfaceloc]);
-        }
-
-
-
-
-        barrier(localMemFence);
-        //SIDE 4 (LEFT)
-
-        for (int j=0; j<ngl; ++j; inner0)
-        {
-            const int MasterSlave = ElemEdgeMasterSlave[ie*4+3];
-            const int id= ie*ngl2*Neq + j*ngl;
-
-            const int idfaceloc = 3*ngl*Neq+j;
-            const int idxfaceloc = 3*ngl+j;
+                    Qt[id]              +=    - MasterSlave* s_FStar[idfaceloc] * Jac;
+                    Qt[id+ngl2]         +=    - MasterSlave* Jac * (s_FStar[idfaceloc+ngl]       - s_DBSurf1[idxfaceloc]);
+                    Qt[id+ngl2+ngl2]    +=    - MasterSlave* Jac * (s_FStar[idfaceloc+ngl+ngl]   - s_DBSurf2[idxfaceloc]);
 
 
 
-            Qt[id]              +=    - MasterSlave* s_FStar[idfaceloc] * s_Jac[idxfaceloc];
-            Qt[id+ngl2]         +=    - MasterSlave* s_Jac[idxfaceloc] * (s_FStar[idfaceloc+ngl]        - s_DBSurf1[idxfaceloc]);
-            Qt[id+ngl2+ngl2]    +=    - MasterSlave* s_Jac[idxfaceloc] * (s_FStar[idfaceloc+ngl+ngl]    - s_DBSurf2[idxfaceloc]);
-
-
+                }
+            }
 
 
 
         }
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
-
-
 }
-
