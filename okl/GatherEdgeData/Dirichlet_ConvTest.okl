@@ -1,20 +1,16 @@
+void Qnodal(const dfloat x,
+            const  dfloat y,
+            dfloat * q1,
+            dfloat * q2,
+            dfloat * q3,
+            const dfloat t,
+            const dfloat b)
+{
+    *q1 = (8.0f+cos(2.0f*PI*x)*sin(2.0f*PI*y)*cos(t)-b);
+    *q2 = 0.5f*(8.0f+cos(2.0f*PI*x)*sin(2.0f*PI*y)*cos(t)-b);
+    *q3 = 1.5f*(8.0f+cos(2.0f*PI*x)*sin(2.0f*PI*y)*cos(t)-b);
 
-
-#define InitQNodal(x[idxR],y[idxR],q1,q2,q3,t,bL[edgeIDX])				\
-      {		  barrier(localMemFence);							\
-
-	q1 = (8.0f+cos(2.0f*PI*x[idxR])*sin(2.0f*PI*y[idxR])*cos(t)-bL[edgeIDX]);					\
-	q2 = 0.5f*(8.0f+cos(2.0f*PI*x[idxR])*sin(2.0f*PI*y[idxR])*cos(t)-bL[edgeIDX]);					\
-	q3 = 1.5f*(8.0f+cos(2.0f*PI*x[idxR])*sin(2.0f*PI*y[idxR])*cos(t)-bL[edgeIDX]);					\
-      }
-
-#define InitQNodal(x[idxL],y[idxL],q1,q2,q3,t,bR[edgeIDX])					\
-      {		  barrier(localMemFence);							\
-
-	q1 = (8.0f+cos(2.0f*PI*x[idxL])*sin(2.0f*PI*y[idxL])*cos(t)-bR[edgeIDX]);					\
-	q2 = 0.5f*(8.0f+cos(2.0f*PI*x[idxL])*sin(2.0f*PI*y[idxL])*cos(t)-bR[edgeIDX]);					\
-	q3 = 1.5f*(8.0f+cos(2.0f*PI*x[idxL])*sin(2.0f*PI*y[idxL])*cos(t)-bR[edgeIDX]);					\
-      }
+}
 
 kernel void CollectEdgeData(const int Nfaces,
                             const int * restrict  EdgeData,
@@ -31,20 +27,22 @@ kernel void CollectEdgeData(const int Nfaces,
 {
     for (int ifa=0; ifa<Nfaces; ifa++; outer0)
     {
-
+        const int iel           =EdgeData[8*ifa];       //left element
+        const int ier           =EdgeData[8*ifa+1];       //right element
+        const int isl           =EdgeData[8*ifa+2];       //side within left element
+        const int isr           =EdgeData[8*ifa+3];      //side within right element
+        const int ireversed     =EdgeData[8*ifa+4];           //is order reversed? 0=yes, 1=no
+        const int cpuL          =EdgeData[8*ifa+5];     // rank of cpuL
+        const int cpuR          =EdgeData[8*ifa+6];     // rank of cpuR
 
         for(int i=0; i<ngl; i++; inner0)
         {
-            const int iel           =EdgeData[8*ifa];       //left element
-            const int ier           =EdgeData[8*ifa+1];       //right element
-            const int isl           =EdgeData[8*ifa+2];       //side within left element
-            const int isr           =EdgeData[8*ifa+3];      //side within right element
-            const int ireversed     =EdgeData[8*ifa+4];           //is order reversed? 0=yes, 1=no
-            const int cpuL          =EdgeData[8*ifa+5];     // rank of cpuL
-            const int cpuR          =EdgeData[8*ifa+6];     // rank of cpuR
 
 
-            int increment;
+
+            const int increment = (1-ireversed)*(ngl-1-i) + ireversed*i;
+
+
             int idL,idR;
             int idxL,idxR;
             const int edgeID=ifa*ngl*Neq + i;   //for edge wise solution
@@ -53,14 +51,6 @@ kernel void CollectEdgeData(const int Nfaces,
             dfloat q2;
             dfloat q3;
 
-            if (ireversed==0)
-            {
-                increment = (ngl-1)-i;
-            }
-            else
-            {
-                increment=i;
-            }
 
 
             dfloat qNodalL[Neq];
@@ -151,19 +141,13 @@ kernel void CollectEdgeData(const int Nfaces,
 
             if (cpuL==-1)
             {
+                Qnodal(x[idxR],y[idxR],&qNodalL[0],&qNodalL[1],&qNodalL[2],t,bL[edgeIDX]);
 
-                InitQNodal(x[idxR],y[idxR],q1,q2,q3,t,bL[edgeIDX]);
-                qNodalL[0]=q1;
-                qNodalL[1]=q2;
-                qNodalL[2]=q3;
             }
             if (cpuR==-1)
             {
 
-                InitQNodal(x[idxL],y[idxL],q1,q2,q3,t,bR[edgeIDX]);
-                qNodalR[0]=q1;
-                qNodalR[1]=q2;
-                qNodalR[2]=q3;
+                Qnodal(x[idxL],y[idxL],&qNodalR[0],&qNodalR[1],&qNodalR[2],t,bR[edgeIDX]);
 
             }
 

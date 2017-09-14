@@ -14,9 +14,6 @@ kernel void CollectEdgeData(const int Nfaces,
     for (int ifa=0; ifa<Nfaces; ifa++; outer0)
     {
 
-
-        for(int i=0; i<ngl; i++; inner0)
-        {
             const int iel           =EdgeData[8*ifa];       //left element
             const int ier           =EdgeData[8*ifa+1];       //right element
             const int isl           =EdgeData[8*ifa+2];       //side within left element
@@ -24,6 +21,10 @@ kernel void CollectEdgeData(const int Nfaces,
             const int ireversed     =EdgeData[8*ifa+4];           //is order reversed? 0=yes, 1=no
             const int cpuL          =EdgeData[8*ifa+5];     // rank of cpuL
             const int cpuR          =EdgeData[8*ifa+6];     // rank of cpuR
+
+        for(int i=0; i<ngl; i++; inner0)
+        {
+
 
 
             int increment;
@@ -75,11 +76,6 @@ kernel void CollectEdgeData(const int Nfaces,
                     break;
 
                 }
-
-
-
-
-
 
                 qNodalL[0]=Q[idL];
                 qNodalL[1]=Q[idL+ngl2];
