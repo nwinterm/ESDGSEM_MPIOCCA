@@ -98,6 +98,7 @@ void ReadInputFile(int *N,
                    int *rkorder,
                    int *rkSSP,
                    int *NEpad,
+                   int *Nedgepad,
                    int *KernelVersion)
 {
 
@@ -165,6 +166,8 @@ void ReadInputFile(int *N,
     *rkSSP= getIntValue(current_string);
     std::getline(InputStream, current_string);
     *NEpad= getIntValue(current_string);
+    std::getline(InputStream, current_string);
+    *Nedgepad= getIntValue(current_string);
     std::getline(InputStream, current_string);
     *KernelVersion= getIntValue(current_string);
 

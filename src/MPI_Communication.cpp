@@ -23,6 +23,7 @@
                       int *rkorder,
                       int *rkSSP,
                       int *NEpad,
+                      int *Nedgepad,
                       int* KernelVersion){
 
 

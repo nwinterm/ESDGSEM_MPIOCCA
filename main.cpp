@@ -207,14 +207,60 @@ int main(int argc, char *argv[])
     dfloat t=0.0;
     int NumPlots,NumTimeChecks,Testcase;
     int NEpad;
+    int Nedgepad;
     int KernelVersion;
     if(MPI.rank==0)
     {
         cout << "rank 0 reading input file \n";
-        ReadInputFile(&N, &meshFile,&CFL,&DFL,&T,&g_const,&ArtificialViscosity,&PositivityPreserving,&epsilon_0,&sigma_min,&sigma_max,&PlotVar,&NumPlots,&NumTimeChecks,&Testcase,&ES,&NumFlux,&Fluxdifferencing,&Cartesian,&rkorder, &rkSSP, &NEpad,&KernelVersion);
+        ReadInputFile(&N,
+                      &meshFile,
+                      &CFL,
+                      &DFL,
+                      &T,
+                      &g_const,
+                      &ArtificialViscosity,
+                      &PositivityPreserving,
+                      &epsilon_0,
+                      &sigma_min,
+                      &sigma_max,
+                      &PlotVar,
+                      &NumPlots,
+                      &NumTimeChecks,
+                      &Testcase,
+                      &ES,
+                      &NumFlux,
+                      &Fluxdifferencing,
+                      &Cartesian,
+                      &rkorder,
+                      &rkSSP,
+                      &NEpad,
+                      &Nedgepad,
+                      &KernelVersion);
     }
 
-    ShareInputData(MPI,&N,&CFL,&DFL,&T,&g_const,&ArtificialViscosity,&PositivityPreserving,&epsilon_0,&sigma_min,&sigma_max,&PlotVar,&NumPlots,&NumTimeChecks,&Testcase,&ES,&NumFlux,&Fluxdifferencing,&rkorder, &rkSSP, &NEpad,&KernelVersion);
+    ShareInputData(MPI,
+                   &N,
+                   &CFL,
+                   &DFL,
+                   &T,
+                   &g_const,
+                   &ArtificialViscosity,
+                   &PositivityPreserving,
+                   &epsilon_0,
+                   &sigma_min,
+                   &sigma_max,
+                   &PlotVar,
+                   &NumPlots,
+                   &NumTimeChecks,
+                   &Testcase,
+                   &ES,
+                   &NumFlux,
+                   &Fluxdifferencing,
+                   &rkorder,
+                   &rkSSP,
+                   &NEpad,
+                   &Nedgepad,
+                   &KernelVersion);
 
     if (Testcase == 31)
     {
@@ -764,6 +810,7 @@ int main(int argc, char *argv[])
 
     info.addDefine("procID",MPI.rank);
     info.addDefine("NEpad",NEpad);
+    info.addDefine("Nedgepad",Nedgepad);
     info.addDefine("ngl",ngl);
     info.addDefine("ngl2",ngl2);
     info.addDefine("Neq",Neq);

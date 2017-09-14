@@ -28,6 +28,7 @@ void ReadInputFile(int *N,
                    int * rkorder,
                    int * rkSSP,
                    int * NEpad,
+                   int * Nedgepad,
                    int * KernelVersion);
 
 void ReadCartesianData(const int, const int, dfloat *xL,dfloat *xR,dfloat *yL,dfloat *yR, int *NelemX, int *NelemY,bool *PeriodicBD_X,bool *PeriodicBD_Y);
