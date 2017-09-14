@@ -1,5 +1,8 @@
-
-kernel void PosPres(const int Nelem,const dfloat * restrict EleSizes,const dfloat * restrict GLw, const dfloat * Jac ,dfloat * Q)
+kernel void PosPres(const int Nelem,
+                    const dfloat * restrict EleSizes,
+                    const dfloat * restrict GLw,
+                    const dfloat * restrict  Jac,
+                    dfloat * restrict  Q)
 {
 
 
@@ -8,7 +11,7 @@ kernel void PosPres(const int Nelem,const dfloat * restrict EleSizes,const dfloa
     {
 
         shared dfloat s_Havg;
-       shared dfloat s_HUavg;
+        shared dfloat s_HUavg;
         shared dfloat s_HVavg;
         shared dfloat s_Hmin;
         shared dfloat s_theta;
@@ -20,14 +23,19 @@ kernel void PosPres(const int Nelem,const dfloat * restrict EleSizes,const dfloa
 
 
 
-        for (int i=0; i<ngl; ++i;inner1){
-            for (int j=0; j<ngl;++j;inner0){
-                    int Fid = ie*ngl2*Neq   +j*ngl+i;
-                    s_H[i][j]=Q[Fid];Fid+=ngl2;
-                    s_Hu[i][j]=Q[Fid];Fid+=ngl2;
-                    s_Hv[i][j]=Q[Fid];
+        for (int i=0; i<ngl; ++i; inner1)
+        {
+            for (int j=0; j<ngl; ++j; inner0)
+            {
+                int Fid = ie*ngl2*Neq   +j*ngl+i;
+                s_H[i][j]=Q[Fid];
+                Fid+=ngl2;
+                s_Hu[i][j]=Q[Fid];
+                Fid+=ngl2;
+                s_Hv[i][j]=Q[Fid];
 
-                if (j == 0) {
+                if (j == 0)
+                {
                     s_GLw[i] = GLw[i];
                 }
 
@@ -40,16 +48,19 @@ kernel void PosPres(const int Nelem,const dfloat * restrict EleSizes,const dfloa
 
 // Very naive way to integrate over an element
 
-        for (int l=0; l<1; ++l;inner0){
+        for (int l=0; l<1; ++l; inner0)
+        {
             s_Hmin = zero;
             s_Havg = zero;
             s_HUavg = zero;
             s_HVavg = zero;
 
             occaUnroll(ngl) // <- #pragma unroll ngl
-            for (int i=0; i<ngl; ++i){
+            for (int i=0; i<ngl; ++i)
+            {
                 occaUnroll(ngl)
-                for (int j=0; j<ngl;++j){
+                for (int j=0; j<ngl; ++j)
+                {
 
                     const int xid=ie*ngl2   +j*ngl+i;
                     dfloat r_Weights = s_GLw[i] * s_GLw[j] /Jac[xid];
@@ -65,13 +76,16 @@ kernel void PosPres(const int Nelem,const dfloat * restrict EleSizes,const dfloa
             }
             s_Havg =   s_Havg/ EleSizes[ie];
             s_HUavg =   s_HUavg/ EleSizes[ie];
-           s_HVavg =   s_HVavg/ EleSizes[ie];
+            s_HVavg =   s_HVavg/ EleSizes[ie];
 
-           if (s_Havg == s_Hmin){
-            s_theta = one;
-           }else{
-            s_theta = min(one,s_Havg/(s_Havg-(s_Hmin)));
-           }
+            if (s_Havg == s_Hmin)
+            {
+                s_theta = one;
+            }
+            else
+            {
+                s_theta = min(one,s_Havg/(s_Havg-(s_Hmin)));
+            }
 
 
 
@@ -80,48 +94,43 @@ kernel void PosPres(const int Nelem,const dfloat * restrict EleSizes,const dfloa
 
         }
 
-            barrier(localMemFence);
+        barrier(localMemFence);
 
 // now that theta is found, update all values
 
-        for (int i=0; i<ngl; ++i;inner1){
-            for (int j=0; j<ngl;++j;inner0){
-                    const int id = ie*ngl2*Neq   +j*ngl+i;
+        for (int i=0; i<ngl; ++i; inner1)
+        {
+            for (int j=0; j<ngl; ++j; inner0)
+            {
+                const int id = ie*ngl2*Neq   +j*ngl+i;
 
 
-					dfloat h_new =zero;
-					dfloat hu_new=zero;
-					dfloat hv_new=zero;
+                dfloat h_new =zero;
+                dfloat hu_new=zero;
+                dfloat hv_new=zero;
 
-                    dfloat r_h = s_H[i][j];
-                    dfloat r_hu = s_Hu[i][j];
-                    dfloat r_hv = s_Hv[i][j];
-					dfloat r_hAvg = s_Havg;
-					dfloat r_huAvg = s_HUavg;
-					dfloat r_hvAvg = s_HVavg;
-					dfloat r_theta = s_theta;
+                dfloat r_h = s_H[i][j];
+                dfloat r_hu = s_Hu[i][j];
+                dfloat r_hv = s_Hv[i][j];
+                dfloat r_hAvg = s_Havg;
+                dfloat r_huAvg = s_HUavg;
+                dfloat r_hvAvg = s_HVavg;
+                dfloat r_theta = s_theta;
 
-                    if (r_hAvg>zero){
+                if (r_hAvg>zero)
+                {
 
-                        h_new =  fabs(r_theta * ( r_h - r_hAvg ) + r_hAvg);
-
-
-
-                        if (h_new > PosPresTOL){
-                                hu_new = r_theta * (r_hu -  r_huAvg) +  r_huAvg;
-                                hv_new = r_theta * (r_hv -  r_hvAvg) + r_hvAvg;
-                        }else{
-                            hu_new = zero;
-                            hv_new = zero;
-
-                        }
+                    h_new =  fabs(r_theta * ( r_h - r_hAvg ) + r_hAvg);
 
 
 
-
-
-                    }else{
-                        h_new=zero;
+                    if (h_new > PosPresTOL)
+                    {
+                        hu_new = r_theta * (r_hu -  r_huAvg) +  r_huAvg;
+                        hv_new = r_theta * (r_hv -  r_hvAvg) + r_hvAvg;
+                    }
+                    else
+                    {
                         hu_new = zero;
                         hv_new = zero;
 
@@ -130,9 +139,22 @@ kernel void PosPres(const int Nelem,const dfloat * restrict EleSizes,const dfloa
 
 
 
-                        Q[id]=h_new;
-                        Q[id+ngl2] =hu_new;
-                        Q[id+ngl2+ngl2] = hv_new;
+
+                }
+                else
+                {
+                    h_new=zero;
+                    hu_new = zero;
+                    hv_new = zero;
+
+                }
+
+
+
+
+                Q[id]=h_new;
+                Q[id+ngl2] =hu_new;
+                Q[id+ngl2+ngl2] = hv_new;
 
 
 

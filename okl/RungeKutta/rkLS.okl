@@ -1,5 +1,8 @@
-
-kernel void calcRK(const int Nelem,const dfloat * Qt,const dfloat rkA,const dfloat rkB,dfloat * gRK)
+kernel void calcRK(const int Nelem,
+                   const dfloat * restrict  Qt,
+                   const dfloat rkA,
+                   const dfloat rkB,
+                   dfloat * restrict gRK)
 {
 
 
@@ -12,28 +15,32 @@ kernel void calcRK(const int Nelem,const dfloat * Qt,const dfloat rkA,const dflo
 
 
 
-            for (int i=0; i<ngl; ++i;inner1){
-                for (int j=0; j<ngl;++j;inner0){
-                        int id=j*ngl+i;
-                        int Fid = ie*ngl2*Neq   +j*ngl+i;
-                        int xid = ie*ngl2   +j*ngl+i;
+        for (int i=0; i<ngl; ++i; inner1)
+        {
+            for (int j=0; j<ngl; ++j; inner0)
+            {
+                int id=j*ngl+i;
+                int Fid = ie*ngl2*Neq   +j*ngl+i;
+                int xid = ie*ngl2   +j*ngl+i;
 
 
-                        s_Qt1[id] = Qt[Fid];
-                        s_Qt2[id] = Qt[Fid+ngl2];
-                        s_Qt3[id] = Qt[Fid+ngl2+ngl2];
+                s_Qt1[id] = Qt[Fid];
+                s_Qt2[id] = Qt[Fid+ngl2];
+                s_Qt3[id] = Qt[Fid+ngl2+ngl2];
 
 
 
 
-                    }
-                }
+            }
+        }
 
-            barrier(localMemFence);
+        barrier(localMemFence);
         // calc Source Term and update gRK
 
-          for(int j=0;j<ngl;++j;inner1){
-            for(int i=0;i<ngl;++i;inner0){
+        for(int j=0; j<ngl; ++j; inner1)
+        {
+            for(int i=0; i<ngl; ++i; inner0)
+            {
                 int id = ie*ngl2*Neq   +j*ngl+i;
                 int idLoc=j*ngl+i;
 
@@ -41,11 +48,11 @@ kernel void calcRK(const int Nelem,const dfloat * Qt,const dfloat rkA,const dflo
 
 
 
-                  gRK[id]=rkA*gRK[id]+ s_Qt1[idLoc]  ;
-                  gRK[id+ngl2]=rkA*gRK[id+ngl2]+ s_Qt2[idLoc]  ;
-                  gRK[id+ngl2+ngl2]=rkA*gRK[id+ngl2+ngl2]+ s_Qt3[idLoc]  ;
+                gRK[id]=rkA*gRK[id]+ s_Qt1[idLoc]  ;
+                gRK[id+ngl2]=rkA*gRK[id+ngl2]+ s_Qt2[idLoc]  ;
+                gRK[id+ngl2+ngl2]=rkA*gRK[id+ngl2+ngl2]+ s_Qt3[idLoc]  ;
             }
-          }
+        }
 
 
 

@@ -1,6 +1,7 @@
 
-
-kernel void FindLambdaMax(const int Nelem, const dfloat * Q, dfloat * LambdaMax)
+kernel void FindLambdaMax(const int Nelem,
+                          const dfloat * restrict  Q,
+                          dfloat * restrict  LambdaMax)
 {
 
 
@@ -14,48 +15,56 @@ kernel void FindLambdaMax(const int Nelem, const dfloat * Q, dfloat * LambdaMax)
 
 
 
-        for (int i=0; i<ngl; ++i;inner1){
-            for (int j=0; j<ngl;++j;inner0){
-                        const int Fid = ie*ngl2*Neq   +j*ngl+i;
+        for (int i=0; i<ngl; ++i; inner1)
+        {
+            for (int j=0; j<ngl; ++j; inner0)
+            {
+                const int Fid = ie*ngl2*Neq   +j*ngl+i;
 
-                        dfloat c;
+                dfloat c;
 
-                        dfloat Qinv;
-                        if (Q[Fid]>=PosPresTOL){
-                            Qinv =  one/Q[Fid];
-                            c=sqrt(g_const*Q[Fid]);
-                        }else{
-                            Qinv = zero;
-                            c=zero;
-                        }
+                dfloat Qinv;
+                if (Q[Fid]>=PosPresTOL)
+                {
+                    Qinv =  one/Q[Fid];
+                    c=sqrt(g_const*Q[Fid]);
+                }
+                else
+                {
+                    Qinv = zero;
+                    c=zero;
+                }
 
-                        const dfloat u =Q[Fid+ngl2]*Qinv;
-                        const dfloat v =Q[Fid+ngl2+ngl2]*Qinv;
+                const dfloat u =Q[Fid+ngl2]*Qinv;
+                const dfloat v =Q[Fid+ngl2+ngl2]*Qinv;
 
-                        s_MaxLambda[i][j] =  c + max(fabs(u),fabs(v));
+                s_MaxLambda[i][j] =  c + max(fabs(u),fabs(v));
 
             }
         }
 
-            barrier(localMemFence);
+        barrier(localMemFence);
 
 
 
-            for (int k=0; k<1; ++k;inner0){
+        for (int k=0; k<1; ++k; inner0)
+        {
 
-                    LambdaMax[ie]=zero;
-
-
-                        occaUnroll(ngl)
-                         for (int i=0; i<ngl; ++i){
-                            occaUnroll(ngl)
-                            for (int j=0; i<ngl; ++i){
-                                    LambdaMax[ie] = max(LambdaMax[ie], s_MaxLambda[i][j]);
-                            }
-                         }
+            LambdaMax[ie]=zero;
 
 
+            occaUnroll(ngl)
+            for (int i=0; i<ngl; ++i)
+            {
+                occaUnroll(ngl)
+                for (int j=0; i<ngl; ++i)
+                {
+                    LambdaMax[ie] = max(LambdaMax[ie], s_MaxLambda[i][j]);
+                }
             }
+
+
+        }
 
 
 

@@ -1,7 +1,17 @@
 
 
 
-kernel void calcGradient(const int Nelem, const dfloat * Jac,const dfloat * Y_xi,const dfloat * Y_eta,const dfloat * X_xi,const dfloat * X_eta,const dfloat * Q,const dfloat * B,const dfloat * restrict D,dfloat * qGradientX,dfloat * qGradientY)
+kernel void calcGradient(const int Nelem,
+                         const dfloat * restrict  Jac,
+                         const dfloat * restrict  Y_xi,
+                         const dfloat * restrict  Y_eta,
+                         const dfloat * restrict  X_xi,
+                         const dfloat * restrict  X_eta,
+                         const dfloat * restrict  Q,
+                         const dfloat * restrict  B,
+                         const dfloat * restrict D,
+                         dfloat * restrict  qGradientX,
+                         dfloat * restrict  qGradientY)
 {
 
 

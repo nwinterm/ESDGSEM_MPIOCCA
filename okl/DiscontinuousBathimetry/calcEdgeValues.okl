@@ -1,27 +1,34 @@
-
-kernel void calcEdgeValues(const int Nfaces,const dfloat * qL,const dfloat * qR, const dfloat * bL,const dfloat * bR,dfloat * hAvg,dfloat * bJump)
+kernel void calcEdgeValues(const int Nfaces,
+                           const dfloat * restrict  qL,
+                           const dfloat * restrict  qR,
+                           const dfloat * restrict  bL,
+                           const dfloat * restrict  bR,
+                           dfloat * restrict  hAvg,
+                           dfloat * restrict  bJump)
 {
-        for (int ifa=0;ifa<Nfaces;ifa++;outer0){
+    for (int ifa=0; ifa<Nfaces; ifa++; outer0)
+    {
 
 
-             for(int i=0;i<ngl;i++;inner0){
+        for(int i=0; i<ngl; i++; inner0)
+        {
 
-                const int edgeID=ifa*ngl*Neq + i;   //for edge wise solution
-                const int edgeIDX=ifa*ngl + i;      //for edge wise spatial values (BOTTOM)
-
-
-                hAvg[edgeIDX] = half* (qL[edgeID] + qR[edgeID]);
-                bJump[edgeIDX] =  (bR[edgeIDX]-bL[edgeIDX]);
+            const int edgeID=ifa*ngl*Neq + i;   //for edge wise solution
+            const int edgeIDX=ifa*ngl + i;      //for edge wise spatial values (BOTTOM)
 
 
-
-
-            }//inner0 loop
+            hAvg[edgeIDX] = half* (qL[edgeID] + qR[edgeID]);
+            bJump[edgeIDX] =  (bR[edgeIDX]-bL[edgeIDX]);
 
 
 
 
-        }//outer0 loop
+        }//inner0 loop
+
+
+
+
+    }//outer0 loop
 
 
 }//end kernel

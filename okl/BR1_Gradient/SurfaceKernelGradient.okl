@@ -1,6 +1,13 @@
 
-
-kernel void SurfaceKernelGradient(const int Nelem, const dfloat *Jac,const int * ElemEdgeMasterSlave,const int * ElemEdgeOrientation,const int * ElemToEdge, const dfloat * UStarX,const dfloat * UStarY,dfloat * qGradientX,dfloat * qGradientY)
+kernel void SurfaceKernelGradient(const int Nelem,
+                                  const dfloat * restrict Jac,
+                                  const int * restrict  ElemEdgeMasterSlave,
+                                  const int * restrict  ElemEdgeOrientation,
+                                  const int * restrict  ElemToEdge,
+                                  const dfloat * restrict  UStarX,
+                                  const dfloat * restrict  UStarY,
+                                  dfloat * restrict  qGradientX,
+                                  dfloat * restrict  qGradientY)
 {
 
     for(int ie = 0; ie < Nelem; ie++; outer0)
@@ -15,53 +22,56 @@ kernel void SurfaceKernelGradient(const int Nelem, const dfloat *Jac,const int *
 
 
 
-        for(int is=0;is<4;is++;inner1){
-           for (int j=0; j<ngl;++j;inner0){
+        for(int is=0; is<4; is++; inner1)
+        {
+            for (int j=0; j<ngl; ++j; inner0)
+            {
 
-            int ifa = ElemToEdge[ie*4 + is]-1;        //get id of element side
-
-
-            // is the numerical flux stored in reversed order for this element?
-            // "1" means the order is correct, 0 means it is not
-            int reversedOrder = ElemEdgeOrientation[ie*4 + is];
-            //increment = j if order is correct, else increment = ngl-1-j
-            int increment  = reversedOrder*j + (1-reversedOrder)*(ngl-1 -j);
-
-            //THIS WAY THE STORAGE IN THE SHARED VARIABLES SHOULD ALWAYS BE IN THE CORRECT ORDER FOR THE LOCAL COORDINATES
-
-            int idFaceLoc = ifa*ngl*Neq + increment;        //get local id on the side storage SurfaceParts
+                int ifa = ElemToEdge[ie*4 + is]-1;        //get id of element side
 
 
+                // is the numerical flux stored in reversed order for this element?
+                // "1" means the order is correct, 0 means it is not
+                int reversedOrder = ElemEdgeOrientation[ie*4 + is];
+                //increment = j if order is correct, else increment = ngl-1-j
+                int increment  = reversedOrder*j + (1-reversedOrder)*(ngl-1 -j);
 
-            int id=is*ngl*Neq+j;                // get id for surface parts for THIS element
-            int id2 = is*ngl+j;
-            int xid;
+                //THIS WAY THE STORAGE IN THE SHARED VARIABLES SHOULD ALWAYS BE IN THE CORRECT ORDER FOR THE LOCAL COORDINATES
 
-         switch(is){
-            case 0: //bottom side
-                xid = ie*ngl2+j;
-                break;
-            case 2: //top side
-                xid = ie*ngl2+ngl2-ngl+j;
-                break;
-            case 3: //left side
-                xid = ie*ngl2+j*ngl;
-                break;
-            case 1: //right side
-                xid = ie*ngl2+(j+1)*ngl-1;
-                break;
-
-            }
-            s_Jac[id2]=Jac[xid];
+                int idFaceLoc = ifa*ngl*Neq + increment;        //get local id on the side storage SurfaceParts
 
 
 
-            s_UStarX[id]         = UStarX[idFaceLoc];
-            s_UStarX[id+ngl]     = UStarX[idFaceLoc+ngl];          //LOOPS OVER EQUATIONS HERE
-            s_UStarX[id+2*ngl]   = UStarX[idFaceLoc+2*ngl];
-            s_UStarY[id]         = UStarY[idFaceLoc];
-            s_UStarY[id+ngl]     = UStarY[idFaceLoc+ngl];          //LOOPS OVER EQUATIONS HERE
-            s_UStarY[id+2*ngl]   = UStarY[idFaceLoc+2*ngl];
+                int id=is*ngl*Neq+j;                // get id for surface parts for THIS element
+                int id2 = is*ngl+j;
+                int xid;
+
+                switch(is)
+                {
+                case 0: //bottom side
+                    xid = ie*ngl2+j;
+                    break;
+                case 2: //top side
+                    xid = ie*ngl2+ngl2-ngl+j;
+                    break;
+                case 3: //left side
+                    xid = ie*ngl2+j*ngl;
+                    break;
+                case 1: //right side
+                    xid = ie*ngl2+(j+1)*ngl-1;
+                    break;
+
+                }
+                s_Jac[id2]=Jac[xid];
+
+
+
+                s_UStarX[id]         = UStarX[idFaceLoc];
+                s_UStarX[id+ngl]     = UStarX[idFaceLoc+ngl];          //LOOPS OVER EQUATIONS HERE
+                s_UStarX[id+2*ngl]   = UStarX[idFaceLoc+2*ngl];
+                s_UStarY[id]         = UStarY[idFaceLoc];
+                s_UStarY[id+ngl]     = UStarY[idFaceLoc+ngl];          //LOOPS OVER EQUATIONS HERE
+                s_UStarY[id+2*ngl]   = UStarY[idFaceLoc+2*ngl];
 
 
 
@@ -72,22 +82,23 @@ kernel void SurfaceKernelGradient(const int Nelem, const dfloat *Jac,const int *
         barrier(localMemFence);
 
         //SIDE 1 (BOTTOM)
-        for (int j=0; j<ngl; ++j;inner0){
-                int id= ie*ngl2*Neq+j;
-                int MasterSlave = ElemEdgeMasterSlave[ie*4];
+        for (int j=0; j<ngl; ++j; inner0)
+        {
+            int id= ie*ngl2*Neq+j;
+            int MasterSlave = ElemEdgeMasterSlave[ie*4];
 
-                int idfaceloc = j;
-                int idxfaceloc = j;
+            int idfaceloc = j;
+            int idxfaceloc = j;
 
 
 
-                qGradientX[id]              +=     MasterSlave* s_UStarX[idfaceloc] * s_Jac[idxfaceloc];
-                qGradientX[id+ngl2]         +=     MasterSlave* s_UStarX[idfaceloc+ngl] * s_Jac[idxfaceloc];
-                qGradientX[id+ngl2+ngl2]    +=     MasterSlave* s_UStarX[idfaceloc+ngl+ngl] * s_Jac[idxfaceloc];
+            qGradientX[id]              +=     MasterSlave* s_UStarX[idfaceloc] * s_Jac[idxfaceloc];
+            qGradientX[id+ngl2]         +=     MasterSlave* s_UStarX[idfaceloc+ngl] * s_Jac[idxfaceloc];
+            qGradientX[id+ngl2+ngl2]    +=     MasterSlave* s_UStarX[idfaceloc+ngl+ngl] * s_Jac[idxfaceloc];
 
-                qGradientY[id]              +=     MasterSlave* s_UStarY[idfaceloc] * s_Jac[idxfaceloc];
-                qGradientY[id+ngl2]         +=     MasterSlave* s_UStarY[idfaceloc+ngl] * s_Jac[idxfaceloc];
-                qGradientY[id+ngl2+ngl2]    +=     MasterSlave* s_UStarY[idfaceloc+ngl+ngl] * s_Jac[idxfaceloc];
+            qGradientY[id]              +=     MasterSlave* s_UStarY[idfaceloc] * s_Jac[idxfaceloc];
+            qGradientY[id+ngl2]         +=     MasterSlave* s_UStarY[idfaceloc+ngl] * s_Jac[idxfaceloc];
+            qGradientY[id+ngl2+ngl2]    +=     MasterSlave* s_UStarY[idfaceloc+ngl+ngl] * s_Jac[idxfaceloc];
 
 
         }
@@ -96,23 +107,24 @@ kernel void SurfaceKernelGradient(const int Nelem, const dfloat *Jac,const int *
 
 
         barrier(localMemFence);
-         // SIDE 3 (TOP)
+        // SIDE 3 (TOP)
 
-        for (int j=0; j<ngl; ++j;inner0){
+        for (int j=0; j<ngl; ++j; inner0)
+        {
 
-                int id= ie*ngl2*Neq+ngl2-ngl+j;
-                int MasterSlave = ElemEdgeMasterSlave[ie*4+2];
+            int id= ie*ngl2*Neq+ngl2-ngl+j;
+            int MasterSlave = ElemEdgeMasterSlave[ie*4+2];
 
-                int idfaceloc = 2*ngl*Neq+j;
-                int idxfaceloc = 2*ngl+j;
+            int idfaceloc = 2*ngl*Neq+j;
+            int idxfaceloc = 2*ngl+j;
 
-                qGradientX[id]              +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarX[idfaceloc]  ;
-                qGradientX[id+ngl2]         +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarX[idfaceloc+ngl]  ;
-                qGradientX[id+ngl2+ngl2]    +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarX[idfaceloc+ngl+ngl]  ;
+            qGradientX[id]              +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarX[idfaceloc]  ;
+            qGradientX[id+ngl2]         +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarX[idfaceloc+ngl]  ;
+            qGradientX[id+ngl2+ngl2]    +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarX[idfaceloc+ngl+ngl]  ;
 
-                qGradientY[id]              +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarY[idfaceloc]  ;
-                qGradientY[id+ngl2]         +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarY[idfaceloc+ngl]  ;
-                qGradientY[id+ngl2+ngl2]    +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarY[idfaceloc+ngl+ngl]  ;
+            qGradientY[id]              +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarY[idfaceloc]  ;
+            qGradientY[id+ngl2]         +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarY[idfaceloc+ngl]  ;
+            qGradientY[id+ngl2+ngl2]    +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarY[idfaceloc+ngl+ngl]  ;
         }
 
 
@@ -120,46 +132,48 @@ kernel void SurfaceKernelGradient(const int Nelem, const dfloat *Jac,const int *
         barrier(localMemFence);
         //SIDE 2 (RIGHT)
         //Then do sides 1 and 3
-            for (int j=0; j<ngl; ++j;inner0){
-                int MasterSlave = ElemEdgeMasterSlave[ie*4+1];
-                int id= ie*ngl2*Neq+(ngl-1) +j*ngl;
+        for (int j=0; j<ngl; ++j; inner0)
+        {
+            int MasterSlave = ElemEdgeMasterSlave[ie*4+1];
+            int id= ie*ngl2*Neq+(ngl-1) +j*ngl;
 
-                int idfaceloc = 1*ngl*Neq+j;
-                int idxfaceloc = 1*ngl+j;
+            int idfaceloc = 1*ngl*Neq+j;
+            int idxfaceloc = 1*ngl+j;
 
-                qGradientX[id]              +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarX[idfaceloc]  ;
-                qGradientX[id+ngl2]         +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarX[idfaceloc+ngl]  ;
-                qGradientX[id+ngl2+ngl2]    +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarX[idfaceloc+ngl+ngl]  ;
+            qGradientX[id]              +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarX[idfaceloc]  ;
+            qGradientX[id+ngl2]         +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarX[idfaceloc+ngl]  ;
+            qGradientX[id+ngl2+ngl2]    +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarX[idfaceloc+ngl+ngl]  ;
 
-                qGradientY[id]              +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarY[idfaceloc]  ;
-                qGradientY[id+ngl2]         +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarY[idfaceloc+ngl]  ;
-                qGradientY[id+ngl2+ngl2]    +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarY[idfaceloc+ngl+ngl]  ;
-            }
+            qGradientY[id]              +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarY[idfaceloc]  ;
+            qGradientY[id+ngl2]         +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarY[idfaceloc+ngl]  ;
+            qGradientY[id+ngl2+ngl2]    +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarY[idfaceloc+ngl+ngl]  ;
+        }
 
 
 
-         barrier(localMemFence);
+        barrier(localMemFence);
 
         //SIDE 4 (LEFT)
 
-            for (int j=0; j<ngl; ++j;inner0){
-                int MasterSlave = ElemEdgeMasterSlave[ie*4+3];
-                int id= ie*ngl2*Neq + j*ngl;
+        for (int j=0; j<ngl; ++j; inner0)
+        {
+            int MasterSlave = ElemEdgeMasterSlave[ie*4+3];
+            int id= ie*ngl2*Neq + j*ngl;
 
-                int idfaceloc = 3*ngl*Neq+j;
-                int idxfaceloc = 3*ngl+j;
+            int idfaceloc = 3*ngl*Neq+j;
+            int idxfaceloc = 3*ngl+j;
 
-                qGradientX[id]              +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarX[idfaceloc]  ;
-                qGradientX[id+ngl2]         +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarX[idfaceloc+ngl]  ;
-                qGradientX[id+ngl2+ngl2]    +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarX[idfaceloc+ngl+ngl]  ;
-
-
-                qGradientY[id]              +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarY[idfaceloc]  ;
-                qGradientY[id+ngl2]         +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarY[idfaceloc+ngl]  ;
-                qGradientY[id+ngl2+ngl2]    +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarY[idfaceloc+ngl+ngl]  ;
+            qGradientX[id]              +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarX[idfaceloc]  ;
+            qGradientX[id+ngl2]         +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarX[idfaceloc+ngl]  ;
+            qGradientX[id+ngl2+ngl2]    +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarX[idfaceloc+ngl+ngl]  ;
 
 
-            }
+            qGradientY[id]              +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarY[idfaceloc]  ;
+            qGradientY[id+ngl2]         +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarY[idfaceloc+ngl]  ;
+            qGradientY[id+ngl2+ngl2]    +=   MasterSlave*s_Jac[idxfaceloc] *  s_UStarY[idfaceloc+ngl+ngl]  ;
+
+
+        }
 
 
 

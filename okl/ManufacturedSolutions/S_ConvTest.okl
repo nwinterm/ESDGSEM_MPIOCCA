@@ -1,6 +1,12 @@
 
-
-kernel void addS(const int Nelem,const dfloat * Bx,const dfloat * By,const dfloat * B,const dfloat * x,const dfloat * y,const dfloat t,dfloat * gRK)
+kernel void addS(const int Nelem,
+                 const dfloat * restrict  Bx,
+                 const dfloat * restrict  By,
+                 const dfloat * restrict  B,
+                 const dfloat * restrict  x,
+                 const dfloat * restrict  y,
+                 const dfloat t,
+                 dfloat * restrict  gRK)
 {
 
 
@@ -14,30 +20,34 @@ kernel void addS(const int Nelem,const dfloat * Bx,const dfloat * By,const dfloa
         shared dfloat s_x[ngl2];
         shared dfloat s_y[ngl2];
 
-            for (int i=0; i<ngl; ++i;inner1){
-                for (int j=0; j<ngl;++j;inner0){
-                        int id=j*ngl+i;
+        for (int i=0; i<ngl; ++i; inner1)
+        {
+            for (int j=0; j<ngl; ++j; inner0)
+            {
+                int id=j*ngl+i;
 
-                        int xid = ie*ngl2   +j*ngl+i;
-
-
-
-                        s_x[id] = x[xid];
-                        s_y[id] = y[xid];
-
-                        s_Bx[id]= Bx[xid];
-                        s_By[id]= By[xid];
-                        s_B[id]= B[xid];
+                int xid = ie*ngl2   +j*ngl+i;
 
 
-                    }
-                }
 
-            barrier(localMemFence);
+                s_x[id] = x[xid];
+                s_y[id] = y[xid];
+
+                s_Bx[id]= Bx[xid];
+                s_By[id]= By[xid];
+                s_B[id]= B[xid];
+
+
+            }
+        }
+
+        barrier(localMemFence);
         // calc Source Term and update gRK
 
-          for(int j=0;j<ngl;++j;inner1){
-            for(int i=0;i<ngl;++i;inner0){
+        for(int j=0; j<ngl; ++j; inner1)
+        {
+            for(int i=0; i<ngl; ++i; inner0)
+            {
                 int id = ie*ngl2*Neq   +j*ngl+i;
                 int idLoc=j*ngl+i;
 
@@ -69,7 +79,7 @@ kernel void addS(const int Nelem,const dfloat * Bx,const dfloat * By,const dfloa
                 gRK[id+ngl2]        += u*H_t+u*u*(H_x-s_Bx[idLoc])+u*v*(H_y-s_By[idLoc])+g_const*H_x*(H-s_B[idLoc]);
                 gRK[id+ngl2+ngl2]   +=  v*H_t+u*v*(H_x-s_Bx[idLoc])+v*v*(H_y-s_By[idLoc])+g_const*H_y*(H-s_B[idLoc]);
             }
-          }
+        }
 
 
 

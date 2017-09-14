@@ -1,6 +1,9 @@
 
-
-kernel void ShockCapturing(const int Nelem, const dfloat * Q,const dfloat * restrict VdmInv,const dfloat * restrict EleSizes,dfloat * ViscPara)
+kernel void ShockCapturing(const int Nelem,
+                           const dfloat * restrict  Q,
+                           const dfloat * restrict VdmInv,
+                           const dfloat * restrict EleSizes,
+                           dfloat * restrict  ViscPara)
 {
 
 
@@ -20,174 +23,199 @@ kernel void ShockCapturing(const int Nelem, const dfloat * Q,const dfloat * rest
 
 
 
-        for (int i=0; i<ngl; ++i;inner1){
-            for (int j=0; j<ngl;++j;inner0){
-                        const int id=j*ngl+i;
-                        const int Fid = ie*ngl2*Neq   +j*ngl+i;
-                        const int Xid = ie*ngl2   +j*ngl+i;
-                        s_VdmInv[i][j]=VdmInv[id];
+        for (int i=0; i<ngl; ++i; inner1)
+        {
+            for (int j=0; j<ngl; ++j; inner0)
+            {
+                const int id=j*ngl+i;
+                const int Fid = ie*ngl2*Neq   +j*ngl+i;
+                const int Xid = ie*ngl2   +j*ngl+i;
+                s_VdmInv[i][j]=VdmInv[id];
 
-                        //ABUSE OF NOTATION, THESE ARE NODAL VALUES NOW
+                //ABUSE OF NOTATION, THESE ARE NODAL VALUES NOW
 
-                        s_Q1modal[i][j]=Q[Fid]*Q[Fid];
+                s_Q1modal[i][j]=Q[Fid]*Q[Fid];
 
-                        dfloat c;
+                dfloat c;
 
-                        dfloat Qinv;
-                        if (Q[Fid]>=PosPresTOL){
-                            Qinv = one/Q[Fid];
-                            c=sqrt(g_const*Q[Fid]);
-                        }else{
-                            Qinv = zero;
-                            c=zero;
-                        }
-                        const dfloat u =Q[Fid+ngl2]*Qinv;
-                        const dfloat v =Q[Fid+ngl2+ngl2]*Qinv;
+                dfloat Qinv;
+                if (Q[Fid]>=PosPresTOL)
+                {
+                    Qinv = one/Q[Fid];
+                    c=sqrt(g_const*Q[Fid]);
+                }
+                else
+                {
+                    Qinv = zero;
+                    c=zero;
+                }
+                const dfloat u =Q[Fid+ngl2]*Qinv;
+                const dfloat v =Q[Fid+ngl2+ngl2]*Qinv;
 
-                        s_MaxLambda[i][j] =  c + max(fabs(u),fabs(v));
+                s_MaxLambda[i][j] =  c + max(fabs(u),fabs(v));
 
             }
         }
 
-            barrier(localMemFence);
+        barrier(localMemFence);
 
-            // TRANSFORM INTO MODAL BASIS
+        // TRANSFORM INTO MODAL BASIS
 
-            for (int i=0; i<ngl; ++i;inner1){
-                for (int j=0; j<ngl;++j;inner0){
-
-
-                        dfloat Q1modal=zero;
-
+        for (int i=0; i<ngl; ++i; inner1)
+        {
+            for (int j=0; j<ngl; ++j; inner0)
+            {
 
 
-                        // calc Vinv * Q
-                        occaUnroll(ngl)
-                        for (int l=0; l<ngl; ++l){
-                              Q1modal+= s_VdmInv[l][i] * s_Q1modal[l][j];
-
-                         }
-
-                        // set s_Q1modal to Vinv * Q
-                        s_Q1[i][j]=Q1modal;
+                dfloat Q1modal=zero;
 
 
 
-                    }
+                // calc Vinv * Q
+                occaUnroll(ngl)
+                for (int l=0; l<ngl; ++l)
+                {
+                    Q1modal+= s_VdmInv[l][i] * s_Q1modal[l][j];
+
                 }
 
+                // set s_Q1modal to Vinv * Q
+                s_Q1[i][j]=Q1modal;
 
-            barrier(localMemFence);
-
-
-
-
-            // TRANSFORM INTO MODAL BASIS
-
-            for (int i=0; i<ngl; ++i;inner1){
-                for (int j=0; j<ngl;++j;inner0){
-
-
-                        dfloat Q1modal=zero;
-
-
-
-                        // calc VQ * Vinv
-                        occaUnroll(ngl)
-                        for (int l=0; l<ngl; ++l){
-
-                              Q1modal+= s_Q1[i][l] * s_VdmInv[l][j] ;
-
-
-
-
-                         }
-
-                        s_Q1modal[i][j]=Q1modal;
-
-
-                    }
-                }
-
-
-            barrier(localMemFence);
-
-
-            // CALC DOF ENERGY INDICATOR
-
-            for (int k=0; k<1; ++k;inner0){
-                    dfloat sigma_dof = zero;
-                    dfloat zaehler1 = zero;
-                    dfloat nenner1 = zero;
-                    dfloat zaehler2 = zero;
-                    dfloat nenner2 = zero;
-                    dfloat term1=zero;
-                    dfloat term2=zero;
-
-                    dfloat viscStar=zero;
-                    dfloat MaxLambdaTotal=zero;
-
-                        occaUnroll(ngl-1)
-                        for (int i=0; i<ngl-1; ++i){
-                              zaehler1+= s_Q1modal[i][ngl-1]*s_Q1modal[i][ngl-1] + s_Q1modal[ngl-1][i]*s_Q1modal[ngl-1][i]  ;
-
-                         }
-                         zaehler1+= s_Q1modal[ngl-1][ngl-1]*s_Q1modal[ngl-1][ngl-1];
-
-                         occaUnroll(ngl-2)
-                        for (int i=0; i<ngl-2; ++i){
-                              zaehler2+= s_Q1modal[i][ngl-2]*s_Q1modal[i][ngl-2] + s_Q1modal[ngl-2][i]*s_Q1modal[ngl-2][i]  ;
-
-                         }
-
-                         zaehler2+= s_Q1modal[ngl-2][ngl-2]*s_Q1modal[ngl-2][ngl-2];
-
-                         occaUnroll(ngl)
-                         for (int i=0; i<ngl; ++i){
-                            occaUnroll(ngl)
-                                for (int j=0; j<ngl; ++j){
-                                    nenner1+= s_Q1modal[i][j]*s_Q1modal[i][j] ;
-                                }
-                         }
-                         occaUnroll(ngl-1)
-                         for (int i=0; i<ngl-1; ++i){
-                            occaUnroll(ngl-1)
-                                for (int j=0; j<ngl-1; ++j){
-                                    nenner2+= s_Q1modal[i][j]*s_Q1modal[i][j] ;
-                                }
-                         }
-
-                         term1= zaehler1/nenner1 ;
-                         term2= zaehler2/nenner2 ;
-
-                         sigma_dof = max(term1,term2);
-                         sigma_dof = log10(sigma_dof);
-
-
-                        if (sigmaMin >= sigma_dof){
-                            viscStar    =   zero;
-                        } else if(sigmaMax >=sigma_dof){
-                            dfloat delta = one+sin(PI*(sigma_dof - half*(sigmaMax + sigmaMin))/(sigmaMax - sigmaMin)) ;
-                            viscStar    =   eps0 * half * delta;
-                        } else{
-                            viscStar    =   eps0;
-                        }
-
-
-                        occaUnroll(ngl)
-                         for (int i=0; i<ngl; ++i){
-                            occaUnroll(ngl)
-                            for (int j=0; i<ngl; ++i){
-                                    MaxLambdaTotal = max(MaxLambdaTotal, s_MaxLambda[i][j]);
-                            }
-                         }
-
-
-
-                         ViscPara[ie] = MaxLambdaTotal * sqrt(EleSizes[ie]) /ngl * viscStar;
 
 
             }
+        }
+
+
+        barrier(localMemFence);
+
+
+
+
+        // TRANSFORM INTO MODAL BASIS
+
+        for (int i=0; i<ngl; ++i; inner1)
+        {
+            for (int j=0; j<ngl; ++j; inner0)
+            {
+
+
+                dfloat Q1modal=zero;
+
+
+
+                // calc VQ * Vinv
+                occaUnroll(ngl)
+                for (int l=0; l<ngl; ++l)
+                {
+
+                    Q1modal+= s_Q1[i][l] * s_VdmInv[l][j] ;
+
+
+
+
+                }
+
+                s_Q1modal[i][j]=Q1modal;
+
+
+            }
+        }
+
+
+        barrier(localMemFence);
+
+
+        // CALC DOF ENERGY INDICATOR
+
+        for (int k=0; k<1; ++k; inner0)
+        {
+            dfloat sigma_dof = zero;
+            dfloat zaehler1 = zero;
+            dfloat nenner1 = zero;
+            dfloat zaehler2 = zero;
+            dfloat nenner2 = zero;
+            dfloat term1=zero;
+            dfloat term2=zero;
+
+            dfloat viscStar=zero;
+            dfloat MaxLambdaTotal=zero;
+
+            occaUnroll(ngl-1)
+            for (int i=0; i<ngl-1; ++i)
+            {
+                zaehler1+= s_Q1modal[i][ngl-1]*s_Q1modal[i][ngl-1] + s_Q1modal[ngl-1][i]*s_Q1modal[ngl-1][i]  ;
+
+            }
+            zaehler1+= s_Q1modal[ngl-1][ngl-1]*s_Q1modal[ngl-1][ngl-1];
+
+            occaUnroll(ngl-2)
+            for (int i=0; i<ngl-2; ++i)
+            {
+                zaehler2+= s_Q1modal[i][ngl-2]*s_Q1modal[i][ngl-2] + s_Q1modal[ngl-2][i]*s_Q1modal[ngl-2][i]  ;
+
+            }
+
+            zaehler2+= s_Q1modal[ngl-2][ngl-2]*s_Q1modal[ngl-2][ngl-2];
+
+            occaUnroll(ngl)
+            for (int i=0; i<ngl; ++i)
+            {
+                occaUnroll(ngl)
+                for (int j=0; j<ngl; ++j)
+                {
+                    nenner1+= s_Q1modal[i][j]*s_Q1modal[i][j] ;
+                }
+            }
+            occaUnroll(ngl-1)
+            for (int i=0; i<ngl-1; ++i)
+            {
+                occaUnroll(ngl-1)
+                for (int j=0; j<ngl-1; ++j)
+                {
+                    nenner2+= s_Q1modal[i][j]*s_Q1modal[i][j] ;
+                }
+            }
+
+            term1= zaehler1/nenner1 ;
+            term2= zaehler2/nenner2 ;
+
+            sigma_dof = max(term1,term2);
+            sigma_dof = log10(sigma_dof);
+
+
+            if (sigmaMin >= sigma_dof)
+            {
+                viscStar    =   zero;
+            }
+            else if(sigmaMax >=sigma_dof)
+            {
+                dfloat delta = one+sin(PI*(sigma_dof - half*(sigmaMax + sigmaMin))/(sigmaMax - sigmaMin)) ;
+                viscStar    =   eps0 * half * delta;
+            }
+            else
+            {
+                viscStar    =   eps0;
+            }
+
+
+            occaUnroll(ngl)
+            for (int i=0; i<ngl; ++i)
+            {
+                occaUnroll(ngl)
+                for (int j=0; i<ngl; ++i)
+                {
+                    MaxLambdaTotal = max(MaxLambdaTotal, s_MaxLambda[i][j]);
+                }
+            }
+
+
+
+            ViscPara[ie] = MaxLambdaTotal * sqrt(EleSizes[ie]) /ngl * viscStar;
+
+
+        }
 
 
 

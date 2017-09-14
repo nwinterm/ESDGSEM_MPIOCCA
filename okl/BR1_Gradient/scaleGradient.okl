@@ -1,7 +1,10 @@
 
 
 
-kernel void scaleGradient(const int Nelem, const dfloat * Q,dfloat * qGradientX,dfloat * qGradientY)
+kernel void scaleGradient(const int Nelem,
+                          const dfloat * restrict  Q,
+                          dfloat * restrict  qGradientX,
+                          dfloat * restrict  qGradientY)
 {
 
 

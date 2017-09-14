@@ -1,171 +1,190 @@
 
-
-kernel void calcNumFluxes(const int Nfaces,const dfloat * normalx,const dfloat * normaly,const dfloat *Scal, const dfloat * qL,const dfloat * qR,const dfloat * BL,const dfloat * BR,dfloat * SurfaceParts)
+kernel void calcNumFluxes(const int Nfaces,
+                          const dfloat * restrict  normalx,
+                          const dfloat * restrict  normaly,
+                          const dfloat * restrict Scal,
+                          const dfloat * restrict  qL,
+                          const dfloat *restrict  qR,
+                          const dfloat * restrict  BL,
+                          const dfloat * restrict  BR,
+                          dfloat * restrict  SurfaceParts)
 {
-        for (int ifa=0;ifa<Nfaces;ifa++;outer0){
+    for (int ifa=0; ifa<Nfaces; ifa++; outer0)
+    {
 
 
-            for(int i=0;i<ngl;i++;inner0){
+        for(int i=0; i<ngl; i++; inner0)
+        {
 
 
 
-                const int edgeIDX=ifa*ngl + i;              //for normals!!
-                const int edgeID=ifa*ngl*Neq + i;           //for values!!
+            const int edgeIDX=ifa*ngl + i;              //for normals!!
+            const int edgeID=ifa*ngl*Neq + i;           //for values!!
 
 
-                const dfloat nx=normalx[edgeIDX];
-                const dfloat ny=normaly[edgeIDX];
-                const dfloat scaling=Scal[edgeIDX];
+            const dfloat nx=normalx[edgeIDX];
+            const dfloat ny=normaly[edgeIDX];
+            const dfloat scaling=Scal[edgeIDX];
 
-                dfloat NumFlux[Neq];
+            dfloat NumFlux[Neq];
 
 
 
 
-                dfloat hL=qL[edgeID];
-                dfloat uL;
-                dfloat vL;
-                if(hL>=PosPresTOL){
-                    uL=qL[edgeID+ngl]/hL;
-                    vL=qL[edgeID+ngl+ngl]/hL;
-                }else{
-                    hL=zero;
-                    uL =zero;
-                    vL =zero;
-                }
-
-
-
-                dfloat hR=qR[edgeID];
-                dfloat uR;
-                dfloat vR;
-
-                if(hR>=PosPresTOL){
-                    uR=qR[edgeID+ngl]/hR;
-                    vR=qR[edgeID+ngl+ngl]/hR;
-
-                }else{
-                    hR=zero;
-                    uR =zero;
-                    vR =zero;
-                }
-
-
-                dfloat avgH = half*(hL+hR);
-                dfloat avgH2= half*(hL*hL+hR*hR);
-                dfloat avgU = half*(uL+uR);
-                dfloat avgV = half*(vL+vR);
-
-
-                dfloat normV =  avgU * nx + avgV * ny;
-
-                NumFlux[0]=avgH * normV;
-                NumFlux[1]=avgH*avgU*normV + (half*g_const*avgH2 )* nx;
-                NumFlux[2]=avgH*avgV*normV + (half*g_const*avgH2) * ny ;
-
-
-
-
-
-               if(ES){
-
-
-                    dfloat bL=BL[edgeIDX];
-                    dfloat bR=BR[edgeIDX];
-
-
-                    dfloat cL=g_const*hL;
-                    dfloat cR=g_const*hR;
-					dfloat avgC;
-					if (fabs(half*(cL+cR))>=PosPresTOL){
-						avgC=sqrt(fabs(half*(cL+cR)));
-					}else{
-						avgC=zero;
-					}
-
-
-
-                   dfloat q1L=g_const*(hL+bL)-half*uL*uL-half*vL*vL;
-                   dfloat q2L=uL;
-                   dfloat q3L=vL;
-                   dfloat q1R=g_const*(hR+bR)-half*uR*uR-half*vR*vR;
-                   dfloat q2R=uR;
-                   dfloat q3R=vR;
-
-                   dfloat jumpQ1 = q1R-q1L;
-                   dfloat jumpQ2 = q2R-q2L;
-                   dfloat jumpQ3 = q3R-q3L;
-
-
-                    //averaged right eigenvectors
-                    dfloat R11 = one;
-                    dfloat R12 = zero;
-                    dfloat R13 = one;
-
-
-                    dfloat R21 = avgU + nx*avgC;
-                    dfloat R22 = ny*one;
-                    dfloat R23 = avgU - nx*avgC;
-
-
-                    dfloat R31 = avgV+ny*avgC;
-                    dfloat R32 = nx*one;
-                    dfloat R33 = avgV-ny*avgC;
-
-
-                    dfloat SL11 = half/g_const*fabs(nx*avgU + ny*avgV + avgC);
-                    dfloat SL22 = fabs(avgH*(nx*avgU+ny*avgV));
-                    dfloat SL33 = half/g_const*fabs(nx*avgU + ny*avgV - avgC);
-
-
-
-                    dfloat RSL11 = R11 * SL11;
-                    dfloat RSL12 = zero;
-                    dfloat RSL13 = R13 * SL33;
-
-                    dfloat RSL21 = R21 * SL11;
-                    dfloat RSL22 = R22 * SL22;
-                    dfloat RSL23 = R23 * SL33;
-
-                    dfloat RSL31 = R31 * SL11;
-                    dfloat RSL32 = R32 * SL22;
-                    dfloat RSL33 = R33 * SL33;
-
-                    // RSL R^T
-                    dfloat RSLR11= RSL11*R11 + RSL12*R12 + RSL13 * R13;
-                    dfloat RSLR12= RSL11*R21 + RSL12*R22 + RSL13 * R23;
-                    dfloat RSLR13= RSL11*R31 + RSL12*R32 + RSL13 * R33;
-
-                    dfloat RSLR21= RSL21*R11 + RSL22*R12 + RSL23 * R13;
-                    dfloat RSLR22= RSL21*R21 + RSL22*R22 + RSL23 * R23;
-                    dfloat RSLR23= RSL21*R31 + RSL22*R32 + RSL23 * R33;
-
-                    dfloat RSLR31= RSL31*R11 + RSL32*R12 + RSL33 * R13;
-                    dfloat RSLR32= RSL31*R21 + RSL32*R22 + RSL33 * R23;
-                    dfloat RSLR33= RSL31*R31 + RSL32*R32 + RSL33 * R33;
-
-
-                    NumFlux[0]+= -half*(RSLR11 * jumpQ1 + RSLR12 * jumpQ2 + RSLR13 * jumpQ3);
-                    NumFlux[1]+= -half*(RSLR21 * jumpQ1 + RSLR22 * jumpQ2 + RSLR23 * jumpQ3);
-                    NumFlux[2]+= -half*(RSLR31 * jumpQ1 + RSLR32 * jumpQ2 + RSLR33 * jumpQ3);
-
-
-
-
-               }
-
-
-
-
-                SurfaceParts[edgeID]          =  scaling*geomFace*  NumFlux[0];
-                SurfaceParts[edgeID+ngl]      =  scaling*geomFace*  NumFlux[1];
-                SurfaceParts[edgeID+ngl+ngl]  =  scaling*geomFace*  NumFlux[2];
-
-
-
-
-              }
+            dfloat hL=qL[edgeID];
+            dfloat uL;
+            dfloat vL;
+            if(hL>=PosPresTOL)
+            {
+                uL=qL[edgeID+ngl]/hL;
+                vL=qL[edgeID+ngl+ngl]/hL;
             }
+            else
+            {
+                hL=zero;
+                uL =zero;
+                vL =zero;
+            }
+
+
+
+            dfloat hR=qR[edgeID];
+            dfloat uR;
+            dfloat vR;
+
+            if(hR>=PosPresTOL)
+            {
+                uR=qR[edgeID+ngl]/hR;
+                vR=qR[edgeID+ngl+ngl]/hR;
+
+            }
+            else
+            {
+                hR=zero;
+                uR =zero;
+                vR =zero;
+            }
+
+
+            dfloat avgH = half*(hL+hR);
+            dfloat avgH2= half*(hL*hL+hR*hR);
+            dfloat avgU = half*(uL+uR);
+            dfloat avgV = half*(vL+vR);
+
+
+            dfloat normV =  avgU * nx + avgV * ny;
+
+            NumFlux[0]=avgH * normV;
+            NumFlux[1]=avgH*avgU*normV + (half*g_const*avgH2 )* nx;
+            NumFlux[2]=avgH*avgV*normV + (half*g_const*avgH2) * ny ;
+
+
+
+
+
+            if(ES)
+            {
+
+
+                dfloat bL=BL[edgeIDX];
+                dfloat bR=BR[edgeIDX];
+
+
+                dfloat cL=g_const*hL;
+                dfloat cR=g_const*hR;
+                dfloat avgC;
+                if (fabs(half*(cL+cR))>=PosPresTOL)
+                {
+                    avgC=sqrt(fabs(half*(cL+cR)));
+                }
+                else
+                {
+                    avgC=zero;
+                }
+
+
+
+                dfloat q1L=g_const*(hL+bL)-half*uL*uL-half*vL*vL;
+                dfloat q2L=uL;
+                dfloat q3L=vL;
+                dfloat q1R=g_const*(hR+bR)-half*uR*uR-half*vR*vR;
+                dfloat q2R=uR;
+                dfloat q3R=vR;
+
+                dfloat jumpQ1 = q1R-q1L;
+                dfloat jumpQ2 = q2R-q2L;
+                dfloat jumpQ3 = q3R-q3L;
+
+
+                //averaged right eigenvectors
+                dfloat R11 = one;
+                dfloat R12 = zero;
+                dfloat R13 = one;
+
+
+                dfloat R21 = avgU + nx*avgC;
+                dfloat R22 = ny*one;
+                dfloat R23 = avgU - nx*avgC;
+
+
+                dfloat R31 = avgV+ny*avgC;
+                dfloat R32 = nx*one;
+                dfloat R33 = avgV-ny*avgC;
+
+
+                dfloat SL11 = half/g_const*fabs(nx*avgU + ny*avgV + avgC);
+                dfloat SL22 = fabs(avgH*(nx*avgU+ny*avgV));
+                dfloat SL33 = half/g_const*fabs(nx*avgU + ny*avgV - avgC);
+
+
+
+                dfloat RSL11 = R11 * SL11;
+                dfloat RSL12 = zero;
+                dfloat RSL13 = R13 * SL33;
+
+                dfloat RSL21 = R21 * SL11;
+                dfloat RSL22 = R22 * SL22;
+                dfloat RSL23 = R23 * SL33;
+
+                dfloat RSL31 = R31 * SL11;
+                dfloat RSL32 = R32 * SL22;
+                dfloat RSL33 = R33 * SL33;
+
+                // RSL R^T
+                dfloat RSLR11= RSL11*R11 + RSL12*R12 + RSL13 * R13;
+                dfloat RSLR12= RSL11*R21 + RSL12*R22 + RSL13 * R23;
+                dfloat RSLR13= RSL11*R31 + RSL12*R32 + RSL13 * R33;
+
+                dfloat RSLR21= RSL21*R11 + RSL22*R12 + RSL23 * R13;
+                dfloat RSLR22= RSL21*R21 + RSL22*R22 + RSL23 * R23;
+                dfloat RSLR23= RSL21*R31 + RSL22*R32 + RSL23 * R33;
+
+                dfloat RSLR31= RSL31*R11 + RSL32*R12 + RSL33 * R13;
+                dfloat RSLR32= RSL31*R21 + RSL32*R22 + RSL33 * R23;
+                dfloat RSLR33= RSL31*R31 + RSL32*R32 + RSL33 * R33;
+
+
+                NumFlux[0]+= -half*(RSLR11 * jumpQ1 + RSLR12 * jumpQ2 + RSLR13 * jumpQ3);
+                NumFlux[1]+= -half*(RSLR21 * jumpQ1 + RSLR22 * jumpQ2 + RSLR23 * jumpQ3);
+                NumFlux[2]+= -half*(RSLR31 * jumpQ1 + RSLR32 * jumpQ2 + RSLR33 * jumpQ3);
+
+
+
+
+            }
+
+
+
+
+            SurfaceParts[edgeID]          =  scaling*geomFace*  NumFlux[0];
+            SurfaceParts[edgeID+ngl]      =  scaling*geomFace*  NumFlux[1];
+            SurfaceParts[edgeID+ngl+ngl]  =  scaling*geomFace*  NumFlux[2];
+
+
+
+
+        }
+    }
 
 
 

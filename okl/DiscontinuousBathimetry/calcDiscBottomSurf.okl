@@ -1,26 +1,34 @@
 
-
-kernel void calcDiscBottomSurf(const int Nfaces,const dfloat * normalx,const dfloat * normaly,const dfloat *Scal, const dfloat * hAvg,const dfloat * bJump,dfloat * discBottomSurf1,dfloat * discBottomSurf2)
+kernel void calcDiscBottomSurf(const int Nfaces,
+                               const dfloat * restrict  normalx,
+                               const dfloat * restrict  normaly,
+                               const dfloat * restrict Scal,
+                               const dfloat * restrict  hAvg,
+                               const dfloat * restrict  bJump,
+                               dfloat * restrict  discBottomSurf1,
+                               dfloat * restrict  discBottomSurf2)
 {
-        for (int ifa=0;ifa<Nfaces;ifa++;outer0){
+    for (int ifa=0; ifa<Nfaces; ifa++; outer0)
+    {
 
 
-            for(int i=0;i<ngl;i++;inner0){
+        for(int i=0; i<ngl; i++; inner0)
+        {
 
 
 
-                const int edgeID=ifa*ngl + i;
+            const int edgeID=ifa*ngl + i;
 
-                const dfloat scaling=Scal[edgeID];
-                const dfloat nx=normalx[edgeID];
-                const dfloat ny=normaly[edgeID];
+            const dfloat scaling=Scal[edgeID];
+            const dfloat nx=normalx[edgeID];
+            const dfloat ny=normaly[edgeID];
 
-                discBottomSurf1[edgeID]  = fabs(nx)*scaling*geomFace*  half*g_const*bJump[edgeID]*hAvg[edgeID];
-                discBottomSurf2[edgeID]  = fabs(ny)*scaling*geomFace*  half*g_const*bJump[edgeID]*hAvg[edgeID];
+            discBottomSurf1[edgeID]  = fabs(nx)*scaling*geomFace*  half*g_const*bJump[edgeID]*hAvg[edgeID];
+            discBottomSurf2[edgeID]  = fabs(ny)*scaling*geomFace*  half*g_const*bJump[edgeID]*hAvg[edgeID];
 
 
-              }
-            }
+        }
+    }
 
 
 

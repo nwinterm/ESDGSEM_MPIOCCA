@@ -1,102 +1,73 @@
 
-
-kernel void CollectEdgeData_Bottom(const int Nfaces,const int * EdgeData,const dfloat * B, dfloat * bL, dfloat * bR)
+kernel void CollectEdgeData_Bottom(const int Nfaces,
+                                   const int * restrict  EdgeData,
+                                   const dfloat * restrict  B,
+                                   dfloat * restrict  bL,
+                                   dfloat * restrict  bR)
 {
-        for (int ifa=0;ifa<Nfaces;ifa++;outer0){
+    for (int ifa=0; ifa<Nfaces; ifa++; outer0)
+    {
 
 
-             for(int i=0;i<ngl;i++;inner0){
-                const int iel           =EdgeData[8*ifa];       //left element
-                const int ier           =EdgeData[8*ifa+1];       //right element
-                const int isl           =EdgeData[8*ifa+2];       //side within left element
-                const int isr           =EdgeData[8*ifa+3];      //side within right element
-                const int ireversed     =EdgeData[8*ifa+4];           //is order reversed? 0=yes, 1=no
-                const int cpuL          =EdgeData[8*ifa+5];     // rank of cpuL
-                const int cpuR          =EdgeData[8*ifa+6];     // rank of cpuR
+        for(int i=0; i<ngl; i++; inner0)
+        {
+            const int iel           =EdgeData[8*ifa];       //left element
+            const int ier           =EdgeData[8*ifa+1];       //right element
+            const int isl           =EdgeData[8*ifa+2];       //side within left element
+            const int isr           =EdgeData[8*ifa+3];      //side within right element
+            const int ireversed     =EdgeData[8*ifa+4];           //is order reversed? 0=yes, 1=no
+            const int cpuL          =EdgeData[8*ifa+5];     // rank of cpuL
+            const int cpuR          =EdgeData[8*ifa+6];     // rank of cpuR
 
 
-                int increment;
-                int idxL,idxR;
-                const int edgeIDX=ifa*ngl + i;      //for edge wise spatial values (BOTTOM)
+            int increment;
+            int idxL,idxR;
+            const int edgeIDX=ifa*ngl + i;      //for edge wise spatial values (BOTTOM)
 
 
-                    if (ireversed==0){
-                        increment = (ngl-1)-i;
-                    }else{
-                        increment=i;
-                    }
-
-
-
-                bL[edgeIDX] = zero;
-
-                bR[edgeIDX] =zero;
-
-
-
-                if (procID == cpuL){
-                    switch(isl){
-                    case (0): //bottom side
-                        idxL = iel*ngl2+i;
-                        break;
-                    case (2): //top side
-                        idxL = iel*ngl2+ngl2-ngl+i;
-                        break;
-                    case (3): //left side
-                        idxL = iel*ngl2+i*ngl;
-                        break;
-                    case (1): //right side
-                        idxL = iel*ngl2+(i+1)*ngl-1;
-                        break;
-
-                    }
+            if (ireversed==0)
+            {
+                increment = (ngl-1)-i;
+            }
+            else
+            {
+                increment=i;
+            }
 
 
 
+            bL[edgeIDX] = zero;
 
-
-                    bL[edgeIDX] = B[idxL];
-
-                }
-
+            bR[edgeIDX] =zero;
 
 
 
-
-
-
-                if (procID == cpuR){
-                    switch(isr){
-                    case (0): //bottom side
-                        idxR = ier*ngl2+increment;
-                        break;
-                    case (2): //top side
-                        idxR = ier*ngl2+ngl2-ngl+increment;
-                        break;
-                    case (3): //left side
-                        idxR = ier*ngl2+increment*ngl;
-                        break;
-                    case (1): //right side
-                        idxR = ier*ngl2+(increment+1)*ngl-1;
-                        break;
-
-                    }
-                    bR[edgeIDX] = B[idxR];
+            if (procID == cpuL)
+            {
+                switch(isl)
+                {
+                case (0): //bottom side
+                    idxL = iel*ngl2+i;
+                    break;
+                case (2): //top side
+                    idxL = iel*ngl2+ngl2-ngl+i;
+                    break;
+                case (3): //left side
+                    idxL = iel*ngl2+i*ngl;
+                    break;
+                case (1): //right side
+                    idxL = iel*ngl2+(i+1)*ngl-1;
+                    break;
 
                 }
 
 
-                // EXTERIOR BOUNDARY CASE!
 
 
-                    if (cpuL==-1){
-                        bL[edgeIDX] = bR[edgeIDX];
 
-                    }
-                    if (cpuR==-1){
-                        bR[edgeIDX] = bL[edgeIDX];
+                bL[edgeIDX] = B[idxL];
 
-                    }
+            }
 
 
 
@@ -104,16 +75,59 @@ kernel void CollectEdgeData_Bottom(const int Nfaces,const int * EdgeData,const d
 
 
 
+            if (procID == cpuR)
+            {
+                switch(isr)
+                {
+                case (0): //bottom side
+                    idxR = ier*ngl2+increment;
+                    break;
+                case (2): //top side
+                    idxR = ier*ngl2+ngl2-ngl+increment;
+                    break;
+                case (3): //left side
+                    idxR = ier*ngl2+increment*ngl;
+                    break;
+                case (1): //right side
+                    idxR = ier*ngl2+(increment+1)*ngl-1;
+                    break;
+
+                }
+                bR[edgeIDX] = B[idxR];
+
+            }
+
+
+            // EXTERIOR BOUNDARY CASE!
+
+
+            if (cpuL==-1)
+            {
+                bL[edgeIDX] = bR[edgeIDX];
+
+            }
+            if (cpuR==-1)
+            {
+                bR[edgeIDX] = bL[edgeIDX];
+
+            }
 
 
 
 
-            }//inner0 loop
 
 
 
 
-        }//outer0 loop
+
+
+
+        }//inner0 loop
+
+
+
+
+    }//outer0 loop
 
 
 }//end kernel
