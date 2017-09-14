@@ -33,15 +33,15 @@ kernel void calcGradient(const int Nelem, const dfloat * Jac,const dfloat * Y_xi
 
                         dfloat Qinv;
                         if (Q[Fid]>=PosPresTOL){
-                            Qinv =  1.f/Q[Fid];
+                            Qinv =  one/Q[Fid];
                         }else{
-                            Qinv = 0.0;
+                            Qinv = zero;
                         }
 
 
 
 
-                            s_Q1[i][j]= 0.0;
+                            s_Q1[i][j]= zero;
                             s_Q2[i][j]= Q[Fid+ngl2]*Qinv;
                             s_Q3[i][j]= Q[Fid+ngl2+ngl2]*Qinv;
 
@@ -62,12 +62,12 @@ kernel void calcGradient(const int Nelem, const dfloat * Jac,const dfloat * Y_xi
 
                     const int xid=ie*ngl2   +j*ngl+i;
 
-                    dfloat h_xi=0.0;
-                    dfloat h_eta=0.0;
-                    dfloat hu_xi=0.0;
-                    dfloat hu_eta=0.0;
-                    dfloat hv_xi=0.0;
-                    dfloat hv_eta=0.0;
+                    dfloat h_xi=zero;
+                    dfloat h_eta=zero;
+                    dfloat hu_xi=zero;
+                    dfloat hu_eta=zero;
+                    dfloat hv_xi=zero;
+                    dfloat hv_eta=zero;
 
                     const dfloat r_Yeta=Y_eta[xid];
                     const dfloat r_Yxi=Y_xi[xid];

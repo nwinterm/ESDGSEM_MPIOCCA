@@ -28,9 +28,9 @@ kernel void CollectEdgeData_Bottom(const int Nfaces,const int * EdgeData,const d
 
 
 
-                bL[edgeIDX] = 0.0;
+                bL[edgeIDX] = zero;
 
-                bR[edgeIDX] =0.0;
+                bR[edgeIDX] =zero;
 
 
 

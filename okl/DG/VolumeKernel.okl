@@ -48,11 +48,11 @@ kernel void VolumeKernel(const int Nelem, const dfloat * Jac,const dfloat * Y_xi
                         dfloat invQ1;
 
                          if (s_Q1[i][j]>PosPresTOL){
-                            invQ1 = 1.f/s_Q1[i][j];
+                            invQ1 = one/s_Q1[i][j];
                          }else{
-                            invQ1=0.0;
-                            s_Q2[i][j]=0.0;
-                            s_Q3[i][j]=0.0;
+                            invQ1=zero;
+                            s_Q2[i][j]=zero;
+                            s_Q3[i][j]=zero;
                          };
 
 
@@ -87,9 +87,9 @@ kernel void VolumeKernel(const int Nelem, const dfloat * Jac,const dfloat * Y_xi
 
             for (int j=0; j<ngl; ++j;inner1){
                 for (int i=0; i<ngl;++i;inner0){
-                    dfloat FluxDeriv1=0.0;
-                    dfloat FluxDeriv2=0.0;
-                    dfloat FluxDeriv3=0.0;
+                    dfloat FluxDeriv1=zero;
+                    dfloat FluxDeriv2=zero;
+                    dfloat FluxDeriv3=zero;
 
 	// unroll loop
                     occaUnroll(ngl)

@@ -68,7 +68,8 @@
 		<Unit filename="okl/DG/FindLambdaMax.okl" />
 		<Unit filename="okl/DG/SurfaceKernel.okl" />
 		<Unit filename="okl/DG/VolumeKernel.okl" />
-		<Unit filename="okl/DG/VolumeKernelFluxDiff.okl" />
+		<Unit filename="okl/DG/VolumeKernelFluxDiffV0.okl" />
+		<Unit filename="okl/DG/VolumeKernelFluxDiffV1.okl" />
 		<Unit filename="okl/DiscontinuousBathimetry/calcDiscBottomSurf.okl" />
 		<Unit filename="okl/DiscontinuousBathimetry/calcEdgeValues.okl" />
 		<Unit filename="okl/GatherEdgeData/3MoundInflow.okl" />

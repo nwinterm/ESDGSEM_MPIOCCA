@@ -31,13 +31,13 @@ kernel void CollectEdgeData(const int Nfaces,const int * EdgeData,const dfloat *
                 dfloat qNodalL[Neq];
                 dfloat qNodalR[Neq];
 
-                qNodalL[0]=0.0;
-                qNodalL[1]=0.0;
-                qNodalL[2]=0.0;
+                qNodalL[0]=zero;
+                qNodalL[1]=zero;
+                qNodalL[2]=zero;
 
-                qNodalR[0]=0.0;
-                qNodalR[1]=0.0;
-                qNodalR[2]=0.0;
+                qNodalR[0]=zero;
+                qNodalR[1]=zero;
+                qNodalR[2]=zero;
 
 
 
@@ -109,7 +109,7 @@ kernel void CollectEdgeData(const int Nfaces,const int * EdgeData,const dfloat *
 
                 // EXTERIOR BOUNDARY CASE!
                     if (cpuL==-1){
-                        if (fabs(nx-0.0)<PosPresTOL){
+                        if (fabs(nx-zero)<PosPresTOL){
                             dfloat tx = - ny;
                             dfloat ty = nx;
                             dfloat vx;
@@ -118,8 +118,8 @@ kernel void CollectEdgeData(const int Nfaces,const int * EdgeData,const dfloat *
                                 vx = qNodalR[1]/qNodalR[0];
                                 vy = qNodalR[2]/qNodalR[0];
                             }else{
-                                vx = 0.0;
-                                vy = 0.0;
+                                vx = zero;
+                                vy = zero;
                             }
                             dfloat v_n  = nx * vx + ny * vy;
                             dfloat v_t = tx*vx + ty * vy;
@@ -135,15 +135,15 @@ kernel void CollectEdgeData(const int Nfaces,const int * EdgeData,const dfloat *
                             qNodalL[2]=qNodalR[0] * vTilde_y;
 
                         }else{
-                            if (x[idxR] == 0.0){
+                            if (x[idxR] == zero){
                                 if (t<=300){
-                                    qNodalL[0]=0.5;
-                                    qNodalL[1]=1.0;
-                                    qNodalL[2]=0.0;
+                                    qNodalL[0]=half;
+                                    qNodalL[1]=one;
+                                    qNodalL[2]=zero;
                                 }else{
-                                    qNodalL[0]=1.0;
-                                    qNodalL[1]=1.0;
-                                    qNodalL[2]=0.0;
+                                    qNodalL[0]=one;
+                                    qNodalL[1]=one;
+                                    qNodalL[2]=zero;
                                 }
                             }else{
                                 qNodalL[0]=qNodalR[0];
@@ -158,7 +158,7 @@ kernel void CollectEdgeData(const int Nfaces,const int * EdgeData,const dfloat *
                     }
 
                     if (cpuR==-1){
-                        if (fabs(nx-0.0)<PosPresTOL){
+                        if (fabs(nx-zero)<PosPresTOL){
                             dfloat tx = - ny;
                             dfloat ty = nx;
                             dfloat vx;
@@ -167,8 +167,8 @@ kernel void CollectEdgeData(const int Nfaces,const int * EdgeData,const dfloat *
                                 vx = qNodalL[1]/qNodalL[0];
                                 vy = qNodalL[2]/qNodalL[0];
                             }else{
-                                vx = 0.0;
-                                vy = 0.0;
+                                vx = zero;
+                                vy = zero;
                             }
                             dfloat v_n  = nx * vx + ny * vy;
                             dfloat v_t = tx*vx + ty * vy;
@@ -183,15 +183,15 @@ kernel void CollectEdgeData(const int Nfaces,const int * EdgeData,const dfloat *
                             qNodalR[1]=qNodalL[0]*vTilde_x;
                             qNodalR[2]=qNodalL[0]*vTilde_y;
                         }else{
-                            if (x[idxL] == 0.0){
+                            if (x[idxL] == zero){
                                     if (t<=300){
-                                        qNodalR[0]=0.5;
-                                        qNodalR[1]=1.0;
-                                        qNodalR[2]=0.0;
+                                        qNodalR[0]=half;
+                                        qNodalR[1]=one;
+                                        qNodalR[2]=zero;
                                     }else{
-                                        qNodalR[0]=1.0;
-                                        qNodalR[1]=1.0;
-                                        qNodalR[2]=0.0;
+                                        qNodalR[0]=one;
+                                        qNodalR[1]=one;
+                                        qNodalR[2]=zero;
 
                                     }
 

@@ -84,9 +84,9 @@ kernel void VolumeKernelViscose(const int Nelem, const dfloat * Jac,const dfloat
 
             for (int j=0; j<ngl; ++j;inner1){
                 for (int i=0; i<ngl;++i;inner0){
-                    dfloat FluxDeriv1=0.0;
-                    dfloat FluxDeriv2=0.0;
-                    dfloat FluxDeriv3=0.0;
+                    dfloat FluxDeriv1=zero;
+                    dfloat FluxDeriv2=zero;
+                    dfloat FluxDeriv3=zero;
 
 	// unroll loop
                     occaUnroll(ngl)

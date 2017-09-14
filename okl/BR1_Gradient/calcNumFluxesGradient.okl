@@ -60,15 +60,15 @@ kernel void calcNumFluxesGradient(const int Nfaces,const int * EdgeData,const df
 
                 dfloat hLinv;
                 if (hL>=PosPresTOL){
-                    hLinv =  1.f/hL;
+                    hLinv =  one/hL;
                 }else{
-                    hLinv = 0.0;
+                    hLinv = zero;
                 }
                 dfloat hRinv;
                 if (hR>=PosPresTOL){
-                    hRinv =  1.f/hR;
+                    hRinv =  one/hR;
                 }else{
-                    hRinv = 0.0;
+                    hRinv = zero;
                 }
 
 
@@ -81,9 +81,9 @@ kernel void calcNumFluxesGradient(const int Nfaces,const int * EdgeData,const df
 
 
 
-                NumFlux[0]=0.0;
-                NumFlux[1]=0.5*(uL+uR );
-                NumFlux[2]=0.5*(vL+vR );
+                NumFlux[0]=zero;
+                NumFlux[1]=half*(uL+uR );
+                NumFlux[2]=half*(vL+vR );
 
                 SurfGradientsX[edgeID]          =  nx * scaling*geomFace*  NumFlux[0];
                 SurfGradientsX[edgeID+ngl]      =  nx * scaling*geomFace*  NumFlux[1];
