@@ -1,0 +1,164 @@
+kernel void SurfaceKernel(const int Nelem,
+                          const dfloat * restrict Jac,
+                          const int * restrict  ElemEdgeMasterSlave,
+                          const int * restrict  ElemEdgeOrientation,
+                          const int * restrict  ElemToEdge,
+                          const dfloat * restrict  FStar,
+                          const dfloat * restrict  DBSurf1,
+                          const dfloat * restrict  DBSurf2,
+                          dfloat * restrict  Qt)
+{
+
+    for(int ie = 0; ie < Nelem; ie++; outer0)
+    {
+        shared dfloat s_FStar[4*ngl*Neq];
+        shared dfloat s_DBSurf1[4*ngl];
+        shared dfloat s_DBSurf2[4*ngl];
+        shared dfloat s_Jac[4*ngl];
+        shared int    s_ElemEdgeMasterSlave[4];
+
+
+
+
+
+
+
+        for(int is=0; is<4; is++; inner1)
+        {
+            for (int j=0; j<ngl; ++j; inner0)
+            {
+
+                const int ifa = ElemToEdge[ie*4 + is]-1;        //get id of element side
+
+
+                // is the numerical flux stored in reversed order for this element?
+                // "1" means the order is correct, 0 means it is not
+                const int reversedOrder = ElemEdgeOrientation[ie*4 + is];
+                //increment = j if order is correct, else increment = ngl-1-j
+                const int increment  = reversedOrder*j + (1-reversedOrder)*(ngl-1 -j);
+
+                //THIS WAY THE STORAGE IN THE SHARED VARIABLES SHOULD ALWAYS BE IN THE CORRECT ORDER FOR THE LOCAL COORDINATES
+
+                const int idFaceLoc = ifa*ngl*Neq + increment;        //get local id on the side storage SurfaceParts
+                const int edgeIDx = ifa*ngl+increment;
+
+
+
+                const int id=is*ngl*Neq+j;                // get id for surface parts for THIS element
+                const int id2 = is*ngl+j;
+
+                const int idx = is*ngl+j;
+
+                int xid;
+                switch(is)
+                {
+                case 0: //bottom side
+                    xid = ie*ngl2+j;
+                    break;
+                case 2: //top side
+                    xid = ie*ngl2+ngl2-ngl+j;
+                    break;
+                case 3: //left side
+                    xid = ie*ngl2+j*ngl;
+                    break;
+                case 1: //right side
+                    xid = ie*ngl2+(j+1)*ngl-1;
+                    break;
+
+                }
+                s_Jac[id2]=Jac[xid];
+
+
+
+                s_FStar[id] = FStar[idFaceLoc];
+                s_FStar[id+ngl] = FStar[idFaceLoc+ngl];          //LOOPS OVER EQUATIONS HERE
+                s_FStar[id+2*ngl] = FStar[idFaceLoc+2*ngl];
+
+                s_DBSurf1[idx] = DBSurf1[edgeIDx];
+                s_DBSurf2[idx] = DBSurf2[edgeIDx];
+
+                s_ElemEdgeMasterSlave[is] = ElemEdgeMasterSlave[ie*4+is];
+
+            }
+        }
+
+
+        barrier(localMemFence);
+
+        //SIDE 1 (BOTTOM) and 3 (TOP)
+        for (int is=0; is<4; is++; inner1)
+        {
+            for (int j=0; j<ngl; ++j; inner0)
+            {
+                if (is<2)
+                {
+                    const int iside = 2*is;
+//                    const int id    = ie*ngl2*Neq+j;
+//                    const int MasterSlave = s_ElemEdgeMasterSlave[0];
+//                    const int idfaceloc    =   j;
+//                    const int idxfaceloc    = j;
+//                    const dfloat Jac = s_Jac[idxfaceloc];
+
+//                    const int is = 1;
+                    const int id    = ie*ngl2*Neq+ is*(ngl2-ngl) +j;
+                    const int MasterSlave = s_ElemEdgeMasterSlave[iside];
+                    const int idfaceloc    = iside*(ngl*Neq) + j;
+                    const int idxfaceloc    = iside*(ngl)+j;
+                    const dfloat Jac = s_Jac[idxfaceloc];
+
+
+                    Qt[id]              +=    - MasterSlave* s_FStar[idfaceloc] * Jac;
+                    Qt[id+ngl2]         +=    - MasterSlave* Jac * (s_FStar[idfaceloc+ngl]       - s_DBSurf1[idxfaceloc]);
+                    Qt[id+ngl2+ngl2]    +=    - MasterSlave* Jac * (s_FStar[idfaceloc+ngl+ngl]   - s_DBSurf2[idxfaceloc]);
+
+
+                }
+
+
+
+
+            }
+
+        }
+
+
+        barrier(localMemFence);
+
+        //SIDE 2 (RIGHT) and 4 (LEFT)
+        //Then do sides 1 and 3
+        for (int is=0; is<4; is++; inner1)
+        {
+            for (int j=0; j<ngl; ++j; inner0)
+            {
+
+                if (is<2)
+                {
+                    const int iside = 2*is+1;
+
+                    const int MasterSlave = s_ElemEdgeMasterSlave[iside];
+
+                    const int id= ie*ngl2*Neq+(1-is)*(ngl-1) +j*ngl;
+
+                    const int idfaceloc = iside*ngl*Neq+j;
+
+                    const int idxfaceloc = iside*ngl+j;
+
+                    const dfloat Jac  = s_Jac[idxfaceloc];
+
+
+                    Qt[id]              +=    - MasterSlave* s_FStar[idfaceloc] * Jac;
+                    Qt[id+ngl2]         +=    - MasterSlave* Jac * (s_FStar[idfaceloc+ngl]       - s_DBSurf1[idxfaceloc]);
+                    Qt[id+ngl2+ngl2]    +=    - MasterSlave* Jac * (s_FStar[idfaceloc+ngl+ngl]   - s_DBSurf2[idxfaceloc]);
+
+
+
+                }
+            }
+
+
+
+        }
+
+
+    }
+}

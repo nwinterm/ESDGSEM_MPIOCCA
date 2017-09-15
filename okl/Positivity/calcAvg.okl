@@ -1,0 +1,108 @@
+kernel void calcAvg(const int Nelem,
+                    const dfloat * restrict EleSizes,
+                    const dfloat * restrict GLw,
+                    const dfloat * restrict Jac,
+                    const dfloat * restrict  Q,
+                    dfloat * restrict Qavg)
+{
+
+
+    for(int iEo = 0; iEo < Nelem; iEo+=NEpad; outer0)
+    {
+
+
+        shared dfloat s_H[NEpad][ngl2];
+        shared dfloat s_Hu[NEpad][ngl2];
+        shared dfloat s_Hv[NEpad][ngl2];
+        shared dfloat s_Hmin[NEpad][ngl2];
+
+
+        for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner1)
+        {
+            for (int i_index=0; i_index<ngl2; ++i_index; inner0)
+            {
+
+                const int eleID     =   iEo + ieLoc;
+                if (eleID<Nelem)
+                {
+                    const int i = i_index %ngl;
+                    const int j = i_index /ngl;
+                    const int Fid = eleID*ngl2*Neq  + j*ngl +i ;
+                    const int xid = eleID*ngl2      + j*ngl +i ;
+                    const dfloat r_weight = GLw[i] * GLw[j]/Jac[xid];
+                    s_H[ieLoc][i_index] =Q[Fid] *r_weight ;
+                    s_Hu[ieLoc][i_index] =Q[Fid+ngl2] * r_weight;
+                    s_Hv[ieLoc][i_index] =Q[Fid+ngl2+ngl2] * r_weight;
+                    s_Hmin[ieLoc][i_index] =Q[Fid] ;
+
+
+                }
+
+            }
+        }
+
+
+
+        for(int alive = ((ngl2 + 1) / 2); 0 < alive; alive /= 2)
+        {
+            barrier(localMemFence);
+
+            for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner1)
+            {
+                for (int i_index=0; i_index<ngl2; ++i_index; inner0)
+                {
+
+                    const int eleID     =   iEo + ieLoc;
+                    if (eleID<Nelem)
+                    {
+                        if (i_index<alive)
+                        {
+                            s_H[ieLoc][i_index] +=  s_H[ieLoc][i_index+alive];
+                            s_Hu[ieLoc][i_index] +=  s_Hu[ieLoc][i_index+alive];
+                            s_Hv[ieLoc][i_index] +=  s_Hv[ieLoc][i_index+alive];
+                            s_Hmin[ieLoc][i_index] = min(s_Hmin[ieLoc][i_index],s_Hmin[ieLoc][i_index+alive])  ;
+
+                        }
+                    }
+
+                }
+            }
+
+
+        }
+
+        barrier(localMemFence);
+        for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
+        {
+            for (int i_index=0; i_index<ngl2; ++i_index; inner0)
+            {
+                const int eleID     =   iEo + ieLoc;
+                if (eleID<Nelem)
+                {
+
+                    if (i_index==0)
+                    {   const dfloat EleSize = EleSizes[eleID];
+                        Qavg[eleID*4 ]      = s_H[ieLoc][0]/EleSize;
+                        Qavg[eleID*4 + 1]   = s_Hu[ieLoc][0]/EleSize;
+                        Qavg[eleID*4 + 2]   = s_Hv[ieLoc][0]/EleSize;
+                        Qavg[eleID*4 + 3]   = s_Hmin[ieLoc][0];
+
+                    }
+
+
+
+
+
+
+
+                }
+
+            }
+
+        }
+
+    }//outer
+
+
+
+}
