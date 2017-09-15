@@ -27,25 +27,15 @@ kernel void CollectEdgeData_Bottom(const int Nfaces,
                     const int cpuR          =EdgeData[8*ifa+6];     // rank of cpuR
 
 
-                    int increment;
+                    const int increment = (1-ireversed)*(ngl-1-i) + ireversed*i;
                     int idxL,idxR;
                     const int edgeIDX=ifa*ngl + i;      //for edge wise spatial values (BOTTOM)
-
-
-                    if (ireversed==0)
-                    {
-                        increment = (ngl-1)-i;
-                    }
-                    else
-                    {
-                        increment=i;
-                    }
 
 
 
                     bL[edgeIDX] = zero;
 
-                    bR[edgeIDX] =zero;
+                    bR[edgeIDX] = zero;
 
 
 
