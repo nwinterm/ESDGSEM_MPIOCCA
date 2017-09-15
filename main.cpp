@@ -123,7 +123,6 @@ int main(int argc, char *argv[])
 
     occa::kernel VolumeKernel;
     occa::kernel calcNumFluxes;
-    //occa::kernel SurfaceKernel;
     occa::kernel SurfaceKernel;
     occa::kernel UpdateKernel;
     occa::kernel calcRK;
@@ -141,6 +140,7 @@ int main(int argc, char *argv[])
     occa::kernel calcDiscBottomSurf;
     occa::kernel calcEdgeValues;
     occa::kernel preservePosivitity;
+    occa::kernel calcAvg;
     occa::kernel FindLambdaMax;
     occa::kernel scaleGradient;
     occa::kernel SurfaceKernelVisc;
@@ -166,10 +166,9 @@ int main(int argc, char *argv[])
     occa::memory o_hAvg, o_bJump;
     occa::memory o_DBSurf1,o_DBSurf2;
     occa::memory o_LambdaMax;
-    occa::memory o_Hmin;
-    occa::memory o_Hmax;
-    occa::memory o_HBmax;
+
     occa::memory o_QtVisc;
+    occa::memory o_Qavg;
 
     occa::memory o_GLw;
     if(MPI.rank==0)
@@ -775,6 +774,7 @@ int main(int argc, char *argv[])
     if (PositivityPreserving == 1)
     {
         o_GLw  = device.malloc(ngl*sizeof(dfloat));
+        o_Qavg = device.malloc(Nelem*4*sizeof(dfloat));
 
     }
     if (ArtificialViscosity == 1)
@@ -791,16 +791,11 @@ int main(int argc, char *argv[])
         o_SurfacePartsVisc = device.malloc(Neq*ngl*Nfaces*sizeof(dfloat));
         o_QtVisc = device.malloc(NoDofs*sizeof(dfloat));
 
+
         o_ViscPara = device.malloc(Nelem*sizeof(dfloat));
         o_ViscParaL = device.malloc(Nfaces*sizeof(dfloat));
         o_ViscParaR = device.malloc(Nfaces*sizeof(dfloat));
-        if (PositivityPreserving == 1)
-        {
-            o_Hmin = device.malloc(Nelem*sizeof(dfloat));
-            o_Hmax = device.malloc(Nelem*sizeof(dfloat));
-            o_HBmax = device.malloc(Nelem*sizeof(dfloat));
 
-        }
     }
 
     if(MPI.rank==0)
@@ -871,10 +866,16 @@ int main(int argc, char *argv[])
     o_Qt.copyFrom(Qt);
     o_VdmInv.copyFrom(VdmInv);
     //o_SubCellMat.copyFrom(SubCellMat);
+
+    dfloat * qavgtmp = (dfloat*) calloc(Nelem*4,sizeof(dfloat));
     if(PositivityPreserving == 1)
     {
         o_GLw.copyFrom(GLw);
+
+        o_Qavg.copyFrom(qavgtmp);
+
     }
+    free(qavgtmp);
     if(MPI.rank==0)
     {
         cout << "         done.\n";
@@ -1030,6 +1031,7 @@ int main(int argc, char *argv[])
 
     if (PositivityPreserving)
     {
+        calcAvg      =   device.buildKernelFromSource("okl/Positivity/calcAvg.okl","calcAvg",info);
         preservePosivitity      =   device.buildKernelFromSource("okl/Positivity/PosPres.okl","PosPres",info);
     }
 
@@ -1377,7 +1379,20 @@ int main(int argc, char *argv[])
 
             if(PositivityPreserving==1)
             {
-                preservePosivitity(Nelem,o_EleSizes,o_GLw, o_Jac,o_q);
+                calcAvg(Nelem,o_EleSizes,o_GLw, o_Jac,o_q,o_Qavg);
+
+//                dfloat * qavgtmp = (dfloat*) calloc(Nelem*4,sizeof(dfloat));
+//                o_Qavg.copyTo(qavgtmp);
+//                for (int i=0; i<1;i++){
+//
+//                    cout << "Ele: " << i << " ";
+//                    cout << "Avg H: " << qavgtmp[i*4] << " ";
+//                    cout << "Avg Hu: " << qavgtmp[i*4+1] << " ";
+//                    cout << "Avg Hv: " << qavgtmp[i*4+2] << " ";
+//                    cout << "Min H: " << qavgtmp[i*4+3] << " \n";
+//                }
+//                free(qavgtmp);
+                preservePosivitity(Nelem,o_Qavg,o_q);
             }
 
 
@@ -1652,9 +1667,7 @@ int main(int argc, char *argv[])
         o_ViscParaR.free();
         if (PositivityPreserving == 1)
         {
-            o_Hmin.free();
-            o_Hmax.free();
-            o_HBmax.free();
+            o_Qavg.free();
 
         }
     }

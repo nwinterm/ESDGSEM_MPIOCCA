@@ -25,43 +25,43 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
         shared dfloat s_Xeta[NEpad][ngl][ngl];
         shared dfloat s_Xxi[NEpad][ngl][ngl];
 
-        for (int ie=0; ie<NEpad; ++ie; inner2)
+        for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
         {
             for (int i=0; i<ngl; ++i; inner1)
             {
                 for (int j=0; j<ngl; ++j; inner0)
                 {
-                    const int eleID     =   iEo + ie;
+                    const int eleID     =   iEo + ieLoc;
                     if (eleID<Nelem)
                     {
                         const int id        =   j*ngl+i;
                         const int xid       =   eleID*ngl2   +j*ngl+i;
                         const int Fid       =   eleID*ngl2*Neq   +j*ngl+i;
 
-                        if (ie==0)
+                        if (ieLoc==0)
                         {
                             s_D[i][j]       =   D[id];
                         }
 
-                        s_Yeta[ie][i][j]    =   Y_eta[xid];
-                        s_Yxi[ie][i][j]     =   Y_xi[xid];
-                        s_Xeta[ie][i][j]    =   X_eta[xid];
-                        s_Xxi[ie][i][j]     =   X_xi[xid];
+                        s_Yeta[ieLoc][i][j]    =   Y_eta[xid];
+                        s_Yxi[ieLoc][i][j]     =   Y_xi[xid];
+                        s_Xeta[ieLoc][i][j]    =   X_eta[xid];
+                        s_Xxi[ieLoc][i][j]     =   X_xi[xid];
 
 
                         if (Q[Fid]>=PosPresTOL)
                         {
-                            s_invQ[ie][i][j]    =   one/Q[Fid];
-                            s_Q1[ie][i][j]      =   Q[Fid];
-                            s_Q2[ie][i][j]      =   Q[Fid+ngl2];
-                            s_Q3[ie][i][j]      =   Q[Fid+ngl2+ngl2];
+                            s_invQ[ieLoc][i][j]    =   one/Q[Fid];
+                            s_Q1[ieLoc][i][j]      =   Q[Fid];
+                            s_Q2[ieLoc][i][j]      =   Q[Fid+ngl2];
+                            s_Q3[ieLoc][i][j]      =   Q[Fid+ngl2+ngl2];
                         }
                         else
                         {
-                            s_invQ[ie][i][j]    =  zero;
-                            s_Q1[ie][i][j]      =  zero;
-                            s_Q2[ie][i][j]      =  zero;
-                            s_Q3[ie][i][j]      =  zero;
+                            s_invQ[ieLoc][i][j]    =  zero;
+                            s_Q1[ieLoc][i][j]      =  zero;
+                            s_Q2[ieLoc][i][j]      =  zero;
+                            s_Q3[ieLoc][i][j]      =  zero;
                         }
 
 
@@ -73,23 +73,23 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
         }
 
         barrier(localMemFence);
-        for (int ie=0; ie<NEpad; ++ie; inner2)
+        for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
         {
             for (int j=0; j<ngl; ++j; inner1)
             {
                 for (int i=0; i<ngl; ++i; inner0)
                 {
 
-                    const int eleID     =   iEo + ie;
+                    const int eleID     =   iEo + ieLoc;
                     if (eleID<Nelem)
                     {
                         dfloat FluxDeriv1   =   zero;
                         dfloat FluxDeriv2   =   zero;
                         dfloat FluxDeriv3   =   zero;
-                        const dfloat invQ1ij      =   s_invQ[ie][i][j];
-                        const dfloat H_ij         =   s_Q1[ie][i][j];
-                        const dfloat HU_ij        =   s_Q2[ie][i][j];
-                        const dfloat HV_ij        =   s_Q3[ie][i][j];
+                        const dfloat invQ1ij      =   s_invQ[ieLoc][i][j];
+                        const dfloat H_ij         =   s_Q1[ieLoc][i][j];
+                        const dfloat HU_ij        =   s_Q2[ieLoc][i][j];
+                        const dfloat HV_ij        =   s_Q3[ieLoc][i][j];
 
 
 
@@ -97,10 +97,10 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
                         for (int l=0; l<ngl; ++l)
                         {
 
-                            const dfloat H_lj=s_Q1[ie][l][j];
-                            const dfloat invQ1lj=s_invQ[ie][l][j];
-                            const dfloat HU_lj=s_Q2[ie][l][j];
-                            const dfloat HV_lj=s_Q3[ie][l][j];
+                            const dfloat H_lj=s_Q1[ieLoc][l][j];
+                            const dfloat invQ1lj=s_invQ[ieLoc][l][j];
+                            const dfloat HU_lj=s_Q2[ieLoc][l][j];
+                            const dfloat HV_lj=s_Q3[ieLoc][l][j];
 
                             const dfloat h_avg_xi = half*(H_ij+H_lj) ;
                             const dfloat h2_avg_xi = half*(H_ij*H_ij+H_lj*H_lj) ;
@@ -109,18 +109,18 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
                             const dfloat u_avg_xi = half* (HU_ij*invQ1ij+HU_lj*invQ1lj) ;
                             const dfloat v_avg_xi = half* (HV_ij*invQ1ij+HV_lj*invQ1lj) ;
 
-                            const dfloat Yeta_avg = half*(s_Yeta[ie][i][j]+s_Yeta[ie][l][j]) ;
-                            const dfloat Xeta_avg = half*(s_Xeta[ie][i][j]+s_Xeta[ie][l][j]) ;
+                            const dfloat Yeta_avg = half*(s_Yeta[ieLoc][i][j]+s_Yeta[ieLoc][l][j]) ;
+                            const dfloat Xeta_avg = half*(s_Xeta[ieLoc][i][j]+s_Xeta[ieLoc][l][j]) ;
 
                             const dfloat F1vol = Yeta_avg * hu_avg_xi - Xeta_avg * hv_avg_xi;
                             const dfloat F2vol = Yeta_avg *(hu_avg_xi * u_avg_xi   + g_const * h_avg_xi*h_avg_xi- half*g_const*h2_avg_xi) - Xeta_avg*hv_avg_xi * u_avg_xi;
                             const dfloat F3vol = Yeta_avg *(hu_avg_xi * v_avg_xi) - Xeta_avg*(hv_avg_xi*v_avg_xi + g_const * h_avg_xi*h_avg_xi - half*g_const * h2_avg_xi);
 
 
-                            const dfloat H_il=s_Q1[ie][i][l];
-                            const dfloat invQ1il=s_invQ[ie][i][l];
-                            const dfloat HU_il=s_Q2[ie][i][l];
-                            const dfloat HV_il=s_Q3[ie][i][l];
+                            const dfloat H_il=s_Q1[ieLoc][i][l];
+                            const dfloat invQ1il=s_invQ[ieLoc][i][l];
+                            const dfloat HU_il=s_Q2[ieLoc][i][l];
+                            const dfloat HV_il=s_Q3[ieLoc][i][l];
 
 
                             const dfloat h_avg_eta = half*(H_ij+H_il) ;
@@ -130,8 +130,8 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
                             const dfloat u_avg_eta = half* (HU_ij*invQ1ij+HU_il*invQ1il) ;
                             const dfloat v_avg_eta = half* (HV_ij*invQ1ij+HV_il*invQ1il) ;
 
-                            const dfloat Yxi_avg = half*(s_Yxi[ie][i][j]+s_Yxi[ie][i][l]) ;
-                            const dfloat Xxi_avg = half*(s_Xxi[ie][i][j]+s_Xxi[ie][i][l]) ;
+                            const dfloat Yxi_avg = half*(s_Yxi[ieLoc][i][j]+s_Yxi[ieLoc][i][l]) ;
+                            const dfloat Xxi_avg = half*(s_Xxi[ieLoc][i][j]+s_Xxi[ieLoc][i][l]) ;
 
                             const dfloat G1vol =-Yxi_avg * hu_avg_eta       + Xxi_avg*hv_avg_eta;
                             const dfloat G2vol =-Yxi_avg * (hu_avg_eta * u_avg_eta   + g_const * h_avg_eta*h_avg_eta- half*g_const*h2_avg_eta) + Xxi_avg* hv_avg_eta * u_avg_eta;
