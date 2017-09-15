@@ -208,6 +208,7 @@ int main(int argc, char *argv[])
     int NumPlots,NumTimeChecks,Testcase;
     int NEpad;
     int Nedgepad;
+    int NEsurfpad;
     int KernelVersion;
     if(MPI.rank==0)
     {
@@ -234,6 +235,7 @@ int main(int argc, char *argv[])
                       &rkorder,
                       &rkSSP,
                       &NEpad,
+                      &NEsurfpad,
                       &Nedgepad,
                       &KernelVersion);
     }
@@ -259,6 +261,7 @@ int main(int argc, char *argv[])
                    &rkorder,
                    &rkSSP,
                    &NEpad,
+                   &NEsurfpad,
                    &Nedgepad,
                    &KernelVersion);
 
@@ -811,6 +814,7 @@ int main(int argc, char *argv[])
     info.addDefine("procID",MPI.rank);
     info.addDefine("NEpad",NEpad);
     info.addDefine("Nedgepad",Nedgepad);
+    info.addDefine("NEsurfpad",NEsurfpad);
     info.addDefine("ngl",ngl);
     info.addDefine("ngl2",ngl2);
     info.addDefine("Neq",Neq);
@@ -936,7 +940,7 @@ int main(int argc, char *argv[])
     {
 
         std::ostringstream oss;
-	cout << "Kernel Version: V " << KernelVersion << ".\n";
+        cout << "Kernel Version: V " << KernelVersion << ".\n";
         oss << "okl/DG/VolumeKernelFluxDiffV" << KernelVersion << ".okl";
         std::string var = oss.str();
 //	cout << "Building kernel "<< var << " for the volume part. \n";
@@ -1158,7 +1162,7 @@ int main(int argc, char *argv[])
     dfloat dt_i=0.0f;
     dfloat dt_v=0.0f;
     dfloat LocalLambdas[DGMeshPartition.NumElements];
-        dfloat rkD=0.0;
+    dfloat rkD=0.0;
 
     //    bool isnaned=false;
     //    int NaNid;

@@ -23,6 +23,7 @@
                       int *rkorder,
                       int *rkSSP,
                       int *NEpad,
+                      int *NEsurfpad,
                       int *Nedgepad,
                       int* KernelVersion){
 
@@ -48,6 +49,8 @@
      MPI_Bcast (&*rkSSP,1,MPI_INT,0,MPI_COMM_WORLD);
 
      MPI_Bcast (&*NEpad,1,MPI_INT,0,MPI_COMM_WORLD);
+     MPI_Bcast (&*NEsurfpad,1,MPI_INT,0,MPI_COMM_WORLD);
+     MPI_Bcast (&*Nedgepad,1,MPI_INT,0,MPI_COMM_WORLD);
      MPI_Bcast (&*KernelVersion,1,MPI_INT,0,MPI_COMM_WORLD);
 //int *PlotVar,int *NumPlots,int *NumTimeChecks,int *Testcase, bool *ES,int *NumFlux, bool *FluxDifferencing, bool *Cartesian,int *rkorder, bool *rkSSP
   }

@@ -28,6 +28,7 @@ void ReadInputFile(int *N,
                    int * rkorder,
                    int * rkSSP,
                    int * NEpad,
+                   int * NEsurfpad,
                    int * Nedgepad,
                    int * KernelVersion);
 
