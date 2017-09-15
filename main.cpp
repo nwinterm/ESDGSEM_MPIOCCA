@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
     occa::kernel calcNumFluxesViscose;
     occa::kernel ShockCapturing;
     occa::kernel calcDiscBottomSurf;
-    occa::kernel calcEdgeValues;
+//    occa::kernel calcEdgeValues;
     occa::kernel preservePosivitity;
     occa::kernel calcAvg;
     occa::kernel FindLambdaMax;
@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
     occa::memory o_SurfacePartsVisc;
     occa::memory o_EleSizes, o_ViscPara;
     occa::memory o_ViscParaL,o_ViscParaR;
-    occa::memory o_hAvg, o_bJump;
+//    occa::memory o_hAvg, o_bJump;
     occa::memory o_DBSurf1,o_DBSurf2;
     occa::memory o_LambdaMax;
 
@@ -760,8 +760,8 @@ int main(int argc, char *argv[])
     o_scal = device.malloc(ngl*Nfaces*sizeof(dfloat));
     o_EdgeData = device.malloc(8*Nfaces*sizeof(int));
 
-    o_hAvg = device.malloc(ngl*Nfaces*sizeof(dfloat));
-    o_bJump = device.malloc(ngl*Nfaces*sizeof(dfloat));
+//    o_hAvg = device.malloc(ngl*Nfaces*sizeof(dfloat));
+//    o_bJump = device.malloc(ngl*Nfaces*sizeof(dfloat));
     o_DBSurf1 = device.malloc(Nfaces*ngl*sizeof(dfloat));
     o_DBSurf2 = device.malloc(Nfaces*ngl*sizeof(dfloat));
     //viscose term
@@ -981,7 +981,7 @@ int main(int argc, char *argv[])
     }
 
     // calc specific value on edges like jump in b and average h
-    calcEdgeValues          =   device.buildKernelFromSource("okl/DiscontinuousBathimetry/calcEdgeValues.okl","calcEdgeValues",info);
+//    calcEdgeValues          =   device.buildKernelFromSource("okl/DiscontinuousBathimetry/calcEdgeValues.okl","calcEdgeValues",info);
     // adds additional surface terms due to a possibly discontinuous bottom topography
     calcDiscBottomSurf      =   device.buildKernelFromSource("okl/DiscontinuousBathimetry/calcDiscBottomSurf.okl","calcDiscBottomSurf",info);
     // standard dg kernel for the surface parts
@@ -1272,10 +1272,10 @@ int main(int argc, char *argv[])
 
 
 
-            calcEdgeValues(Nfaces,o_qL,o_qR, o_bL,o_bR,o_hAvg,o_bJump);
+//            calcEdgeValues(Nfaces,o_qL,o_qR, o_bL,o_bR,o_hAvg,o_bJump);
 
 
-            calcDiscBottomSurf(Nfaces,o_nx,o_ny,o_scal,o_hAvg,o_bJump,o_DBSurf1,o_DBSurf2);
+            calcDiscBottomSurf(Nfaces,o_qL,o_qR, o_bL,o_bR,o_nx,o_ny,o_scal,o_DBSurf1,o_DBSurf2);
 
 
             SurfaceKernel(Nelem,o_Jac,o_ElemEdgeMasterSlave,o_ElemEdgeOrientation,o_ElemToEdge, o_SurfaceParts,o_DBSurf1,o_DBSurf2,o_Qt);
@@ -1637,8 +1637,8 @@ int main(int argc, char *argv[])
     o_scal.free();
     o_EdgeData.free();
 
-    o_hAvg.free();
-    o_bJump.free();
+//    o_hAvg.free();
+//    o_bJump.free();
     o_DBSurf1.free();
     o_DBSurf2.free();
 //viscose term
