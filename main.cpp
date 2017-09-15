@@ -146,12 +146,12 @@ int main(int argc, char *argv[])
     occa::kernel SurfaceKernelVisc;
     occa::kernel UpdateQt;
 
-    //occa::kernel FluxKernel;
+
     occa::memory o_Qtmp; // for SSP RK
     occa::memory o_D,o_Dstrong,o_Dhat,o_Qt,o_gRK,o_q;//,o_Neq,o_ngl,o_Jac;
     occa::memory o_VdmInv;//,o_SubCellMat,;
     occa::memory o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta;
-    //occa::memory o_Ftilde, o_Gtilde;
+
     occa::memory o_SurfaceParts, o_ElemEdgeOrientation, o_ElemToEdge,o_ElemEdgeMasterSlave;
     occa::memory o_nx,o_ny,o_scal;
     occa::memory o_Bx,o_By,o_B;
@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
     occa::memory o_SurfacePartsVisc;
     occa::memory o_EleSizes, o_ViscPara;
     occa::memory o_ViscParaL,o_ViscParaR;
-//    occa::memory o_hAvg, o_bJump;
+
     occa::memory o_DBSurf1,o_DBSurf2;
     occa::memory o_LambdaMax;
 
@@ -760,8 +760,7 @@ int main(int argc, char *argv[])
     o_scal = device.malloc(ngl*Nfaces*sizeof(dfloat));
     o_EdgeData = device.malloc(8*Nfaces*sizeof(int));
 
-//    o_hAvg = device.malloc(ngl*Nfaces*sizeof(dfloat));
-//    o_bJump = device.malloc(ngl*Nfaces*sizeof(dfloat));
+
     o_DBSurf1 = device.malloc(Nfaces*ngl*sizeof(dfloat));
     o_DBSurf2 = device.malloc(Nfaces*ngl*sizeof(dfloat));
     //viscose term
@@ -1272,7 +1271,7 @@ int main(int argc, char *argv[])
 
 
 
-//            calcEdgeValues(Nfaces,o_qL,o_qR, o_bL,o_bR,o_hAvg,o_bJump);
+
 
 
             calcDiscBottomSurf(Nfaces,o_qL,o_qR, o_bL,o_bR,o_nx,o_ny,o_scal,o_DBSurf1,o_DBSurf2);
@@ -1637,8 +1636,7 @@ int main(int argc, char *argv[])
     o_scal.free();
     o_EdgeData.free();
 
-//    o_hAvg.free();
-//    o_bJump.free();
+
     o_DBSurf1.free();
     o_DBSurf2.free();
 //viscose term
