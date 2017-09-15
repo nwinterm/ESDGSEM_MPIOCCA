@@ -22,9 +22,9 @@ kernel void PosPres(const int Nelem,
 
         for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
         {
-            for (int i=0; i<ngl; ++i; inner1)
+            for (int j=0; j<ngl; ++j; inner1)
             {
-                for (int j=0; j<ngl; ++j; inner0)
+                for (int i=0; i<ngl; ++i; inner0)
                 {
                     const int eleID     =   iEo + ieLoc;
                     if (eleID<Nelem)
@@ -38,11 +38,11 @@ kernel void PosPres(const int Nelem,
                         if ((i==0)&&(j==0)){
                             s_Havg[ieLoc]  =   Qavg[eleID*4];
                             s_HUavg[ieLoc] =   Qavg[eleID*4+1];
-                            s_HVavg[ieLoc] =   Qavg[eleID*4++2];
+                            s_HVavg[ieLoc] =   Qavg[eleID*4+2];
 
 
                             const dfloat r_havg = s_Havg[ieLoc] ;
-                            const dfloat r_hmin = Qavg[eleID*4++3] ;
+                            const dfloat r_hmin = Qavg[eleID*4+3] ;
                             if (r_havg == r_hmin)
                             {
                                 s_theta[ieLoc] =  one;
@@ -69,9 +69,9 @@ kernel void PosPres(const int Nelem,
 
         for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
         {
-            for (int i=0; i<ngl; ++i; inner1)
+            for (int j=0; j<ngl; ++j; inner1)
             {
-                for (int j=0; j<ngl; ++j; inner0)
+                for (int i=0; i<ngl; ++i; inner0)
                 {
                     const int eleID     =   iEo + ieLoc;
                     if (eleID<Nelem)

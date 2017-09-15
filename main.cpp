@@ -1393,6 +1393,10 @@ int main(int argc, char *argv[])
 //                }
 //                free(qavgtmp);
                 preservePosivitity(Nelem,o_Qavg,o_q);
+
+                // old kernel header
+//                preservePosivitity(Nelem,o_EleSizes,o_GLw, o_Jac,o_q);
+
             }
 
 
