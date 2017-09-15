@@ -36,7 +36,7 @@ kernel void UpdateKernel(const int Nelem,
 
 
 
-                        const int Fid = eleID*ngl2*Neq   +j*ngl+i;
+                        const int Fid = eleID*ngl2*Neq   +i*ngl+j;
                         s_Qt1[ieLoc][i][j]   = Qt[Fid];
                         s_Qt2[ieLoc][i][j]   = Qt[Fid+ngl2];
                         s_Qt3[ieLoc][i][j]   = Qt[Fid+ngl2+ngl2];
@@ -65,7 +65,7 @@ kernel void UpdateKernel(const int Nelem,
                     const int eleID     =   iEo + ieLoc;
                     if (eleID<Nelem)
                     {
-                        const int id = eleID*ngl2*Neq   +j*ngl+i;
+                        const int id = eleID*ngl2*Neq   +i*ngl+j;
                         q[id]          = RKCoeffA*s_qTmp1[ieLoc][i][j] + RKCoeffB * s_Q1[ieLoc][i][j] + RKCoeffC*dt*s_Qt1[ieLoc][i][j] ;
                         q[id+ngl2]     = RKCoeffA*s_qTmp2[ieLoc][i][j] + RKCoeffB * s_Q2[ieLoc][i][j] + RKCoeffC*dt*s_Qt2[ieLoc][i][j] ;
                         q[id+ngl2+ngl2]= RKCoeffA*s_qTmp3[ieLoc][i][j] + RKCoeffB * s_Q3[ieLoc][i][j] + RKCoeffC*dt*s_Qt3[ieLoc][i][j] ;
