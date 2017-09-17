@@ -22,17 +22,13 @@ kernel void VolumeKernelFluxDiff(int Nelem,
         {
             for (int i=0; i<ngl; ++i; inner0)
             {
-                int id=j*ngl+i;
-                int xid=ie*ngl2   +j*ngl+i;
-                int Fid = ie*ngl2*Neq   +j*ngl+i;
+				int xid=ie*ngl2   +j*ngl+i;
+				int ij = ie*ngl2*Neq   +j*ngl+i;
 				
                 dfloat FluxDeriv1   =   zero;
                 dfloat FluxDeriv2   =   zero;
                 dfloat FluxDeriv3   =   zero;
-                dfloat invQ1ij      =   s_invQ[i][j];
-                dfloat H_ij         =   Q[Fid];
-                dfloat Q[Fid+ngl2]        =   Q[Fid+ngl2];
-                dfloat Q[Fid+ngl2+ngl2]        =   s_Q3[i][j];
+
 				dfloat r_invQij;
 					if (Q[ij]>=PosPresTOL)
 					{
@@ -45,8 +41,7 @@ kernel void VolumeKernelFluxDiff(int Nelem,
 
                 for (int l=0; l<ngl; ++l)
                 {
-					int xid=ie*ngl2   +j*ngl+i;
-					int ij = ie*ngl2*Neq   +j*ngl+i;
+
 					
                     dfloat H_lj=s_Q1[l][j];
                     dfloat invQ1lj=s_invQ[l][j];
