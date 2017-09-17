@@ -90,7 +90,7 @@ kernel void VolumeKernel(int Nelem,
 
 
                     FluxDeriv2+=D[i*ngl+l] * s_F2[l][j];
-                    FluxDeriv2+=s_D[l][j] * s_G2[i][l];;
+                    FluxDeriv2+=D[j*ngl+l] * s_G2[i][l];;
 
 
 
