@@ -949,7 +949,11 @@ int main(int argc, char *argv[])
     }
     else
     {
-        VolumeKernel=device.buildKernelFromSource("okl/DG/VolumeKernel.okl","VolumeKernel",info);
+		std::ostringstream oss;
+        cout << "Kernel Version: V " << KernelVersion << ".\n";
+        oss << "okl/DG/VolumeKernelV" << KernelVersion << ".okl";
+        std::string var = oss.str();
+        VolumeKernel=device.buildKernelFromSource(var,"VolumeKernel",info);
     }
     switch(NumFlux)
     {
