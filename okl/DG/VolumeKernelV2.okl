@@ -16,8 +16,6 @@ kernel void VolumeKernel(const int Nelem,
     for(int iEo = 0; iEo < Nelem; iEo+=NEpad; outer0)
     {
 
-
-
         shared dfloat s_F1[NEpad][ngl][ngl];
         shared dfloat s_F2[NEpad][ngl][ngl];
         shared dfloat s_F3[NEpad][ngl][ngl];
@@ -28,8 +26,6 @@ kernel void VolumeKernel(const int Nelem,
         shared dfloat s_Q1[NEpad][ngl][ngl];
         shared dfloat s_Q2[NEpad][ngl][ngl];
         shared dfloat s_Q3[NEpad][ngl][ngl];
-
-
 
         for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
         {
@@ -47,10 +43,18 @@ kernel void VolumeKernel(const int Nelem,
 						if(ieLoc==0){
 							s_D[i][j]=D[id];	
 						}
-
-						s_Q1[ieLoc][i][j]=Q[Fid];
-						s_Q2[ieLoc][i][j]=Q[Fid+ngl2];
-						s_Q3[ieLoc][i][j]=Q[Fid+ngl2+ngl2];
+                        if (Q[Fid]>=PosPresTOL)
+                        {
+                            s_Q1[ieLoc][i][j]      =   Q[Fid];
+                            s_Q2[ieLoc][i][j]      =   Q[Fid+ngl2];
+                            s_Q3[ieLoc][i][j]      =   Q[Fid+ngl2+ngl2];
+                        }
+                        else
+                        {
+                            s_Q1[ieLoc][i][j]      =  zero;
+                            s_Q2[ieLoc][i][j]      =  zero;
+                            s_Q3[ieLoc][i][j]      =  zero;
+                        }
 					}
 
 				}
