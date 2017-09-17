@@ -104,14 +104,14 @@ kernel void VolumeKernel(const int Nelem,
 						const dfloat r_Xxi=X_xi[xid];
 
 
-						s_F1[i][j]=r_Yeta * F1 - r_Xeta* G1;
-						s_G1[i][j]=-r_Yxi * F1 + r_Xxi* G1;
+						s_F1[ieLoc][i][j]=r_Yeta * F1 - r_Xeta* G1;
+						s_G1[ieLoc][i][j]=-r_Yxi * F1 + r_Xxi* G1;
 
-						s_F2[i][j]=r_Yeta * F2 - r_Xeta* G2;
-						s_G2[i][j]=-r_Yxi * F2 + r_Xxi* G2;
+						s_F2[ieLoc][i][j]=r_Yeta * F2 - r_Xeta* G2;
+						s_G2[ieLoc][i][j]=-r_Yxi * F2 + r_Xxi* G2;
 
-						s_F3[i][j]=r_Yeta * F3 - r_Xeta* G3;
-						s_G3[i][j]=-r_Yxi * F3 + r_Xxi* G3;
+						s_F3[ieLoc][i][j]=r_Yeta * F3 - r_Xeta* G3;
+						s_G3[ieLoc][i][j]=-r_Yxi * F3 + r_Xxi* G3;
 					}
 
 				}
@@ -139,17 +139,17 @@ kernel void VolumeKernel(const int Nelem,
 						for (int l=0; l<ngl; ++l)
 						{
 
-							FluxDeriv1+= s_D[l][i] * s_F1[l][j];
-							FluxDeriv1+= s_D[l][j] * s_G1[i][l];
+							FluxDeriv1+= s_D[l][i] * s_F1[ieLoc][l][j];
+							FluxDeriv1+= s_D[l][j] * s_G1[ieLoc][i][l];
 
 
-							FluxDeriv2+=s_D[l][i] * s_F2[l][j];
-							FluxDeriv2+=s_D[l][j] * s_G2[i][l];;
+							FluxDeriv2+=s_D[l][i] * s_F2[ieLoc][l][j];
+							FluxDeriv2+=s_D[l][j] * s_G2[ieLoc][i][l];;
 
 
 
-							FluxDeriv3+=s_D[l][i] * s_F3[l][j];
-							FluxDeriv3+=s_D[l][j] * s_G3[i][l];
+							FluxDeriv3+=s_D[l][i] * s_F3[ieLoc][l][j];
+							FluxDeriv3+=s_D[l][j] * s_G3[ieLoc][i][l];
 
 
 						}
@@ -163,8 +163,8 @@ kernel void VolumeKernel(const int Nelem,
 						const dfloat r_By=By[xid];
 
 						Qt[id]              = -  r_Jac *FluxDeriv1;
-						Qt[id+ngl2]         = -  r_Jac *FluxDeriv2 - g_const *s_Q1[i][j]*r_Bx ;
-						Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3 - g_const *s_Q1[i][j]*r_By;
+						Qt[id+ngl2]         = -  r_Jac *FluxDeriv2 - g_const *s_Q1[ieLoc][i][j]*r_Bx ;
+						Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3 - g_const *s_Q1[ieLoc][i][j]*r_By;
 
 
 
