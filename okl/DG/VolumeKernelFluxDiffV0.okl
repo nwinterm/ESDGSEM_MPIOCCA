@@ -121,15 +121,14 @@ kernel void VolumeKernelFluxDiff(int Nelem,
 
                 }
 
-                int id  = ie*ngl2*Neq   +j*ngl+i;
-                int xid=ie*ngl2   +j*ngl+i;
+
                 dfloat r_Jac=Jac[xid];
                 dfloat r_Bx=Bx[xid];
                 dfloat r_By=By[xid];
 
-                Qt[id]              = -  r_Jac *FluxDeriv1;
-                Qt[id+ngl2]         = -  r_Jac *FluxDeriv2 - g_const *Q[Fid]*r_Bx ;
-                Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3 - g_const *Q[Fid]*r_By;
+                Qt[ij]              = -  r_Jac *FluxDeriv1;
+                Qt[ij+ngl2]         = -  r_Jac *FluxDeriv2 - g_const *Q[ij]*r_Bx ;
+                Qt[ij+ngl2+ngl2]    = -  r_Jac *FluxDeriv3 - g_const *Q[ij]*r_By;
 
 
             }
