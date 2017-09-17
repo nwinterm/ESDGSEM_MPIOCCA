@@ -88,11 +88,11 @@ kernel void VolumeKernel(const int Nelem,
 						else
 						{
 							r_invQ1=zero;
-						};
+						}
 
 
 						const dfloat F1 = r_hu;
-						const dfloat F2 = r_hu*r_hu]*r_invQ1 + 0.5*g_const*r_h*r_h;
+						const dfloat F2 = r_hu*r_hu*r_invQ1 + 0.5*g_const*r_h*r_h;
 						const dfloat F3 = r_hv*r_hu*r_invQ1;
 						const dfloat G1 = r_hv;
 						const dfloat G2 = r_hu*r_hv*r_invQ1;
