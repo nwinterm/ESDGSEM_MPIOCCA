@@ -52,28 +52,23 @@ kernel void VolumeKernel(const int Nelem,
 					const int eleID     =   iEo + ieLoc;
 					if (eleID<Nelem)
 					{
-						const int id=j*ngl+i;
 						const int xid=eleID*ngl2   +j*ngl+i;
-
+						const int Fid  = eleID*ngl2*Neq   +j*ngl+i;
 						
 						
-						dfloat r_invQ1;
-						dfloat r_h;
-						dfloat r_hu;
-						dfloat r_hv;
+						dfloat r_invQ1=zero;
+						dfloat r_h=zero;
+						dfloat r_hu=zero;
+						dfloat r_hv=zero;
 						
 						if (Q[Fid]>=PosPresTOL)
                         {
                             r_h      =   Q[Fid];
                             r_hu      =   Q[Fid+ngl2];
                             r_hv      =   Q[Fid+ngl2+ngl2];
+							r_invQ1 = one/r_h;
                         }
-                        else
-                        {
-                            r_h      =  zero;
-                            r_hu      =  zero;
-                            r_hv      =  zero;
-                        }
+                        
 
 						const dfloat F1 = r_hu;
 						const dfloat F2 = r_hu*r_hu*r_invQ1 + 0.5*g_const*r_h*r_h;
