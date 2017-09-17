@@ -34,7 +34,7 @@ kernel void VolumeKernelFluxDiff(int Nelem,
                 int xid=ie*ngl2   +j*ngl+i;
                 int Fid = ie*ngl2*Neq   +j*ngl+i;
 
-                s_D[i][j]=D[j*ngl+i];
+                s_D[i][j]=D[id];
                 s_Yeta[i][j]=Y_eta[xid];
                 s_Yxi[i][j]=Y_xi[xid];
                 s_Xeta[i][j]=X_eta[xid];
@@ -44,7 +44,7 @@ kernel void VolumeKernelFluxDiff(int Nelem,
                 if (Q[Fid]>=PosPresTOL)
                 {
                     s_invQ[i][j] = one/Q[Fid];
-                    s_Q1[i][j]=Q[ie*ngl2*Neq   +j*ngl+i];
+                    s_Q1[i][j]=Q[Fid];
                     s_Q2[i][j]=Q[Fid+ngl2];
                     s_Q3[i][j]=Q[Fid+ngl2+ngl2];
                 }
@@ -64,78 +64,79 @@ kernel void VolumeKernelFluxDiff(int Nelem,
         {
             for (int i=0; i<ngl; ++i; inner0)
             {
-                int id=j*ngl+i;
-                int xid=ie*ngl2   +j*ngl+i;
-                int Fid = ie*ngl2*Neq   +j*ngl+i;
-				
+
                 dfloat FluxDeriv1   =   zero;
                 dfloat FluxDeriv2   =   zero;
                 dfloat FluxDeriv3   =   zero;
                 dfloat invQ1ij      =   s_invQ[i][j];
-                dfloat H_ij         =   Q[Fid];
-                dfloat Q[Fid+ngl2]        =   Q[Fid+ngl2];
-                dfloat Q[Fid+ngl2+ngl2]        =   s_Q3[i][j];
+                dfloat H_ij         =   s_Q1[i][j];
+                dfloat HU_ij        =   s_Q2[i][j];
+                dfloat HV_ij        =   s_Q3[i][j];
 
 
 
+                occaUnroll(ngl)
                 for (int l=0; l<ngl; ++l)
                 {
-					int xid=ie*ngl2   +j*ngl+i;
-					int ij = ie*ngl2*Neq   +j*ngl+i;
-					
+
                     dfloat H_lj=s_Q1[l][j];
                     dfloat invQ1lj=s_invQ[l][j];
                     dfloat HU_lj=s_Q2[l][j];
                     dfloat HV_lj=s_Q3[l][j];
-					
-					dfloat lj = ie*ngl2*Neq   +j*ngl+l;
 
 
-                    dfloat h_avg_xi = half*(Q[ij]+Q[lj]) ;
-                    dfloat h2_avg_xi = half*(Q[ij]*Q[ij]+Q[lj]*Q[lj]) ;
-                    dfloat hu_avg_xi = half* (Q[ij+ngl2]+Q[lj+ngl2]) ;
-                    dfloat hv_avg_xi = half* (Q[ij+ngl2+ngl2]+Q[lj+ngl2+ngl2]) ;
-                    dfloat u_avg_xi = half* (Q[ij+ngl2]/Q[ij]+Q[lj+ngl2]/Q[lj]) ;
-                    dfloat v_avg_xi = half* (Q[ij+ngl2+ngl2]/Q[ij]+HV_lj/Q[lj]) ;
 
-                    dfloat Yeta_avg = half*(Y_eta[ie*ngl2   +j*ngl+i]+Y_eta[ie*ngl2   +j*ngl+l]) ;
-                    dfloat Xeta_avg = half*(Xeta[ie*ngl2   +j*ngl+i]+X_eta[ie*ngl2   +j*ngl+l]) ;
+
+
+                    dfloat h_avg_xi = half*(H_ij+H_lj) ;
+                    dfloat h2_avg_xi = half*(H_ij*H_ij+H_lj*H_lj) ;
+                    dfloat hu_avg_xi = half* (HU_ij+HU_lj) ;
+                    dfloat hv_avg_xi = half* (HV_ij+HV_lj) ;
+                    dfloat u_avg_xi = half* (HU_ij*invQ1ij+HU_lj*invQ1lj) ;
+                    dfloat v_avg_xi = half* (HV_ij*invQ1ij+HV_lj*invQ1lj) ;
+
+                    dfloat Yeta_avg = half*(s_Yeta[i][j]+s_Yeta[l][j]) ;
+                    dfloat Xeta_avg = half*(s_Xeta[i][j]+s_Xeta[l][j]) ;
 
                     dfloat F1vol = Yeta_avg * hu_avg_xi - Xeta_avg * hv_avg_xi;
-                    dfloat F2vol = Yeta_avg *(hu_avg_xi * u_avg_xi   + g_const * h_avg_xi*h_avg_xi- half*g_const*h2_avg_xi) - Xeta_avg*hv_avg_xi * u_avg_xi;
-                    dfloat F3vol = Yeta_avg *(hu_avg_xi * v_avg_xi) - Xeta_avg*(hv_avg_xi*v_avg_xi + g_const * h_avg_xi*h_avg_xi - half*g_const * h2_avg_xi);
+                    dfloat F2vol = Yeta_avg *(hu_avg_xi * u_avg_xi   + g_* h_avg_xi*h_avg_xi- half*g_const*h2_avg_xi) - Xeta_avg*hv_avg_xi * u_avg_xi;
+                    dfloat F3vol = Yeta_avg *(hu_avg_xi * v_avg_xi) - Xeta_avg*(hv_avg_xi*v_avg_xi + g_* h_avg_xi*h_avg_xi - half*g_* h2_avg_xi);
 
 
-					dfloat il = ie*ngl2*Neq   +l*ngl+i;
-					
-                    dfloat h_avg_eta = half*(Q[ij]+Q[il]) ;
-                    dfloat h2_avg_eta = half*(Q[ij]*Q[ij]+Q[il]*Q[il]) ;
-                    dfloat hu_avg_eta = half* (Q[ij+ngl2]+Q[il+ngl2]);
-                    dfloat hv_avg_eta = half* (Q[ij+ngl2+ngl2]+Q[il+ngl2+ngl2]);
-                    dfloat u_avg_eta = half* (Q[ij+ngl2]/Q[ij]+Q[il+ngl2]/Q[il]) ;
-                    dfloat v_avg_eta = half* (Q[ij+ngl2+ngl2]/Q[ij]+Q[il+ngl2+ngl2]/Q[il]) ;
+                    dfloat H_il=s_Q1[i][l];
+                    dfloat invQ1il=s_invQ[i][l];
+                    dfloat HU_il=s_Q2[i][l];
+                    dfloat HV_il=s_Q3[i][l];
 
-                    dfloat Yxi_avg = half*(Y_xi[ie*ngl2   +j*ngl+i]+Y_xi[ie*ngl2   +l*ngl+i]) ;
-                    dfloat Xxi_avg = half*(X_xi[ie*ngl2   +j*ngl+i]+X_xi[ie*ngl2   +l*ngl+i]) ;
+
+                    dfloat h_avg_eta = half*(H_ij+H_il) ;
+                    dfloat h2_avg_eta = half*(H_ij*H_ij+H_il*H_il) ;
+                    dfloat hu_avg_eta = half* (HU_ij+HU_il);
+                    dfloat hv_avg_eta = half* (HV_ij+HV_il);
+                    dfloat u_avg_eta = half* (HU_ij*invQ1ij+HU_il*invQ1il) ;
+                    dfloat v_avg_eta = half* (HV_ij*invQ1ij+HV_il*invQ1il) ;
+
+                    dfloat Yxi_avg = half*(s_Yxi[i][j]+s_Yxi[i][l]) ;
+                    dfloat Xxi_avg = half*(s_Xxi[i][j]+s_Xxi[i][l]) ;
 
                     dfloat G1vol =-Yxi_avg * hu_avg_eta       + Xxi_avg*hv_avg_eta;
-                    dfloat G2vol =-Yxi_avg * (hu_avg_eta * u_avg_eta   + g_const * h_avg_eta*h_avg_eta- half*g_const*h2_avg_eta) + Xxi_avg* hv_avg_eta * u_avg_eta;
-                    dfloat G3vol =-Yxi_avg *(hu_avg_eta * v_avg_eta) + Xxi_avg*(hv_avg_eta*v_avg_eta + g_const * h_avg_eta*h_avg_eta - half*g_const * h2_avg_eta);
+                    dfloat G2vol =-Yxi_avg * (hu_avg_eta * u_avg_eta   + g_* h_avg_eta*h_avg_eta- half*g_const*h2_avg_eta) + Xxi_avg* hv_avg_eta * u_avg_eta;
+                    dfloat G3vol =-Yxi_avg *(hu_avg_eta * v_avg_eta) + Xxi_avg*(hv_avg_eta*v_avg_eta + g_* h_avg_eta*h_avg_eta - half*g_* h2_avg_eta);
 
 
-                    FluxDeriv1+= D[i*ngl+l] * F1vol ;
-                    FluxDeriv1+= D[j*ngl+l] * G1vol ;
-
-
-
-                    FluxDeriv2+=D[i*ngl+l] * F2vol ;
-                    FluxDeriv2+=D[j*ngl+l] * G2vol ;
+                    FluxDeriv1+= s_D[l][i] * F1vol ;
+                    FluxDeriv1+= s_D[l][j] * G1vol ;
 
 
 
+                    FluxDeriv2+=s_D[l][i] * F2vol ;
+                    FluxDeriv2+=s_D[l][j] * G2vol ;
 
-                    FluxDeriv3+=D[i*ngl+l] * F3vol ;
-                    FluxDeriv3+=D[j*ngl+l] * G3vol ;
+
+
+
+                    FluxDeriv3+=s_D[l][i] * F3vol ;
+                    FluxDeriv3+=s_D[l][j] * G3vol ;
 
 
 
@@ -150,8 +151,8 @@ kernel void VolumeKernelFluxDiff(int Nelem,
                 dfloat r_By=By[xid];
 
                 Qt[id]              = -  r_Jac *FluxDeriv1;
-                Qt[id+ngl2]         = -  r_Jac *FluxDeriv2 - g_const *Q[Fid]*r_Bx ;
-                Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3 - g_const *Q[Fid]*r_By;
+                Qt[id+ngl2]         = -  r_Jac *FluxDeriv2 - g_*H_ij*r_Bx ;
+                Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3 - g_*H_ij*r_By;
 
 
             }
