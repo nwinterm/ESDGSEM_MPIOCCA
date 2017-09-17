@@ -43,12 +43,8 @@ kernel void VolumeKernelFluxDiff(int Nelem,
                 {
 
 					
-                    dfloat H_lj=s_Q1[l][j];
-                    dfloat invQ1lj=s_invQ[l][j];
-                    dfloat HU_lj=s_Q2[l][j];
-                    dfloat HV_lj=s_Q3[l][j];
 					
-					dfloat lj = ie*ngl2*Neq   +j*ngl+l;
+					int lj = ie*ngl2*Neq   +j*ngl+l;
 					dfloat r_invQlj;
 
 					if (Q[lj]>=PosPresTOL)
@@ -65,22 +61,22 @@ kernel void VolumeKernelFluxDiff(int Nelem,
                     dfloat hu_avg_xi = half* (Q[ij+ngl2]+Q[lj+ngl2]) ;
                     dfloat hv_avg_xi = half* (Q[ij+ngl2+ngl2]+Q[lj+ngl2+ngl2]) ;
                     dfloat u_avg_xi = half* (Q[ij+ngl2]*r_invQij+Q[lj+ngl2]*r_invQlj) ;
-                    dfloat v_avg_xi = half* (Q[ij+ngl2+ngl2]*r_invQij+HV_lj*r_invQlj) ;
+                    dfloat v_avg_xi = half* (Q[ij+ngl2+ngl2]*r_invQij+Q[lj+ngl2+ngl2]*r_invQlj) ;
 
                     dfloat Yeta_avg = half*(Y_eta[ie*ngl2   +j*ngl+i]+Y_eta[ie*ngl2   +j*ngl+l]) ;
-                    dfloat Xeta_avg = half*(Xeta[ie*ngl2   +j*ngl+i]+X_eta[ie*ngl2   +j*ngl+l]) ;
+                    dfloat Xeta_avg = half*(X_eta[ie*ngl2   +j*ngl+i]+X_eta[ie*ngl2   +j*ngl+l]) ;
 
                     dfloat F1vol = Yeta_avg * hu_avg_xi - Xeta_avg * hv_avg_xi;
                     dfloat F2vol = Yeta_avg *(hu_avg_xi * u_avg_xi   + g_const * h_avg_xi*h_avg_xi- half*g_const*h2_avg_xi) - Xeta_avg*hv_avg_xi * u_avg_xi;
                     dfloat F3vol = Yeta_avg *(hu_avg_xi * v_avg_xi) - Xeta_avg*(hv_avg_xi*v_avg_xi + g_const * h_avg_xi*h_avg_xi - half*g_const * h2_avg_xi);
 
 
-					dfloat il = ie*ngl2*Neq   +l*ngl+i;
+					int il = ie*ngl2*Neq   +l*ngl+i;
 					dfloat r_invQil;
 
-					if (Q[lj]>=PosPresTOL)
+					if (Q[il]>=PosPresTOL)
 					{
-						r_invQil = one/Q[lj];
+						r_invQil = one/Q[il];
 					}
 					else
 					{
