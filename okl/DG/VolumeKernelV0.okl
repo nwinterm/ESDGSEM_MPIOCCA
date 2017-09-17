@@ -106,8 +106,8 @@ kernel void VolumeKernel(int Nelem,
 
 
                 Qt[id]              = -  Jac[xid] *FluxDeriv1;
-                Qt[id+ngl2]         = -  Jac[xid] *FluxDeriv2 - g_*s_Q1[i][j]*Bx[xid] ;
-                Qt[id+ngl2+ngl2]    = -  Jac[xid] *FluxDeriv3 - g_*s_Q1[i][j]*By[xid];
+                Qt[id+ngl2]         = -  Jac[xid] *FluxDeriv2 - g_const*Q[id]*Bx[xid] ;
+                Qt[id+ngl2+ngl2]    = -  Jac[xid] *FluxDeriv3 - g_xonst*Q[id]*By[xid];
 
 
 
