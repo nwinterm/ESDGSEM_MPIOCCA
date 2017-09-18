@@ -812,7 +812,7 @@ int main(int argc, char *argv[])
     info.addDefine("ngl",ngl);
     info.addDefine("ngl2",ngl2);
     info.addDefine("Neq",Neq);
-    info.addDefine("g_const",g_const);
+
     info.addDefine("PI",PI);
     //info.addDefine("Nelem",Nelem);
     info.addDefine("dfloat", dfloatString);
@@ -828,9 +828,16 @@ int main(int argc, char *argv[])
     dfloat zero = 0.0f;
     dfloat half = 0.5f;
     dfloat one = 1.0f;
+    dfloat fourth = 0.25f;
+    dfloat halfg = half*g_const;
+    dfloat fourthg = fourth*g_const;
     info.addDefine("zero",zero );
     info.addDefine("half",half );
+    info.addDefine("fourth",fourth );
     info.addDefine("one",one );
+    info.addDefine("half_g",halfg);
+    info.addDefine("fourth_g",fourthg);
+    info.addDefine("g_const",g_const);
     info.addDefine("geomFace",geomface );
     info.addDefine("PosPresTOL",TOL_PosPres);
 
