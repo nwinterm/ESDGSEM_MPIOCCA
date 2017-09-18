@@ -15,15 +15,15 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
     for(int iEo = 0; iEo < Nelem; iEo+=NEpad; outer0)
     {
 
-        shared dfloat s_D[ngl+nglPad][ngl+nglPad];
-        shared dfloat s_invQ[NEpad][ngl+nglPad][ngl+nglPad];
-        shared dfloat s_Q1[NEpad][ngl+nglPad][ngl+nglPad];
-        shared dfloat s_Q2[NEpad][ngl+nglPad][ngl+nglPad];
-        shared dfloat s_Q3[NEpad][ngl+nglPad][ngl+nglPad];
-        shared dfloat s_Yeta[NEpad][ngl+nglPad][ngl+nglPad];
-        shared dfloat s_Yxi[NEpad][ngl+nglPad][ngl+nglPad];
-        shared dfloat s_Xeta[NEpad][ngl+nglPad][ngl+nglPad];
-        shared dfloat s_Xxi[NEpad][ngl+nglPad][ngl+nglPad];
+        shared dfloat s_D[ngl][ngl+nglPad];
+        shared dfloat s_invQ[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_Q1[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_Q2[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_Q3[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_Yeta[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_Yxi[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_Xeta[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_Xxi[NEpad][ngl][ngl+nglPad];
 
         for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
         {
