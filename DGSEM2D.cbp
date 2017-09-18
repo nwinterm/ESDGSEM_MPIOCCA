@@ -70,14 +70,16 @@
 		<Unit filename="okl/DG/VolumeKernel.okl" />
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV0.okl" />
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV1.okl" />
+		<Unit filename="okl/DG/VolumeKernelFluxDiffV2.okl" />
 		<Unit filename="okl/DiscontinuousBathimetry/calcDiscBottomSurf.okl" />
-		<Unit filename="okl/DiscontinuousBathimetry/calcEdgeValues.okl" />
 		<Unit filename="okl/GatherEdgeData/3MoundInflow.okl" />
 		<Unit filename="okl/GatherEdgeData/CollectEdgeData_Bottom.okl" />
 		<Unit filename="okl/GatherEdgeData/Dirichlet_ConvTest.okl" />
 		<Unit filename="okl/GatherEdgeData/SolidWalls.okl" />
 		<Unit filename="okl/ManufacturedSolutions/S_ConvTest.okl" />
 		<Unit filename="okl/Positivity/PosPres.okl" />
+		<Unit filename="okl/Positivity/PosPres_V0.okl" />
+		<Unit filename="okl/Positivity/calcAvg.okl" />
 		<Unit filename="okl/RiemannSolvers/calcESFlux.okl" />
 		<Unit filename="okl/RiemannSolvers/calcLFTypeESFlux.okl" />
 		<Unit filename="okl/RiemannSolvers/calcLaxFriedrich.okl" />
