@@ -808,7 +808,7 @@ int main(int argc, char *argv[])
     o_PackReceive.copyFrom(PackSend);
     for (int i = 0; i < VolKernelPackageSize;i++){
         int locIndex = i % NoSpaceDofs;
-        PackSend[i] = J[i];
+        PackSend[i] = J[locIndex];
     }
     o_PackSend.copyFrom(PackSend);
     free(PackSend);
