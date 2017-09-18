@@ -8,7 +8,7 @@ kernel void VolumeKernelFluxDiff(int Nelem,
                                  dfloat * D,
                                  dfloat * Bx,
                                  dfloat * By,
-                                 float * Qt)
+                                 dfloat * Qt)
 {
 
 

@@ -146,6 +146,8 @@ int main(int argc, char *argv[])
     occa::kernel SurfaceKernelVisc;
     occa::kernel UpdateQt;
 
+    occa::kernel MemCopyKernel;
+
 
     occa::memory o_Qtmp; // for SSP RK
     occa::memory o_D,o_Dstrong,o_Dhat,o_Qt,o_gRK,o_q;//,o_Neq,o_ngl,o_Jac;
@@ -1051,7 +1053,7 @@ int main(int argc, char *argv[])
     }
 
 
-
+    MemCopyKernel           =   device.buildKernelFromSource("okl/DG/MemCopyComparison.okl","MemCopyComparison",info);
 
     //if(MPI.rank == 0){
     //    cout <<"rank: " << MPI.rank <<" ... Kernels built!\n";
@@ -1212,7 +1214,8 @@ int main(int argc, char *argv[])
 
         if (rkSSP)
         {
-            o_Qtmp.copyFrom(o_q);
+//            o_Qtmp.copyFrom(o_q);
+            MemCopyKernel(Nelem,o_q,o_Qtmp);
         }
 
 

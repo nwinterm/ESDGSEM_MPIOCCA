@@ -8,7 +8,7 @@ kernel void VolumeKernelFluxDiff(int Nelem,
                                  dfloat * D,
                                  dfloat * Bx,
                                  dfloat * By,
-                                 float * Qt)
+                                 dfloat * Qt)
 {
 
 
@@ -21,7 +21,7 @@ kernel void VolumeKernelFluxDiff(int Nelem,
 
 				int ij = ie*ngl2*Neq   +j*ngl+i;
 				int xij = ie*ngl2   +j*ngl+i;
-				
+
                 dfloat FluxDeriv1   =   zero;
                 dfloat FluxDeriv2   =   zero;
                 dfloat FluxDeriv3   =   zero;
@@ -39,8 +39,8 @@ kernel void VolumeKernelFluxDiff(int Nelem,
                 for (int l=0; l<ngl; ++l)
                 {
 
-					
-					
+
+
 					int lj = ie*ngl2*Neq   +j*ngl+l;
 					int xlj= ie*ngl2   +j*ngl+l;
 					dfloat r_invQlj;
@@ -53,7 +53,7 @@ kernel void VolumeKernelFluxDiff(int Nelem,
 					{
 						r_invQ lj=  zero;
 					}
-					
+
                     dfloat h_avg_xi = half*(Q[ij]+Q[lj]) ;
                     dfloat h2_avg_xi = half*(Q[ij]*Q[ij]+Q[lj]*Q[lj]) ;
                     dfloat hu_avg_xi = half* (Q[ij+ngl2]+Q[lj+ngl2]) ;

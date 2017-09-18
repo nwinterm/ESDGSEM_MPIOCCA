@@ -8,7 +8,7 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
                                  const dfloat * restrict D,
                                  const dfloat * restrict Bx,
                                  const dfloat * restrict By,
-                                 float * restrict Qt)
+                                 dfloat * restrict Qt)
 {
 
 
