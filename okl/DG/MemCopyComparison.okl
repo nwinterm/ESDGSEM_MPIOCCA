@@ -7,6 +7,36 @@ kernel void MemCopyComparison(const int Nelem,
     for(int iEo = 0; iEo < Nelem; iEo+=NEpad; outer0)
     {
 
+        shared dfloat s_Q1[NEpad][ngl+nglPad][ngl+nglPad];
+        shared dfloat s_Q2[NEpad][ngl+nglPad][ngl+nglPad];
+        shared dfloat s_Q3[NEpad][ngl+nglPad][ngl+nglPad];
+
+
+        for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
+        {
+            for (int i=0; i<ngl; ++i; inner1)
+            {
+                for (int j=0; j<ngl; ++j; inner0)
+                {
+                    const int eleID     =   iEo + ieLoc;
+                    if (eleID<Nelem)
+                    {
+                        const int id        =   i*ngl+j;
+                        const int xid       =   eleID*ngl2   +i*ngl+j;
+                        const int Fid       =   eleID*ngl2*Neq   +i*ngl+j;
+
+                            s_Q1[ieLoc][i][j]      =   Qin[Fid];
+                            s_Q2[ieLoc][i][j]      =   Qin[Fid+ngl2];
+                            s_Q3[ieLoc][i][j]      =   Qin[Fid+ngl2+ngl2];
+
+
+                    }
+
+                }
+            }
+        }
+
+        barrier(localMemFence);
 
         for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
         {
@@ -21,9 +51,9 @@ kernel void MemCopyComparison(const int Nelem,
 
                         const int id  = eleID*ngl2*Neq   +i*ngl+j;
 
-                        Qout[id]              =  Qin[id];
-                        Qout[id+ngl2]         =  Qin[id+ngl2] ;
-                        Qout[id+ngl2+ngl2]    =  Qin[id+ngl2+ngl2];
+                        Qout[id]              =  s_Q1[ieLoc][i][j];
+                        Qout[id+ngl2]         =  s_Q2[ieLoc][i][j] ;
+                        Qout[id+ngl2+ngl2]    =  s_Q3[ieLoc][i][j];
 
                     }
 

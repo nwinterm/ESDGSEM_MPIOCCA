@@ -1214,8 +1214,8 @@ int main(int argc, char *argv[])
 
         if (rkSSP)
         {
-            MemCopyKernel(Nelem/2,o_q,o_Qtmp);
-            o_Qtmp.copyFrom(o_q);
+            MemCopyKernel(Nelem,o_q,o_Qtmp);
+//            o_Qtmp.copyFrom(o_q);
 
         }
 
