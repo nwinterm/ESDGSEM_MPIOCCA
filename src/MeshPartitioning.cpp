@@ -147,18 +147,22 @@ int maxEdgesLocal=0;
 
 
 
-//                cout << "eleID_global: " <<eleID_global <<"\n";
-//                cout << "sideID_global: " <<sideID_global <<"\n";
 
-                // CHECK IF WE ALREADY FOUND THIS EDGE ON THIS PROCESSOR
-                isInArray(sideID_global,EdgeArray_proc,EdgesPerProc[iproc-1],&LocatedAt);
-//                cout << "LocatedAt: " <<LocatedAt <<"\n";
-//                if (sideID_global == 3316) {
-//                    cout << "EDGE: " << sideID_global <<" was found at "<< LocatedAt <<"\n";
-//
-//                }
-//                cout << "EdgeInfo(3,sideID_global)" << GlobalMesh.EdgeInfo(3,sideID_global)+1 <<"\n";
-                if (LocatedAt == 0) {
+
+                if (isInArray2(sideID_global,EdgeArray_proc,EdgesPerProc[iproc-1]) == 1) {
+
+                    if (GlobalMesh.EdgeInfo[(sideID_global-1)*7+2]==eleID_global-1){
+//                        cout << " WE ACTUALLY GET IN WEIRD CASE WHERE RIGHT ELE WAS FOUND FIRST\n";
+                          EdgeGlobalToLocal[(sideID_global-1)*4+0] = EdgeGlobalToLocal[(sideID_global-1)*4+1];
+                          EdgeGlobalToLocal[(sideID_global-1)*4+2] = EdgeGlobalToLocal[(sideID_global-1)*4+3];
+                    }else{
+//                        if (sideID_global>3280){cout <<"STIMMT WAS NICHT!";}
+                          EdgeGlobalToLocal[(sideID_global-1)*4+1] = EdgeGlobalToLocal[(sideID_global-1)*4];
+                          EdgeGlobalToLocal[(sideID_global-1)*4+3] = EdgeGlobalToLocal[(sideID_global-1)*4+2];
+                    }
+
+                }else{
+
                     //PRINT*, 'SIDE NOT FOUND: ', sideID_global
                     EdgesPerProc[iproc-1] = EdgesPerProc[iproc-1]+1;
 //                    cout << " EDGE ADDED : " << sideID_global << "Element: " << eleID_global << " side " << is <<"\n" ;
@@ -173,17 +177,6 @@ int maxEdgesLocal=0;
 
                           EdgeGlobalToLocal[(sideID_global-1)*4+1] = EdgesPerProc[iproc-1];
                           EdgeGlobalToLocal[(sideID_global-1)*4+3] = iproc;
-                    }
-                }else{
-
-                    if (GlobalMesh.EdgeInfo[(sideID_global-1)*7+2]==eleID_global-1){
-//                        cout << " WE ACTUALLY GET IN WEIRD CASE WHERE RIGHT ELE WAS FOUND FIRST\n";
-                          EdgeGlobalToLocal[(sideID_global-1)*4+0] = EdgeGlobalToLocal[(sideID_global-1)*4+1];
-                          EdgeGlobalToLocal[(sideID_global-1)*4+2] = EdgeGlobalToLocal[(sideID_global-1)*4+3];
-                    }else{
-//                        if (sideID_global>3280){cout <<"STIMMT WAS NICHT!";}
-                          EdgeGlobalToLocal[(sideID_global-1)*4+1] = EdgeGlobalToLocal[(sideID_global-1)*4];
-                          EdgeGlobalToLocal[(sideID_global-1)*4+3] = EdgeGlobalToLocal[(sideID_global-1)*4+2];
                     }
                 }
 
@@ -1044,5 +1037,13 @@ for (int i=1;i<=ArraySize;i++){
 }
 }
 
+int MeshPartitioning::isInArray2(const int SearchIndex, const int IntArray[],const int ArraySize){
 
+for (int i=1;i<=ArraySize;i++){
+    if(SearchIndex == IntArray[i-1]){
+        return 1;
+    }
+}
+return 0;
+}
 

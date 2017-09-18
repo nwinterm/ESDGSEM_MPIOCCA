@@ -74,6 +74,7 @@ class MeshPartitioning
 
 //        imatrix globalEdgeInfo;
         void isInArray(const int , const int[]  ,const int , int* );
+        int isInArray2(const int , const int [],const int );
         void SplitRealValuesBetweenProcs(const MPI_setup,const dfloat *, dfloat *);
         void SplitEdgeRealValuesBetweenProcs(const MPI_setup ,const dfloat * , dfloat *);
 
