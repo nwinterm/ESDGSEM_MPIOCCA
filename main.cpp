@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
     occa::kernel SurfaceKernelVisc;
     occa::kernel UpdateQt;
 
-    occa::kernel MemCopyKernel;
+//    occa::kernel MemCopyKernel;
 
 
     occa::memory o_Qtmp; // for SSP RK
@@ -173,6 +173,9 @@ int main(int argc, char *argv[])
     occa::memory o_Qavg;
 
     occa::memory o_GLw;
+
+    occa::memory o_PackSend, o_PackReceive;
+
     if(MPI.rank==0)
     {
         cout <<"... finished.\n";
@@ -798,6 +801,17 @@ int main(int argc, char *argv[])
         o_ViscParaR = device.malloc(Nfaces*sizeof(dfloat));
 
     }
+    int VolKernelPackageSize = (7*NoSpaceDofs+2*NoDofs+ngl2)/2;
+    o_PackSend    = device.malloc(VolKernelPackageSize*sizeof(dfloat));
+    o_PackReceive = device.malloc(VolKernelPackageSize*sizeof(dfloat));
+    dfloat * PackSend = (dfloat*) calloc(VolKernelPackageSize,sizeof(dfloat));
+    o_PackReceive.copyFrom(PackSend);
+    for (int i = 0; i < VolKernelPackageSize;i++){
+        int locIndex = i % NoSpaceDofs;
+        PackSend[i] = J[i];
+    }
+    o_PackSend.copyFrom(PackSend);
+    free(PackSend);
 
     if(MPI.rank==0)
     {
@@ -1053,7 +1067,7 @@ int main(int argc, char *argv[])
     }
 
 
-    MemCopyKernel           =   device.buildKernelFromSource("okl/DG/MemCopyComparison.okl","MemCopyComparison",info);
+//    MemCopyKernel           =   device.buildKernelFromSource("okl/DG/MemCopyComparison.okl","MemCopyComparison",info);
 
     //if(MPI.rank == 0){
     //    cout <<"rank: " << MPI.rank <<" ... Kernels built!\n";
@@ -1214,7 +1228,6 @@ int main(int argc, char *argv[])
 
         if (rkSSP)
         {
-            MemCopyKernel(Nelem/2,o_q,o_Qtmp);
             o_Qtmp.copyFrom(o_q);
         }
 
@@ -1270,7 +1283,7 @@ int main(int argc, char *argv[])
             //o_qR.copyTo(qR);
             //CollectEdgeDataMPI(MPI, DGMeshPartition, qL, qR);
 
-
+            o_PackReceive.copyFrom(o_PackSend);
 
             VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_Qt);
 
@@ -1658,6 +1671,7 @@ int main(int argc, char *argv[])
 
     o_DBSurf1.free();
     o_DBSurf2.free();
+
 //viscose term
 
     o_LambdaMax.free();
@@ -1692,6 +1706,8 @@ int main(int argc, char *argv[])
 
         }
     }
+    o_PackSend.free();
+    o_PackReceive.free();
 
 // done with MPI
     MPI_Finalize();
