@@ -102,8 +102,7 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
                             const dfloat HU_lj=s_Q2[ieLoc][i][l];
                             const dfloat HV_lj=s_Q3[ieLoc][i][l];
 
-                            const dfloat Yeta_avg = half*(s_Yeta[ieLoc][i][j]+s_Yeta[ieLoc][l][j]) ;
-                            const dfloat Xeta_avg = half*(s_Xeta[ieLoc][i][j]+s_Xeta[ieLoc][l][j]) ;
+
 
                             const dfloat h_avg_xi = fourth_g*(H_ij+H_lj)*(H_ij+H_lj) ;
                             const dfloat h2_avg_xi = half*(H_ij*H_ij+H_lj*H_lj) ;
@@ -112,7 +111,8 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
                             const dfloat u_avg_xi = half* (HU_ij*invQ1ij+HU_lj*invQ1lj) ;
                             const dfloat v_avg_xi = half* (HV_ij*invQ1ij+HV_lj*invQ1lj) ;
 
-
+                            const dfloat Yeta_avg = half*(s_Yeta[ieLoc][i][j]+s_Yeta[ieLoc][l][j]) ;
+                            const dfloat Xeta_avg = half*(s_Xeta[ieLoc][i][j]+s_Xeta[ieLoc][l][j]) ;
 
                             const dfloat F1vol = Yeta_avg * hu_avg_xi - Xeta_avg * hv_avg_xi;
                             const dfloat F2vol = Yeta_avg *(hu_avg_xi * u_avg_xi   + h_avg_xi - half_g*h2_avg_xi) - Xeta_avg*hv_avg_xi * u_avg_xi;
@@ -125,8 +125,7 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
                             const dfloat HV_il=s_Q3[ieLoc][l][j];
 
 
-                            const dfloat Yxi_avg = half*(s_Yxi[ieLoc][i][j]+s_Yxi[ieLoc][l][j]) ;
-                            const dfloat Xxi_avg = half*(s_Xxi[ieLoc][i][j]+s_Xxi[ieLoc][l][j]) ;
+
 
                             const dfloat h_avg_eta = fourth_g*(H_ij+H_il)*(H_ij+H_il) ;
                             const dfloat h2_avg_eta = half*(H_ij*H_ij+H_il*H_il) ;
@@ -135,7 +134,8 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
                             const dfloat u_avg_eta = half* (HU_ij*invQ1ij+HU_il*invQ1il) ;
                             const dfloat v_avg_eta = half* (HV_ij*invQ1ij+HV_il*invQ1il) ;
 
-
+                            const dfloat Yxi_avg = half*(s_Yxi[ieLoc][i][j]+s_Yxi[ieLoc][l][j]) ;
+                            const dfloat Xxi_avg = half*(s_Xxi[ieLoc][i][j]+s_Xxi[ieLoc][l][j]) ;
 
                             const dfloat G1vol =-Yxi_avg * hu_avg_eta       + Xxi_avg*hv_avg_eta;
                             const dfloat G2vol =-Yxi_avg * (hu_avg_eta * u_avg_eta   + h_avg_eta- half_g*h2_avg_eta) + Xxi_avg* hv_avg_eta * u_avg_eta;
