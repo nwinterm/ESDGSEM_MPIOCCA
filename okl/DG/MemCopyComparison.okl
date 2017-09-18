@@ -7,9 +7,9 @@ kernel void MemCopyComparison(const int Nelem,
     for(int iEo = 0; iEo < Nelem; iEo+=NEpad; outer0)
     {
 
-        shared dfloat s_Q1[NEpad][ngl+nglPad][ngl+nglPad];
-        shared dfloat s_Q2[NEpad][ngl+nglPad][ngl+nglPad];
-        shared dfloat s_Q3[NEpad][ngl+nglPad][ngl+nglPad];
+        shared dfloat s_Q1[NEpad][ngl][ngl];
+        shared dfloat s_Q2[NEpad][ngl][ngl];
+        shared dfloat s_Q3[NEpad][ngl][ngl];
 
 
         for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
@@ -21,8 +21,6 @@ kernel void MemCopyComparison(const int Nelem,
                     const int eleID     =   iEo + ieLoc;
                     if (eleID<Nelem)
                     {
-                        const int id        =   i*ngl+j;
-                        const int xid       =   eleID*ngl2   +i*ngl+j;
                         const int Fid       =   eleID*ngl2*Neq   +i*ngl+j;
 
                             s_Q1[ieLoc][i][j]      =   Qin[Fid];
