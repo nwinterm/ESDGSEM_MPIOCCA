@@ -823,6 +823,11 @@ int main(int argc, char *argv[])
     info.addDefine("eps0",epsilon_0);
     info.addDefine("sigmaMax",sigma_max);
     info.addDefine("sigmaMin",sigma_min);
+    int nglPad=0;
+    if (ngl%4==0){
+        nglPad=1;
+    }
+    info.addDefine("nglPad",nglPad );
     dfloat TOL_PosPres = pow(10.0,-3);
     dfloat geomface = 1.0/DGBasis.w_GL[0];
     dfloat zero = 0.0f;
