@@ -35,8 +35,8 @@ kernel void VolumeKernel(const int Nelem,
 					const int eleID     =   iEo + ieLoc;
 					if (eleID<Nelem)
 					{
-						const int xid=eleID*ngl2   +j*ngl+i;
-						const int Fid  = eleID*ngl2*Neq   +j*ngl+i;
+						const int xid=eleID*ngl2   +i*ngl+j;
+						const int Fid  = eleID*ngl2*Neq   +i*ngl+j;
                         const int id=j*ngl+i;
                         if(ieLoc==0){
                             s_D[i][j]=D[id];
@@ -104,24 +104,24 @@ kernel void VolumeKernel(const int Nelem,
 						for (int l=0; l<ngl; ++l)
 						{
 
-							FluxDeriv1+= s_D[l][i] * s_F1[ieLoc][l][j];
-							FluxDeriv1+= s_D[l][j] * s_G1[ieLoc][i][l];
+							FluxDeriv1+= s_D[i][l] * s_F1[ieLoc][j][l];
+							FluxDeriv1+= s_D[j][l] * s_G1[ieLoc][l][i];
 
 
-							FluxDeriv2+=s_D[l][i] * s_F2[ieLoc][l][j];
-							FluxDeriv2+=s_D[l][j] * s_G2[ieLoc][i][l];;
+							FluxDeriv2+=s_D[i][l] * s_F2[ieLoc][j][l];
+							FluxDeriv2+=s_D[j][l] * s_G2[ieLoc][l][i];;
 
 
 
-							FluxDeriv3+=s_D[l][i] * s_F3[ieLoc][l][j];
-							FluxDeriv3+=s_D[l][j] * s_G3[ieLoc][i][l];
+							FluxDeriv3+=s_D[i][l] * s_F3[ieLoc][j][l];
+							FluxDeriv3+=s_D[j][l] * s_G3[ieLoc][l][i];
 
 
 						}
 
 
-						const int id  = eleID*ngl2*Neq   +j*ngl+i;
-						const int xid=eleID*ngl2   +j*ngl+i;
+						const int id  = eleID*ngl2*Neq   +i*ngl+j;
+						const int xid=eleID*ngl2   +i*ngl+j;
 
 						const dfloat r_Jac=Jac[xid];
 						const dfloat r_Bx=Bx[xid];
