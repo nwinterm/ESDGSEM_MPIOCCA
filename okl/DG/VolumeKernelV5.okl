@@ -35,8 +35,8 @@ kernel void VolumeKernel(const int Nelem,
 					const int eleID     =   iEo + ieLoc;
 					if (eleID<Nelem)
 					{
-						const int xid=eleID*ngl2   +j*ngl+i;
-						const int Fid  = eleID*ngl2*Neq   +j*ngl+i;
+						const int xid=eleID*ngl2   +i*ngl+j;
+						const int Fid  = eleID*ngl2*Neq   +i*ngl+j;
                         const int id=i*ngl+j;
                         if(ieLoc==0){
                             s_D[i][j]=D[id];
