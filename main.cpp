@@ -801,13 +801,14 @@ int main(int argc, char *argv[])
         o_ViscParaR = device.malloc(Nfaces*sizeof(dfloat));
 
     }
-    int Dloads = Nelem_global / NEpad + 1;
-    if (Nelem_global % NEpad == 0){
-
-        Dloads--;
-    }
+//    int Dloads = Nelem_global / NEpad + 1;
+//    if (Nelem_global % NEpad == 0){
+//
+//        Dloads--;
+//    }
     // loading Jac, Xxi,Xeta,Yxi,Yeta,Bx,By, Q,D  storing Qt
-    int VolKernelPackageSize = (7*NoSpaceDofs+2*NoDofs+Dloads*ngl2)/2;
+//    int VolKernelPackageSize = (7*NoSpaceDofs+2*NoDofs+Dloads*ngl2)/2;
+    int VolKernelPackageSize = (7*NoSpaceDofs+2*NoDofs)/2;
     o_PackSend    = device.malloc(VolKernelPackageSize*sizeof(dfloat));
     o_PackReceive = device.malloc(VolKernelPackageSize*sizeof(dfloat));
     dfloat * PackSend = (dfloat*) calloc(VolKernelPackageSize,sizeof(dfloat));
