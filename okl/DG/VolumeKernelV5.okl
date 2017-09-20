@@ -103,20 +103,20 @@ kernel void VolumeKernel(const int Nelem,
 						occaUnroll(ngl)
 						for (int l=0; l<ngl; ++l)
 						{
-							const dfloat dil = s_D[i][l];
-							const dfloat djl = s_D[j][l];
+							const dfloat dil = s_D[j][l];
+							const dfloat djl = s_D[i][l];
 
-							FluxDeriv1+=  dil* s_F1[ieLoc][j][l];
-							FluxDeriv1+=  djl* s_G1[ieLoc][l][i];
-
-
-							FluxDeriv2+=dil * s_F2[ieLoc][j][l];
-							FluxDeriv2+=djl * s_G2[ieLoc][l][i];;
+							FluxDeriv1+=  dil* s_F1[ieLoc][i][l];
+							FluxDeriv1+=  djl* s_G1[ieLoc][l][j];
 
 
+							FluxDeriv2+=dil * s_F2[ieLoc][i][l];
+							FluxDeriv2+=djl * s_G2[ieLoc][l][j];;
 
-							FluxDeriv3+=dil * s_F3[ieLoc][j][l];
-							FluxDeriv3+=djl * s_G3[ieLoc][l][i];
+
+
+							FluxDeriv3+=dil * s_F3[ieLoc][i][l];
+							FluxDeriv3+=djl * s_G3[ieLoc][l][j];
 
 
 						}
