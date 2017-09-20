@@ -122,6 +122,7 @@ int main(int argc, char *argv[])
     //    occa::memory o_Ftilde,o_Gtilde;
 
     occa::kernel VolumeKernel;
+    occa::kernel VolumeKernelSTD;
     occa::kernel calcNumFluxes;
     occa::kernel SurfaceKernel;
     occa::kernel UpdateKernel;
@@ -214,6 +215,7 @@ int main(int argc, char *argv[])
     int Nedgepad;
     int NEsurfpad;
     int KernelVersion;
+	int KernelVersionSTD;
     if(MPI.rank==0)
     {
         cout << "rank 0 reading input file \n";
@@ -241,7 +243,9 @@ int main(int argc, char *argv[])
                       &NEpad,
                       &NEsurfpad,
                       &Nedgepad,
-                      &KernelVersion);
+                      &KernelVersion,
+			&KernelVersionSTD;			
+);
     }
 
     ShareInputData(MPI,
@@ -267,7 +271,8 @@ int main(int argc, char *argv[])
                    &NEpad,
                    &NEsurfpad,
                    &Nedgepad,
-                   &KernelVersion);
+                   &KernelVersion,
+		   &KernelVersionSTD);
 
     if (Testcase == 31)
     {
@@ -1221,7 +1226,7 @@ int main(int argc, char *argv[])
 //            dt_i = min(dt_i,dt_v);
         }
 
-        dt_i = 0.0001;
+        dt_i = 0.00001;
         dt=min(T-dt,dt_i);
 
 
