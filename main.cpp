@@ -811,14 +811,7 @@ int main(int argc, char *argv[])
     int VolKernelPackageSize = (7*NoSpaceDofs+2*NoDofs)/2;
     o_PackSend    = device.malloc(VolKernelPackageSize*sizeof(dfloat));
     o_PackReceive = device.malloc(VolKernelPackageSize*sizeof(dfloat));
-    dfloat * PackSend = (dfloat*) calloc(VolKernelPackageSize,sizeof(dfloat));
-    o_PackReceive.copyFrom(PackSend);
-    for (int i = 0; i < VolKernelPackageSize;i++){
-        int locIndex = i % NoSpaceDofs;
-        PackSend[i] = i*J[locIndex];
-    }
-    o_PackSend.copyFrom(PackSend);
-    free(PackSend);
+
 
     if(MPI.rank==0)
     {
@@ -1228,7 +1221,7 @@ int main(int argc, char *argv[])
 //            dt_i = min(dt_i,dt_v);
         }
 
-        dt_i = 0.000001;
+        dt_i = 0.0001;
         dt=min(T-dt,dt_i);
 
 
@@ -1289,6 +1282,16 @@ int main(int argc, char *argv[])
             //o_qL.copyTo(qL);
             //o_qR.copyTo(qR);
             //CollectEdgeDataMPI(MPI, DGMeshPartition, qL, qR);
+            dfloat * PackSend = (dfloat*) calloc(VolKernelPackageSize,sizeof(dfloat));
+            o_PackReceive.copyFrom(PackSend);
+            for (int i = 0; i < VolKernelPackageSize;i++){
+                int locIndex = i % NoSpaceDofs;
+                PackSend[i] = 1.24f*(t+dt)*i*J[locIndex];
+            }
+            o_PackSend.copyFrom(PackSend);
+            free(PackSend);
+
+
 
             o_PackReceive.copyFrom(o_PackSend);
 
