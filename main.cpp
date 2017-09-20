@@ -215,7 +215,7 @@ int main(int argc, char *argv[])
     int Nedgepad;
     int NEsurfpad;
     int KernelVersion;
-	int KernelVersionSTD;
+    int KernelVersionSTD;
     if(MPI.rank==0)
     {
         cout << "rank 0 reading input file \n";
@@ -244,8 +244,7 @@ int main(int argc, char *argv[])
                       &NEsurfpad,
                       &Nedgepad,
                       &KernelVersion,
-			&KernelVersionSTD;			
-);
+                      &KernelVersionSTD);
     }
 
     ShareInputData(MPI,
@@ -272,7 +271,7 @@ int main(int argc, char *argv[])
                    &NEsurfpad,
                    &Nedgepad,
                    &KernelVersion,
-		   &KernelVersionSTD);
+                   &KernelVersionSTD);
 
     if (Testcase == 31)
     {
@@ -845,7 +844,8 @@ int main(int argc, char *argv[])
     info.addDefine("sigmaMax",sigma_max);
     info.addDefine("sigmaMin",sigma_min);
     int nglPad=0;
-    if (ngl%4==0){
+    if (ngl%4==0)
+    {
         nglPad=1;
     }
     info.addDefine("nglPad",nglPad );
@@ -969,25 +969,38 @@ int main(int argc, char *argv[])
     //if(MPI.rank != 0){
     //    MPI_Barrier(MPI_COMM_WORLD);
     //}
-    if(Fluxdifferencing)
-    {
+//    if(Fluxdifferencing)
+//    {
+//
+//        std::ostringstream oss;
+//        cout << "Kernel Version: V " << KernelVersion << ".\n";
+//        oss << "okl/DG/VolumeKernelFluxDiffV" << KernelVersion << ".okl";
+//        std::string var = oss.str();
+//        VolumeKernel=device.buildKernelFromSource(var,"VolumeKernelFluxDiff",info);
+//
+//    }
+//    else
+//    {
+//        std::ostringstream oss;
+//        cout << "Kernel Version: V " << KernelVersion << ".\n";
+//        oss << "okl/DG/VolumeKernelV" << KernelVersion << ".okl";
+//        std::string var = oss.str();
+//        VolumeKernel=device.buildKernelFromSource(var,"VolumeKernel",info);
+//    }
+//
 
-        std::ostringstream oss;
+        std::ostringstream oss1;
         cout << "Kernel Version: V " << KernelVersion << ".\n";
-        oss << "okl/DG/VolumeKernelFluxDiffV" << KernelVersion << ".okl";
-        std::string var = oss.str();
-//	cout << "Building kernel "<< var << " for the volume part. \n";
-        VolumeKernel=device.buildKernelFromSource(var,"VolumeKernelFluxDiff",info);
-        //    VolumeKernel=device.buildKernelFromSource("okl/DG/VolumeKernelFluxDiffCentral.okl","VolumeKernelFluxDiff",info);
-    }
-    else
-    {
-		std::ostringstream oss;
-        cout << "Kernel Version: V " << KernelVersion << ".\n";
-        oss << "okl/DG/VolumeKernelV" << KernelVersion << ".okl";
-        std::string var = oss.str();
-        VolumeKernel=device.buildKernelFromSource(var,"VolumeKernel",info);
-    }
+        oss1 << "okl/DG/VolumeKernelFluxDiffV" << KernelVersion << ".okl";
+        std::string var1 = oss1.str();
+        VolumeKernel=device.buildKernelFromSource(var1,"VolumeKernelFluxDiff",info);
+
+        std::ostringstream oss2;
+        cout << "Kernel Version: V " << KernelVersionSTD << ".\n";
+        oss2 << "okl/DG/VolumeKernelV" << KernelVersionSTD << ".okl";
+        std::string var2 = oss2.str();
+        VolumeKernelSTD=device.buildKernelFromSource(var2,"VolumeKernel",info);
+
     switch(NumFlux)
     {
     // ENTROPY STABLE FLUX FROM PAPERS
@@ -1289,7 +1302,8 @@ int main(int argc, char *argv[])
             //CollectEdgeDataMPI(MPI, DGMeshPartition, qL, qR);
             dfloat * PackSend = (dfloat*) calloc(VolKernelPackageSize,sizeof(dfloat));
             o_PackReceive.copyFrom(PackSend);
-            for (int i = 0; i < VolKernelPackageSize;i++){
+            for (int i = 0; i < VolKernelPackageSize; i++)
+            {
                 int locIndex = i % NoSpaceDofs;
                 PackSend[i] = 1.24f*(t+dt)*i*J[locIndex];
             }
@@ -1301,6 +1315,12 @@ int main(int argc, char *argv[])
             o_PackReceive.copyFrom(o_PackSend);
 
             VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_Qt);
+
+            VolumeKernelSTD(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_Dstrong,o_Bx,o_By,o_Qt);
+
+
+
+
 
 
             //MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Recv_q_reqs, MPI.stats);

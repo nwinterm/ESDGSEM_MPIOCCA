@@ -7,7 +7,8 @@
 using namespace std;
 
 
-string getStrValue(string line){
+string getStrValue(string line)
+{
     string returnValue;
     int pos=line.find("=");
 
@@ -22,7 +23,8 @@ string getStrValue(string line){
 
 }
 
-double getDoubleValue(string line){
+double getDoubleValue(string line)
+{
     double returnValue;
     int pos=line.find("=");
 
@@ -35,7 +37,8 @@ double getDoubleValue(string line){
     return returnValue;
 }
 
-dfloat getDfloatValue(string line){
+dfloat getDfloatValue(string line)
+{
     dfloat returnValue;
     int pos=line.find("=");
 
@@ -49,7 +52,8 @@ dfloat getDfloatValue(string line){
 }
 
 
-int getIntValue(string line){
+int getIntValue(string line)
+{
     int returnValue;
     int pos=line.find("=");
 
@@ -62,7 +66,8 @@ int getIntValue(string line){
     return returnValue;
 }
 
-bool getBoolValue(string line){
+bool getBoolValue(string line)
+{
     bool returnValue;
     int pos=line.find("=");
 
@@ -100,7 +105,8 @@ void ReadInputFile(int *N,
                    int *NEpad,
                    int *NEsurfpad,
                    int *Nedgepad,
-                   int *KernelVersion)
+                   int *KernelVersion,
+                   int * KernelVersionSTD)
 {
 
 //,dfloat T, dfloat g_const
@@ -112,9 +118,9 @@ void ReadInputFile(int *N,
 
     if (!InputStream)
     {
-      std::string error_message("ERROR: Input file not found: ");
-      error_message += filename;
-      throw std::invalid_argument(error_message);
+        std::string error_message("ERROR: Input file not found: ");
+        error_message += filename;
+        throw std::invalid_argument(error_message);
     }
 
 
@@ -173,6 +179,8 @@ void ReadInputFile(int *N,
     *Nedgepad= getIntValue(current_string);
     std::getline(InputStream, current_string);
     *KernelVersion= getIntValue(current_string);
+    std::getline(InputStream, current_string);
+    *KernelVersionSTD= getIntValue(current_string);
 
 }
 
@@ -189,37 +197,41 @@ void ReadCartesianData(const int fixedDomain,const int fixedDisc, dfloat *xL,dfl
 
     if (!InputStream)
     {
-      std::string error_message("ERROR: Input file not found: ");
-      error_message += filename;
-      throw std::invalid_argument(error_message);
+        std::string error_message("ERROR: Input file not found: ");
+        error_message += filename;
+        throw std::invalid_argument(error_message);
     }
 
 
     std::string current_string;
 
-    if (!fixedDomain){
-    std::getline(InputStream, current_string);
-    *xL= getDfloatValue(current_string);
-    std::getline(InputStream, current_string);
-    *xR= getDfloatValue(current_string);
-    std::getline(InputStream, current_string);
-    *yL= getDfloatValue(current_string);
-    std::getline(InputStream, current_string);
-    *yR= getDfloatValue(current_string);}
-    else{
+    if (!fixedDomain)
+    {
+        std::getline(InputStream, current_string);
+        *xL= getDfloatValue(current_string);
+        std::getline(InputStream, current_string);
+        *xR= getDfloatValue(current_string);
+        std::getline(InputStream, current_string);
+        *yL= getDfloatValue(current_string);
+        std::getline(InputStream, current_string);
+        *yR= getDfloatValue(current_string);
+    }
+    else
+    {
         std::getline(InputStream, current_string);
         std::getline(InputStream, current_string);
         std::getline(InputStream, current_string);
         std::getline(InputStream, current_string);
     }
-    if (!fixedDisc){
-    std::getline(InputStream, current_string);
-    *NelemX= getIntValue(current_string);
-    std::getline(InputStream, current_string);
-    *NelemY= getIntValue(current_string);
-    std::getline(InputStream, current_string);
-    *PeriodicBD_X= getBoolValue(current_string);
-    std::getline(InputStream, current_string);
-    *PeriodicBD_Y= getBoolValue(current_string);
+    if (!fixedDisc)
+    {
+        std::getline(InputStream, current_string);
+        *NelemX= getIntValue(current_string);
+        std::getline(InputStream, current_string);
+        *NelemY= getIntValue(current_string);
+        std::getline(InputStream, current_string);
+        *PeriodicBD_X= getBoolValue(current_string);
+        std::getline(InputStream, current_string);
+        *PeriodicBD_Y= getBoolValue(current_string);
     }
 }
