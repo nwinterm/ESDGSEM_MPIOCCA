@@ -1,8 +1,8 @@
-xL=-1.0
-xR=1.0
-yL=-1.0
-yR=1.0
-NelemX=100
-NelemY=100
+xL=-5.0
+xR=5.0
+yL=-5.0
+yR=5.0
+NelemX=200
+NelemY=200
 PeriodicBD_X=0
 PeriodicBD_Y=0

@@ -1228,7 +1228,7 @@ int main(int argc, char *argv[])
 //            dt_i = min(dt_i,dt_v);
         }
 
-        dt_i = 0.00001;
+        dt_i = 0.000001;
         dt=min(T-dt,dt_i);
 
 
