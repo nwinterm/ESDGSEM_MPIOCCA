@@ -1,5 +1,5 @@
 meshFile=meshFiles/CurveDamN3.mesh
-N=1
+N=7
 CFL=0.1
 DFL=0.01
 T=0.0001
@@ -19,7 +19,7 @@ FluxDifferencing=1
 Cartesian=1
 rkOrder=3
 rkSSP=0
-NEpad=32
+NEpad=4
 NEsurfpad=4
 Nedgepad=16
 KernelVersionFD=9
