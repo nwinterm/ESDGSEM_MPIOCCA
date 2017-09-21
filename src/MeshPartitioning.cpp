@@ -31,7 +31,7 @@ void MeshPartitioning::DivideMesh(const Mesh GlobalMesh,const MPI_setup MPI)
 {
 
 
-    if (NumProcessors==0)
+    if (NumProcessors==1)
     {
 
 
