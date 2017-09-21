@@ -80,10 +80,13 @@
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV6.okl" />
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV7.okl" />
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV8.okl" />
+		<Unit filename="okl/DG/VolumeKernelFluxDiffV9.okl" />
 		<Unit filename="okl/DG/VolumeKernelV0.okl" />
 		<Unit filename="okl/DG/VolumeKernelV1.okl" />
 		<Unit filename="okl/DG/VolumeKernelV2.okl" />
 		<Unit filename="okl/DG/VolumeKernelV3.okl" />
+		<Unit filename="okl/DG/VolumeKernelV4.okl" />
+		<Unit filename="okl/DG/VolumeKernelV5.okl" />
 		<Unit filename="okl/DiscontinuousBathimetry/calcDiscBottomSurf.okl" />
 		<Unit filename="okl/GatherEdgeData/3MoundInflow.okl" />
 		<Unit filename="okl/GatherEdgeData/CollectEdgeData_Bottom.okl" />

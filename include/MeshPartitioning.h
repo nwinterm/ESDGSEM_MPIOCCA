@@ -6,6 +6,7 @@
 #include "MPI_setup.h"
 #include "Constants.hpp"
 #include <stdexcept>
+#include <cstring>
 using namespace Constants;
 
 
@@ -18,7 +19,6 @@ class MeshPartitioning
         int global_NumEdges;
         int NumElements;
         int NumProcessors;
-        int NumNeighbors;
         int NumEdges;
 
         int ngl,ngl2;

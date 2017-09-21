@@ -360,6 +360,9 @@ int main(int argc, char *argv[])
         DGMeshPartition.ReceiveMesh(MPI);
 
     }
+
+
+
     //if(MPI.rank==3){cout << "I did get my Mesh Partition! \n...";}
     //cout << " We solve " << DGMeshPartition.NumEdges << " Faces with "<< ngl << " nodes each, so we should have " << DGMeshPartition.NumEdges*ngl << " IDs! \n" ;
 
@@ -377,9 +380,9 @@ int main(int argc, char *argv[])
 
 
 
-
+    cout <<"Sorting Edges for MPI! \n";
     DGMeshPartition.SortMPIEdges(MPI);
-
+    cout <<"done! \n";
 
     dfloat LambdaMax;
 
@@ -990,13 +993,13 @@ int main(int argc, char *argv[])
 //
 
         std::ostringstream oss1;
-        cout << "Kernel Version: V " << KernelVersion << ".\n";
+        cout << "Kernel Version FD: V " << KernelVersion << ".\n";
         oss1 << "okl/DG/VolumeKernelFluxDiffV" << KernelVersion << ".okl";
         std::string var1 = oss1.str();
         VolumeKernel=device.buildKernelFromSource(var1,"VolumeKernelFluxDiff",info);
 
         std::ostringstream oss2;
-        cout << "Kernel Version: V " << KernelVersionSTD << ".\n";
+        cout << "Kernel Version STD: V " << KernelVersionSTD << ".\n";
         oss2 << "okl/DG/VolumeKernelV" << KernelVersionSTD << ".okl";
         std::string var2 = oss2.str();
         VolumeKernelSTD=device.buildKernelFromSource(var2,"VolumeKernel",info);
@@ -1113,7 +1116,6 @@ int main(int argc, char *argv[])
             }
         }
     }
-
 
     dfloat * tCheckpoints;
     int timeCount=0;
@@ -1268,7 +1270,7 @@ int main(int argc, char *argv[])
             dfloat rkA=RK.CoeffsA[rkstage];
             dfloat rkB=RK.CoeffsB[rkstage];
             dfloat rkC=RK.CoeffsC[rkstage];
-            dfloat intermediatetime;
+            dfloat intermediatetime=t;
             if (rkSSP)
             {
                 switch(rkstage)
@@ -1654,9 +1656,14 @@ int main(int argc, char *argv[])
     free(qGradientYL);
     free(qGradientYR);
 
+   if (NumPlots>0){
+        free(mCheckpoints);
+   }
+    if (NumTimeChecks>0){
+        free(tCheckpoints);
+    }
 
-    free(mCheckpoints);
-    free(tCheckpoints);
+
 
 
     free(SurfaceParts);

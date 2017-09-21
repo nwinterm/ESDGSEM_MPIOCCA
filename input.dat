@@ -1,5 +1,5 @@
 meshFile=meshFiles/CurveDamN3.mesh
-N=7
+N=3
 CFL=0.1
 DFL=0.01
 T=0.0001
