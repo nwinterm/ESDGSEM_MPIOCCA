@@ -1722,9 +1722,9 @@ void Mesh::InitDomain(const int Testcase, int *fixedDomain,int *fixedDisc, int *
         *fixedDomain = 1 ;
         *fixedDisc = 0 ;
         *xL=0.0;
-        *xR=2.0;
+        *xR=20.0;
         *yL=0.0;
-        *yR=2.0;
+        *yR=20.0;
         break;
     }
 
