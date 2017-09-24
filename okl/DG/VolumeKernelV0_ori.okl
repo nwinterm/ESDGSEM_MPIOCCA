@@ -36,14 +36,24 @@ kernel void VolumeKernel(int Nelem,
                 int xid=ie*ngl2   +j*ngl+i;
 				int Fid = ie*ngl2*Neq   +j*ngl+i;
 
+                dfloat r_invQ1;
+
+                if (Q[Fid]>PosPresTOL)
+                {
+                    r_invQ1 = one/Q[Fid];
+                }
+                else
+                {
+                    r_invQ1=zero;
+                };
 
 
                 dfloat F1 = Q[Fid+ngl2];
-                dfloat F2 = Q[Fid+ngl2]*Q[Fid+ngl2]/Q[Fid] + 0.5*g_const*Q[Fid]*Q[Fid];
-                dfloat F3 = Q[Fid+ngl2+ngl2]*Q[Fid+ngl2]/Q[Fid];
+                dfloat F2 = Q[Fid+ngl2]*Q[Fid+ngl2]*r_invQ1 + 0.5*g_const*Q[Fid]*Q[Fid];
+                dfloat F3 = Q[Fid+ngl2+ngl2]*Q[Fid+ngl2]*r_invQ1;
                 dfloat G1 = Q[Fid+ngl2+ngl2];
-                dfloat G2 = Q[Fid+ngl2]*Q[Fid+ngl2+ngl2]/Q[Fid];
-                dfloat G3 = Q[Fid+ngl2+ngl2]*Q[Fid+ngl2+ngl2]/Q[Fid] + 0.5*g_const*Q[Fid]*Q[Fid];
+                dfloat G2 = Q[Fid+ngl2]*Q[Fid+ngl2+ngl2]*r_invQ1;
+                dfloat G3 = Q[Fid+ngl2+ngl2]*Q[Fid+ngl2+ngl2]*r_invQ1 + 0.5*g_const*Q[Fid]*Q[Fid];
 
 
                 s_F1[i][j]=Y_eta[xid] * F1 - X_eta[xid]* G1;
@@ -75,11 +85,18 @@ kernel void VolumeKernel(int Nelem,
                 for (int l=0; l<ngl; ++l)
                 {
 
-                    FluxDeriv1+= D[i*ngl+l] * s_F1[l][j] + D[j*ngl+l] * s_G1[i][l];
+                    FluxDeriv1+= D[i*ngl+l] * s_F1[l][j];
+                    FluxDeriv1+= D[j*ngl+l] * s_G1[i][l];
 
-                    FluxDeriv2+=D[i*ngl+l] * s_F2[l][j] + D[j*ngl+l] * s_G2[i][l];
 
-                    FluxDeriv3+=D[i*ngl+l] * s_F3[l][j]+D[j*ngl+l] * s_G3[i][l];
+                    FluxDeriv2+=D[i*ngl+l] * s_F2[l][j];
+                    FluxDeriv2+=D[j*ngl+l] * s_G2[i][l];;
+
+
+
+                    FluxDeriv3+=D[i*ngl+l] * s_F3[l][j];
+                    FluxDeriv3+=D[j*ngl+l] * s_G3[i][l];
+
 
                 }
 
