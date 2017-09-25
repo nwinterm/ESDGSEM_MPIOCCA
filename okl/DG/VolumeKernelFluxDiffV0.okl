@@ -10,8 +10,6 @@ kernel void VolumeKernelFluxDiff(int Nelem,dfloat * Jac,dfloat * Y_xi,dfloat * Y
 				int ij = ie*ngl2*Neq   +j*ngl+i;
 				int xij = ie*ngl2   +j*ngl+i;
                 dfloat FluxDeriv1=zero,FluxDeriv2=zero,FluxDeriv3=zero;
-				dfloat r_invQij = one/Q[ij];
-
                 for (int l=0; l<ngl; ++l)
                 {
 					int lj = ie*ngl2*Neq   +j*ngl+l;
