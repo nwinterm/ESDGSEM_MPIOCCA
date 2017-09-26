@@ -108,15 +108,15 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
 
 
 
-//                            const dfloat h_avg_xi = fourth_g*(H_ij+H_lj)*(H_ij+H_lj) ;      // 4 ops
-//                            const dfloat h2_avg_xi = half*(H_ij*H_ij+H_lj*H_lj) ;           // 4 ops
-//                            const dfloat hu_avg_xi = half* (HU_ij+HU_lj) ;                  // 2 ops
-//                            const dfloat hv_avg_xi =  half* (HV_ij+HV_lj) ;                 // 2 ops
-//                            const dfloat u_avg_xi = half* (HU_ij*invQ1ij+HU_lj*invQ1lj) ;   // 4 ops
-//                            const dfloat v_avg_xi = half* (HV_ij*invQ1ij+HV_lj*invQ1lj) ;   // 4 ops
+                            const dfloat h_avg_xi = fourth_g*(H_ij+H_lj)*(H_ij+H_lj) ;      // 4 ops
+                            const dfloat h2_avg_xi = half*(H_ij*H_ij+H_lj*H_lj) ;           // 4 ops
+                            const dfloat hu_avg_xi = half* (HU_ij+HU_lj) ;                  // 2 ops
+                            const dfloat hv_avg_xi =  half* (HV_ij+HV_lj) ;                 // 2 ops
+                            const dfloat u_avg_xi = half* (HU_ij*invQ1ij+HU_lj*invQ1lj) ;   // 4 ops
+                            const dfloat v_avg_xi = half* (HV_ij*invQ1ij+HV_lj*invQ1lj) ;   // 4 ops
 
-//                            const dfloat Yeta_avg = half*(r_Yeta_ij+s_Yeta[ieLoc][l][j]) ;  // 2 ops
-//                            const dfloat Xeta_avg = half*(r_Xeta_ij+s_Xeta[ieLoc][l][j]) ;  // 2 ops
+                            const dfloat Yeta_avg = half*(r_Yeta_ij+s_Yeta[ieLoc][l][j]) ;  // 2 ops
+                            const dfloat Xeta_avg = half*(r_Xeta_ij+s_Xeta[ieLoc][l][j]) ;  // 2 ops
 
                             const dfloat F1vol = 0.0; // Yeta_avg * hu_avg_xi - Xeta_avg * hv_avg_xi;   // 3 ops
                             const dfloat F2vol = 0.0; //Yeta_avg *(hu_avg_xi * u_avg_xi   + h_avg_xi - half_g*h2_avg_xi) - Xeta_avg*hv_avg_xi * u_avg_xi;  // 8 ops
@@ -131,15 +131,15 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
 
 
 
-//                            const dfloat h_avg_eta = fourth_g*(H_ij+H_il)*(H_ij+H_il) ;
-//                            const dfloat h2_avg_eta = half*(H_ij*H_ij+H_il*H_il) ;
-//                            const dfloat hu_avg_eta = half* (HU_ij+HU_il);
-//                            const dfloat hv_avg_eta = half* (HV_ij+HV_il);
-//                            const dfloat u_avg_eta = half* (HU_ij*invQ1ij+HU_il*invQ1il) ;
-//                            const dfloat v_avg_eta = half* (HV_ij*invQ1ij+HV_il*invQ1il) ;
+                            const dfloat h_avg_eta = fourth_g*(H_ij+H_il)*(H_ij+H_il) ;
+                            const dfloat h2_avg_eta = half*(H_ij*H_ij+H_il*H_il) ;
+                            const dfloat hu_avg_eta = half* (HU_ij+HU_il);
+                            const dfloat hv_avg_eta = half* (HV_ij+HV_il);
+                            const dfloat u_avg_eta = half* (HU_ij*invQ1ij+HU_il*invQ1il) ;
+                            const dfloat v_avg_eta = half* (HV_ij*invQ1ij+HV_il*invQ1il) ;
 
-//                            const dfloat Yxi_avg = half*(r_Yxi_ij+s_Yxi[ieLoc][l][j]) ;
-//                            const dfloat Xxi_avg = half*(r_Xxi_ij+s_Xxi[ieLoc][l][j]) ;
+                            const dfloat Yxi_avg = half*(r_Yxi_ij+s_Yxi[ieLoc][l][j]) ;
+                            const dfloat Xxi_avg = half*(r_Xxi_ij+s_Xxi[ieLoc][l][j]) ;
 
                             const dfloat G1vol =0.0; //-Yxi_avg * hu_avg_eta       + Xxi_avg*hv_avg_eta;
                             const dfloat G2vol =0.0; //-Yxi_avg * (hu_avg_eta * u_avg_eta   + h_avg_eta- half_g*h2_avg_eta) + Xxi_avg* hv_avg_eta * u_avg_eta;
@@ -167,9 +167,9 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
                         const dfloat r_Bx=Bx[xid];
                         const dfloat r_By=By[xid];
 
-                        Qt[id]              = -  r_Jac *FluxDeriv1;
-                        Qt[id+ngl2]         = -  r_Jac *FluxDeriv2 - g_const *H_ij*r_Bx ;
-                        Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3 - g_const *H_ij*r_By;
+                        Qt[id]              = -  r_Jac *FluxDeriv1;							// 1 Multiply
+                        Qt[id+ngl2]         = -  r_Jac *FluxDeriv2 - g_const *H_ij*r_Bx ;	// 1 FMA, 2 Multiply	= 4ops
+                        Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3 - g_const *H_ij*r_By;	// 3 ops, because g_const * H_ij is not calculated twice !!!
 
                     }
 
