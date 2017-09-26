@@ -1330,7 +1330,7 @@ int main(int argc, char *argv[])
     double scaling  = 1024*1024*1024;
     double GBReadWrite = BytesReadWrite/scaling;
 	double flopsFD = (90*ngl+13)*ngl2;
-	double GFLOPS_FD = flopsFD/scaling;
+	double GFLOPS_FD = flopsFD*Nelem/scaling;
     occa::streamTag start = device.tagStream();
     double iterations=10;
     for (int i =0; i<iterations; i++)
