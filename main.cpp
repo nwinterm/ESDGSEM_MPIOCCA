@@ -32,8 +32,8 @@ int main(int argc, char *argv[])
     //   char hostname[MPI_MAX_PROCESSOR_NAME];
 
 
-    MPI_setup MPI(argc, argv);
-    //MPI_setup MPI;
+    //MPI_setup MPI(argc, argv);
+    MPI_setup MPI;
 
     if(argc<2)
     {
@@ -109,92 +109,20 @@ int main(int argc, char *argv[])
     if(MPI.rank==0)
     {
         cout <<" ... device initialized.\n";
+		cout <<" reading in possible other input parameters ... \.";
     }
-
-
-    if(MPI.rank==0)
-    {
-        cout <<"declaring occa Kernels and Variables... ";
-    }
-
-
-    //    occa::kernel FluxKernel;
-    //    occa::memory o_Ftilde,o_Gtilde;
-
-    occa::kernel VolumeKernel;
-    occa::kernel VolumeKernelSTD;
-    occa::kernel calcNumFluxes;
-    occa::kernel SurfaceKernel;
-    occa::kernel UpdateKernel;
-    occa::kernel calcRK;
-    occa::kernel addS;
-    occa::kernel CollectEdgeData;
-    occa::kernel CollectEdgeData_Bottom;
-
-    occa::kernel CollectEdgeDataGradient;
-    occa::kernel calcGradient;
-    occa::kernel calcNumFluxesGradient;
-    occa::kernel SurfaceKernelGradient;
-    occa::kernel VolumeKernelViscose;
-    occa::kernel calcNumFluxesViscose;
-    occa::kernel ShockCapturing;
-    occa::kernel calcDiscBottomSurf;
-//    occa::kernel calcEdgeValues;
-    occa::kernel preservePosivitity;
-    occa::kernel calcAvg;
-    occa::kernel FindLambdaMax;
-    occa::kernel scaleGradient;
-    occa::kernel SurfaceKernelVisc;
-    occa::kernel UpdateQt;
-
-//    occa::kernel MemCopyKernel;
-
-
-    occa::memory o_Qtmp; // for SSP RK
-    occa::memory o_D,o_Dstrong,o_Dhat,o_Qt,o_gRK,o_q;//,o_Neq,o_ngl,o_Jac;
-    occa::memory o_VdmInv;//,o_SubCellMat,;
-    occa::memory o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta;
-
-    occa::memory o_SurfaceParts, o_ElemEdgeOrientation, o_ElemToEdge,o_ElemEdgeMasterSlave;
-    occa::memory o_nx,o_ny,o_scal;
-    occa::memory o_Bx,o_By,o_B;
-    occa::memory o_x,o_y;
-    occa::memory o_qL,o_qR,o_bL,o_bR;
-    occa::memory o_EdgeData;
-    occa::memory o_qGradientX, o_qGradientY,o_SurfGradientX,o_SurfGradientY ;
-    occa::memory o_qGradientXL,o_qGradientXR,o_qGradientYL,o_qGradientYR;
-    occa::memory o_SurfacePartsVisc;
-    occa::memory o_EleSizes, o_ViscPara;
-    occa::memory o_ViscParaL,o_ViscParaR;
-
-    occa::memory o_DBSurf1,o_DBSurf2;
-    occa::memory o_LambdaMax;
-
-    occa::memory o_QtVisc;
-    occa::memory o_Qavg;
-
-    occa::memory o_GLw;
-
-    occa::memory o_PackSend, o_PackReceive;
-
-    if(MPI.rank==0)
-    {
-        cout <<"... finished.\n";
-    }
+	
 
 
 
 
 
 
-    //device.setup("mode = OpenCL, platformID = 0, deviceID=1");
-    //device.setup("mode = OpenMP");
 
 
     //initialize polynomial basis
 
-    //int NumProcessors = 4;
-    int N,ngl, ngl2;;
+    int ngl, ngl2;;
     int NoDofs,NoSpaceDofs;
     int Nfaces, Nelem;
     int Nfaces_global, Nelem_global,NoDofs_global,NoSpaceDofs_global;
@@ -211,11 +139,32 @@ int main(int argc, char *argv[])
     dfloat epsilon_0,sigma_min,sigma_max;
     dfloat t=0.0;
     int NumPlots,NumTimeChecks,Testcase;
-    int NEpad;
     int Nedgepad;
     int NEsurfpad;
     int KernelVersion;
     int KernelVersionSTD;
+	
+	int N=0;
+	int NelemX=0;
+	int NEpad=0;
+	
+	for (int i = 2; i < argc; i++) { /* We will iterate over argv[] to get the parameters stored inside.
+								  * Note that we're starting on 1 because we don't need to know the 
+								  * path of the program, which is stored in argv[0] */
+	if (i + 1 != argc) // Check that we haven't finished parsing already
+		if (argv[i] == "Nelem") {
+			// We know the next argument *should* be the filename:
+			NelemX = argv[i + 1];
+		} else if (argv[i] == "N") {
+			N = argv[i + 1];
+		} else if (argv[i] == "NEpad") {
+			NEpad = argv[i + 1];
+		} else {
+			std::cout << "Not enough or invalid arguments, please try again.\n";
+			MPI_Finalize();
+			exit(0);
+	}
+
     if(MPI.rank==0)
     {
         cout << "rank 0 reading input file \n";
@@ -287,6 +236,7 @@ int main(int argc, char *argv[])
 
     if(MPI.rank==0)
     {
+		cout <<"Polynomial Order: " <<N <<"\n";
         cout <<"Testcase: " <<Testcase <<"\n";
         cout <<"CFL: " <<CFL <<"\n";
         cout <<"T: " <<T <<"\n";
@@ -328,7 +278,7 @@ int main(int argc, char *argv[])
     MeshPartitioning DGMeshPartition(MPI.numtasks, ngl);
 
 
-    Mesh DGMesh(DGBasis.x_GL,ngl);
+    Mesh DGMesh(DGBasis.x_GL,ngl,NelemX);
     if(MPI.rank==0)
     {
         if (Cartesian)
@@ -718,12 +668,78 @@ int main(int argc, char *argv[])
     //
     //free(q_modal);
 
+
+
     if(MPI.rank==0)
     {
-        cout <<"Allocating Memory on the device...      ";
+        cout <<"declaring occa Kernels and Variables... ";
     }
 
 
+    //    occa::kernel FluxKernel;
+    //    occa::memory o_Ftilde,o_Gtilde;
+
+    occa::kernel VolumeKernel;
+    occa::kernel VolumeKernelSTD;
+    occa::kernel calcNumFluxes;
+    occa::kernel SurfaceKernel;
+    occa::kernel UpdateKernel;
+    occa::kernel calcRK;
+    occa::kernel addS;
+    occa::kernel CollectEdgeData;
+    occa::kernel CollectEdgeData_Bottom;
+
+    occa::kernel CollectEdgeDataGradient;
+    occa::kernel calcGradient;
+    occa::kernel calcNumFluxesGradient;
+    occa::kernel SurfaceKernelGradient;
+    occa::kernel VolumeKernelViscose;
+    occa::kernel calcNumFluxesViscose;
+    occa::kernel ShockCapturing;
+    occa::kernel calcDiscBottomSurf;
+//    occa::kernel calcEdgeValues;
+    occa::kernel preservePosivitity;
+    occa::kernel calcAvg;
+    occa::kernel FindLambdaMax;
+    occa::kernel scaleGradient;
+    occa::kernel SurfaceKernelVisc;
+    occa::kernel UpdateQt;
+
+//    occa::kernel MemCopyKernel;
+
+
+    occa::memory o_Qtmp; // for SSP RK
+    occa::memory o_D,o_Dstrong,o_Dhat,o_Qt,o_gRK,o_q;//,o_Neq,o_ngl,o_Jac;
+    occa::memory o_VdmInv;//,o_SubCellMat,;
+    occa::memory o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta;
+
+    occa::memory o_SurfaceParts, o_ElemEdgeOrientation, o_ElemToEdge,o_ElemEdgeMasterSlave;
+    occa::memory o_nx,o_ny,o_scal;
+    occa::memory o_Bx,o_By,o_B;
+    occa::memory o_x,o_y;
+    occa::memory o_qL,o_qR,o_bL,o_bR;
+    occa::memory o_EdgeData;
+    occa::memory o_qGradientX, o_qGradientY,o_SurfGradientX,o_SurfGradientY ;
+    occa::memory o_qGradientXL,o_qGradientXR,o_qGradientYL,o_qGradientYR;
+    occa::memory o_SurfacePartsVisc;
+    occa::memory o_EleSizes, o_ViscPara;
+    occa::memory o_ViscParaL,o_ViscParaR;
+
+    occa::memory o_DBSurf1,o_DBSurf2;
+    occa::memory o_LambdaMax;
+
+    occa::memory o_QtVisc;
+    occa::memory o_Qavg;
+
+    occa::memory o_GLw;
+
+    occa::memory o_PackSend, o_PackReceive;
+
+    if(MPI.rank==0)
+    {
+        cout <<"... finished.\n";
+		cout <<"Allocating Memory on the device...      ";
+    }
 
     // NEEDED PARAMETERS: (Nelem,Neq,ngl,DGMetrics.Jac,o_F,o_D,o_Qt);
     //o_Ftilde  = device.malloc(NoDofs*sizeof(dfloat));

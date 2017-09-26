@@ -2,13 +2,13 @@
 
 
 
-MPI_setup::MPI_setup(int argc, char *argv[]){
+//MPI_setup::MPI_setup(int argc, char *argv[]){
 
-//MPI_setup::MPI_setup(){
+MPI_setup::MPI_setup(){
 
 
-    MPI_Init(&argc,&argv);
-//    MPI_Init(NULL,NULL);
+//    MPI_Init(&argc,&argv);
+    MPI_Init(NULL,NULL);
 
     // get number of tasks
     MPI_Comm_size(MPI_COMM_WORLD,&numtasks);

@@ -1,13 +1,15 @@
 #include "Mesh.h"
 
 
-Mesh::Mesh(const dfloat * fm_x_GL,const int int_ngl)
+Mesh::Mesh(const dfloat * fm_x_GL,const int int_ngl, const int intNele)
 {
 //    x_GL=fm_x_GL;
     ngl=int_ngl;
     ngl2 = ngl*ngl;
 //    x_GL.resize(ngl);
     x_GL= (dfloat*) calloc(ngl,sizeof(dfloat));
+	NelemX=intNele;
+	NelemY=intNele;
 
     for (int i=0; i<ngl; i++)
     {
@@ -29,8 +31,8 @@ Mesh::~Mesh()
 
 void Mesh::InitMesh(const string meshFile, const bool Cartesian, const int Testcase)
 {
-    NelemX=0;
-    NelemY=0;
+   // NelemX=0;
+   // NelemY=0;
     if (Cartesian)
     {
         dfloat xR,xL,yR,yL;

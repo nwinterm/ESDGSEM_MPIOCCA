@@ -11,7 +11,7 @@ using namespace Constants;
 class Mesh
 {
     public:
-        Mesh(const dfloat*,const int );
+        Mesh(const dfloat*,const int ,const int);
         void InitMesh(const string,const bool, const int );
         int m_num_nodes;
         int m_num_edges;

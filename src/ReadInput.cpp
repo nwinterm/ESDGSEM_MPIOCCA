@@ -129,7 +129,10 @@ void ReadInputFile(int *N,
     std::getline(InputStream, current_string);
     *meshFile= getStrValue(current_string);
     std::getline(InputStream, current_string);
-    *N= getIntValue(current_string);
+	if (*N ==0){
+		*N= getIntValue(current_string);
+	}
+    
     std::getline(InputStream, current_string);
     *CFL= getDfloatValue(current_string);
     std::getline(InputStream, current_string);
@@ -172,7 +175,10 @@ void ReadInputFile(int *N,
     std::getline(InputStream, current_string);
     *rkSSP= getIntValue(current_string);
     std::getline(InputStream, current_string);
-    *NEpad= getIntValue(current_string);
+    if (*NEpad==0){
+			*NEpad= getIntValue(current_string);
+	}
+	
     std::getline(InputStream, current_string);
     *NEsurfpad= getIntValue(current_string);
     std::getline(InputStream, current_string);
@@ -226,9 +232,15 @@ void ReadCartesianData(const int fixedDomain,const int fixedDisc, dfloat *xL,dfl
     if (!fixedDisc)
     {
         std::getline(InputStream, current_string);
-        *NelemX= getIntValue(current_string);
+		if (*NelemX==0){
+			*NelemX= getIntValue(current_string);
+		}
+        
         std::getline(InputStream, current_string);
-        *NelemY= getIntValue(current_string);
+		if (*NelemX==0){
+			*NelemY= getIntValue(current_string);
+		}
+        
         std::getline(InputStream, current_string);
         *PeriodicBD_X= getBoolValue(current_string);
         std::getline(InputStream, current_string);
