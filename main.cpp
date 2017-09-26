@@ -1330,6 +1330,7 @@ int main(int argc, char *argv[])
     double scaling  = 1024*1024*1024;
     double GBReadWrite = BytesReadWrite/scaling;
 	double flopsFD = (90*ngl+13)*ngl2;
+	double GFLOPS_FD = flopsFD/scaling;
     occa::streamTag start = device.tagStream();
     double iterations=10;
     for (int i =0; i<iterations; i++)
@@ -1368,9 +1369,10 @@ int main(int argc, char *argv[])
 	cout << "Floating Point Operations FD: " << flopsFD <<"\n";
 	cout << "flop_count_sp should be : " << flopsFD*Nelem - Nelem*ngl2 <<"\n";
 	
-	double GFLOPS = flopsFD*iterations/(scaling * timeFD);
+	cout << "we managed " << GFLOPS_FD << " in time " << timeFD << " !\n";
+	double GFLOPSs = GFLOPS_FD*iterations/ timeFD;
 	
-	cout << " achieved GFLOPS : " << GFLOPS << "\n";
+	cout << " achieved GFLOPS : " << GFLOPSs << "\n";
 
 
 
