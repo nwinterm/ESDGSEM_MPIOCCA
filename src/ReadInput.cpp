@@ -184,9 +184,13 @@ void ReadInputFile(int *N,
     std::getline(InputStream, current_string);
     *Nedgepad= getIntValue(current_string);
     std::getline(InputStream, current_string);
-    *KernelVersion= getIntValue(current_string);
+	 if (*KernelVersion==-1){
+			*KernelVersion= getIntValue(current_string);
+	}
     std::getline(InputStream, current_string);
-    *KernelVersionSTD= getIntValue(current_string);
+    if (*KernelVersionSTD==-1){
+			*KernelVersionSTD= getIntValue(current_string);
+	}
 
 }
 

@@ -141,8 +141,8 @@ int main(int argc, char *argv[])
     int NumPlots,NumTimeChecks,Testcase;
     int Nedgepad;
     int NEsurfpad;
-    int KernelVersion;
-    int KernelVersionSTD;
+    int KernelVersion=-1;
+    int KernelVersionSTD=-1;
 	
 	int N=0;
 	int NelemX=0;
@@ -159,7 +159,11 @@ int main(int argc, char *argv[])
 			N =atoi(argv[i + 1]);
 		} else if (argv[i] == "NEpad") {
 			NEpad =atoi(argv[i + 1]);
-		} else {
+		} else if (argv[i] == "STDKernelV") {
+			KernelVersionSTD =atoi(argv[i + 1]);
+		}else if (argv[i] == "KernelV") {
+			KernelVersion =atoi(argv[i + 1]);
+		}else {
 			std::cout << "Not enough or invalid arguments, please try again.\n";
 			MPI_Finalize();
 			exit(0);}
