@@ -1,3 +1,0 @@
-#!binbash
-nvprof --kernels VolumeKernelFluxDiff --metric flop_sp_efficiency,achieved_occupancy,flop_count_sp,dram_read_throughput,dram_write_throughput VolumeKernel0 --metric flop_sp_efficiency,achieved_occupancy,flop_count_sp,dram_read_throughput,dram_write_throughput ./main CUDA
-#.. do this 16 times
