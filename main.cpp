@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
     if(MPI.rank==0)
     {
         cout <<" ... device initialized.\n";
-		cout <<" reading in possible other input parameters ... \.";
+		cout <<" reading in possible other input parameters ... \n.";
     }
 	
 
@@ -154,15 +154,15 @@ int main(int argc, char *argv[])
 	if (i + 1 != argc) // Check that we haven't finished parsing already
 		if (argv[i] == "Nelem") {
 			// We know the next argument *should* be the filename:
-			NelemX = argv[i + 1];
+			NelemX = atoi(argv[i + 1]);
 		} else if (argv[i] == "N") {
-			N = argv[i + 1];
+			N =atoi(argv[i + 1]);
 		} else if (argv[i] == "NEpad") {
-			NEpad = argv[i + 1];
+			NEpad =atoi(argv[i + 1]);
 		} else {
 			std::cout << "Not enough or invalid arguments, please try again.\n";
 			MPI_Finalize();
-			exit(0);
+			exit(0);}
 	}
 
     if(MPI.rank==0)

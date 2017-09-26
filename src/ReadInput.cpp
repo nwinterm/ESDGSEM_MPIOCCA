@@ -237,7 +237,7 @@ void ReadCartesianData(const int fixedDomain,const int fixedDisc, dfloat *xL,dfl
 		}
         
         std::getline(InputStream, current_string);
-		if (*NelemX==0){
+		if (*NelemY==0){
 			*NelemY= getIntValue(current_string);
 		}
         
