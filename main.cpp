@@ -1329,6 +1329,7 @@ int main(int argc, char *argv[])
     int BytesReadWrite = sizeof(dfloat) * (NoSpaceDofs*7 + NoDofs*2);
     int scaling  = 1024*1024*1024;
     double GBReadWrite = double(BytesReadWrite)/double(scaling);
+	double flopsFD = (92*ngl+10)*ngl2;
     occa::streamTag start = device.tagStream();
     int iterations=10;
     for (int i =0; i<iterations; i++)
@@ -1364,7 +1365,7 @@ int main(int argc, char *argv[])
     double timeFD = device.timeBetween(startFD, endFD);
     cout << "Elapsed Time FD : " << timeFD << "\n";
     cout << "Bandwidth FD Volume: " << iterations*GBReadWrite/timeFD << "\n";
-
+	cout << "Floating Point Operations FD: " << flopsFD <<"\n";
 
 
 
