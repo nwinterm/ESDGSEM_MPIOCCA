@@ -1368,7 +1368,7 @@ int main(int argc, char *argv[])
 	cout << "Floating Point Operations FD: " << flopsFD <<"\n";
 	cout << "flop_count_sp should be : " << flopsFD*Nelem - Nelem*ngl2 <<"\n";
 	
-	double GFLOPS = flopsFD/(1024*1024*1024 * timeFD);
+	double GFLOPS = flopsFD*iterations/(1024*1024*1024 * timeFD);
 	
 	cout << " achieved GFLOPS : " << GFLOPS << "\n";
 
