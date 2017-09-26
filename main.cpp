@@ -1326,9 +1326,9 @@ int main(int argc, char *argv[])
 //            //o_qR.copyTo(qR);
 //            //CollectEdgeDataMPI(MPI, DGMeshPartition, qL, qR);
 
-    int BytesReadWrite = sizeof(dfloat) * (NoSpaceDofs*7 + NoDofs*2);
+    double BytesReadWrite = sizeof(dfloat) * (NoSpaceDofs*7 + NoDofs*2);
     int scaling  = 1024*1024*1024;
-    double GBReadWrite = double(BytesReadWrite)/double(scaling);
+    double GBReadWrite = BytesReadWrite/scaling;
 	double flopsFD = (90*ngl+13)*ngl2;
     occa::streamTag start = device.tagStream();
     int iterations=10;
@@ -1368,7 +1368,7 @@ int main(int argc, char *argv[])
 	cout << "Floating Point Operations FD: " << flopsFD <<"\n";
 	cout << "flop_count_sp should be : " << flopsFD*Nelem - Nelem*ngl2 <<"\n";
 	
-	double GFLOPS = flopsFD*iterations/(1024*1024*1024 * timeFD);
+	double GFLOPS = flopsFD*iterations/(scaling * timeFD);
 	
 	cout << " achieved GFLOPS : " << GFLOPS << "\n";
 
