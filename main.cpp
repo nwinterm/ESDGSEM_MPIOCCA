@@ -148,23 +148,23 @@ int main(int argc, char *argv[])
 	int NelemX=0;
 	int NEpad=0;
 	
-	for (int i = 2; i < argc; i++) { /* We will iterate over argv[] to get the parameters stored inside.
+	for (int i = 2; i < argc; i+=2) { /* We will iterate over argv[] to get the parameters stored inside.
 								  * Note that we're starting on 1 because we don't need to know the 
 								  * path of the program, which is stored in argv[0] */
 	if (i + 1 != argc) // Check that we haven't finished parsing already
-		if (argv[i] == "Nelem") {
-			// We know the next argument *should* be the filename:
+    		if(!strcmp(argv[i], "Nelem")){
 			NelemX = atoi(argv[i + 1]);
-		} else if (argv[i] == "N") {
+    		} else if(!strcmp(argv[i], "N")){
 			N =atoi(argv[i + 1]);
-		} else if (argv[i] == "NEpad") {
+    		} else if(!strcmp(argv[i], "Nepad")){
 			NEpad =atoi(argv[i + 1]);
-		} else if (argv[i] == "STDKernelV") {
+    		} else if(!strcmp(argv[i], "STDKernelV")){
 			KernelVersionSTD =atoi(argv[i + 1]);
-		}else if (argv[i] == "KernelV") {
+    		} else if(!strcmp(argv[i], "KernelV")){
 			KernelVersion =atoi(argv[i + 1]);
 		}else {
 			std::cout << "Not enough or invalid arguments, please try again.\n";
+			std::cout <<"invalid argument: " << argv[i]<<"\n";
 			MPI_Finalize();
 			exit(0);}
 	}
