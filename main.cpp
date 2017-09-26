@@ -1327,11 +1327,11 @@ int main(int argc, char *argv[])
 //            //CollectEdgeDataMPI(MPI, DGMeshPartition, qL, qR);
 
     double BytesReadWrite = sizeof(dfloat) * (NoSpaceDofs*7 + NoDofs*2);
-    int scaling  = 1024*1024*1024;
+    double scaling  = 1024*1024*1024;
     double GBReadWrite = BytesReadWrite/scaling;
 	double flopsFD = (90*ngl+13)*ngl2;
     occa::streamTag start = device.tagStream();
-    int iterations=10;
+    double iterations=10;
     for (int i =0; i<iterations; i++)
     {
         o_PackReceive.copyFrom(o_PackSend);
