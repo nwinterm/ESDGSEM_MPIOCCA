@@ -1366,7 +1366,11 @@ int main(int argc, char *argv[])
     cout << "Elapsed Time FD : " << timeFD << "\n";
     cout << "Bandwidth FD Volume: " << iterations*GBReadWrite/timeFD << "\n";
 	cout << "Floating Point Operations FD: " << flopsFD <<"\n";
-	cout << "flop_count_sd should be : " << flopsFD*Nelem - Nelem*ngl2 <<"\n";
+	cout << "flop_count_sp should be : " << flopsFD*Nelem - Nelem*ngl2 <<"\n";
+	
+	double GFLOPS = flopsFD/(1024*1024*1024 * timeFD);
+	
+	cout << " achieved GFLOPS : " << GFLOPS << "\n";
 
 
 
