@@ -1340,8 +1340,9 @@ int main(int argc, char *argv[])
     occa::streamTag end = device.tagStream();
     device.finish();
     double timeCpy = device.timeBetween(start, end);
+	double MemBandwidth = iterations*GBReadWrite/timeCpy;
     cout << "Elapsed Time MemCpy: " << timeCpy << "\n";
-    cout << "Bandwidth MemCpy: " << iterations*GBReadWrite/timeCpy << "\n";
+    cout << "Bandwidth MemCpy: " << MemBandwidth  << "\n";
 
 
     occa::streamTag startSD = device.tagStream();
@@ -1352,8 +1353,9 @@ int main(int argc, char *argv[])
     occa::streamTag endSD = device.tagStream();
     device.finish();
     double timeSD = device.timeBetween(startSD, endSD);
+	double SDBandwidth = iterations*GBReadWrite/timeSD;
     cout << "Elapsed Time STD: " << timeSD << "\n";
-    cout << "Bandwidth Standard Volume: " << iterations*GBReadWrite/timeSD << "\n";
+    cout << "Bandwidth Standard Volume: " << SDBandwidth << "\n";
 
 
     occa::streamTag startFD = device.tagStream();
@@ -1364,15 +1366,18 @@ int main(int argc, char *argv[])
     occa::streamTag endFD = device.tagStream();
     device.finish();
     double timeFD = device.timeBetween(startFD, endFD);
+	double FDBandwidth = iterations*GBReadWrite/timeFD;
     cout << "Elapsed Time FD : " << timeFD << "\n";
-    cout << "Bandwidth FD Volume: " << iterations*GBReadWrite/timeFD << "\n";
+    cout << "Bandwidth FD Volume: " << FDBandwidth << "\n";
 	cout << "Floating Point Operations FD: " << flopsFD <<"\n";
 	cout << "flop_count_sp should be : " << flopsFD*Nelem - Nelem*ngl2 <<"\n";
 	
 	cout << "we managed " << GFLOPS_FD << " in time " << timeFD << " !\n";
 	double GFLOPSs = GFLOPS_FD*iterations/ timeFD;
+	double MemoryBound = GFLOPSs *MemBandwidth / FDBandwidth;
 	
-	cout << " achieved GFLOPS : " << GFLOPSs << "\n";
+	cout << "Achieved GFLOPS/s : " << GFLOPSs << "\n";
+	cout << "MemoryBound : " << MemoryBound << "\n";
 
 
 
