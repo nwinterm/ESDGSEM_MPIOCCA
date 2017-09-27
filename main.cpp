@@ -1327,7 +1327,7 @@ int main(int argc, char *argv[])
 //            //CollectEdgeDataMPI(MPI, DGMeshPartition, qL, qR);
 
 	std::cout.precision(15);
-	std::scientific;
+	
 
     double BytesReadWrite = sizeof(dfloat) * (NoSpaceDofs*7 + NoDofs*2);
     double scaling  = 1024*1024*1024;
@@ -1379,7 +1379,8 @@ int main(int argc, char *argv[])
 	double GFLOPSs = GFLOPS_FD*iterations/ timeFD;
 	double MemoryBound = GFLOPSs *MemBandwidth / FDBandwidth;
 	
-	cout << "Achieved GFLOPS/s : " << N << " " <<  GFLOPSs << "\n";
+	std::cout <<  std::scientific;
+	cout << "Achieved GFLOPS/s : " << N << " "  <<  GFLOPSs << "\n";
 	cout << "MemoryBound : " << N << " " << MemoryBound << "\n";
 
 
