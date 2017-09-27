@@ -1,38 +1,38 @@
-void Fvol(dfloat * q1L,dfloat * q2L,dfloat * q3L,
-			dfloat * q1R,dfloat * q2R,dfloat * q3R,
-			dfloat * YetaL,dfloat * YetaR,
-			dfloat * XetaL,dfloat * XetaR,
+void Fvol(dfloat q1L,dfloat q2L,dfloat q3L,
+			dfloat q1R,dfloat q2R,dfloat q3R,
+			dfloat YetaL,dfloat YetaR,
+			dfloat XetaL,dfloat XetaR,
             dfloat * F1,dfloat * F2,dfloat * F3
 			)
 {
-		dfloat h_A = half*(*q1L+*q1R) ;
-		dfloat h2_A = half*(*q1L * *q1L+*q1R * *q1R) ;
-		dfloat hu_A = half* (*q2L+*q2R) ;
-		dfloat hv_A = half* (*q3L+*q3R) ;
-		dfloat u_A = half* (*q2L/*q1L+*q2R/*q1R)) ;
-		dfloat v_A = half* (*q3L/*q1L+*q3R/*q1R) ;
-		dfloat Yeta_A = half*(*YetaL+* YetaR) ;
-		dfloat Xeta_A= half*(* XetaL+ *XetaR) ;
+		dfloat h_A = half*(q1L+q1R) ;
+		dfloat h2_A = half*(q1L * q1L+q1R * q1R) ;
+		dfloat hu_A = half* (q2L+q2R) ;
+		dfloat hv_A = half* (q3L+q3R) ;
+		dfloat u_A = half* (q2L/q1L+q2R/q1R)) ;
+		dfloat v_A = half* (q3L/q1L+q3R/q1R) ;
+		dfloat Yeta_A = half*(YetaL+YetaR) ;
+		dfloat Xeta_A= half*(XetaL+XetaR) ;
 		*F1 = Yeta_A * hu_A - Xeta_A * hv_A;
 		*F2 = Yeta_A *(hu_A * u_A   + g_const * h_A*h_A - half*g_const*h2_A) - Xeta_A*hv_A * u_A;
 		*F3 = Yeta_A *(hu_A * v_A) - Xeta_A*(hv_A*v_A+ g_const * h_A*h_A - half*g_const * h2_A);
 
 }
-void Gvol(dfloat * q1L,dfloat * q2L,dfloat * q3L,
-			dfloat * q1R,dfloat * q2R,dfloat * q3R,
-            dfloat * YxiL,dfloat * YxiR,
-            dfloat * XxiL,dfloat * XxiR,
+void Gvol(dfloat q1L,dfloat q2L,dfloat q3L,
+			dfloat q1R,dfloat q2R,dfloat q3R,
+            dfloat YxiL,dfloat YxiR,
+            dfloat XxiL,dfloat XxiR,
             dfloat * F1,dfloat * F2,dfloat * F3
 			)
 {
-			dfloat h_A = half*(*q1L+*q1R) ;
-			dfloat h2_A = half*(*q1L * *q1L+*q1R * *q1R) ;
-			dfloat hu_A = half* (*q2L+*q2R) ;
-			dfloat hv_A = half* (*q3L+*q3R) ;
-			dfloat u_A = half* (*q2L/*q1L+*q2R/*q1R)) ;
-			dfloat v_A = half* (*q3L/*q1L+*q3R/*q1R) ;
-			dfloat Yxi_A = half*(*YxiL+*YxiR) ;
-			dfloat Xxi_A = half*(* XxiL+* XxiR) ;
+			dfloat h_A = half*(q1L+q1R) ;
+			dfloat h2_A = half*(q1L * q1L+q1R * q1R) ;
+			dfloat hu_A = half* (q2L+q2R) ;
+			dfloat hv_A = half* (q3L+q3R) ;
+			dfloat u_A = half* (q2L/q1L+q2R/q1R)) ;
+			dfloat v_A = half* (q3L/q1L+q3R/q1R) ;
+			dfloat Yxi_A = half*(YxiL+YxiR) ;
+			dfloat Xxi_A = half*( XxiL+ XxiR) ;
 			*G1 =-Yxi_A * hu_A   + Xxi_A*hv_A;
 			*G2 =-Yxi_A * (hu_A * u_A   + g_const * h_A*h_A - half*g_const*h2_A) + Xxi_A* hv_A * u_A;
 			*G3 =-Yxi_A *(hu_A * v_A) + Xxi_A*(hv_A*v_A + g_const * h_A*h_A - half*g_const * h2_A);
@@ -58,7 +58,7 @@ kernel void VolumeKernelFluxDiff(int Nelem,dfloat * Jac,dfloat * Y_xi,dfloat * Y
 					int xlj= ie*ngl2   +j*ngl+l;
                     dfloat F1vol,F2vol,F3vol;
 					
-					Fvol(Q[ij],Q[ij+ngl2],Q[ij+ngl2+ngl2],Q[lj],Q[lj+ngl2],Q[lj+ngl2+ngl2],Y_eta[xij],Y_eta[xlj],X_eta[xij],X_eta[xlj],F1vol,F2vol,F3vol);						
+					Fvol(Q[ij],Q[ij+ngl2],Q[ij+ngl2+ngl2],Q[lj],Q[lj+ngl2],Q[lj+ngl2+ngl2],Y_eta[xij],Y_eta[xlj],X_eta[xij],X_eta[xlj],&F1vol,&F2vol,&F3vol);						
 					
 					int il = ie*ngl2*Neq   +l*ngl+i;
 					int xil = ie*ngl2   +l*ngl+i;
@@ -66,7 +66,7 @@ kernel void VolumeKernelFluxDiff(int Nelem,dfloat * Jac,dfloat * Y_xi,dfloat * Y
 					
 					dfloat G1vol,G2vol,G3vol;
 					
-					Fvol(Q[ij],Q[ij+ngl2],Q[ij+ngl2+ngl2],Q[il],Q[il+ngl2],Q[il+ngl2+ngl2],Y_eta[xij],Y_eta[xil],X_eta[xij],X_eta[xil],G1vol,G2vol,G3vol);		
+					Fvol(Q[ij],Q[ij+ngl2],Q[ij+ngl2+ngl2],Q[il],Q[il+ngl2],Q[il+ngl2+ngl2],Y_eta[xij],Y_eta[xil],X_eta[xij],X_eta[xil],&G1vol,&G2vol,&G3vol);		
 
 
                     FluxDeriv1+= D[i*ngl+l] * F1vol + D[j*ngl+l] * G1vol ;
