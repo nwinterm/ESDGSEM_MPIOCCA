@@ -95,7 +95,6 @@ kernel void VolumeKernelFluxDiff(int Nelem,
                 dfloat FluxDeriv1   =   zero;
                 dfloat FluxDeriv2   =   zero;
                 dfloat FluxDeriv3   =   zero;
-                dfloat invQ1ij      =   s_invQ[i][j];
                 dfloat H_ij         =   s_Q1[i][j];
                 dfloat HU_ij        =   s_Q2[i][j];
                 dfloat HV_ij        =   s_Q3[i][j];
@@ -107,7 +106,6 @@ kernel void VolumeKernelFluxDiff(int Nelem,
                 {
 
                     dfloat H_lj=s_Q1[l][j];
-                    dfloat invQ1lj=s_invQ[l][j];
                     dfloat HU_lj=s_Q2[l][j];
                     dfloat HV_lj=s_Q3[l][j];
 					
@@ -115,7 +113,6 @@ kernel void VolumeKernelFluxDiff(int Nelem,
 					Fvol(H_ij,HU_ij,HV_ij,H_lj,HU_lj,HV_lj,s_Yeta[i][j],s_Yeta[l][j],s_Xeta[i][j],s_Xeta[l][j],&F1vol,&F2vol,&F3vol);	
 
                     dfloat H_il=s_Q1[i][l];
-                    dfloat invQ1il=s_invQ[i][l];
                     dfloat HU_il=s_Q2[i][l];
                     dfloat HV_il=s_Q3[i][l];
 
