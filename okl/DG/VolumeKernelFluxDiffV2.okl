@@ -140,10 +140,8 @@ kernel void VolumeKernelFluxDiff(int Nelem,
 						Qt[id+ngl2]         = -  r_Jac *FluxDeriv2 - g_const*H_ij*r_Bx ;
 						Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3 - g_const*H_ij*r_By;
 
-					}
-				}				
-            }
-        }
+			}
+		}				
 
 
 
