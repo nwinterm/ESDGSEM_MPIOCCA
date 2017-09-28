@@ -73,8 +73,8 @@ kernel void VolumeKernelFluxDiff(int Nelem,
                     if (eleID<Nelem)
                     {
 						int id=j*ngl+i;
-						int xid=ie*ngl2   +j*ngl+i;
-						int Fid = ie*ngl2*Neq   +j*ngl+i;
+						int xid=eleID*ngl2   +j*ngl+i;
+						int Fid = eleID*ngl2*Neq   +j*ngl+i;
 
                         if (ieLoc==0)
                         {
@@ -140,8 +140,8 @@ kernel void VolumeKernelFluxDiff(int Nelem,
 
 						}
 
-						int id  = ie*ngl2*Neq   +j*ngl+i;
-						int xid=ie*ngl2   +j*ngl+i;
+						int id  = eleID*ngl2*Neq   +j*ngl+i;
+						int xid=eleID*ngl2   +j*ngl+i;
 						dfloat r_Jac=Jac[xid];
 						dfloat r_Bx=Bx[xid];
 						dfloat r_By=By[xid];
