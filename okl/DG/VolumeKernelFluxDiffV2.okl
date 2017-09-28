@@ -69,7 +69,7 @@ kernel void VolumeKernelFluxDiff(int Nelem,
             {
                 for (int j=0; j<ngl; ++j; inner0)
                 {
-                    const int eleID     =   iEo + ieLoc;
+                    int eleID     =   iEo + ieLoc;
                     if (eleID<Nelem)
                     {
 						int id=j*ngl+i;
@@ -102,7 +102,7 @@ kernel void VolumeKernelFluxDiff(int Nelem,
             {
                 for (int j=0; j<ngl; ++j; inner0)
                 {
-                    const int eleID     =   iEo + ieLoc;
+                    int eleID     =   iEo + ieLoc;
                     if (eleID<Nelem)
                     {
 
@@ -114,8 +114,6 @@ kernel void VolumeKernelFluxDiff(int Nelem,
 						dfloat HV_ij        =   s_Q3[ieLoc][i][j];
 
 
-
-						occaUnroll(ngl)
 						for (int l=0; l<ngl; ++l)
 						{
 
@@ -134,9 +132,11 @@ kernel void VolumeKernelFluxDiff(int Nelem,
 							Gvol(H_ij,HU_ij,HV_ij,H_il,HU_il,HV_il,s_Yxi[ieLoc][i][j],s_Yxi[ieLoc][i][l],s_Xxi[ieLoc][i][j],s_Xxi[ieLoc][i][l],&G1vol,&G2vol,&G3vol);	
 
 							
-							FluxDeriv1+= s_D[l][i] * F1vol + s_D[l][j] * G1vol ;
-							FluxDeriv2+=s_D[l][i] * F2vol +s_D[l][j] * G2vol ;
-							FluxDeriv3+=s_D[l][i] * F3vol +s_D[l][j] * G3vol ;
+							dfloat dli = s_D[l][i];
+							dfloat dlj = s_D[l][j];
+							FluxDeriv1+= dli * F1vol + dlj * G1vol ;
+							FluxDeriv2+= dli * F2vol + dlj * G2vol ;
+							FluxDeriv3+= dli * F3vol + dlj * G3vol ;
 
 						}
 
