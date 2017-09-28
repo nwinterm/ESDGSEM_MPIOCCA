@@ -114,9 +114,9 @@ kernel void VolumeKernelFluxDiff(int Nelem,
 							dfloat F1vol=zero,F2vol=zero,F3vol=zero;
 							Fvol(H_ij,HU_ij,HV_ij,H_lj,HU_lj,HV_lj,r_Yeta_ij,s_Yeta[l][j],r_Xeta_ij,s_Xeta[l][j],&F1vol,&F2vol,&F3vol);	
 
-							dfloat H_il=s_Q1[ieLoc][i][l];
-							dfloat HU_il=s_Q2[ieLoc][i][l];
-							dfloat HV_il=s_Q3[ieLoc][i][l];
+							dfloat H_il=s_Q1[i][l];
+							dfloat HU_il=s_Q2[i][l];
+							dfloat HV_il=s_Q3[i][l];
 
 							dfloat G1vol=zero,G2vol=zero,G3vol=zero;
 							Gvol(H_ij,HU_ij,HV_ij,H_il,HU_il,HV_il,r_Yxi_ij,s_Yxi[i][l],r_Xxi_ij,s_Xxi[i][l],&G1vol,&G2vol,&G3vol);	
