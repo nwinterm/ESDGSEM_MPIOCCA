@@ -1380,9 +1380,9 @@ int main(int argc, char *argv[])
 	double MemoryBound = GFLOPSs *MemBandwidth / FDBandwidth;
 	
 	std::cout <<  std::scientific;
-	cout << "Achieved GFLOPS/s : " << KernelV << " " << N << " "  <<  GFLOPSs << "\n";
-	cout << "MemoryBound : " << KernelV << " "  << N << " " << MemoryBound << "\n";
-	cout << "Bytes ReadWrite: " <<BytesReadWrite << ". "\n";
+	cout << "Achieved GFLOPS/s : " << KernelVersion << " " << N << " "  <<  GFLOPSs << "\n";
+	cout << "MemoryBound : " << KernelVersion << " "  << N << " " << MemoryBound << "\n";
+	cout << "Bytes ReadWrite: " <<BytesReadWrite << ". \n";
 
 
 
