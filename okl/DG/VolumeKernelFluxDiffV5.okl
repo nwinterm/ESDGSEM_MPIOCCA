@@ -115,7 +115,7 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
 						const dfloat HU_ij        =   s_Q2[ieLoc][i][j];
 						const dfloat HV_ij        =   s_Q3[ieLoc][i][j];
 
-
+						occaUnroll(ngl)
 						for (int l=0; l<ngl; ++l)
 						{
 
