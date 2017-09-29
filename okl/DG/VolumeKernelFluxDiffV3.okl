@@ -68,8 +68,8 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
             for (int j=0; j<ngl; ++j; inner0)
             {
 				const int id=j*ngl+i;
-				const int xid=eleID*ngl2   +j*ngl+i;
-				const int Fid = eleID*ngl2*Neq   +j*ngl+i;
+				const int xid=ie*ngl2   +j*ngl+i;
+				const int Fid = ie*ngl2*Neq   +j*ngl+i;
 
                 s_D[i][j]=D[id];
                 s_Yeta[i][j]=Y_eta[xid];
