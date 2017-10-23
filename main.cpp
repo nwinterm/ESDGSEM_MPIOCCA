@@ -1378,10 +1378,15 @@ int main(int argc, char *argv[])
 	cout << "we managed " << GFLOPS_FD << " in time " << timeFD << " !\n";
 	double GFLOPSs = GFLOPS_FD*iterations/ timeFD;
 	double MemoryBound = GFLOPSs *MemBandwidth / FDBandwidth;
-	
+	double FlopsPerBlock = flopsFD * NEpad;
+	double SharedMemLoadsStoresPerBlock = 4*ngl2 * (16+ngl*18)*NEpad;
+	double SharedMemBound = 3830.784 * FlopsPerBlock / SharedMemLoadsStoresPerBlock;
+	double minBound = min(MemoryBound,SharedMemBound);
 	std::cout <<  std::scientific;
 	cout << "Achieved GFLOPS/s : " << KernelVersion << " " << N << " "  <<  GFLOPSs << "\n";
 	cout << "MemoryBound : " << KernelVersion << " "  << N << " " << MemoryBound << "\n";
+	cout << "SharedMemBound : " << KernelVersion << " "  << N << " " << SharedMemBound << "\n";
+	cout << "minBound : " << KernelVersion << " "  << N << " " << minBound << "\n";
 	cout << "Bytes ReadWrite: " <<BytesReadWrite << ". \n";
 
 
