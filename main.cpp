@@ -1332,7 +1332,8 @@ int main(int argc, char *argv[])
     double BytesReadWrite = sizeof(dfloat) * (NoSpaceDofs*7 + NoDofs*2);
     double scaling  = 1024*1024*1024;
     double GBReadWrite = BytesReadWrite/scaling;
-	double flopsFD = (90*ngl+13)*ngl2;
+//	double flopsFD = (90*ngl+13)*ngl2;			//old estimate
+	double flopsFD = (98*ngl+9)*ngl2;			//actual count of flops (also doesnt match nvprof exactly due to compiler!)
 	double GFLOPS_FD = flopsFD*Nelem/scaling;
     occa::streamTag start = device.tagStream();
     double iterations=10;
