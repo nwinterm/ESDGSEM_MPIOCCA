@@ -1330,7 +1330,8 @@ int main(int argc, char *argv[])
 	
 
     double BytesReadWrite = sizeof(dfloat) * (NoSpaceDofs*7 + NoDofs*2);
-    double scaling  = 1024*1024*1024;
+//    double scaling  = 1024*1024*1024;
+	double scaling  = 1000*1000*1000;
     double GBReadWrite = BytesReadWrite/scaling;
 //	double flopsFD = (90*ngl+13)*ngl2;			//old estimate
 	double flopsFD = (98*ngl+9)*ngl2;			//actual count of flops (also doesnt match nvprof exactly due to compiler!)
@@ -1366,7 +1367,7 @@ int main(int argc, char *argv[])
 	double MemoryBoundSD = GFLOPSsSD *MemBandwidth / SDBandwidth;
 	double FlopsPerBlockSD = flopsSD * NEpad;
 	double SharedMemLoadsStoresPerBlockSD = 4*ngl2 * (8+ngl*8)*NEpad;
-	double SharedMemBoundSD = 3830.784 * FlopsPerBlockSD / SharedMemLoadsStoresPerBlockSD;
+	double SharedMemBoundSD = 3741 * FlopsPerBlockSD / SharedMemLoadsStoresPerBlockSD;
 	double minBoundSD = min(MemoryBoundSD,SharedMemBoundSD);
 	std::cout <<  std::scientific;
 	cout << "Achieved GFLOPS/sSD : " << KernelVersionSTD << " " << N << " "  <<  GFLOPSsSD << "\n";
@@ -1397,7 +1398,7 @@ int main(int argc, char *argv[])
 	double MemoryBound = GFLOPSs *MemBandwidth / FDBandwidth;
 	double FlopsPerBlock = flopsFD * NEpad;
 	double SharedMemLoadsStoresPerBlock = 4*ngl2 * (16+ngl*14)*NEpad;
-	double SharedMemBound = 3830.784 * FlopsPerBlock / SharedMemLoadsStoresPerBlock;
+	double SharedMemBound = 3741 * FlopsPerBlock / SharedMemLoadsStoresPerBlock;
 	double minBound = min(MemoryBound,SharedMemBound);
 	std::cout <<  std::scientific;
 	cout << "Achieved GFLOPS/s : " << KernelVersion << " " << N << " "  <<  GFLOPSs << "\n";
