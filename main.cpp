@@ -1367,7 +1367,7 @@ int main(int argc, char *argv[])
 	double MemoryBoundSD = GFLOPSsSD *MemBandwidth / SDBandwidth;
 	double FlopsPerBlockSD = flopsSD * NEpad;
 	double SharedMemLoadsStoresPerBlockSD = 4*ngl2 * (8+ngl*8)*NEpad;
-	double SharedMemBoundSD = 3741 * FlopsPerBlockSD / SharedMemLoadsStoresPerBlockSD;
+	double SharedMemBoundSD = 4113 * FlopsPerBlockSD / SharedMemLoadsStoresPerBlockSD;
 	double minBoundSD = min(MemoryBoundSD,SharedMemBoundSD);
 	std::cout <<  std::scientific;
 	cout << "Achieved GFLOPS/sSD : " << KernelVersionSTD << " " << N << " "  <<  GFLOPSsSD << "\n";
@@ -1398,7 +1398,7 @@ int main(int argc, char *argv[])
 	double MemoryBound = GFLOPSs *MemBandwidth / FDBandwidth;
 	double FlopsPerBlock = flopsFD * NEpad;
 	double SharedMemLoadsStoresPerBlock = 4*ngl2 * (16+ngl*14)*NEpad;
-	double SharedMemBound = 3741 * FlopsPerBlock / SharedMemLoadsStoresPerBlock;
+	double SharedMemBound = 4113 * FlopsPerBlock / SharedMemLoadsStoresPerBlock;
 	double minBound = min(MemoryBound,SharedMemBound);
 	std::cout <<  std::scientific;
 	cout << "Achieved GFLOPS/s : " << KernelVersion << " " << N << " "  <<  GFLOPSs << "\n";
