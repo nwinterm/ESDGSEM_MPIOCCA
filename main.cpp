@@ -1334,7 +1334,9 @@ int main(int argc, char *argv[])
     double GBReadWrite = BytesReadWrite/scaling;
 //	double flopsFD = (90*ngl+13)*ngl2;			//old estimate
 	double flopsFD = (98*ngl+9)*ngl2;			//actual count of flops (also doesnt match nvprof exactly due to compiler!)
+	double flopsSD = (12*ngl + 41) * ngl2;
 	double GFLOPS_FD = flopsFD*Nelem/scaling;
+	double GFLOPS_SD = flopsSD*Nelem/scaling;
     occa::streamTag start = device.tagStream();
     double iterations=10;
     for (int i =0; i<iterations; i++)
@@ -1360,6 +1362,17 @@ int main(int argc, char *argv[])
 	double SDBandwidth = iterations*GBReadWrite/timeSD;
     cout << "Elapsed Time STD: " << timeSD << "\n";
     cout << "Bandwidth Standard Volume: " << SDBandwidth << "\n";
+	double GFLOPSsSD = GFLOPS_SD*iterations/ timeSD;
+	double MemoryBoundSD = GFLOPSsSD *MemBandwidth / SDBandwidth;
+	double FlopsPerBlockSD = flopsSD * NEpad;
+	double SharedMemLoadsStoresPerBlockSD = 4*ngl2 * (8+ngl*8)*NEpad;
+	double SharedMemBoundSD = 3830.784 * FlopsPerBlockSD / SharedMemLoadsStoresPerBlockSD;
+	double minBoundSD = min(MemoryBoundSD,SharedMemBoundSD);
+	cout << "Achieved GFLOPS/sSD : " << KernelVersionSTD << " " << N << " "  <<  GFLOPSsSD << "\n";
+	cout << "MemoryBoundSD : " << KernelVersionSTD << " "  << N << " " << MemoryBoundSD << "\n";
+	cout << "SharedMemBoundSD : " << KernelVersionSTD << " "  << N << " " << SharedMemBoundSD << "\n";
+	cout << "minBoundSD : " << KernelVersionSTD << " "  << N << " " << minBoundSD << "\n";
+
 
 
     occa::streamTag startFD = device.tagStream();
@@ -1371,16 +1384,18 @@ int main(int argc, char *argv[])
     device.finish();
     double timeFD = device.timeBetween(startFD, endFD);
 	double FDBandwidth = iterations*GBReadWrite/timeFD;
+	
+	
     cout << "Elapsed Time FD : " << timeFD << "\n";
     cout << "Bandwidth FD Volume: " << FDBandwidth << "\n";
 	cout << "Floating Point Operations FD: " << flopsFD <<"\n";
-	cout << "flop_count_sp should be : " << flopsFD*Nelem - Nelem*ngl2 <<"\n";
+	cout << "flop_count_sp should be : " << flopsFD*Nelem <<"\n";
 	
 	cout << "we managed " << GFLOPS_FD << " in time " << timeFD << " !\n";
 	double GFLOPSs = GFLOPS_FD*iterations/ timeFD;
 	double MemoryBound = GFLOPSs *MemBandwidth / FDBandwidth;
 	double FlopsPerBlock = flopsFD * NEpad;
-	double SharedMemLoadsStoresPerBlock = 4*ngl2 * (16+ngl*18)*NEpad;
+	double SharedMemLoadsStoresPerBlock = 4*ngl2 * (16+ngl*14)*NEpad;
 	double SharedMemBound = 3830.784 * FlopsPerBlock / SharedMemLoadsStoresPerBlock;
 	double minBound = min(MemoryBound,SharedMemBound);
 	std::cout <<  std::scientific;
