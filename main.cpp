@@ -1368,6 +1368,7 @@ int main(int argc, char *argv[])
 	double SharedMemLoadsStoresPerBlockSD = 4*ngl2 * (8+ngl*8)*NEpad;
 	double SharedMemBoundSD = 3830.784 * FlopsPerBlockSD / SharedMemLoadsStoresPerBlockSD;
 	double minBoundSD = min(MemoryBoundSD,SharedMemBoundSD);
+	std::cout <<  std::scientific;
 	cout << "Achieved GFLOPS/sSD : " << KernelVersionSTD << " " << N << " "  <<  GFLOPSsSD << "\n";
 	cout << "MemoryBoundSD : " << KernelVersionSTD << " "  << N << " " << MemoryBoundSD << "\n";
 	cout << "SharedMemBoundSD : " << KernelVersionSTD << " "  << N << " " << SharedMemBoundSD << "\n";
