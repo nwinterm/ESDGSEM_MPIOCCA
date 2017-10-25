@@ -141,11 +141,11 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
 							
 							
 							
-                            FluxDeriv+= djl * F1vol ;
+                            FluxDeriv1+= djl * F1vol ;
 
-                            FluxDeriv+= djl * F2vol ;
+                            FluxDeriv2+= djl * F2vol ;
 
-                            FluxDeriv+= djl * F3vol  ;
+                            FluxDeriv3+= djl * F3vol  ;
 						}	
 							
 						occaUnroll(ngl)
@@ -158,19 +158,19 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
 							Gvol(H_ij,HU_ij,HV_ij,invQ1ij,s_Q1[ieLoc][l][j],s_Q2[ieLoc][l][j],s_Q3[ieLoc][l][j],s_invQ[ieLoc][l][j],r_Yxi_ij,s_Yxi[ieLoc][l][j],r_Xxi_ij,s_Xxi[ieLoc][l][j],&G1vol,&G2vol,&G3vol);	
 
 
-                            FluxDeriv+=  dil * G1vol ;
+                            FluxDeriv1+=  dil * G1vol ;
 
-                            FluxDeriv+=  dil * G2vol ;
+                            FluxDeriv2+=  dil * G2vol ;
 
-                            FluxDeriv+=  dil * G3vol ;
+                            FluxDeriv3+=  dil * G3vol ;
 
 						}
 
 
 
-						Qt[id]              = -  r_Jac *FluxDeriv;
-						Qt[id+ngl2]         = -  r_Jac *FluxDeriv - g_const*H_ij*r_Bx ;
-						Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv - g_const*H_ij*r_By;
+						Qt[id]              = -  r_Jac *FluxDeriv1;
+						Qt[id+ngl2]         = -  r_Jac *FluxDeriv2 - g_const*H_ij*r_Bx ;
+						Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3 - g_const*H_ij*r_By;
 
 					}
 				}				
