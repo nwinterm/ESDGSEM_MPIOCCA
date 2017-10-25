@@ -118,9 +118,9 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
 						const dfloat r_By=By[xid];
 						
 						// split FluxDeriv split for F and G so there is some room for the compiler
-						dfloat FluxDeriv   =   zero;
-						dfloat FluxDeriv   =   zero;
-						dfloat FluxDeriv   =   zero;
+						dfloat FluxDeriv1   =   zero;
+						dfloat FluxDeriv2   =   zero;
+						dfloat FluxDeriv3  =   zero;
 
 						const dfloat invQ1ij      =   s_invQ[ieLoc][i][j];
 						const dfloat H_ij         =   s_Q1[ieLoc][i][j];
