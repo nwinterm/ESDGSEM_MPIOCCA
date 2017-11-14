@@ -1,0 +1,206 @@
+kernel void calcNumFluxes(const int Nfaces,
+                          const dfloat * restrict  normalx,
+                          const dfloat * restrict  normaly,
+                          const dfloat * restrict Scal,
+                          const dfloat * restrict  qL,
+                          const dfloat * restrict  qR,
+                          const dfloat * restrict  BL,
+                          const dfloat * restrict  BR,
+                          dfloat * restrict  SurfaceParts)
+{
+    for (int ifa_base=0; ifa_base<Nfaces; ifa_base+=Nedgepad; outer0)
+    {
+
+
+
+        for (int ifa_inner = 0; ifa_inner < Nedgepad; ifa_inner++; inner1)
+        {
+            for(int i=0; i<ngl; i++; inner0)
+            {
+
+                const int ifa = ifa_base + ifa_inner;
+
+                if (ifa<Nfaces)
+                {
+
+                    const int edgeIDX=ifa*ngl + i;              //for normals!!
+                    const int edgeID=ifa*ngl*Neq + i;           //for values!!
+
+
+                    const dfloat nx=normalx[edgeIDX];
+                    const dfloat ny=normaly[edgeIDX];
+                    const dfloat scaling=Scal[edgeIDX];
+
+                    dfloat NumFlux[Neq];
+
+
+                    dfloat hL=qL[edgeID];
+                    dfloat uL;
+                    dfloat vL;
+                    if(hL>=PosPresTOL)
+                    {
+                        uL=qL[edgeID+ngl]/hL;
+                        vL=qL[edgeID+ngl+ngl]/hL;
+                    }
+                    else
+                    {
+                        hL=zero;
+                        uL =zero;
+                        vL =zero;
+                    }
+
+
+
+                    dfloat hR=qR[edgeID];
+                    dfloat uR;
+                    dfloat vR;
+
+                    if(hR>=PosPresTOL)
+                    {
+                        uR=qR[edgeID+ngl]/hR;
+                        vR=qR[edgeID+ngl+ngl]/hR;
+
+                    }
+                    else
+                    {
+                        hR=zero;
+                        uR =zero;
+                        vR =zero;
+                    }
+
+					
+					const dfloat tx = - ny;
+					const dfloat ty = nx;
+
+					const dfloat vL_n  = nx * uL + ny * vL;
+					const dfloat vL_t  = tx* uL + ty * vL;
+					const dfloat vR_n  = nx * uR + ny * vR;
+					const dfloat vR_t  = tx* uR + ty * vR;
+					
+					const dfloat uTildeL = - nx * vL_n + tx * vL_t;
+					const dfloat vTildeL = - ny * vL_n + ty * vL_t;
+					
+					const dfloat uTildeR = - nx * vR_n + tx * vR_t;
+					const dfloat vTildeR = - ny * vR_n + ty * vR_t;
+					
+
+                    const dfloat avgH = half*(hL+hR);
+                    const dfloat avgH2= half*(hL*hL+hR*hR);
+                    const dfloat avgU = half*(uTildeL+uTildeR);
+                    const dfloat avgV = half*(vTildeL+vTildeR);
+
+
+
+                    NumFlux[0]=avgH * avgU;
+                    NumFlux[1]=avgH*avgU*avgU + (half*g_const*avgH2 );
+                    NumFlux[2]=avgH*avgV*avgU ;
+
+
+
+
+
+                    if(ES)
+                    {
+
+
+                        const dfloat bL=BL[edgeIDX];
+                        const dfloat bR=BR[edgeIDX];
+
+
+                        const dfloat cL=g_const*hL;
+                        const dfloat cR=g_const*hR;
+                        dfloat avgC;
+                        if (fabs(half*(cL+cR))>PosPresTOL)
+                        {
+                            avgC=sqrt(fabs(half*(cL+cR)));
+                        }
+                        else
+                        {
+                            avgC=zero;
+                        }
+
+
+
+                        const dfloat q1L=g_const*(hL+bL)-half*uTildeL*uTildeL-half*vTildeL*vTildeL;
+                        const dfloat q2L=uTildeL;
+                        const dfloat q3L=vTildeL;
+                        const dfloat q1R=g_const*(hR+bR)-half*uTildeR*uTildeR-half*vTildeR*vTildeR;
+                        const dfloat q2R=uTildeR;
+                        const dfloat q3R=vTildeR;
+
+                        const dfloat jumpQ1 = q1R-q1L;
+                        const dfloat jumpQ2 = q2R-q2L;
+                        const dfloat jumpQ3 = q3R-q3L;
+
+
+                        //averaged right eigenvectors
+                        const dfloat R11 = one;
+                        const dfloat R12 = zero;
+                        const dfloat R13 = one;
+
+
+                        const dfloat R21 = avgU + avgC;
+                        const dfloat R22 = one;
+                        const dfloat R23 = avgU - avgC;
+
+
+                        const dfloat R31 = avgV;
+                        const dfloat R32 = one;
+                        const dfloat R33 = avgV;
+
+
+                        const dfloat SL11 = half/g_const*fabs(avgU  + avgC);
+                        const dfloat SL22 = fabs(avgH*avgU);
+                        const dfloat SL33 = half/g_const*fabs(avgU  - avgC);
+
+
+
+                        const dfloat RSL11 = R11 * SL11;
+                        const dfloat RSL12 = zero;
+                        const dfloat RSL13 = R13 * SL33;
+
+                        const dfloat RSL21 = R21 * SL11;
+                        const dfloat RSL22 = R22 * SL22;
+                        const dfloat RSL23 = R23 * SL33;
+
+                        const dfloat RSL31 = R31 * SL11;
+                        const dfloat RSL32 = R32 * SL22;
+                        const dfloat RSL33 = R33 * SL33;
+
+                        // RSL R^T
+                        const dfloat RSLR11= RSL11*R11 + RSL12*R12 + RSL13 * R13;
+                        const dfloat RSLR12= RSL11*R21 + RSL12*R22 + RSL13 * R23;
+                        const dfloat RSLR13= RSL11*R31 + RSL12*R32 + RSL13 * R33;
+
+                        const dfloat RSLR21= RSL21*R11 + RSL22*R12 + RSL23 * R13;
+                        const dfloat RSLR22= RSL21*R21 + RSL22*R22 + RSL23 * R23;
+                        const dfloat RSLR23= RSL21*R31 + RSL22*R32 + RSL23 * R33;
+
+                        const dfloat RSLR31= RSL31*R11 + RSL32*R12 + RSL33 * R13;
+                        const dfloat RSLR32= RSL31*R21 + RSL32*R22 + RSL33 * R23;
+                        const dfloat RSLR33= RSL31*R31 + RSL32*R32 + RSL33 * R33;
+
+
+                        NumFlux[0]+= -half*(RSLR11 * jumpQ1 + RSLR12 * jumpQ2 + RSLR13 * jumpQ3);
+                        NumFlux[1]+= -half*(RSLR21 * jumpQ1 + RSLR22 * jumpQ2 + RSLR23 * jumpQ3);
+                        NumFlux[2]+= -half*(RSLR31 * jumpQ1 + RSLR32 * jumpQ2 + RSLR33 * jumpQ3);
+
+
+
+
+                    }
+
+					const dfloat bRotNumFlux1 = nx * NumFlux[1]  + tx * NumFlux[2] ;
+					const dfloat bRotNumFlux2 = ny * NumFlux[1]  + ty * NumFlux[2] ;
+
+                    SurfaceParts[edgeID]          =  scaling*geomFace*  NumFlux[0];
+                    SurfaceParts[edgeID+ngl]      =  scaling*geomFace*  bRotNumFlux1;
+                    SurfaceParts[edgeID+ngl+ngl]  =  scaling*geomFace*  bRotNumFlux2;
+
+
+                }
+            }
+        }
+    }
+
+}
