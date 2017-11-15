@@ -1058,6 +1058,11 @@ int main(int argc, char *argv[])
         calcNumFluxes=device.buildKernelFromSource("okl/RiemannSolvers/calcLFTypeESFlux.okl","calcNumFluxes",info);
         break;
     }
+	case 3:
+    {
+        calcNumFluxes=device.buildKernelFromSource("okl/RiemannSolvers/calcESFluxRotated.okl","calcNumFluxes",info);
+        break;
+    }
     }
 
     // calc specific value on edges like jump in b and average h
