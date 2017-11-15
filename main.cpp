@@ -1061,7 +1061,7 @@ int main(int argc, char *argv[])
     }
 
     // calc specific value on edges like jump in b and average h
-    calcEdgeValues          =   device.buildKernelFromSource("okl/DiscontinuousBathimetry/calcEdgeValues.okl","calcEdgeValues",info);
+//    calcEdgeValues          =   device.buildKernelFromSource("okl/DiscontinuousBathimetry/calcEdgeValues.okl","calcEdgeValues",info);
     // adds additional surface terms due to a possibly discontinuous bottom topography
     calcDiscBottomSurf      =   device.buildKernelFromSource("okl/DiscontinuousBathimetry/calcDiscBottomSurf.okl","calcDiscBottomSurf",info);
     // standard dg kernel for the surface parts
@@ -1428,7 +1428,7 @@ int main(int argc, char *argv[])
 //                        //            SendViscosity(MPI, DGMeshPartition,  Qx,Qy);
 //                        SendViscosity(MPI, DGMeshPartition,  QtVisc,Qy);
 //                    }
-//                }
+                }
 //
                 plotCount=plotCount+1;
             }
@@ -1502,7 +1502,6 @@ int main(int argc, char *argv[])
         InitQ(0,DGMeshPartition,Testcase,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,T,b_global,g_const);
 
 
-        cout <<"runtime in ns : " << elapsed << "\n";
 
         dfloat L2Error[Neq];
         dfloat LinfError[Neq];
