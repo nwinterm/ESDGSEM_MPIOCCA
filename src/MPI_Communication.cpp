@@ -436,9 +436,9 @@
         LocalLambdaMax = max(LocalLambdaMax,LocalLambdas[ie]);
 
     }
-	cout << "Local Lambda max: " << LocalLambdaMax <<"\n";
+	//cout << "Local Lambda max: " << LocalLambdaMax <<"\n";
     MPI_Allreduce(&LocalLambdaMax, &*LambdaMax, 1, MPI_DFLOAT, MPI_MAX,MPI_COMM_WORLD);
-	cout << "Local Lambda max: " << LocalLambdaMax <<"\n";
+	//cout << "Local Lambda max: " << LocalLambdaMax <<"\n";
 
 
 

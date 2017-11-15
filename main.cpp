@@ -1228,8 +1228,8 @@ int main(int argc, char *argv[])
         }
 
 //        dt_i = 0.00001;
-//        dt=min(T-dt,dt_i);
-cout << "timestep " << dt << "\n" ;
+        dt=min(T-dt,dt_i);
+//cout << "timestep " << dt << "\n" ;
         if (rkSSP)
         {
             o_Qtmp.copyFrom(o_q);
