@@ -19,6 +19,12 @@ using namespace std;
 //using namespace Constants;
 
 
+
+
+//const int Neq=LinAdv.Neq0;
+//  void buildIC(int Nelem, int ngl, dfloat *x, dfloat *q);
+
+
 int main(int argc, char *argv[])
 {
 
@@ -983,124 +989,130 @@ int main(int argc, char *argv[])
     {
         cout <<"Build Kernels...\n";
     }
-
-    switch(Testcase)
-    {
-    case 1:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
-    {
-        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/Dirichlet_ConvTest.okl","CollectEdgeData",info);
-        addS = device.buildKernelFromSource("okl/ManufacturedSolutions/S_ConvTest.okl","addS",info);
-        break;
-    }
-    case 32:  // Inflow Boundaries for 3 Mound PP test case
-    {
-        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/3MoundInflow.okl","CollectEdgeData",info);
-        break;
-    }
-    default:
-        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/SolidWalls.okl","CollectEdgeData",info);
-        break;
-    }
-    //cout <<"rank: " << MPI.rank << " I AM AT: Collecting Kernels Post TESTCASE" << "\n";
-    CollectEdgeData_Bottom=device.buildKernelFromSource("okl/GatherEdgeData/CollectEdgeData_Bottom.okl","CollectEdgeData_Bottom",info);
-
-
-
-    if(Fluxdifferencing)
-    {
-
-        std::ostringstream oss;
-        cout << "Kernel Version: V " << KernelVersion << ".\n";
-        oss << "okl/DG/VolumeKernelFluxDiffV" << KernelVersion << ".okl";
-        std::string var = oss.str();
-        VolumeKernel=device.buildKernelFromSource(var,"VolumeKernelFluxDiff",info);
-
-    }
-    else
-    {
-        std::ostringstream oss;
-        cout << "Kernel Version: V " << KernelVersion << ".\n";
-        oss << "okl/DG/VolumeKernelV" << KernelVersion << ".okl";
-        std::string var = oss.str();
-        VolumeKernel=device.buildKernelFromSource(var,"VolumeKernel",info);
-    }
-
-
-//    std::ostringstream oss1;
-//    cout << "Kernel Version FD: V " << KernelVersion << ".\n";
-//    oss1 << "okl/DG/VolumeKernelFluxDiffV" << KernelVersion << ".okl";
-//    std::string var1 = oss1.str();
-//    VolumeKernel=device.buildKernelFromSource(var1,"VolumeKernelFluxDiff",info);
-
-//    std::ostringstream oss2;
-//    cout << "Kernel Version STD: V " << KernelVersionSTD << ".\n";
-//    oss2 << "okl/DG/VolumeKernelV" << KernelVersionSTD << ".okl";
-//    std::string var2 = oss2.str();
-//    VolumeKernelSTD=device.buildKernelFromSource(var2,"VolumeKernel",info);
-
-    switch(NumFlux)
-    {
-    // ENTROPY STABLE FLUX FROM PAPERS
-    case 0:
-    {
-        calcNumFluxes=device.buildKernelFromSource("okl/RiemannSolvers/calcESFlux.okl","calcNumFluxes",info);
-        break;
-    }
-    //Lax Friedrich Flux (MAXIMUM EIGENVALUES ON EDGE ARE EVALUATED POINT WISE
-    case 1:
-    {
-        calcNumFluxes=device.buildKernelFromSource("okl/RiemannSolvers/calcLaxFriedrich.okl","calcNumFluxes",info);
-        break;
-    }
-    //Lax Friedrich Type Entropy Stable Flux   // NOT WORKING PROPERLY ATM
-    case 2:
-    {
-        calcNumFluxes=device.buildKernelFromSource("okl/RiemannSolvers/calcLFTypeESFlux.okl","calcNumFluxes",info);
-        break;
-    }
-    }
-
-    // calc specific value on edges like jump in b and average h
-    calcEdgeValues          =   device.buildKernelFromSource("okl/DiscontinuousBathimetry/calcEdgeValues.okl","calcEdgeValues",info);
-    // adds additional surface terms due to a possibly discontinuous bottom topography
-    calcDiscBottomSurf      =   device.buildKernelFromSource("okl/DiscontinuousBathimetry/calcDiscBottomSurf.okl","calcDiscBottomSurf",info);
-    // standard dg kernel for the surface parts
-   SurfaceKernel=device.buildKernelFromSource("okl/DG/SurfaceKernel.okl","SurfaceKernel",info);
-    //kernel to compute eigenvalues
-    FindLambdaMax           =   device.buildKernelFromSource("okl/DG/FindLambdaMax.okl","FindLambdaMax",info);
-
-    if (rkSSP)
-    {
-        UpdateKernel=device.buildKernelFromSource("okl/RungeKutta/UpdateKernelSSP.okl","UpdateKernel",info);
-    }
-    else
-    {
-        // no SSP runge kutta but Low Storage verison
-        calcRK=device.buildKernelFromSource("okl/RungeKutta/rkLS.okl","calcRK",info);
-        UpdateKernel=device.buildKernelFromSource("okl/RungeKutta/UpdateKernelLS.okl","UpdateKernel",info);
-    }
+//
+//    switch(Testcase)
+//    {
+//    case 1:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
+//    {
+//        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/Dirichlet_ConvTest.okl","CollectEdgeData",info);
+//        addS = device.buildKernelFromSource("okl/ManufacturedSolutions/S_ConvTest.okl","addS",info);
+//        break;
+//    }
+//    case 32:  // Inflow Boundaries for 3 Mound PP test case
+//    {
+//        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/3MoundInflow.okl","CollectEdgeData",info);
+//        break;
+//    }
+//    default:
+//        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/SolidWalls.okl","CollectEdgeData",info);
+//        break;
+//    }
+//    //cout <<"rank: " << MPI.rank << " I AM AT: Collecting Kernels Post TESTCASE" << "\n";
+//    CollectEdgeData_Bottom=device.buildKernelFromSource("okl/GatherEdgeData/CollectEdgeData_Bottom.okl","CollectEdgeData_Bottom",info);
 
 
 
+//    if(Fluxdifferencing)
+//    {
+//
+//        std::ostringstream oss;
+//        cout << "Kernel Version: V " << KernelVersion << ".\n";
+//        oss << "okl/DG/VolumeKernelFluxDiffV" << KernelVersion << ".okl";
+//        std::string var = oss.str();
+//        VolumeKernel=device.buildKernelFromSource(var,"VolumeKernelFluxDiff",info);
+//
+//    }
+//    else
+//    {
+//        std::ostringstream oss;
+//        cout << "Kernel Version: V " << KernelVersion << ".\n";
+//        oss << "okl/DG/VolumeKernelV" << KernelVersion << ".okl";
+//        std::string var = oss.str();
+//        VolumeKernel=device.buildKernelFromSource(var,"VolumeKernel",info);
+//    }
+//
 
-    if (ArtificialViscosity)
-    {
-        UpdateQt                =   device.buildKernelFromSource("okl/ViscoseParts/UpdateQt.okl","UpdateQt",info);
-        CollectEdgeDataGradient =   device.buildKernelFromSource("okl/BR1_Gradient/CollectEdgeDataGradient.okl","CollectEdgeDataGradient",info);
-        SurfaceKernelGradient   =   device.buildKernelFromSource("okl/BR1_Gradient/SurfaceKernelGradient.okl","SurfaceKernelGradient",info);
-        calcGradient            =   device.buildKernelFromSource("okl/BR1_Gradient/calcGradient.okl","calcGradient",info);
-        calcNumFluxesGradient   =   device.buildKernelFromSource("okl/BR1_Gradient/calcNumFluxesGradient.okl","calcNumFluxesGradient",info);
-        scaleGradient          =   device.buildKernelFromSource("okl/BR1_Gradient/scaleGradient.okl","scaleGradient",info);
-        VolumeKernelViscose     =   device.buildKernelFromSource("okl/ViscoseParts/VolumeKernelViscose.okl","VolumeKernelViscose",info);
-        calcNumFluxesViscose    =   device.buildKernelFromSource("okl/ViscoseParts/calcNumFluxesViscose.okl","calcNumFluxesViscose",info);
-        SurfaceKernelVisc       =   device.buildKernelFromSource("okl/ViscoseParts/SurfaceKernelVisc.okl","SurfaceKernelVisc",info);
-        ShockCapturing          =   device.buildKernelFromSource("okl/ViscoseParts/ShockCapturing.okl","ShockCapturing",info);
-    }
-    if (PositivityPreserving)
-    {
-        calcAvg      =   device.buildKernelFromSource("okl/Positivity/calcAvg.okl","calcAvg",info);
-        preservePosivitity      =   device.buildKernelFromSource("okl/Positivity/PosPres.okl","PosPres",info);
-    }
+    std::ostringstream oss1;
+    cout << "Kernel Version FD: V " << KernelVersion << ".\n";
+    oss1 << "okl/DG/VolumeKernelFluxDiffV" << KernelVersion << ".okl";
+    std::string var1 = oss1.str();
+    VolumeKernel=device.buildKernelFromSource(var1,"VolumeKernelFluxDiff",info);
+
+    std::ostringstream oss2;
+    cout << "Kernel Version STD: V " << KernelVersionSTD << ".\n";
+    oss2 << "okl/DG/VolumeKernelV" << KernelVersionSTD << ".okl";
+    std::string var2 = oss2.str();
+    VolumeKernelSTD=device.buildKernelFromSource(var2,"VolumeKernel",info);
+
+//    switch(NumFlux)
+//    {
+//    // ENTROPY STABLE FLUX FROM PAPERS
+//    case 0:
+//    {
+//
+//        calcNumFluxes=device.buildKernelFromSource("okl/RiemannSolvers/calcESFlux.okl","calcNumFluxes",info);
+//        break;
+//    }
+//
+//
+//    //Lax Friedrich Flux (MAXIMUM EIGENVALUES ON EDGE ARE EVALUATED POINT WISE
+//    case 1:
+//    {
+//        calcNumFluxes=device.buildKernelFromSource("okl/RiemannSolvers/calcLaxFriedrich.okl","calcNumFluxes",info);
+//        break;
+//
+//    }
+//    //Lax Friedrich Type Entropy Stable Flux   // NOT WORKING PROPERLY ATM
+//    case 2:
+//    {
+//        calcNumFluxes=device.buildKernelFromSource("okl/RiemannSolvers/calcLFTypeESFlux.okl","calcNumFluxes",info);
+//        break;
+//
+//
+//    }
+//    }
+
+//    // calc specific value on edges like jump in b and average h
+////    calcEdgeValues          =   device.buildKernelFromSource("okl/DiscontinuousBathimetry/calcEdgeValues.okl","calcEdgeValues",info);
+//    // adds additional surface terms due to a possibly discontinuous bottom topography
+//    calcDiscBottomSurf      =   device.buildKernelFromSource("okl/DiscontinuousBathimetry/calcDiscBottomSurf.okl","calcDiscBottomSurf",info);
+//    // standard dg kernel for the surface parts
+//    SurfaceKernel=device.buildKernelFromSource("okl/DG/SurfaceKernel.okl","SurfaceKernel",info);
+//    //kernel to compute eigenvalues
+//    FindLambdaMax           =   device.buildKernelFromSource("okl/DG/FindLambdaMax.okl","FindLambdaMax",info);
+//
+//    if (rkSSP)
+//    {
+//        UpdateKernel=device.buildKernelFromSource("okl/RungeKutta/UpdateKernelSSP.okl","UpdateKernel",info);
+//    }
+//    else
+//    {
+//        // no SSP runge kutta but Low Storage verison
+//        calcRK=device.buildKernelFromSource("okl/RungeKutta/rkLS.okl","calcRK",info);
+//        UpdateKernel=device.buildKernelFromSource("okl/RungeKutta/UpdateKernelLS.okl","UpdateKernel",info);
+//    }
+
+
+
+
+//    if (ArtificialViscosity)
+//    {
+//        UpdateQt                =   device.buildKernelFromSource("okl/ViscoseParts/UpdateQt.okl","UpdateQt",info);
+//        CollectEdgeDataGradient =   device.buildKernelFromSource("okl/BR1_Gradient/CollectEdgeDataGradient.okl","CollectEdgeDataGradient",info);
+//        SurfaceKernelGradient   =   device.buildKernelFromSource("okl/BR1_Gradient/SurfaceKernelGradient.okl","SurfaceKernelGradient",info);
+//        calcGradient            =   device.buildKernelFromSource("okl/BR1_Gradient/calcGradient.okl","calcGradient",info);
+//        calcNumFluxesGradient   =   device.buildKernelFromSource("okl/BR1_Gradient/calcNumFluxesGradient.okl","calcNumFluxesGradient",info);
+//        scaleGradient          =   device.buildKernelFromSource("okl/BR1_Gradient/scaleGradient.okl","scaleGradient",info);
+//        VolumeKernelViscose     =   device.buildKernelFromSource("okl/ViscoseParts/VolumeKernelViscose.okl","VolumeKernelViscose",info);
+//        calcNumFluxesViscose    =   device.buildKernelFromSource("okl/ViscoseParts/calcNumFluxesViscose.okl","calcNumFluxesViscose",info);
+//        SurfaceKernelVisc       =   device.buildKernelFromSource("okl/ViscoseParts/SurfaceKernelVisc.okl","SurfaceKernelVisc",info);
+//        ShockCapturing          =   device.buildKernelFromSource("okl/ViscoseParts/ShockCapturing.okl","ShockCapturing",info);
+//    }
+//    if (PositivityPreserving)
+//    {
+//        calcAvg      =   device.buildKernelFromSource("okl/Positivity/calcAvg.okl","calcAvg",info);
+//        preservePosivitity      =   device.buildKernelFromSource("okl/Positivity/PosPres.okl","PosPres",info);
+//    }
 
 
 //    MemCopyKernel           =   device.buildKernelFromSource("okl/DG/MemCopyComparison.okl","MemCopyComparison",info);
@@ -1148,15 +1160,34 @@ int main(int argc, char *argv[])
 
 
     // Exchange information about the bottom topography only ONCE!
-    CollectEdgeData_Bottom(Nfaces,o_EdgeData,o_B,o_bL,o_bR);
-    o_bL.copyTo(bL);
-    o_bR.copyTo(bR);
-    CollectEdgeDataMPI_Bonly(MPI, DGMeshPartition, bL,  bR);
-    MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Recv_b_reqs, MPI.stats);
-    MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Send_b_reqs, MPI.stats);
+//    CollectEdgeData_Bottom(Nfaces,o_EdgeData,o_B,o_bL,o_bR);
+//    device.finish();
+//    o_bL.copyTo(bL);
+//    o_bR.copyTo(bR);
+//    CollectEdgeDataMPI_Bonly(MPI, DGMeshPartition, bL,  bR);
+//    MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Recv_b_reqs, MPI.stats);
+//    MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Send_b_reqs, MPI.stats);
 
-    o_bL.copyFrom(bL);
-    o_bR.copyFrom(bR);
+//    o_bL.copyFrom(bL);
+//    o_bR.copyFrom(bR);
+
+
+    //for (int i=0; i<=Nfaces;i++){
+    //        cout << " proc: " << MPI.rank << " edge " << i <<"\n";
+    //        cout  << " bL: ";
+    //        for (int i_ngl=0; i_ngl<ngl; i_ngl++){
+    //             cout << bL[i*ngl+i_ngl] <<"  ";
+    //        }
+    //        cout  << "\n bR: ";
+    //        for (int i_ngl=0; i_ngl<ngl; i_ngl++){
+    //             cout  <<   bR[i*ngl+i_ngl] <<"  ";
+    //        }
+    //cout << "\n";
+    //}
+
+
+
+
 
 
 
@@ -1211,156 +1242,305 @@ int main(int argc, char *argv[])
     dfloat rkD=0.0;
 
 
-    while (t<T)
-    {
-        FindLambdaMax(Nelem, o_q, o_LambdaMax);
-        globalLambdaMax=0.0f;
-        o_LambdaMax.copyTo(LocalLambdas);
-        GetGlobalLambdaMax(MPI,  DGMeshPartition,LocalLambdas, &globalLambdaMax);
-        dt_i = globalMinEleSize/(ngl) * CFL /globalLambdaMax;
-        if ( ArtificialViscosity==1)
-        {
-            ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara);
-            o_ViscPara.copyTo(ViscPara);
-            GetGlobalViscParaMax(MPI,  DGMeshPartition,ViscPara, &maxViscPara);
-            dt_v = DFL/(pow(ngl,2)) * pow(globalMinEleSize,2) / maxViscPara;
-            dt_i = min(dt_i,dt_v);
-        }
-
+//    while (t<T)
+//    {
+//
+//
+//        FindLambdaMax(Nelem, o_q, o_LambdaMax);
+//
+////        globalLambdaMax=0.0f;
+////        o_LambdaMax.copyTo(LocalLambdas);
+////        GetGlobalLambdaMax(MPI,  DGMeshPartition,LocalLambdas, &globalLambdaMax);
+////        dt_i = globalMinEleSize/(ngl) * CFL /globalLambdaMax;
+//
+//
+//
+//        if ( ArtificialViscosity==1)
+//        {
+//            ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara);
+////            o_ViscPara.copyTo(ViscPara);
+////            GetGlobalViscParaMax(MPI,  DGMeshPartition,ViscPara, &maxViscPara);
+////            dt_v = DFL/(pow(ngl,2)) * pow(globalMinEleSize,2) / maxViscPara;
+////            dt_i = min(dt_i,dt_v);
+//        }
+//
 //        dt_i = 0.00001;
 //        dt=min(T-dt,dt_i);
+//
+//
+//
+//        if (rkSSP)
+//        {
+//            o_Qtmp.copyFrom(o_q);
+//        }
+//
+//
+//
+//
+//
+//        for (int rkstage=0; rkstage<RK.rkStages; rkstage++)
+//        {
+//
+//            //    o_q.copyTo(q);
+//            //    DGBasis.CheckWhereItNaNed(q,&isnaned,&NaNid);
+//            //    if (isnaned){
+//            //        cout << "First NaN was at Beginning of RK Stage!\n";
+//            //		MPI_Finalize();
+//            //        return 0;
+//            //    }
+//
+//
+//            dfloat rkA=RK.CoeffsA[rkstage];
+//            dfloat rkB=RK.CoeffsB[rkstage];
+//            dfloat rkC=RK.CoeffsC[rkstage];
+//            dfloat intermediatetime=t;
+//            if (rkSSP)
+//            {
+//                switch(rkstage)
+//                {
+//                case 0:
+//                    rkD=0.0;
+//                    break;
+//                case 1:
+//                    rkD=1.0;
+//                    break;
+//                case 2:
+//                    rkD=1.0/2.0;
+//                    break;
+//                }
+//                intermediatetime = t +rkD*dt;
+//            }
+//            else
+//            {
+//                intermediatetime = t +rkB*dt;
+//            }
+//
+//
+//
+//            CollectEdgeData(Nfaces,o_EdgeData,o_q,o_x,o_y,o_nx,o_ny, o_bL,o_bR, o_qL, o_qR, intermediatetime);
+//
+//
+//
+//
+//            //o_qL.copyTo(qL);
+//            //o_qR.copyTo(qR);
+//            //CollectEdgeDataMPI(MPI, DGMeshPartition, qL, qR);
 
-        if (rkSSP)
-        {
-            o_Qtmp.copyFrom(o_q);
-        }
+	std::cout.precision(15);
+	
 
-        for (int rkstage=0; rkstage<RK.rkStages; rkstage++)
-        {
-
-            dfloat rkA=RK.CoeffsA[rkstage];
-            dfloat rkB=RK.CoeffsB[rkstage];
-            dfloat rkC=RK.CoeffsC[rkstage];
-            dfloat intermediatetime=t;
-            if (rkSSP)
-            {
-                switch(rkstage)
-                {
-                case 0:
-                    rkD=0.0;
-                    break;
-                case 1:
-                    rkD=1.0;
-                    break;
-                case 2:
-                    rkD=1.0/2.0;
-                    break;
-                }
-                intermediatetime = t +rkD*dt;
-            }
-            else
-            {
-                intermediatetime = t +rkB*dt;
-            }
-
-            CollectEdgeData(Nfaces,o_EdgeData,o_q,o_x,o_y,o_nx,o_ny, o_bL,o_bR, o_qL, o_qR, intermediatetime);
-            o_qL.copyTo(qL);
-            o_qR.copyTo(qR);
-            CollectEdgeDataMPI(MPI, DGMeshPartition, qL, qR);
-
-
-			VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_Qt);
-
-
-
-            MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Recv_q_reqs, MPI.stats);
-            MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Send_q_reqs, MPI.stats);
-            o_qL.copyFrom(qL);
-            o_qR.copyFrom(qR);
-
-            calcNumFluxes(Nfaces,o_nx,o_ny,o_scal,o_qL,o_qR,o_bL,o_bR,o_SurfaceParts);
-            calcDiscBottomSurf(Nfaces,o_qL,o_qR, o_bL,o_bR,o_nx,o_ny,o_scal,o_DBSurf1,o_DBSurf2);
-
-            SurfaceKernel(Nelem,o_Jac,o_ElemEdgeMasterSlave,o_ElemEdgeOrientation,o_ElemToEdge, o_SurfaceParts,o_DBSurf1,o_DBSurf2,o_Qt);
-
-            if ( ArtificialViscosity==1)
-            {
-
-
-                // at first RK step we already now o_ViscPara from time step computation!
-                if (rkstage>0)
-                {
-                    ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara);
-                }
-
-                calcNumFluxesGradient(Nfaces,o_EdgeData,o_nx,o_ny,o_scal, o_qL, o_qR, o_bL,o_bR, o_SurfGradientX,o_SurfGradientY);
-
-                calcGradient(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_B,o_Dhat,o_qGradientX,o_qGradientY);
-
-
-                SurfaceKernelGradient(Nelem,o_Jac,o_ElemEdgeMasterSlave,o_ElemEdgeOrientation,o_ElemToEdge, o_SurfGradientX, o_SurfGradientY,o_qGradientX,o_qGradientY);
-
-                scaleGradient(Nelem,o_q,o_qGradientX,o_qGradientY);
-
-                CollectEdgeDataGradient(Nfaces,o_EdgeData,o_qGradientX,o_qGradientY,o_ViscPara,o_ViscParaL,o_ViscParaR, o_qGradientXL, o_qGradientXR,o_qGradientYL, o_qGradientYR);
-
-                o_ViscParaL.copyTo(ViscParaL);
-                o_ViscParaR.copyTo(ViscParaR);
-                o_qGradientXL.copyTo(qGradientXL);
-                o_qGradientXR.copyTo(qGradientXR);
-                o_qGradientYL.copyTo(qGradientYL);
-                o_qGradientYR.copyTo(qGradientYR);
-                    
-                // not an OCCA kernel, this is MPI communication for exchanging gradient data
-				CollectViscoseEdgeDataMPI(MPI, DGMeshPartition, ViscParaL, ViscParaL, qGradientXL,  qGradientXR,qGradientYL,qGradientYR);
-                VolumeKernelViscose(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_qGradientX,o_qGradientY,o_Dstrong,o_ViscPara,o_QtVisc);
-
+    double BytesReadWrite = sizeof(dfloat) * (NoSpaceDofs*7 + NoDofs*2);
+//    double scaling  = 1024*1024*1024;
+	double scaling  = 1000*1000*1000;
+    double GBReadWrite = BytesReadWrite/scaling;
+	double flopsFD = (90*ngl+13)*ngl2;			//old estimate, matches flop_count_sp very well
+//	double flopsFD = (98*ngl+9)*ngl2;			//actual count of flops (also doesnt match nvprof exactly due to compiler!)
+	double flopsSD = (12*ngl + 41) * ngl2;
+	double GFLOPS_FD = flopsFD*Nelem/scaling;
+	double GFLOPS_SD = flopsSD*Nelem/scaling;
+    occa::streamTag start = device.tagStream();
+    double iterations=10;
+    for (int i =0; i<iterations; i++)
+    {
+        o_PackReceive.copyFrom(o_PackSend);
+    }
+    occa::streamTag end = device.tagStream();
+    device.finish();
+    double timeCpy = device.timeBetween(start, end);
+	double MemBandwidth = iterations*GBReadWrite/timeCpy;
+    cout << "Elapsed Time MemCpy: " << timeCpy << "\n";
+    cout << "Bandwidth MemCpy: " << MemBandwidth  << "\n";
 
 
-                MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Recv_qX_reqs, MPI.stats);
-                MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Recv_qY_reqs, MPI.stats);
-                MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Recv_ViscPar_reqs, MPI.stats);
-                MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Send_qX_reqs, MPI.stats);
-                MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Send_qY_reqs, MPI.stats);
-                MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Send_ViscPar_reqs, MPI.stats);
-                o_ViscParaL.copyFrom(ViscParaL);
-                o_ViscParaR.copyFrom(ViscParaR);
-                o_qGradientXL.copyFrom(qGradientXL);
-                o_qGradientXR.copyFrom(qGradientXR);
-                o_qGradientYL.copyFrom(qGradientYL);
-                o_qGradientYR.copyFrom(qGradientYR);
+    occa::streamTag startSD = device.tagStream();
+    for (int i =0; i<iterations; i++)
+    {
+        VolumeKernelSTD(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_Dstrong,o_Bx,o_By,o_Qt);
+    }
+    occa::streamTag endSD = device.tagStream();
+    device.finish();
+    double timeSD = device.timeBetween(startSD, endSD);
+	double SDBandwidth = iterations*GBReadWrite/timeSD;
+    cout << "Elapsed Time STD: " << timeSD << "\n";
+    cout << "Bandwidth Standard Volume: " << SDBandwidth << "\n";
+	double GFLOPSsSD = GFLOPS_SD*iterations/ timeSD;
+	double MemoryBoundSD = GFLOPSsSD *MemBandwidth / SDBandwidth;
+	double FlopsPerBlockSD = flopsSD * NEpad;
+	double SharedMemLoadsStoresPerBlockSD = 4*ngl2 * (8+ngl*8)*NEpad + 4*ngl2;
+	double SharedMemBoundSD = 4113 * FlopsPerBlockSD / SharedMemLoadsStoresPerBlockSD;
+	double minBoundSD = min(MemoryBoundSD,SharedMemBoundSD);
+	std::cout <<  std::scientific;
+	cout << "Achieved GFLOPS/sSD : " << KernelVersionSTD << " " << N << " "  <<  GFLOPSsSD << "\n";
+	cout << "MemoryBoundSD : " << KernelVersionSTD << " "  << N << " " << MemoryBoundSD << "\n";
+	cout << "SharedMemBoundSD : " << KernelVersionSTD << " "  << N << " " << SharedMemBoundSD << "\n";
+	cout << "minBoundSD : " << KernelVersionSTD << " "  << N << " " << minBoundSD << "\n";
 
-                calcNumFluxesViscose(Nfaces,o_EdgeData,o_nx,o_ny,o_scal,o_ViscParaL,o_ViscParaR,o_qGradientXL,o_qGradientXR,o_qGradientYL,o_qGradientYR,o_SurfacePartsVisc);
-
-                SurfaceKernelVisc(Nelem,o_Jac,o_ElemEdgeMasterSlave,o_ElemEdgeOrientation,o_ElemToEdge, o_SurfacePartsVisc,o_QtVisc);
 
 
+    occa::streamTag startFD = device.tagStream();
+    for (int i =0; i<iterations; i++)
+    {
+        VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_Qt);
+    }
+    occa::streamTag endFD = device.tagStream();
+    device.finish();
+    double timeFD = device.timeBetween(startFD, endFD);
+	double FDBandwidth = iterations*GBReadWrite/timeFD;
+	
+	
+    cout << "Elapsed Time FD : " << timeFD << "\n";
+    cout << "Bandwidth FD Volume: " << FDBandwidth << "\n";
+	cout << "Floating Point Operations FD: " << flopsFD <<"\n";
+	cout << "flop_count_sp should be : " << flopsFD*Nelem -Nelem*ngl2<<"\n";
+	
+	cout << "we managed " << GFLOPS_FD << " in time " << timeFD << " !\n";
+	double GFLOPSs = GFLOPS_FD*iterations/ timeFD;
+	double MemoryBound = GFLOPSs *MemBandwidth / FDBandwidth;
+	double FlopsPerBlock = flopsFD * NEpad;
+	double SharedMemLoadsStoresPerBlock = 4*ngl2 * (16+ngl*14)*NEpad + 4*ngl2 ;
+	double SharedMemBound = 4113 * FlopsPerBlock / SharedMemLoadsStoresPerBlock;
+	double minBound = min(MemoryBound,SharedMemBound);
+	std::cout <<  std::scientific;
+	cout << "Achieved GFLOPS/s : " << KernelVersion << " " << N << " "  <<  GFLOPSs << "\n";
+	cout << "MemoryBound : " << KernelVersion << " "  << N << " " << MemoryBound << "\n";
+	cout << "SharedMemBound : " << KernelVersion << " "  << N << " " << SharedMemBound << "\n";
+	cout << "minBound : " << KernelVersion << " "  << N << " " << minBound << "\n";
+	cout << "Bytes ReadWrite: " <<BytesReadWrite << ". \n";
 
-                UpdateQt(Nelem,o_QtVisc,o_Qt);
 
-            }
 
-            // add manufactured source term for convergence test
-            if (Testcase==1)
-            {
-                addS(Nelem,o_Bx,o_By,o_B,o_x,o_y,intermediatetime,o_Qt);
-            }
 
-            if (rkSSP)
-            {
-                UpdateKernel(Nelem,rkA,rkB,rkC,dt,o_Qt,o_Qtmp,o_q);
-            }
-            else
-            {
-                calcRK(Nelem,o_Qt,rkA,rkB,o_gRK);
-                UpdateKernel(Nelem,rkC,dt,o_gRK,o_q);
-            }
 
-            if(PositivityPreserving==1)
-            {
-                calcAvg(Nelem,o_EleSizes,o_GLw, o_Jac,o_q,o_Qavg);
 
-//                dfloat * qavgtmp = (dfloat*) calloc(Nelem*4,sizeof(dfloat));
+
+
+
+
+//            //MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Recv_q_reqs, MPI.stats);
+//            //MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Send_q_reqs, MPI.stats);
+//            //o_qL.copyFrom(qL);
+//            //o_qR.copyFrom(qR);
+//
+//
+//
+//
+//
+//            calcNumFluxes(Nfaces,o_nx,o_ny,o_scal,o_qL,o_qR,o_bL,o_bR,o_SurfaceParts);
+//
+//
+//
+//
+//
+//
+//
+//
+//            calcDiscBottomSurf(Nfaces,o_qL,o_qR, o_bL,o_bR,o_nx,o_ny,o_scal,o_DBSurf1,o_DBSurf2);
+//
+//
+//            SurfaceKernel(Nelem,o_Jac,o_ElemEdgeMasterSlave,o_ElemEdgeOrientation,o_ElemToEdge, o_SurfaceParts,o_DBSurf1,o_DBSurf2,o_Qt);
+//
+//
+//
+//
+//
+//
+//            if ( ArtificialViscosity==1)
+//            {
+//
+//
+//                // at first RK step we already now o_ViscPara from time step computation!
+//                if (rkstage>0)
+//                {
+//                    ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara);
+//                }
+//
+//
+//                calcNumFluxesGradient(Nfaces,o_EdgeData,o_nx,o_ny,o_scal, o_qL, o_qR, o_bL,o_bR, o_SurfGradientX,o_SurfGradientY);
+//
+//                calcGradient(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_B,o_Dhat,o_qGradientX,o_qGradientY);
+//
+//
+//                SurfaceKernelGradient(Nelem,o_Jac,o_ElemEdgeMasterSlave,o_ElemEdgeOrientation,o_ElemToEdge, o_SurfGradientX, o_SurfGradientY,o_qGradientX,o_qGradientY);
+//
+//                scaleGradient(Nelem,o_q,o_qGradientX,o_qGradientY);
+//
+//
+//
+//
+//
+//                CollectEdgeDataGradient(Nfaces,o_EdgeData,o_qGradientX,o_qGradientY,o_ViscPara,o_ViscParaL,o_ViscParaR, o_qGradientXL, o_qGradientXR,o_qGradientYL, o_qGradientYR);
+//
+//                ////o_ViscParaL.copyTo(ViscParaL);
+//                ////o_ViscParaR.copyTo(ViscParaR);
+//                ////o_qGradientXL.copyTo(qGradientXL);
+//                ////o_qGradientXR.copyTo(qGradientXR);
+//                ////o_qGradientYL.copyTo(qGradientYL);
+//                ////o_qGradientYR.copyTo(qGradientYR);
+//                ////
+//                ////
+//                ////// not an OCCA kernel, this is MPI communication for exchanging gradient data
+//                ////CollectViscoseEdgeDataMPI(MPI, DGMeshPartition, ViscParaL, ViscParaL, qGradientXL,  qGradientXR,qGradientYL,qGradientYR);
+//
+//
+//
+//                VolumeKernelViscose(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_qGradientX,o_qGradientY,o_Dstrong,o_ViscPara,o_QtVisc);
+//
+//
+//
+//                //MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Recv_qX_reqs, MPI.stats);
+//                //MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Recv_qY_reqs, MPI.stats);
+//                //MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Recv_ViscPar_reqs, MPI.stats);
+//                //MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Send_qX_reqs, MPI.stats);
+//                //MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Send_qY_reqs, MPI.stats);
+//                //MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Send_ViscPar_reqs, MPI.stats);
+//                //o_ViscParaL.copyFrom(ViscParaL);
+//                //o_ViscParaR.copyFrom(ViscParaR);
+//                //o_qGradientXL.copyFrom(qGradientXL);
+//                //o_qGradientXR.copyFrom(qGradientXR);
+//                //o_qGradientYL.copyFrom(qGradientYL);
+//                //o_qGradientYR.copyFrom(qGradientYR);
+//
+//
+//                calcNumFluxesViscose(Nfaces,o_EdgeData,o_nx,o_ny,o_scal,o_ViscParaL,o_ViscParaR,o_qGradientXL,o_qGradientXR,o_qGradientYL,o_qGradientYR,o_SurfacePartsVisc);
+//
+//
+//
+//                SurfaceKernelVisc(Nelem,o_Jac,o_ElemEdgeMasterSlave,o_ElemEdgeOrientation,o_ElemToEdge, o_SurfacePartsVisc,o_QtVisc);
+//
+//
+//
+//                UpdateQt(Nelem,o_QtVisc,o_Qt);
+//
+//            }
+//
+//
+//
+//
+//
+//
+//            // add manufactured source term for convergence test
+//            if (Testcase==1)
+//            {
+//                addS(Nelem,o_Bx,o_By,o_B,o_x,o_y,intermediatetime,o_Qt);
+//            }
+//
+//
+//            if (rkSSP)
+//            {
+//                UpdateKernel(Nelem,rkA,rkB,rkC,dt,o_Qt,o_Qtmp,o_q);
+//            }
+//            else
+//            {
+//                calcRK(Nelem,o_Qt,rkA,rkB,o_gRK);
+//                UpdateKernel(Nelem,rkC,dt,o_gRK,o_q);
+//            }
+//
+//
+//            if(PositivityPreserving==1)
+//            {
+//                calcAvg(Nelem,o_EleSizes,o_GLw, o_Jac,o_q,o_Qavg);
+//
+////                dfloat * qavgtmp = (dfloat*) calloc(Nelem*4,sizeof(dfloat));
 ////                o_Qavg.copyTo(qavgtmp);
 ////                for (int i=0; i<1;i++){
 ////
@@ -1371,81 +1551,92 @@ int main(int argc, char *argv[])
 ////                    cout << "Min H: " << qavgtmp[i*4+3] << " \n";
 ////                }
 ////                free(qavgtmp);
-                preservePosivitity(Nelem,o_Qavg,o_q);
-
-//                // old kernel header
-//                preservePosivitity(Nelem,o_EleSizes,o_GLw, o_Jac,o_q);
+//                preservePosivitity(Nelem,o_Qavg,o_q);
 //
-            }
-
-
-
-
-        }
-
-
-
-        t += dt;
-
-        //PRINT SOLUTION
-        if(plotCount<NumPlots)
-        {
-            if(t>=mCheckpoints[plotCount])
-            {
-
-                o_q.copyTo(q);
-                if(ArtificialViscosity==1)
-                {
-//                    o_qGradientX.copyTo(Qx);
+//                // old kernel header
+////                preservePosivitity(Nelem,o_EleSizes,o_GLw, o_Jac,o_q);
+//
+//            }
+//
+//
+//
+//
+//        }
+//
+//
+//
+//        t += dt;
+//
+//        //PRINT SOLUTION
+//        if(plotCount<NumPlots)
+//        {
+//            if(t>=mCheckpoints[plotCount])
+//            {
+//
+//                o_q.copyTo(q);
+//                if(ArtificialViscosity==1)
+//                {
+//                    //        o_qGradientX.copyTo(Qx);
 //                    o_QtVisc.copyTo(QtVisc);
 //                    o_qGradientY.copyTo(Qy);
 //                    o_ViscPara.copyTo(ViscPara);
-                }
-                if(MPI.rank==0)
-                {
-                    cout << "we have time: "<<t<< " and we do plot number " <<  plotCount <<"!\n";
-                    CollectSolution( MPI, DGMeshPartition, q, Q_global);
-                    PlotSolution(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount);
-                    if(ArtificialViscosity==1)
-                    {
-//                      CollectViscPara(MPI,   DGMeshPartition, ViscPara, ViscPara_Global);
-//                      PlotViscoseParameter(Nelem_global, ngl, x_phy_global,y_phy_global, ViscPara_Global, plotCount);
-//                        CollectViscosity( MPI, DGMeshPartition, Qx,Qy, Qx_global, Qy_global);
-//                        PlotViscosity(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Qx_global,Qy_global,plotCount);
+//                }
+//                if(MPI.rank==0)
+//                {
+//                    cout << "we have time: "<<t<< " and we do plot number " <<  plotCount <<"!\n";
+//                    CollectSolution( MPI, DGMeshPartition, q, Q_global);
+//                    PlotSolution(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount);
+//                    if(ArtificialViscosity==1)
+//                    {
+//                        CollectViscPara(MPI,   DGMeshPartition, ViscPara, ViscPara_Global);
+//                        PlotViscoseParameter(Nelem_global, ngl, x_phy_global,y_phy_global, ViscPara_Global, plotCount);
+//
+//                        //            CollectViscosity( MPI, DGMeshPartition, Qx,Qy, Qx_global, Qy_global);
+//                        //            PlotViscosity(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Qx_global,Qy_global,plotCount);
 //                        CollectViscosity( MPI, DGMeshPartition, QtVisc,Qy, QtVisc_global, Qy_global);
 //                        PlotViscosity(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,QtVisc_global,Qy_global,plotCount);
-
-                    }
-
-
-                }
-                else
-                {
-                    SendSolution(MPI, DGMeshPartition,  q);
+//
+//                    }
+//
+//
+//                }
+//                else
+//                {
+//
+//                    SendSolution(MPI, DGMeshPartition,  q);
+//
 //                    if(ArtificialViscosity==1)
 //                    {
 //                        SendViscPara(MPI, DGMeshPartition,  ViscPara);
+//
 //                        //            SendViscosity(MPI, DGMeshPartition,  Qx,Qy);
 //                        SendViscosity(MPI, DGMeshPartition,  QtVisc,Qy);
 //                    }
 //                }
 //
-                plotCount=plotCount+1;
-            }
-        }
-
-        if (MPI.rank==0)
-        {
-            if (timeCount < NumTimeChecks)
-                if(t>=tCheckpoints[timeCount])
-                {
-                    cout << "time: " << t << " last timestep "<< dt<< " dt_i = "<< dt_i << " dt_v " << dt_v << "\n";
-                    timeCount=timeCount+1;
-                }
-        }
-
-    }
-    o_q.copyTo(q);
+//                plotCount=plotCount+1;
+//            }
+//        }
+//
+//
+//
+//        if (MPI.rank==0)
+//        {
+//            if (timeCount < NumTimeChecks)
+//                if(t>=tCheckpoints[timeCount])
+//                {
+//                    cout << "time: " << t << " last timestep "<< dt<< " dt_i = "<< dt_i << " dt_v " << dt_v << "\n";
+//                    timeCount=timeCount+1;
+//                }
+//        }
+//
+//    }
+//
+//
+//
+//
+//
+//    o_q.copyTo(q);
 
 
 
@@ -1467,22 +1658,22 @@ int main(int argc, char *argv[])
 
         cout <<"time taken in seconds = "<< TimeDifferenceMeasured<< "\n";
     }
-
-
-
-
-    if(MPI.rank==0)
-    {
-
-        cout << "I am rank: " << MPI.rank << " and i collect solution now!\n";
-        CollectSolution( MPI, DGMeshPartition, q, Q_global);
-    }
-    else
-    {
-        cout << "I am rank: " << MPI.rank << " and i send solution now!\n";
-        SendSolution(MPI, DGMeshPartition,  q);
-
-    }
+//
+//
+//
+//
+//    if(MPI.rank==0)
+//    {
+//
+//        cout << "I am rank: " << MPI.rank << " and i collect solution now!\n";
+//        CollectSolution( MPI, DGMeshPartition, q, Q_global);
+//    }
+//    else
+//    {
+//        cout << "I am rank: " << MPI.rank << " and i send solution now!\n";
+//        SendSolution(MPI, DGMeshPartition,  q);
+//
+//    }
 
 
     if(MPI.rank==0)
@@ -1492,42 +1683,42 @@ int main(int argc, char *argv[])
 
 
 
-        InitQ(0,DGMeshPartition,Testcase,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,0,b_global,g_const);
-
-
-        dfloat EntropyDelta=0.0;
-        DGBasis.calcEntropyDelta(g_const,Q_global,q_exakt,b_global,J_global,&EntropyDelta);
-        cout <<"Entropydifference is: " <<  EntropyDelta <<"\n";
-
-        InitQ(0,DGMeshPartition,Testcase,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,T,b_global,g_const);
-
-
-        cout <<"runtime in ns : " << elapsed << "\n";
-
-        dfloat L2Error[Neq];
-        dfloat LinfError[Neq];
-        for(int ik=0; ik<Neq; ik++)
-        {
-            L2Error[ik]=0.0;
-            LinfError[ik]=0.0;
-        }
-        DGBasis.L2Norm(Q_global,q_exakt,J_global,L2Error);
-        DGBasis.LinfNorm(Q_global,q_exakt,LinfError);
-        for(int ik=0; ik<Neq; ik++)
-        {
-            L2Error[ik]= sqrt(L2Error[ik]);
-        }
-
-        for(int ik=0; ik<Neq; ik++)
-        {
-            cout <<"L2Error["<<ik<<"] is: " <<  L2Error[ik] <<"\n";
-
-        }
-        for(int ik=0; ik<Neq; ik++)
-        {
-            cout <<"LinfError["<<ik<<"] is: " <<  LinfError[ik] <<"\n";
-
-        }
+//        InitQ(0,DGMeshPartition,Testcase,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,0,b_global,g_const);
+//
+//
+//        dfloat EntropyDelta=0.0;
+//        DGBasis.calcEntropyDelta(g_const,Q_global,q_exakt,b_global,J_global,&EntropyDelta);
+//        cout <<"Entropydifference is: " <<  EntropyDelta <<"\n";
+//
+//        InitQ(0,DGMeshPartition,Testcase,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,T,b_global,g_const);
+//
+//
+//        //cout <<"runtime in ns : " << elapsed << "\n";
+//
+//        dfloat L2Error[Neq];
+//        dfloat LinfError[Neq];
+//        for(int ik=0; ik<Neq; ik++)
+//        {
+//            L2Error[ik]=0.0;
+//            LinfError[ik]=0.0;
+//        }
+//        DGBasis.L2Norm(Q_global,q_exakt,J_global,L2Error);
+//        DGBasis.LinfNorm(Q_global,q_exakt,LinfError);
+//        for(int ik=0; ik<Neq; ik++)
+//        {
+//            L2Error[ik]= sqrt(L2Error[ik]);
+//        }
+//
+//        for(int ik=0; ik<Neq; ik++)
+//        {
+//            cout <<"L2Error["<<ik<<"] is: " <<  L2Error[ik] <<"\n";
+//
+//        }
+//        for(int ik=0; ik<Neq; ik++)
+//        {
+//            cout <<"LinfError["<<ik<<"] is: " <<  LinfError[ik] <<"\n";
+//
+//        }
 
         free(Q_global);
         free(q_exakt);
