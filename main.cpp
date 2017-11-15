@@ -538,14 +538,14 @@ int main(int argc, char *argv[])
             Scal[id] = DGMeshPartition.scal_global[id];
         }
     }
-        for(int ie=0;ie<Nfaces;++ie){
-        cout <<"\n face: " << ie <<"\n";
-            for(int i=0;i<ngl;++i){
-                int id = ie*ngl  +i ;
-                cout << normalsX[id] << " ";
-          }
-           cout  <<"\n";
-        }
+//        for(int ie=0;ie<Nfaces;++ie){
+//        cout <<"\n face: " << ie <<"\n";
+//            for(int i=0;i<ngl;++i){
+//                int id = ie*ngl  +i ;
+//                cout << normalsX[id] << " ";
+//          }
+//           cout  <<"\n";
+//        }
 
 
     if(MPI.rank==0)
