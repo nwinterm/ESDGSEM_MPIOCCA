@@ -1233,7 +1233,7 @@ int main(int argc, char *argv[])
         }
 
 //        dt_i = 0.00001;
-        dt=min(T-dt,dt_i);
+        dt=min(T-dt_i,dt_i);
 //cout << "timestep " << dt << "\n" ;
         if (rkSSP)
         {
