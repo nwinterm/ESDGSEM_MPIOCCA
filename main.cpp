@@ -888,7 +888,7 @@ int main(int argc, char *argv[])
         nglPad=1;
     }
     info.addDefine("nglPad",nglPad );
-    dfloat TOL_PosPres = pow(10.0,-3);
+    dfloat TOL_PosPres = pow(10.0,-8);
     dfloat geomface = 1.0/DGBasis.w_GL[0];
     dfloat zero = 0.0;
     dfloat half = 0.5;
