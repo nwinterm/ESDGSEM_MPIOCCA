@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
 
 
 
-
+	cout.precision(17);
     //initialize polynomial basis
 
     int ngl, ngl2;;
