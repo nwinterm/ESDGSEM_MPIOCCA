@@ -896,7 +896,7 @@ int main(int argc, char *argv[])
     dfloat fourth = 0.25;
 	dfloat eight = 8.0;
 	dfloat two = 2.0;
-	dfloat onepointfive = 1.5,
+	dfloat onepointfive = 1.5;
     dfloat halfg = half*g_const;
     dfloat fourthg = fourth*g_const;
     info.addDefine("zero",zero );
