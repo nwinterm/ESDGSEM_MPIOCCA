@@ -745,7 +745,7 @@ int main(int argc, char *argv[])
 
     occa::memory o_GLw;
 
-    occa::memory o_PackSend, o_PackReceive;
+//   occa::memory o_PackSend, o_PackReceive;
 
     if(MPI.rank==0)
     {
@@ -1654,8 +1654,8 @@ int main(int argc, char *argv[])
 
         }
     }
-    o_PackSend.free();
-    o_PackReceive.free();
+//    o_PackSend.free();
+//    o_PackReceive.free();
 
 // done with MPI
     MPI_Finalize();
