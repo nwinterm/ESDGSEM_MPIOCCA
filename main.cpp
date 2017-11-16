@@ -890,16 +890,23 @@ int main(int argc, char *argv[])
     info.addDefine("nglPad",nglPad );
     dfloat TOL_PosPres = pow(10.0,-3);
     dfloat geomface = 1.0/DGBasis.w_GL[0];
-    dfloat zero = 0.0f;
-    dfloat half = 0.5f;
-    dfloat one = 1.0f;
-    dfloat fourth = 0.25f;
+    dfloat zero = 0.0;
+    dfloat half = 0.5;
+    dfloat one = 1.0;
+    dfloat fourth = 0.25;
+	dfloat eight = 8.0;
+	dfloat two = 2.0;
+	dfloat onepointfive = 1.5,
     dfloat halfg = half*g_const;
     dfloat fourthg = fourth*g_const;
     info.addDefine("zero",zero );
     info.addDefine("half",half );
     info.addDefine("fourth",fourth );
     info.addDefine("one",one );
+	info.addDefine("two",two );
+	info.addDefine("eight",eight );
+	info.addDefine("onepointfive",onepointfive );
+	
     info.addDefine("half_g",halfg);
     info.addDefine("fourth_g",fourthg);
     info.addDefine("g_const",g_const);
@@ -1076,7 +1083,7 @@ int main(int argc, char *argv[])
 
     if (rkSSP)
     {
-        UpdateKernel=device.buildKernelFromSource("okl/RungeKutta/UpdateKernelSSP.okl","UpdateKernel",info);
+        UpdateKernel=device.buildKernelFromSource("okl/RungeKutta/UpdateKernelSSP_V1.okl","UpdateKernel",info);
     }
     else
     {
