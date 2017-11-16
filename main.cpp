@@ -1215,10 +1215,10 @@ int main(int argc, char *argv[])
     // cout << "rank: " << MPI.rank << " Entering Time Loop!\n";
 
     //TIME LOOP!!
-    dfloat globalLambdaMax=0.0f;
+    dfloat globalLambdaMax=0.0;
     dfloat maxViscPara=0.0;
-    dfloat dt_i=0.0f;
-    dfloat dt_v=0.0f;
+    dfloat dt_i=0.0;
+    dfloat dt_v=0.0;
     dfloat LocalLambdas[DGMeshPartition.NumElements];
     dfloat rkD=0.0;
 
@@ -1226,7 +1226,7 @@ int main(int argc, char *argv[])
     while (t<T)
     {
         FindLambdaMax(Nelem, o_q, o_LambdaMax);
-        globalLambdaMax=0.0f;
+        globalLambdaMax=0.0;
         o_LambdaMax.copyTo(LocalLambdas);
         GetGlobalLambdaMax(MPI,  DGMeshPartition,LocalLambdas, &globalLambdaMax);
         dt_i = globalMinEleSize/(ngl) * CFL /globalLambdaMax;
