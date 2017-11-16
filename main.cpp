@@ -843,18 +843,18 @@ int main(int argc, char *argv[])
 //    }
     // loading Jac, Xxi,Xeta,Yxi,Yeta,Bx,By, Q,D  storing Qt
 //    int VolKernelPackageSize = (7*NoSpaceDofs+2*NoDofs+Dloads*ngl2)/2;
-    int VolKernelPackageSize = (7*NoSpaceDofs+2*NoDofs)/2;
-    o_PackSend    = device.malloc(VolKernelPackageSize*sizeof(dfloat));
-    o_PackReceive = device.malloc(VolKernelPackageSize*sizeof(dfloat));
-    dfloat * PackSend = (dfloat*) calloc(VolKernelPackageSize,sizeof(dfloat));
-    o_PackReceive.copyFrom(PackSend);
-    for (int i = 0; i < VolKernelPackageSize; i++)
-    {
-        int locIndex = i % NoSpaceDofs;
-        PackSend[i] = 1.24f*(t+dt)*i*J[locIndex];
-    }
-    o_PackSend.copyFrom(PackSend);
-    free(PackSend);
+//    int VolKernelPackageSize = (7*NoSpaceDofs+2*NoDofs)/2;
+//    o_PackSend    = device.malloc(VolKernelPackageSize*sizeof(dfloat));
+//    o_PackReceive = device.malloc(VolKernelPackageSize*sizeof(dfloat));
+//    dfloat * PackSend = (dfloat*) calloc(VolKernelPackageSize,sizeof(dfloat));
+//    o_PackReceive.copyFrom(PackSend);
+//    for (int i = 0; i < VolKernelPackageSize; i++)
+//   {
+//        int locIndex = i % NoSpaceDofs;
+//        PackSend[i] = 1.24f*(t+dt)*i*J[locIndex];
+//    }
+//    o_PackSend.copyFrom(PackSend);
+//    free(PackSend);
 
     if(MPI.rank==0)
     {
