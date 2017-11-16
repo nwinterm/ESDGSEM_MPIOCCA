@@ -399,7 +399,7 @@ for(int ie=0;ie<Nelem;++ie){
             int xid = ie*ngl2  + j*ngl+i;
 
  switch(Testcase){
-case 1: {    // convergence test, non periodic
+case 1: {    // convergence test
     b[xid] = 2.0+sin(2.0*PI*y[xid])+cos(2.0*PI*x[xid]);//+cos(x[xid])*sin(y[xid])*cos(t);
     break;}
 
