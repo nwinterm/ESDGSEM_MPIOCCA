@@ -433,7 +433,7 @@
 
     dfloat LocalLambdaMax=0.0;
     for (int ie=0;ie<MeshSplit.NumElements;ie++){
-        LocalLambdaMax = max(LocalLambdaMax,LocalLambdas[ie]);
+        LocalLambdaMax = fmax(LocalLambdaMax,LocalLambdas[ie]);
 
     }
 	//cout << "Local Lambda max: " << LocalLambdaMax <<"\n";
@@ -463,7 +463,7 @@
 
     dfloat LocalViscParaMax=0.0;
     for (int ie=0;ie<MeshSplit.NumElements;ie++){
-        LocalViscParaMax = max(LocalViscParaMax,LocalViscPara[ie]);
+        LocalViscParaMax = fmax(LocalViscParaMax,LocalViscPara[ie]);
 
     }
 

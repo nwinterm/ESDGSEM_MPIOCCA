@@ -1236,7 +1236,7 @@ int main(int argc, char *argv[])
             o_ViscPara.copyTo(ViscPara);
             GetGlobalViscParaMax(MPI,  DGMeshPartition,ViscPara, &maxViscPara);
             dt_v = DFL/(pow(ngl,2)) * pow(globalMinEleSize,2) / maxViscPara;
-            dt_i = min(dt_i,dt_v);
+            dt_i = fmin(dt_i,dt_v);
         }
 
 //        dt_i = 0.00001;
