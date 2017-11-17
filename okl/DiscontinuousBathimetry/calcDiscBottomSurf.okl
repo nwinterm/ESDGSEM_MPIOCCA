@@ -34,8 +34,8 @@ kernel void calcDiscBottomSurf(const int Nfaces,
 
                     dfloat rJumpTerm =  scaling*geomFace*  half* half* g_const*(bR[edgeIDX]-bL[edgeIDX]) *  (qL[edgeID] + qR[edgeID]);
 
-                    discBottomSurf1[edgeIDX]  = fabs(nx)*rJumpTerm;
-                    discBottomSurf2[edgeIDX]  = fabs(ny)*rJumpTerm;
+                    discBottomSurf1[edgeIDX]  = n)*rJumpTerm;
+                    discBottomSurf2[edgeIDX]  = ny*rJumpTerm;
                 }
 
             }
