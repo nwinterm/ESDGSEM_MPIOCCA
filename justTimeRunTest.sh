@@ -10,5 +10,5 @@ OutFile=NVprofTimingResults.txt
 rm -f $OutFile
 for ((currVersion=$StartVerFD;currVersion<=$EndVerFD;currVersion++)){
 #echo $currVersion
-	nvprof ./main CUDA Nelem 400 N 4 Nepad 8 KernelV $currVersion STDKernelV $VerSD &>>$OutFile
+	nvprof ./main CUDA Nelem 2000 N 2 Nepad 16 KernelV $currVersion STDKernelV $VerSD &>>$OutFile
 }

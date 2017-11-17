@@ -109,7 +109,7 @@ Dstrong[ngl2-1] = D0[ngl2-1] - 1.0/w_GL[ngl-1];
 //cout << " \n";
 //}
 
-ModalTrafoMatrix();
+//ModalTrafoMatrix();
 //SubCellAverageMatrix();
 
 //dfloat InterpolLagrange[N+1];
