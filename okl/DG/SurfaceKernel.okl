@@ -51,8 +51,8 @@ kernel void SurfaceKernel(const int Nelem,
 
 
                         Qt[id]              +=    - r_Masterslave*  FStar[idFaceLoc] * r_Jac;
-                        Qt[id+ngl2]         +=    - r_Masterslave* r_Jac * (FStar[idFaceLoc+ngl]      - (1-2*is)*DBSurf1[edgeIDx]);
-                        Qt[id+ngl2+ngl2]    +=    - r_Masterslave* r_Jac * (FStar[idFaceLoc+ngl+ngl]   - (1-2*is)*DBSurf2[edgeIDx]);
+                        Qt[id+ngl2]         +=    - r_Masterslave* r_Jac * FStar[idFaceLoc+ngl] + r_Jac*       DBSurf1[edgeIDx];
+                        Qt[id+ngl2+ngl2]    +=    - r_Masterslave* r_Jac * FStar[idFaceLoc+ngl+ngl]  + r_Jac* DBSurf2[edgeIDx];
 
 
                     }
@@ -109,8 +109,8 @@ kernel void SurfaceKernel(const int Nelem,
 
 
                         Qt[id]              +=    - r_Masterslave*  FStar[idFaceLoc] * r_Jac;
-                        Qt[id+ngl2]         +=    - r_Masterslave* r_Jac * (FStar[idFaceLoc+ngl]      + (1-2*is)*DBSurf1[edgeIDx]);
-                        Qt[id+ngl2+ngl2]    +=    - r_Masterslave* r_Jac * (FStar[idFaceLoc+ngl+ngl]   + (1-2*is)*DBSurf2[edgeIDx]);
+                        Qt[id+ngl2]         +=    - r_Masterslave* r_Jac * FStar[idFaceLoc+ngl]       +r_Jac* DBSurf1[edgeIDx];
+                        Qt[id+ngl2+ngl2]    +=    - r_Masterslave* r_Jac * FStar[idFaceLoc+ngl+ngl]   +r_Jac* DBSurf2[edgeIDx];
 
 
                     }
