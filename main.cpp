@@ -1371,7 +1371,7 @@ int main(int argc, char *argv[])
 
             if(PositivityPreserving==1)
             {
-                calcAvg(Nelem,o_EleSizes,o_GLw, o_Jac,o_q,o_Qavg);
+//                calcAvg(Nelem,o_EleSizes,o_GLw, o_Jac,o_q,o_Qavg);
 
 //                dfloat * qavgtmp = (dfloat*) calloc(Nelem*4,sizeof(dfloat));
 ////                o_Qavg.copyTo(qavgtmp);
@@ -1384,10 +1384,14 @@ int main(int argc, char *argv[])
 ////                    cout << "Min H: " << qavgtmp[i*4+3] << " \n";
 ////                }
 ////                free(qavgtmp);
-                preservePosivitity(Nelem,o_Qavg,o_q);
+
+
+
+
+//                preservePosivitity(Nelem,o_Qavg,o_q);
 
 //                // old kernel header
-//                preservePosivitity(Nelem,o_EleSizes,o_GLw, o_Jac,o_q);
+               preservePosivitity(Nelem,o_EleSizes,o_GLw, o_Jac,o_q);
 //
             }
 

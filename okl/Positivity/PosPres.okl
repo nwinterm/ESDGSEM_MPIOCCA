@@ -1,136 +1,161 @@
 kernel void PosPres(const int Nelem,
-                    const dfloat * restrict Qavg,
+                    const dfloat * restrict EleSizes,
+                    const dfloat * restrict GLw,
+                    const dfloat * restrict  Jac,
                     dfloat * restrict  Q)
 {
 
 
 
-    for(int iEo = 0; iEo < Nelem; iEo+=NEpad; outer0)
+    for(int ie = 0; ie < Nelem; ie++; outer0)
     {
 
-        shared dfloat s_Havg[NEpad];
-        shared dfloat s_HUavg[NEpad];
-        shared dfloat s_HVavg[NEpad];
-        shared dfloat s_theta[NEpad];
+        shared dfloat s_Havg;
+        shared dfloat s_HUavg;
+        shared dfloat s_HVavg;
+        shared dfloat s_Hmin;
+        shared dfloat s_theta;
 
-        shared dfloat s_H[NEpad][ngl][ngl];
-        shared dfloat s_Hu[NEpad][ngl][ngl];
-        shared dfloat s_Hv[NEpad][ngl][ngl];
+        shared dfloat s_GLw[ngl];
+        shared dfloat s_H[ngl][ngl];
+        shared dfloat s_Hu[ngl][ngl];
+        shared dfloat s_Hv[ngl][ngl];
 
+
+
+        for (int i=0; i<ngl; ++i; inner1)
+        {
+            for (int j=0; j<ngl; ++j; inner0)
+            {
+                int Fid = ie*ngl2*Neq   +j*ngl+i;
+                s_H[i][j]=Q[Fid];
+                Fid+=ngl2;
+                s_Hu[i][j]=Q[Fid];
+                Fid+=ngl2;
+                s_Hv[i][j]=Q[Fid];
+
+                if (j == 0)
+                {
+                    s_GLw[i] = GLw[i];
+                }
+
+
+            }
+
+        }
+
+        barrier(localMemFence);
 
 // Very naive way to integrate over an element
 
-        for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
+        for (int l=0; l<1; ++l; inner0)
         {
-            for (int j=0; j<ngl; ++j; inner1)
+            s_Hmin = zero;
+            s_Havg = zero;
+            s_HUavg = zero;
+            s_HVavg = zero;
+
+            occaUnroll(ngl) // <- #pragma unroll ngl
+            for (int i=0; i<ngl; ++i)
             {
-                for (int i=0; i<ngl; ++i; inner0)
+                occaUnroll(ngl)
+                for (int j=0; j<ngl; ++j)
                 {
-                    const int eleID     =   iEo + ieLoc;
-                    if (eleID<Nelem)
-                    {
 
-                        const int Fid = eleID*ngl2*Neq   +j*ngl+i;
-
-                        s_H[ieLoc][i][j] = Q[Fid];
-                        s_Hu[ieLoc][i][j] = Q[Fid+ngl2];
-                        s_Hv[ieLoc][i][j] = Q[Fid+ngl2+ngl2];
-                        if ((i==0)&&(j==0)){
-                            s_Havg[ieLoc]  =   Qavg[eleID*4];
-                            s_HUavg[ieLoc] =   Qavg[eleID*4+1];
-                            s_HVavg[ieLoc] =   Qavg[eleID*4+2];
+                    const int xid=ie*ngl2   +j*ngl+i;
+                    dfloat r_Weights = s_GLw[i] * s_GLw[j] /Jac[xid];
+                    s_Havg += s_H[i][j] * r_Weights;
+                    s_HUavg += s_Hu[i][j] * r_Weights;
+                    s_HVavg += s_Hv[i][j] * r_Weights;
+                    s_Hmin = min(s_Hmin, s_H[i][j]);
 
 
-                            const dfloat r_havg = s_Havg[ieLoc] ;
-                            const dfloat r_hmin = Qavg[eleID*4+3] ;
-                            if (r_havg == r_hmin)
-                            {
-                                s_theta[ieLoc] =  one;
-                            }
-                            else
-                            {
-                                s_theta[ieLoc] =  min(one,r_havg/(r_havg-r_hmin));
-                            }
-
-                        }
-
-
-
-
-                    }
 
                 }
+
             }
+            s_Havg =   s_Havg/ EleSizes[ie];
+            s_HUavg =   s_HUavg/ EleSizes[ie];
+            s_HVavg =   s_HVavg/ EleSizes[ie];
+
+            if (s_Havg == s_Hmin)
+            {
+                s_theta = one;
+            }
+            else
+            {
+                s_theta = min(one,s_Havg/(s_Havg-(s_Hmin)));
+            }
+
+
+
+
+
+
         }
 
         barrier(localMemFence);
 
 // now that theta is found, update all values
 
-        for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
+        for (int i=0; i<ngl; ++i; inner1)
         {
-            for (int j=0; j<ngl; ++j; inner1)
+            for (int j=0; j<ngl; ++j; inner0)
             {
-                for (int i=0; i<ngl; ++i; inner0)
+                const int id = ie*ngl2*Neq   +j*ngl+i;
+
+
+                dfloat h_new =zero;
+                dfloat hu_new=zero;
+                dfloat hv_new=zero;
+
+                dfloat r_h = s_H[i][j];
+                dfloat r_hu = s_Hu[i][j];
+                dfloat r_hv = s_Hv[i][j];
+                dfloat r_hAvg = s_Havg;
+                dfloat r_huAvg = s_HUavg;
+                dfloat r_hvAvg = s_HVavg;
+                dfloat r_theta = s_theta;
+
+                if (r_hAvg>zero)
                 {
-                    const int eleID     =   iEo + ieLoc;
-                    if (eleID<Nelem)
+
+                    h_new =  fabs(r_theta * ( r_h - r_hAvg ) + r_hAvg);
+
+
+
+                    if (h_new > PosPresTOL)
                     {
-                        const int id = eleID*ngl2*Neq   +j*ngl+i;
-
-
-                        dfloat h_new =zero;
-                        dfloat hu_new=zero;
-                        dfloat hv_new=zero;
-
-                        const dfloat r_h = s_H[ieLoc][i][j];
-                        const dfloat r_hu = s_Hu[ieLoc][i][j];
-                        const dfloat r_hv = s_Hv[ieLoc][i][j];
-                        const dfloat r_hAvg = s_Havg[ieLoc];
-                        const dfloat r_huAvg = s_HUavg[ieLoc];
-                        const dfloat r_hvAvg = s_HVavg[ieLoc];
-                        const dfloat r_theta = s_theta[ieLoc];
-
-                        if (r_hAvg>zero)
-                        {
-
-                            h_new =  fabs(r_theta * ( r_h - r_hAvg ) + r_hAvg);
-
-
-
-                            if (h_new > PosPresTOL)
-                            {
-                                hu_new = r_theta * (r_hu -  r_huAvg) +  r_huAvg;
-                                hv_new = r_theta * (r_hv -  r_hvAvg) + r_hvAvg;
-                            }
-                            else
-                            {
-                                hu_new = zero;
-                                hv_new = zero;
-
-                            }
-
-
-
-
-
-                        }
-                        else
-                        {
-                            h_new=zero;
-                            hu_new = zero;
-                            hv_new = zero;
-
-                        }
-
-
-
-
-                        Q[id]=h_new;
-                        Q[id+ngl2] =hu_new;
-                        Q[id+ngl2+ngl2] = hv_new;
+                        hu_new = r_theta * (r_hu -  r_huAvg) +  r_huAvg;
+                        hv_new = r_theta * (r_hv -  r_hvAvg) + r_hvAvg;
                     }
+                    else
+                    {
+                        hu_new = zero;
+                        hv_new = zero;
+
+                    }
+
+
+
+
+
                 }
+                else
+                {
+                    h_new=zero;
+                    hu_new = zero;
+                    hv_new = zero;
+
+                }
+
+
+
+
+                Q[id]=h_new;
+                Q[id+ngl2] =hu_new;
+                Q[id+ngl2+ngl2] = hv_new;
+
 
 
 
