@@ -91,8 +91,11 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
 						s_Q1[ieLoc][i][j]      =   Q[Fid];
 						s_Q2[ieLoc][i][j]      =   Q[Fid+ngl2];
 						s_Q3[ieLoc][i][j]      =   Q[Fid+ngl2+ngl2];
-						s_invQ[ieLoc][i][j]    =   one/Q[Fid];
-
+						if(Q[Fid]>0){
+							s_invQ[ieLoc][i][j]    =   one/Q[Fid];
+						}else{
+							s_invQ[ieLoc][i][j]    =   zero;
+						}
 						
 						
 
