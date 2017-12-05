@@ -1126,8 +1126,12 @@ int main(int argc, char *argv[])
 
 
     dfloat * mCheckpoints;
+
     if (NumPlots>0)
     {
+	if (Testcase == 32){
+		NumPlots=5;      
+    	}
         mCheckpoints = (dfloat*) calloc(NumPlots,sizeof(dfloat));
         mCheckpoints[0]=0.0;
         if (NumPlots>1)
@@ -1139,7 +1143,15 @@ int main(int argc, char *argv[])
 
             }
         }
+
+	if (Testcase == 32){
+		mCheckpoints[1]=8.0;
+		mCheckpoints[2]=30.0;
+		mCheckpoints[3]=300.0;
+		mCheckpoints[4]=900.0;    
+    	}
     }
+    
 
     dfloat * tCheckpoints;
     int timeCount=0;
@@ -1229,8 +1241,12 @@ int main(int argc, char *argv[])
         globalLambdaMax=0.0;
         o_LambdaMax.copyTo(LocalLambdas);
         GetGlobalLambdaMax(MPI,  DGMeshPartition,LocalLambdas, &globalLambdaMax);
-        dt_i = globalMinEleSize/(ngl) * CFL /globalLambdaMax;
-        if ( ArtificialViscosity==1)
+	if(globalLambdaMax==0.0){
+		dt_i = 0.0001;
+	}else{
+        	dt_i = globalMinEleSize/(ngl) * CFL /globalLambdaMax;
+	}        
+	if ( ArtificialViscosity==1)
         {
             ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara);
             o_ViscPara.copyTo(ViscPara);
