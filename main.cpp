@@ -889,6 +889,7 @@ int main(int argc, char *argv[])
     }
     info.addDefine("nglPad",nglPad );
     dfloat TOL_PosPres = pow(10.0,-3);
+    dfloat ZeroTOL = pow(10.0,-5);
     dfloat geomface = 1.0/DGBasis.w_GL[0];
     dfloat zero = 0.0;
     dfloat half = 0.5;
@@ -912,7 +913,7 @@ int main(int argc, char *argv[])
     info.addDefine("g_const",g_const);
     info.addDefine("geomFace",geomface );
     info.addDefine("PosPresTOL",TOL_PosPres);
-
+    info.addDefine("ZeroTOL",ZeroTOL);
     //copy all permanent data onto the device
     if(MPI.rank==0)
     {
