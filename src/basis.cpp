@@ -785,7 +785,29 @@ if (h>pow(10,-12)){
 };
 
 
+void basis :: checkConservation(const dfloat Q[],const dfloat Q_init[],const dfloat J[],dfloat *MassDelta){
 
+*MassDelta=0.0;
+dfloat TotalMass_Final = 0.0;
+dfloat TotalMass_Init = 0.0;
+
+for (int ie=0; ie<Nelem_global;ie++){
+          for(int j=0;j<ngl;++j){
+            for(int i=0;i<ngl;++i){
+                int id = ie*ngl2*Neq   +j*ngl+i;
+                int xid = ie*ngl2   +j*ngl+i;
+
+//            cout <<"Entropy final: "<<E_final <<"\n";
+//            cout <<"Entropy init: "<<E_init <<"\n";
+            TotalMass_Final  +=  Q[id] /J[xid]* w_GL[i]* w_GL[j];
+            TotalMass_Init   +=  Q_init[id] /J[xid]* w_GL[i]* w_GL[j];
+
+        }
+          }
+}
+
+*MassDelta=TotalMass_Final - TotalMass_Init;
+};
 //
 //
 //

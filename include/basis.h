@@ -44,6 +44,7 @@ class basis
         void setNelemLocal(const int);
         void setNelemGlobal(const int);
         void  calcEntropyDelta(const dfloat g_const,const dfloat Q[],const dfloat Q_init[],const dfloat b[],const dfloat J[],dfloat *EntropyDelta);
+		void checkConservation(const dfloat Q[],const dfloat Q_init[],const dfloat J[],dfloat *MassDelta);
         void ConvertToModal(const dfloat *Q_nodal, dfloat *Q_modal);
         void EvaluteModalPolynomial(const dfloat Q_modal[], dfloat Q_nodal[]);
 //        void  CheckWhereItNaNed(const dfloat [],bool*, int*);

@@ -1532,6 +1532,9 @@ int main(int argc, char *argv[])
         dfloat EntropyDelta=0.0;
         DGBasis.calcEntropyDelta(g_const,Q_global,q_exakt,b_global,J_global,&EntropyDelta);
         cout <<"Entropydifference is: " <<  EntropyDelta <<"\n";
+		dfloat MassDelta
+		checkConservation(Q_global,q_exakt,J_global,&MassDelta);
+		cout <<"Mass difference is: " <<  MassDelta <<"\n";
 
         InitQ(0,DGMeshPartition,Testcase,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,T,b_global,g_const);
 
