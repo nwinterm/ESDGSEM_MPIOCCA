@@ -734,7 +734,7 @@ dfloat tmpMinEleSize;
 
 
 
-void basis :: calcEntropyDelta(const dfloat g_const,const dfloat Q[],const dfloat Q_init[],const dfloat b[],const dfloat J[],dfloat *EntropyDelta){
+void basis :: calcEntropyDelta(const dfloat g_const,const dfloat Q[],const dfloat Q_init[],const dfloat b[],const dfloat J[],dfloat *EntropyDelta,dfloat * relEntropyDelta){
 
 *EntropyDelta=0.0;
 dfloat TotalEntropy_Final = 0.0;
@@ -761,6 +761,7 @@ for (int ie=0; ie<Nelem_global;ie++){
 }
 
 *EntropyDelta=TotalEntropy_Final - TotalEntropy_Init;
+*relEntropyDelta=*EntropyDelta/TotalEntropy_Init;
 };
 
 
@@ -785,7 +786,7 @@ if (h>pow(10,-12)){
 };
 
 
-void basis :: checkConservation(const dfloat Q[],const dfloat Q_init[],const dfloat J[],dfloat *MassDelta){
+void basis :: checkConservation(const dfloat Q[],const dfloat Q_init[],const dfloat J[],dfloat *MassDelta, dfloat *relMassError){
 
 *MassDelta=0.0;
 dfloat TotalMass_Final = 0.0;
@@ -807,6 +808,7 @@ for (int ie=0; ie<Nelem_global;ie++){
 }
 
 *MassDelta=TotalMass_Final - TotalMass_Init;
+*relMassError = *MassDelta/TotalMass_Init;
 };
 //
 //

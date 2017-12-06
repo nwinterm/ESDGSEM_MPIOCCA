@@ -43,8 +43,8 @@ class basis
         void LinfNorm(const dfloat[],const dfloat[],dfloat[]);
         void setNelemLocal(const int);
         void setNelemGlobal(const int);
-        void  calcEntropyDelta(const dfloat g_const,const dfloat Q[],const dfloat Q_init[],const dfloat b[],const dfloat J[],dfloat *EntropyDelta);
-		void checkConservation(const dfloat Q[],const dfloat Q_init[],const dfloat J[],dfloat *MassDelta);
+        void  calcEntropyDelta(const dfloat g_const,const dfloat Q[],const dfloat Q_init[],const dfloat b[],const dfloat J[],dfloat *EntropyDelta, dfloat *relEntropyDelta);
+	void checkConservation(const dfloat Q[],const dfloat Q_init[],const dfloat J[],dfloat *MassDelta,dfloat *relMassError);
         void ConvertToModal(const dfloat *Q_nodal, dfloat *Q_modal);
         void EvaluteModalPolynomial(const dfloat Q_modal[], dfloat Q_nodal[]);
 //        void  CheckWhereItNaNed(const dfloat [],bool*, int*);

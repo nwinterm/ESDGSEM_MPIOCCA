@@ -1027,8 +1027,8 @@ int main(int argc, char *argv[])
     else
     {
         std::ostringstream oss;
-        cout << "Kernel Version: V " << KernelVersion << ".\n";
-        oss << "okl/DG/VolumeKernelV" << KernelVersion << ".okl";
+        cout << "Kernel Version: V " << KernelVersionSTD << ".\n";
+        oss << "okl/DG/VolumeKernelV" << KernelVersionSTD << ".okl";
         std::string var = oss.str();
         VolumeKernel=device.buildKernelFromSource(var,"VolumeKernel",info);
     }
@@ -1530,11 +1530,16 @@ int main(int argc, char *argv[])
 
 
         dfloat EntropyDelta=0.0;
-        DGBasis.calcEntropyDelta(g_const,Q_global,q_exakt,b_global,J_global,&EntropyDelta);
+        dfloat relEntropyDelta=0.0;
+        DGBasis.calcEntropyDelta(g_const,Q_global,q_exakt,b_global,J_global,&EntropyDelta,&relEntropyDelta);
         cout <<"Entropydifference is: " <<  EntropyDelta <<"\n";
+        cout <<"relative Entropydifference is: " <<  relEntropyDelta <<"\n";
+
 		dfloat MassDelta=0.0;
-		DGBasis.checkConservation(Q_global,q_exakt,J_global,&MassDelta);
+		dfloat relMassError=0.0;
+		DGBasis.checkConservation(Q_global,q_exakt,J_global,&MassDelta,&relMassError);
 		cout <<"Mass difference is: " <<  MassDelta <<"\n";
+		cout <<"relative mass difference is: " <<  relMassError <<"\n";
 
         InitQ(0,DGMeshPartition,Testcase,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,T,b_global,g_const);
 

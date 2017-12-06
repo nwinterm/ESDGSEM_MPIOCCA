@@ -23,4 +23,4 @@ NEpad=16
 NEsurfpad=16
 Nedgepad=8
 KernelVersionFD=99
-KernelVersionSTD=10
+KernelVersionSTD=7
