@@ -189,7 +189,7 @@ case 30:     // Steeper Dam Break To Test Shock Capturing
 
     }else{
 //        h=max(pow(10.0,-6),0.1-b);
-        h=pow(10.0,-6)-b;
+        h=0.0;
     }
 
 
@@ -419,11 +419,11 @@ case 4: {    // WELL BALANCED (CARTESIAN 4x4)
     break;}
 case 30:{    // Steeper Dam Break To Test Shock Capturing
 
-    if (x[xid] >= 2.5){
-        b[xid] = sin((x[xid]-2.5)/2.5 * PI);
-    }else{
-        b[xid] =0.0;
-    }
+//    if (x[xid] >= 2.5){
+//        b[xid] = sin((x[xid]-2.5)/2.5 * PI);
+//    }else{
+//        b[xid] =0.0;
+//    }
      b[xid] =0.0;
     break;}
 case 31:     // Two-dimensional oscillating lake  (Xing_PosPres paper, 6.8)

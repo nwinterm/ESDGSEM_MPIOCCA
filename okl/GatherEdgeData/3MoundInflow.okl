@@ -166,14 +166,14 @@ kernel void CollectEdgeData(const int Nfaces,
                         if (t<=300)
                         {
                             qNodalL[0]=half;
-                            qNodalL[1]=one*qNodalL[0];
-                            qNodalL[2]=zero*qNodalL[0];
+                            qNodalL[1]=half;
+                            qNodalL[2]=zero;
                         }
                         else
                         {
                             qNodalL[0]=one;
-                            qNodalL[1]=one*qNodalL[0];
-                            qNodalL[2]=zero*qNodalL[0];
+                            qNodalL[1]=one;
+                            qNodalL[2]=zero;
                         }
                     }
                     else
@@ -227,14 +227,14 @@ kernel void CollectEdgeData(const int Nfaces,
                         if (t<=300)
                         {
                             qNodalR[0]=half;
-                            qNodalR[1]=one*qNodalR[0];
-                            qNodalR[2]=zero*qNodalR[0];
+                            qNodalR[1]=half;
+                            qNodalR[2]=zero;
                         }
                         else
                         {
                             qNodalR[0]=one;
-                            qNodalR[1]=one*qNodalR[0];
-                            qNodalR[2]=zero*qNodalR[0];
+                            qNodalR[1]=one;
+                            qNodalR[2]=zero;
 
                         }
 

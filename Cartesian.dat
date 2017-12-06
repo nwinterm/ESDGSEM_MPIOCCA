@@ -4,5 +4,5 @@ yL=-1.0
 yR=1.0
 NelemX=40
 NelemY=40
-PeriodicBD_X=0
-PeriodicBD_Y=0
+PeriodicBD_X=1
+PeriodicBD_Y=1
