@@ -1532,7 +1532,7 @@ int main(int argc, char *argv[])
         dfloat EntropyDelta=0.0;
         DGBasis.calcEntropyDelta(g_const,Q_global,q_exakt,b_global,J_global,&EntropyDelta);
         cout <<"Entropydifference is: " <<  EntropyDelta <<"\n";
-		dfloat MassDelta
+		dfloat MassDelta=0.0;
 		checkConservation(Q_global,q_exakt,J_global,&MassDelta);
 		cout <<"Mass difference is: " <<  MassDelta <<"\n";
 
