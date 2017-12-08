@@ -7,7 +7,7 @@
 #include "MeshPartitioning.h"
 using namespace Constants;
 
-void ShareInputData(MPI_setup, int *,dfloat *,dfloat *, dfloat *,dfloat *,int *,int *,dfloat *,dfloat *,
+void ShareInputData(MPI_setup, int *,dfloat *,dfloat *, dfloat *,dfloat *,int *,int *,dfloat *,dfloat *,dfloat *,
                     dfloat *,int *,int *,int *,int *, int *,int *, int *, int *, int *,int*,int*,int*,int*,int*);
 
 

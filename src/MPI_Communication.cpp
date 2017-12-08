@@ -10,6 +10,7 @@
                       dfloat *g_const,
                       int *ArtificialViscosity,
                       int *PositivityPreserving,
+		      dfloat *PosPresTOL,
                       dfloat *epsilon_0,
                       dfloat *sigma_min,
                       dfloat *sigma_max,
@@ -36,6 +37,7 @@
 	 MPI_Bcast (&*g_const,1,MPI_DFLOAT,0,MPI_COMM_WORLD);
 	 MPI_Bcast (&*ArtificialViscosity,1,MPI_INT,0,MPI_COMM_WORLD);
 	 MPI_Bcast (&*PositivityPreserving,1,MPI_INT,0,MPI_COMM_WORLD);
+	 MPI_Bcast (&*PosPresTOL,1,MPI_DFLOAT,0,MPI_COMM_WORLD);
 	 MPI_Bcast (&*epsilon_0,1,MPI_DFLOAT,0,MPI_COMM_WORLD);
 	 MPI_Bcast (&*sigma_min,1,MPI_DFLOAT,0,MPI_COMM_WORLD);
 	 MPI_Bcast (&*sigma_max,1,MPI_DFLOAT,0,MPI_COMM_WORLD);

@@ -95,15 +95,30 @@ for(int ie=0;ie<Nelem;++ie){
                     qNodal[0] = 10.0;
                 }
                 if( globalEleID % (NelemX/2) == 1){
-//                    qNodal[0] = max(pow(10.0,-6),0.1-b[xid]);
                     qNodal[0] = 0.0;
                 }
                 if( globalEleID % NelemX == 0){
-//                    qNodal[0] = max(pow(10.0,-6),0.1-b[xid]);
                     qNodal[0] = 0.0;
                 }
                 if( globalEleID % NelemX == 1){
                     qNodal[0] = 10.0;
+                }
+
+
+            }
+            if (Testcase==28){
+                int NelemX = sqrt(MeshSplit.global_NumElements);
+                if( globalEleID % (NelemX/2) == 0){
+                    qNodal[0] = 1.0;
+                }
+                if( globalEleID % (NelemX/2) == 1){
+                    qNodal[0] = 0.0;
+                }
+                if( globalEleID % NelemX == 0){
+                    qNodal[0] = 0.0;
+                }
+                if( globalEleID % NelemX == 1){
+                    qNodal[0] = 1.0;
                 }
 
 
@@ -218,6 +233,20 @@ case 29:{     // Steeper Dam Break To Test Shock Capturing
 case 30:{     // Steeper Dam Break To Test Shock Capturing
     if (x<0.0){
             h=10.0-b;
+
+    }else{
+//        h=max(pow(10.0,-6),0.1-b);
+        h=0.0;
+    }
+
+
+    v= 0.0;
+    w= 0.0;
+        break;
+}
+case 28:{     // Steeper Dam Break To Test Shock Capturing
+    if (x<0.5){
+            h=1.0-b;
 
     }else{
 //        h=max(pow(10.0,-6),0.1-b);

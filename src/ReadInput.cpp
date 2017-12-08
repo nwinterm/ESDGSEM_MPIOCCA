@@ -89,6 +89,7 @@ void ReadInputFile(int *N,
                    dfloat *g_const,
                    int *ArtificialViscosity,
                    int *PositivityPreserving,
+		   dfloat *PosPresTOL,
                    dfloat *epsilon_0,
                    dfloat *sigma_min,
                    dfloat *sigma_max,
@@ -146,6 +147,8 @@ void ReadInputFile(int *N,
 
     std::getline(InputStream, current_string);
     *PositivityPreserving= getIntValue(current_string);
+    std::getline(InputStream, current_string);
+    *PosPresTOL= getDfloatValue(current_string);
     std::getline(InputStream, current_string);
     *epsilon_0= getDfloatValue(current_string);
     std::getline(InputStream, current_string);

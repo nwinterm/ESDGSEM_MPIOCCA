@@ -132,6 +132,7 @@ int main(int argc, char *argv[])
     dfloat g_const;
     dfloat epsilon_0,sigma_min,sigma_max;
     dfloat t=0.0;
+    dfloat PosPresTOL=0.0;
     int NumPlots,NumTimeChecks,Testcase;
     int Nedgepad;
     int NEsurfpad;
@@ -188,7 +189,8 @@ int main(int argc, char *argv[])
                       &g_const,
                       &ArtificialViscosity,
                       &PositivityPreserving,
-                      &epsilon_0,
+                      &PosPresTOL,
+		      &epsilon_0,
                       &sigma_min,
                       &sigma_max,
                       &PlotVar,
@@ -216,7 +218,8 @@ int main(int argc, char *argv[])
                    &g_const,
                    &ArtificialViscosity,
                    &PositivityPreserving,
-                   &epsilon_0,
+                   &PosPresTOL,
+		   &epsilon_0,
                    &sigma_min,
                    &sigma_max,
                    &PlotVar,
@@ -255,7 +258,8 @@ int main(int argc, char *argv[])
         cout <<"g_const: " <<g_const <<"\n";
         cout <<"ArtificialViscosity: " <<ArtificialViscosity <<"\n";
         cout <<"PositivityPreserving: " <<PositivityPreserving <<"\n";
-        cout <<"epsilon_0: " <<epsilon_0 <<"\n";
+        cout <<"PosPresTOL: " <<PosPresTOL <<"\n";
+	cout <<"epsilon_0: " <<epsilon_0 <<"\n";
         cout <<"sigma_min: " <<sigma_min <<"\n";
         cout <<"sigma_max: " <<sigma_max <<"\n";
         cout <<"PlotVar: " <<PlotVar <<"\n";
@@ -888,7 +892,7 @@ int main(int argc, char *argv[])
         nglPad=1;
     }
     info.addDefine("nglPad",nglPad );
-    dfloat TOL_PosPres = pow(10.0,-3);
+    dfloat TOL_PosPres = PosPresTOL;//pow(10.0,-4);
     dfloat ZeroTOL = pow(10.0,-5);
     dfloat geomface = 1.0/DGBasis.w_GL[0];
     dfloat zero = 0.0;
@@ -1133,6 +1137,9 @@ int main(int argc, char *argv[])
 	if (Testcase == 32){
 		NumPlots=5;      
     	}
+	if (Testcase == 31){
+		NumPlots=5;
+	}
         mCheckpoints = (dfloat*) calloc(NumPlots,sizeof(dfloat));
         mCheckpoints[0]=0.0;
         if (NumPlots>1)
@@ -1150,6 +1157,12 @@ int main(int argc, char *argv[])
 		mCheckpoints[2]=30.0;
 		mCheckpoints[3]=300.0;
 		mCheckpoints[4]=900.0;    
+    	}
+	if (Testcase == 31){
+		mCheckpoints[1]=T/12.0;
+		mCheckpoints[2]=T/6.0;
+		mCheckpoints[3]=T/4.0;
+		mCheckpoints[4]=T;    
     	}
     }
     
@@ -1242,10 +1255,13 @@ int main(int argc, char *argv[])
         globalLambdaMax=0.0;
         o_LambdaMax.copyTo(LocalLambdas);
         GetGlobalLambdaMax(MPI,  DGMeshPartition,LocalLambdas, &globalLambdaMax);
+	dt_i = globalMinEleSize/(ngl) * CFL /globalLambdaMax;
 	if(globalLambdaMax==0.0){
-		dt_i = 0.0001;
-	}else{
-        	dt_i = globalMinEleSize/(ngl) * CFL /globalLambdaMax;
+		if (t==0.0){
+			dt_i = 0.0001;		
+		}else{
+        		dt_i = globalMinEleSize/(ngl) * CFL /globalLambdaMax;
+		}	
 	}        
 	if ( ArtificialViscosity==1)
         {
@@ -1253,12 +1269,11 @@ int main(int argc, char *argv[])
             o_ViscPara.copyTo(ViscPara);
             GetGlobalViscParaMax(MPI,  DGMeshPartition,ViscPara, &maxViscPara);
             dt_v = DFL/(pow(ngl,2)) * pow(globalMinEleSize,2) / maxViscPara;
-            dt_i = fmin(dt_i,dt_v);
         }
 
 //        dt_i = 0.00001;
 
-        dt=fmin(T-t,dt_i);
+        dt=fmin(T-t,fmin(dt_i,dt_v));
 //cout << "timestep " << dt << "\n" ;
         if (rkSSP)
         {
