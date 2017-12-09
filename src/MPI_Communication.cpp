@@ -15,6 +15,7 @@
                       dfloat *sigma_min,
                       dfloat *sigma_max,
                       int *PlotVar,
+                      int *EntropyPlot,
                       int *NumPlots,
                       int *NumTimeChecks,
                       int *Testcase,
@@ -42,6 +43,7 @@
 	 MPI_Bcast (&*sigma_min,1,MPI_DFLOAT,0,MPI_COMM_WORLD);
 	 MPI_Bcast (&*sigma_max,1,MPI_DFLOAT,0,MPI_COMM_WORLD);
 	 MPI_Bcast (&*PlotVar,1,MPI_INT,0,MPI_COMM_WORLD);
+	 MPI_Bcast (&*EntropyPlot,1,MPI_INT,0,MPI_COMM_WORLD);
 	 MPI_Bcast (&*NumPlots,1,MPI_INT,0,MPI_COMM_WORLD);
      MPI_Bcast (&*NumTimeChecks,1,MPI_INT,0,MPI_COMM_WORLD);
      MPI_Bcast (&*Testcase,1,MPI_INT,0,MPI_COMM_WORLD);

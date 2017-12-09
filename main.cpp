@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     int Nfaces_global, Nelem_global,NoDofs_global,NoSpaceDofs_global;
     int PlotVar;
     int EntropyPlot;
-	int ArtificialViscosity;
+    int ArtificialViscosity;
     int PositivityPreserving;
     int rkorder;
     int rkSSP;
@@ -196,7 +196,7 @@ int main(int argc, char *argv[])
                       &sigma_min,
                       &sigma_max,
                       &PlotVar,
-					  &EntropyPlot,
+		      &EntropyPlot,
                       &NumPlots,
                       &NumTimeChecks,
                       &Testcase,
@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
                    &sigma_min,
                    &sigma_max,
                    &PlotVar,
-				   &EntropyPlot,
+		   &EntropyPlot,
                    &NumPlots,
                    &NumTimeChecks,
                    &Testcase,
@@ -267,6 +267,7 @@ int main(int argc, char *argv[])
         cout <<"sigma_min: " <<sigma_min <<"\n";
         cout <<"sigma_max: " <<sigma_max <<"\n";
         cout <<"PlotVar: " <<PlotVar <<"\n";
+        cout <<"Entropy Plot: " <<EntropyPlot <<"\n";
         cout <<"NumPlots: " <<NumPlots <<"\n";
         cout <<"Fluxdifferencing: " <<Fluxdifferencing <<"\n";
         cout <<"NumFlux: " <<NumFlux <<"\n";
@@ -392,7 +393,7 @@ int main(int argc, char *argv[])
         x_phy_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
         y_phy_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
 		
-		if (EntropyPlots){
+		if (EntropyPlot){
 			EntropyOverTime = (dfloat*) calloc(NumPlots,sizeof(dfloat));
 		}
 
