@@ -203,3 +203,39 @@ plotfile.close();
 
 
 }
+
+
+void PlotEntropy(const int NumPlots, const dfloat EntropyTimes[], const dfloat TotalEntropy[]){
+
+  ostringstream os;
+  os << "movie/Entropyplot.tec";
+  string fName = os.str();
+
+
+ofstream plotfile;
+plotfile.open (fName.c_str());
+
+
+
+
+        plotfile <<"TITLE = Entropyplot.tec\n";
+        plotfile <<"VARIABLES = \"t\",\"Entropy\"\n";
+
+
+        for(int i=0;i<NumPlots;++i){
+            plotfile <<t[i]<<" "<<TotalEntropy[i]<<" \n";
+        }
+
+
+
+
+
+
+
+plotfile.close();
+
+
+
+
+
+}

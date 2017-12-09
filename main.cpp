@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     int Nfaces_global, Nelem_global,NoDofs_global,NoSpaceDofs_global;
     int PlotVar;
     int EntropyPlot;
-    int ArtificialViscosity;
+	int ArtificialViscosity;
     int PositivityPreserving;
     int rkorder;
     int rkSSP;
@@ -196,7 +196,7 @@ int main(int argc, char *argv[])
                       &sigma_min,
                       &sigma_max,
                       &PlotVar,
-		      &EntropyPlot,
+					  &EntropyPlot,
                       &NumPlots,
                       &NumTimeChecks,
                       &Testcase,
@@ -226,7 +226,7 @@ int main(int argc, char *argv[])
                    &sigma_min,
                    &sigma_max,
                    &PlotVar,
-		   &EntropyPlot,
+				   &EntropyPlot,
                    &NumPlots,
                    &NumTimeChecks,
                    &Testcase,
@@ -267,7 +267,6 @@ int main(int argc, char *argv[])
         cout <<"sigma_min: " <<sigma_min <<"\n";
         cout <<"sigma_max: " <<sigma_max <<"\n";
         cout <<"PlotVar: " <<PlotVar <<"\n";
-        cout <<"Entropy Plot: " <<EntropyPlot <<"\n";
         cout <<"NumPlots: " <<NumPlots <<"\n";
         cout <<"Fluxdifferencing: " <<Fluxdifferencing <<"\n";
         cout <<"NumFlux: " <<NumFlux <<"\n";
@@ -364,6 +363,7 @@ int main(int argc, char *argv[])
 
     dfloat * Q_global ;
 	dfloat * EntropyOverTime;
+	dfloat * EntropyTimes;
     dfloat * QtVisc_global;
     dfloat * Qx_global;
     dfloat * Qy_global ;
@@ -393,8 +393,9 @@ int main(int argc, char *argv[])
         x_phy_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
         y_phy_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
 		
-		if (EntropyPlot){
+		if (EntropyPlots){
 			EntropyOverTime = (dfloat*) calloc(NumPlots,sizeof(dfloat));
+			EntropyTimes = (dfloat*) calloc(NumPlots,sizeof(dfloat));
 		}
 
 
@@ -1225,6 +1226,7 @@ int main(int argc, char *argv[])
 					dfloat TotalEntropy=0.0;
 					DGBasis.calcTotalEntropy(g_const,Q_global,b_global,J_global,&TotalEntropy);
 					EntropyOverTime[plotCount] = TotalEntropy;
+					EntropyTimes[plotCount] = t;
 				}
             }
             else
@@ -1485,6 +1487,7 @@ int main(int argc, char *argv[])
 					dfloat TotalEntropy=0.0;
 					DGBasis.calcTotalEntropy(g_const,Q_global,b_global,J_global,&TotalEntropy);
 					EntropyOverTime[plotCount] = TotalEntropy;
+					EntropyTimes[plotCount] = t;
 				}
                 }
                 else
@@ -1557,8 +1560,9 @@ int main(int argc, char *argv[])
     {
         dfloat * q_exakt = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
 
-
-
+		if (EntropyPlot){
+			PlotEntropy(NumPlots, EntropyOverTime, EntropyTimes);
+		}
 
         InitQ(0,DGMeshPartition,Testcase,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,0,b_global,g_const);
 

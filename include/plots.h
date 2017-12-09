@@ -11,5 +11,6 @@ using namespace Constants;
 void PlotSolution(const int, const int,const int, const dfloat[],const dfloat[],const dfloat[],const dfloat[],const int);
 void PlotViscosity(const int, const int,const int, const dfloat[],const dfloat[],const dfloat[],const dfloat[],const int);
 void PlotViscoseParameter(const int , const int , const dfloat [], const dfloat [], const dfloat [], const int );
+void PlotEntropy(const int , const dfloat [], const dfloat []);
 #endif // plots_H
 
