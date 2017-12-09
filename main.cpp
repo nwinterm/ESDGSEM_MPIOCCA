@@ -121,7 +121,8 @@ int main(int argc, char *argv[])
     int Nfaces, Nelem;
     int Nfaces_global, Nelem_global,NoDofs_global,NoSpaceDofs_global;
     int PlotVar;
-    int ArtificialViscosity;
+    int EntropyPlot;
+	int ArtificialViscosity;
     int PositivityPreserving;
     int rkorder;
     int rkSSP;
@@ -138,6 +139,7 @@ int main(int argc, char *argv[])
     int NEsurfpad;
     int KernelVersion=-1;
     int KernelVersionSTD=-1;
+	
 
     int N=0;
     int NelemX=0;
@@ -194,6 +196,7 @@ int main(int argc, char *argv[])
                       &sigma_min,
                       &sigma_max,
                       &PlotVar,
+					  &EntropyPlot,
                       &NumPlots,
                       &NumTimeChecks,
                       &Testcase,
@@ -223,6 +226,7 @@ int main(int argc, char *argv[])
                    &sigma_min,
                    &sigma_max,
                    &PlotVar,
+				   &EntropyPlot,
                    &NumPlots,
                    &NumTimeChecks,
                    &Testcase,
@@ -358,6 +362,7 @@ int main(int argc, char *argv[])
 
 
     dfloat * Q_global ;
+	dfloat * EntropyOverTime;
     dfloat * QtVisc_global;
     dfloat * Qx_global;
     dfloat * Qy_global ;
@@ -386,6 +391,10 @@ int main(int argc, char *argv[])
 
         x_phy_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
         y_phy_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
+		
+		if (EntropyPlots){
+			EntropyOverTime = (dfloat*) calloc(NumPlots,sizeof(dfloat));
+		}
 
 
 
@@ -1211,6 +1220,11 @@ int main(int argc, char *argv[])
             {
                 CollectSolution( MPI, DGMeshPartition, q, Q_global);
                 PlotSolution(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount);
+				if (EntropyPlot){
+					dfloat TotalEntropy=0.0;
+					DGBasis.calcTotalEntropy(g_const,Q_global,b_global,J_global,&TotalEntropy);
+					EntropyOverTime[plotCount] = TotalEntropy;
+				}
             }
             else
             {
@@ -1466,7 +1480,11 @@ int main(int argc, char *argv[])
 
                     }
 
-
+				if (EntropyPlot){
+					dfloat TotalEntropy=0.0;
+					DGBasis.calcTotalEntropy(g_const,Q_global,b_global,J_global,&TotalEntropy);
+					EntropyOverTime[plotCount] = TotalEntropy;
+				}
                 }
                 else
                 {

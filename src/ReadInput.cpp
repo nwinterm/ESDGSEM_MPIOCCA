@@ -94,6 +94,7 @@ void ReadInputFile(int *N,
                    dfloat *sigma_min,
                    dfloat *sigma_max,
                    int *PlotVar,
+				   int *EntropyPlot,
                    int *NumPlots,
                    int *NumTimeChecks,
                    int *Testcase,
@@ -157,6 +158,8 @@ void ReadInputFile(int *N,
     *sigma_max= getDfloatValue(current_string);
     std::getline(InputStream, current_string);
     *PlotVar= getIntValue(current_string);
+	std::getline(InputStream, current_string);
+    *EntropyPlot= getIntValue(current_string);
     std::getline(InputStream, current_string);
     *NumPlots= getIntValue(current_string);
     std::getline(InputStream, current_string);

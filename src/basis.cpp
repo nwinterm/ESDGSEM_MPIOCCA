@@ -764,7 +764,31 @@ for (int ie=0; ie<Nelem_global;ie++){
 *relEntropyDelta=*EntropyDelta/TotalEntropy_Init;
 };
 
+void basis :: calcTotalEntropy(const dfloat g_const,const dfloat Q[],const dfloat b[],const dfloat J[],dfloat *TotalEntropy){
 
+dfloat r_TotalEntropy= 0.0;
+
+for (int ie=0; ie<Nelem_global;ie++){
+          for(int j=0;j<ngl;++j){
+            for(int i=0;i<ngl;++i){
+                int id = ie*ngl2*Neq   +j*ngl+i;
+                int xid = ie*ngl2   +j*ngl+i;
+
+                dfloat Entropy=0.0;
+                calcEntropyPointwise(g_const,Q[id],Q[id+ngl2],Q[id+ngl2+ngl2],b[xid],&Entropy);
+
+//            cout <<"Entropy final: "<<E_final <<"\n";
+//            cout <<"Entropy init: "<<E_init <<"\n";
+            r_TotalEntropy  +=  Entropy /J[xid]* w_GL[i]* w_GL[j];
+
+
+        }
+          }
+}
+
+*TotalEntropy=r_TotalEntropy ;
+
+};
 
 void basis :: calcEntropyPointwise(const dfloat g_const,const dfloat h,const dfloat hu,const dfloat hv,const dfloat b,dfloat *Entropy){
 dfloat u;
