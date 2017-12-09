@@ -393,7 +393,7 @@ int main(int argc, char *argv[])
         x_phy_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
         y_phy_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
 		
-		if (EntropyPlots){
+		if (EntropyPlot){
 			EntropyOverTime = (dfloat*) calloc(NumPlots,sizeof(dfloat));
 			EntropyTimes = (dfloat*) calloc(NumPlots,sizeof(dfloat));
 		}
@@ -1561,7 +1561,7 @@ int main(int argc, char *argv[])
         dfloat * q_exakt = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
 
 		if (EntropyPlot){
-			PlotEntropy(NumPlots, EntropyOverTime, EntropyTimes);
+			PlotEntropy(NumPlots, EntropyTimes,EntropyOverTime);
 		}
 
         InitQ(0,DGMeshPartition,Testcase,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,0,b_global,g_const);

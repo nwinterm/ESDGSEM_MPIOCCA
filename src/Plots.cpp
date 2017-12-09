@@ -223,7 +223,7 @@ plotfile.open (fName.c_str());
 
 
         for(int i=0;i<NumPlots;++i){
-            plotfile <<t[i]<<" "<<TotalEntropy[i]<<" \n";
+            plotfile <<EntropyTimes[i]<<" "<<TotalEntropy[i]<<" \n";
         }
 
 
