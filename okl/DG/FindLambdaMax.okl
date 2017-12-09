@@ -21,19 +21,17 @@ kernel void FindLambdaMax(const int Nelem,
             {
                 const int Fid = ie*ngl2*Neq   +j*ngl+i;
 
-                dfloat c;
 
                 dfloat Qinv;
                 if (Q[Fid]>=PosPresTOL)
                 {
                     Qinv =  one/Q[Fid];
-                    c=sqrt(g_const*Q[Fid]);
                 }
                 else
                 {
                     Qinv = zero;
-                    c=zero;
                 }
+                const dfloat c=sqrt(g_const*Q[Fid]);
 
                 const dfloat u =Q[Fid+ngl2]*Qinv;
                 const dfloat v =Q[Fid+ngl2+ngl2]*Qinv;

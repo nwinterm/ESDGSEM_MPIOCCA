@@ -104,16 +104,7 @@ kernel void calcNumFluxes(const int Nfaces,
 
                         const dfloat cL=g_const*hL;
                         const dfloat cR=g_const*hR;
-                        dfloat avgC;
-                        if (fabs(half*(cL+cR))>PosPresTOL)
-                        {
-                            avgC=sqrt(fabs(half*(cL+cR)));
-                        }
-                        else
-                        {
-                            avgC=zero;
-                        }
-
+                        const dfloat avgC=sqrt(fabs(half*(cL+cR)));
 
 
                         const dfloat q1L=g_const*(hL+bL)-half*vL_n*vL_n-half*vL_t*vL_t;

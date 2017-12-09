@@ -1740,15 +1740,19 @@ void Mesh::InitDomain(const int Testcase, int *fixedDomain,int *fixedDisc, int *
         *PeriodicBD_Y=0;
         break;
     }
-    case 3:     // Steeper Dam Break To Test Shock Capturing
+    case 3:     // Entropy Glitch
     {
         *fixedDomain = 1 ;
-        *fixedDisc = 0;
+        *fixedDisc = 1;
+        *PeriodicBD_X=0;
+        *PeriodicBD_Y=0;
+        *NelemX=40;
+        *NelemY=40;
 
-        *xL=-5.0;
-        *xR=5.0;
-        *yL=-5.0;
-        *yR=5.0;
+        *xL=-1.0;
+        *xR=1.0;
+        *yL=-1.0;
+        *yR=1.0;
         break;
     }
     case 4:      // WELL BALANCED (CARTESIAN 20x20)

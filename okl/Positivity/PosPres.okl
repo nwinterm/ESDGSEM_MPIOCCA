@@ -121,8 +121,8 @@ kernel void PosPres(const int Nelem,
                 {
 
 //                    h_new =  max(zero,(r_theta * ( r_h - r_hAvg ) + r_hAvg));
-//                   h_new =  fabs(r_theta * ( r_h - r_hAvg ) + r_hAvg);
-                    h_new =  r_theta * ( r_h - r_hAvg ) + r_hAvg;
+                   h_new =  fabs(r_theta * ( r_h - r_hAvg ) + r_hAvg);
+//                    h_new =  r_theta * ( r_h - r_hAvg ) + r_hAvg;
 
 
 

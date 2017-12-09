@@ -1256,24 +1256,24 @@ int main(int argc, char *argv[])
         o_LambdaMax.copyTo(LocalLambdas);
         GetGlobalLambdaMax(MPI,  DGMeshPartition,LocalLambdas, &globalLambdaMax);
 	dt_i = globalMinEleSize/(ngl) * CFL /globalLambdaMax;
-	if(globalLambdaMax==0.0){
+	if (Testcase==32){
 		if (t==0.0){
 			dt_i = 0.0001;		
-		}else{
-        		dt_i = globalMinEleSize/(ngl) * CFL /globalLambdaMax;
-		}	
-	}        
+		}
+	}
 	if ( ArtificialViscosity==1)
         {
             ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara);
             o_ViscPara.copyTo(ViscPara);
             GetGlobalViscParaMax(MPI,  DGMeshPartition,ViscPara, &maxViscPara);
             dt_v = DFL/(pow(ngl,2)) * pow(globalMinEleSize,2) / maxViscPara;
-        }
+	    dt=fmin(T-t,fmin(dt_i,dt_v));
+        }else{
+	    dt=fmin(T-t,dt_i);
+	}
 
 //        dt_i = 0.00001;
 
-        dt=fmin(T-t,fmin(dt_i,dt_v));
 //cout << "timestep " << dt << "\n" ;
         if (rkSSP)
         {
