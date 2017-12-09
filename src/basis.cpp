@@ -834,6 +834,31 @@ for (int ie=0; ie<Nelem_global;ie++){
 *MassDelta=TotalMass_Final - TotalMass_Init;
 *relMassError = *MassDelta/TotalMass_Init;
 };
+
+
+void basis :: calcTotalMass(const dfloat Q[],const dfloat J[],dfloat *TotalMass){
+
+dfloat r_TotalMass= 0.0;
+
+for (int ie=0; ie<Nelem_global;ie++){
+          for(int j=0;j<ngl;++j){
+            for(int i=0;i<ngl;++i){
+                int id = ie*ngl2*Neq   +j*ngl+i;
+                int xid = ie*ngl2   +j*ngl+i;
+
+            r_TotalMass  +=  Q[id] /J[xid]* w_GL[i]* w_GL[j];
+
+
+        }
+          }
+}
+
+*TotalMass=r_TotalMass ;
+
+};
+
+
+
 //
 //
 //

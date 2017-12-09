@@ -363,6 +363,7 @@ int main(int argc, char *argv[])
 
     dfloat * Q_global ;
 	dfloat * EntropyOverTime;
+	dfloat * MassOverTime;
 	dfloat * EntropyTimes;
     dfloat * QtVisc_global;
     dfloat * Qx_global;
@@ -395,6 +396,7 @@ int main(int argc, char *argv[])
 		
 		if (EntropyPlot){
 			EntropyOverTime = (dfloat*) calloc(NumPlots,sizeof(dfloat));
+			MassOverTime = (dfloat*) calloc(NumPlots,sizeof(dfloat));
 			EntropyTimes = (dfloat*) calloc(NumPlots,sizeof(dfloat));
 		}
 
@@ -1226,6 +1228,9 @@ int main(int argc, char *argv[])
 					dfloat TotalEntropy=0.0;
 					DGBasis.calcTotalEntropy(g_const,Q_global,b_global,J_global,&TotalEntropy);
 					EntropyOverTime[plotCount] = TotalEntropy;
+					dfloat TotalMass=0.0;
+					DGBasis.calcTotalMass(Q_global,J_global,&TotalMass);
+					MassOverTime[plotCount] = TotalMass;
 					EntropyTimes[plotCount] = t;
 				}
             }
@@ -1487,6 +1492,9 @@ int main(int argc, char *argv[])
 					dfloat TotalEntropy=0.0;
 					DGBasis.calcTotalEntropy(g_const,Q_global,b_global,J_global,&TotalEntropy);
 					EntropyOverTime[plotCount] = TotalEntropy;
+					dfloat TotalMass=0.0;
+					DGBasis.calcTotalMass(Q_global,J_global,&TotalMass);
+					MassOverTime[plotCount] = TotalMass;
 					EntropyTimes[plotCount] = t;
 				}
                 }
@@ -1562,6 +1570,7 @@ int main(int argc, char *argv[])
 
 		if (EntropyPlot){
 			PlotEntropy(NumPlots, EntropyTimes,EntropyOverTime);
+			PlotMass(NumPlots, EntropyTimes,MassOverTime);
 		}
 
         InitQ(0,DGMeshPartition,Testcase,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,0,b_global,g_const);

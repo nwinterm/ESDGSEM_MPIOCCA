@@ -239,3 +239,37 @@ plotfile.close();
 
 
 }
+void PlotMass(const int NumPlots, const dfloat PlotTimes[], const dfloat TotalMass[]){
+
+  ostringstream os;
+  os << "movie/Massplot.tec";
+  string fName = os.str();
+
+
+ofstream plotfile;
+plotfile.open (fName.c_str());
+
+
+
+
+        plotfile <<"TITLE = Massplot.tec\n";
+        plotfile <<"VARIABLES = \"t\",\"Mass\"\n";
+
+
+        for(int i=0;i<NumPlots;++i){
+            plotfile <<PlotTimes[i]<<" "<<TotalMass[i]<<" \n";
+        }
+
+
+
+
+
+
+
+plotfile.close();
+
+
+
+
+
+}
