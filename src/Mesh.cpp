@@ -91,7 +91,7 @@ void Mesh::InitMesh(const string meshFile, const bool Cartesian, const int Testc
 
 
 
-    if(Testcase ==43)    //PARTIAL CURVED DAM BREAK
+    if(Testcase ==43 || Testcase == 46 || Testcase == 47)    //PARTIAL CURVED DAM BREAK
     {
         cout << "Doing extra boundaries for Testcase 43, partial curved dam...\n";
         int ExtraEdges=36;
@@ -1776,6 +1776,17 @@ void Mesh::InitDomain(const int Testcase, int *fixedDomain,int *fixedDisc, int *
         *yR=5.0;
         break;
     }
+    case 21:     // Dam Break
+    {
+        *fixedDomain = 1 ;
+        *fixedDisc = 0;
+
+        *xL=-5.0;
+        *xR=5.0;
+        *yL=-5.0;
+        *yR=5.0;
+        break;
+    }
     case 30:     // Steeper Dam Break To Test Shock Capturing
     {
         *fixedDomain = 1 ;
@@ -1846,8 +1857,8 @@ void Mesh::InitDomain(const int Testcase, int *fixedDomain,int *fixedDisc, int *
 
         *xL=0.0;
         *xR=25.0;
-        *yL=-15.0;
-        *yR=15.0;
+        *yL=0.0;
+        *yR=30.0;
 
 
         break;

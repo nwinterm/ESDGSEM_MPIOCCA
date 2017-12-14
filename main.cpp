@@ -1294,7 +1294,6 @@ int main(int argc, char *argv[])
 	    dt=fmin(T-t,dt_i);
 	}
 
-//        dt_i = 0.00001;
 
 //cout << "timestep " << dt << "\n" ;
         if (rkSSP)

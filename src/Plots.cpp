@@ -253,11 +253,11 @@ plotfile.open (fName.c_str());
 
 
         plotfile <<"TITLE = Massplot.tec\n";
-        plotfile <<"VARIABLES = \"t\",\"Mass\"\n";
+        plotfile <<"VARIABLES = \"t\",\"Massdifference\"\n";
 
 
         for(int i=0;i<NumPlots;++i){
-            plotfile <<PlotTimes[i]<<" "<<TotalMass[i]<<" \n";
+            plotfile <<PlotTimes[i]<<" "<<(TotalMass[i]-TotalMass[0])/TotalMass[0]<<" \n";
         }
 
 

@@ -68,6 +68,22 @@ for(int ie=0;ie<Nelem;++ie){
                 }
 
             }
+            if (Testcase==21){
+                int NelemX = sqrt(MeshSplit.global_NumElements);
+                if( globalEleID % (NelemX/2) == 0){
+                    qNodal[0] = 2.5;
+                }
+                if( globalEleID % (NelemX/2) == 1){
+                    qNodal[0] = 1.5;
+                }
+                if( globalEleID % NelemX == 0){
+                    qNodal[0] = 1.5;
+                }
+                if( globalEleID % NelemX == 1){
+                    qNodal[0] = 2.5;
+                }
+
+            }
 
             if (Testcase==29){
                 int NelemX = sqrt(MeshSplit.global_NumElements);
@@ -141,12 +157,23 @@ for(int ie=0;ie<Nelem;++ie){
 
             }
 
-            if (Testcase==43 ||Testcase==44 || Testcase==45){
+            if (Testcase==43 ||Testcase==44 || Testcase==45 || Testcase == 46){
                 if( globalEleID % 20 == 3){
                     qNodal[0] = 10.0;
                 }
                 if( globalEleID % 20 == 4){
                     qNodal[0] = 5.0;
+                }
+                if( globalEleID % 40 == 4){
+                    qNodal[0] = 10.0;
+                }
+            }
+            if (Testcase == 47){
+                if( globalEleID % 20 == 3){
+                    qNodal[0] = 10.0;
+                }
+                if( globalEleID % 20 == 4){
+                    qNodal[0] = 0.0;
                 }
                 if( globalEleID % 40 == 4){
                     qNodal[0] = 10.0;
@@ -205,14 +232,23 @@ case 4: {    // smaller discontinuous bottom WB test
     w= 0.0;
         break;}
 
-case 20: {    // Partial Dam Break (CARTESIAN)
+case 20: {    //  Dam Break (CARTESIAN)
     if (x<0.0){
             h=10.0-b;
 
     }else{
         h=5.0-b;
     }
-//    h=4.0;
+    v= 0.0;
+    w= 0.0;
+    break;}
+case 21: {    // Dam Break (CARTESIAN)
+    if (x<0.0){
+            h=2.5-b;
+
+    }else{
+        h=1.5-b;
+    }
     v= 0.0;
     w= 0.0;
     break;}
@@ -357,9 +393,11 @@ case 34:{     // 2D Solitary Wave Runup and Run-down
 	dfloat x_c = 2.5;
 	dfloat h0 = 0.32;
 	dfloat gamma = sqrt((3.0*A)/(4*h0));
+	dfloat displacement =  A/h0 /pow(cosh(gamma*(x-x_c)),2);
 
-	h= max (0.0 , 0.32 +   A/h0 /pow(cosh(gamma*(x-x_c)),2)  - b);
-    v= 0.0;
+	h= max (0.0 , h0 +   displacement  - b);
+//	v= displacement * sqrt(g_const/h0);
+	v= displacement * sqrt(g_const*h0);
     w= 0.0;
     break;}
 
@@ -377,6 +415,8 @@ case 35:{     // 1D Bowl
     dfloat h0 = 10.0;
     dfloat omega = sqrt(2*g_const * h0 ) / a;
     h = max(0.0,h0 - Bterm *g_const*(2*omega*t) - Bterm - B*x*0.5/a *sqrt(8*h0/g_const)*cos(omega*t)-b);
+
+// end switch case
 
 
 //    h = max(0.0, sigma*h0 / pow(a,2) *(2 * x * cos(omega*t) + 2* y * sin(omega*t) - sigma) + h0 - h0 * ( pow(x,2)+pow(y,2)/pow(a,2)));
@@ -423,8 +463,31 @@ case 45: {    //curved dam NO BREAK
     v= 0.0;
     w= 0.0;
     break;}
-}
+case 46: {    //curved dam break PARTIAL
+    if (x<1.0/25.0 * y*y - 0.25){
+            h=10.0-b;
 
+    }else{
+        h=5.0-b;
+    }
+
+    v= 0.0;
+    w= 0.0;
+    break;}
+case 47: {    //curved dam break PARTIAL
+    if (x<1.0/25.0 * y*y - 0.25){
+            h=10.0-b;
+
+    }else{
+        h=0.0-b;
+    }
+
+    v= 0.0;
+    w= 0.0;
+    break;}
+
+
+} //end switch
             //compare with cartesian code
 
 //            dfloat h=8.0+cos(2.0*PI*x)*sin(2.0*PI*y)*cos(t)-b;
