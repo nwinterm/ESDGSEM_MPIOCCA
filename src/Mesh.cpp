@@ -269,7 +269,6 @@ void Mesh::InitMesh(const string meshFile, const bool Cartesian, const int Testc
 //
 //        free(EdgeInfo);
 //        EdgeInfo = (int*) calloc((m_num_edges+ExtraEdges)*7,sizeof(int));
-////        EdgeInfo.resize(7,m_num_edges+ExtraEdges);
 //
 //        for(int is=0; is<m_num_edges; ++is)
 //        {
@@ -279,9 +278,7 @@ void Mesh::InitMesh(const string meshFile, const bool Cartesian, const int Testc
 //                EdgeInfo[id] = EdgeInfo_TMP[id];
 //            }
 //        }
-////
-////
-////        for(int is=1;is<=m_num_edges;++is){
+
 //
 //        int startIndex = (NelemX+1)*NelemY + NelemY/2;
 //        int endIndex = m_num_edges - NelemY/2 ;
@@ -290,13 +287,7 @@ void Mesh::InitMesh(const string meshFile, const bool Cartesian, const int Testc
 //        int MidIndex = startIndex + increment*(ExtraEdges/2-1);
 //        int startIndex2 = MidIndex + (CutEdges+1) * increment-1;
 //
-////
-////        cout << " startIndex: " << startIndex <<"\n";
-////        cout << " endIndex: " << endIndex<<"\n";
-////        cout << " increment: " << increment<<"\n";
-////        cout << " MidIndex: " << MidIndex<<"\n";
-////        cout << " startIndex2: " << startIndex2<<"\n";
-////        for(int is=1661;is<=3260;is+=41){       //40x40 case
+
 //        for(int is=startIndex; is<MidIndex; is+=increment)
 //        {
 //            int id = is*7;
@@ -336,10 +327,7 @@ void Mesh::InitMesh(const string meshFile, const bool Cartesian, const int Testc
 //            EdgeInfo[id+5]=-1;
 //
 //        }
-//////        cout << "ghostcounter is " << ghostCounter <<"\n";
 //        ghostCounter = 1;
-////                for(int ie=50;ie<=9950;ie=ie+100){
-////        for(int ie=21;ie<=1581;ie=ie+40){
 //
 //        int eleStartIndex = NelemX/2+1;
 //        int eleEndIndex = m_num_elements - NelemY/2 +1;
@@ -349,11 +337,6 @@ void Mesh::InitMesh(const string meshFile, const bool Cartesian, const int Testc
 //
 //
 //
-////        cout << " eleStartIndex: " << eleStartIndex <<"\n";
-////        cout << " eleEndIndex: " << eleEndIndex<<"\n";
-////        cout << " eleIncrement: " << eleIncrement<<"\n";
-////        cout << " eleMidIndex: " << eleMidIndex<<"\n";
-////        cout << " eleStartIndex2: " << eleStartIndex2<<"\n";
 //
 //
 //        for(int ie=eleStartIndex; ie<=eleMidIndex; ie=ie+eleIncrement)
