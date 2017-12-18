@@ -232,6 +232,15 @@ case 4: {    // smaller discontinuous bottom WB test
     w= 0.0;
         break;}
 
+case 5: {    // Dry Lake + Lake at Rest
+
+        h=max(0.0,0.4-b);
+
+
+    v= 0.0;
+    w= 0.0;
+        break;}
+
 case 20: {    //  Dam Break (CARTESIAN)
     if (x<0.0){
             h=10.0-b;
@@ -394,8 +403,8 @@ case 34:{     // 2D Solitary Wave Runup and Run-down
 	dfloat h0 = 0.32;
 	dfloat gamma = sqrt((3.0*A)/(4*h0));
 	dfloat displacement =  A/h0 /pow(cosh(gamma*(x-x_c)),2);
-
-	h= max (0.0 , h0 +   displacement  - b);
+	dfloat zero=0.0;
+	h= max (zero , h0 +   displacement  - b);
 //	v= displacement * sqrt(g_const/h0);
 	v= displacement * sqrt(g_const*h0);
     w= 0.0;
@@ -534,12 +543,8 @@ case 2: {    // WELL BALANCED (CARTESIAN 20x20)
         b[xid] =0.0;//b[xid] =2.0+sin(y[xid])+cos(x[xid]);
     }
     break;}
-case 4: {    // WELL BALANCED (CARTESIAN 4x4)
-    if ((globalEleID == 6)||(globalEleID==7) ||(globalEleID==10)||(globalEleID==11)){
-        b[xid] =2.0+sin(y[xid])+cos(x[xid]);
-    }else{
-        b[xid] =0.0;//b[xid] =2.0+sin(y[xid])+cos(x[xid]);
-    }
+case 5: {    // WELL BALANCED (CARTESIAN 4x4)
+        b[xid] = 0.25 - 0.25*cos((2*x[xid]-1)*PI);
     break;}
 case 30:{    // Steeper Dam Break To Test Shock Capturing
 

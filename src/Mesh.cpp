@@ -1748,6 +1748,17 @@ void Mesh::InitDomain(const int Testcase, int *fixedDomain,int *fixedDisc, int *
         *PeriodicBD_Y=0;
         break;
     }
+    case 5:      // Dry Lake + Lake at Rest
+    {
+        *fixedDomain = 1 ;
+        *fixedDisc = 0 ;
+        *xL=0.0;
+        *xR=1.0;
+        *yL=0.0;
+        *yR=1.0;
+
+        break;
+    }
     case 20:     // Dam Break
     {
         *fixedDomain = 1 ;
