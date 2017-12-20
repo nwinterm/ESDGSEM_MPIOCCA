@@ -620,56 +620,51 @@ int main(int argc, char *argv[])
     InitQ(1,DGMeshPartition,Testcase,Nelem,ngl,ngl2,x_phy,y_phy,q,0.0,b, g_const);
 
 
-    //dfloat * q_modal = (dfloat*) malloc(NoDofs*sizeof(dfloat));
-    //dfloat * q_exakt = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
-    //DGBasis.ConvertToModal(q, q_modal);
-    //       cout <<"\n Modal Coefficients: \n";
-    //for (int ie=0;ie<Nelem;ie++){
-    //        cout <<"Ele: " << ie <<"\n";
-    //    for(int j=0;j<ngl;++j){
-    //        for(int i=0;i<ngl;++i){
-    //            int id = ie*ngl2*Neq +  j*ngl+i;
-    //
-    //           cout <<q_modal[id]<<"  ";
-    //
-    //      }
-    //        cout <<"\n";
-    //    }
-    //
-    //
-    //}
-    //
-    //
-    //DGBasis.EvaluteModalPolynomial(q_modal, q_exakt);
-    //       cout <<"\n q_init : \n";
-    //for (int ie=0;ie<1;ie++){
-    //        cout <<"Ele: " << ie <<"\n";
-    //    for(int j=0;j<ngl;++j){
-    //        for(int i=0;i<ngl;++i){
-    //            int id = ie*ngl2*Neq +  j*ngl+i;
-    //
-    //           cout <<q[id]<<"  ";
-    //      }
-    //        cout <<"\n";
-    //    }
-    //
-    //
-    //}
-    //
-    //       cout <<"\n q_exakt : \n";
-    //for (int ie=0;ie<1;ie++){
-    //        cout <<"Ele: " << ie <<"\n";
-    //    for(int j=0;j<ngl;++j){
-    //        for(int i=0;i<ngl;++i){
-    //            int id = ie*ngl2*Neq +  j*ngl+i;
-    //
-    //           cout <<q_exakt[id]<<"  ";
-    //      }
-    //        cout <<"\n";
-    //    }
-    //
-    //
-    //}
+    dfloat * q_modal = (dfloat*) malloc(NoDofs*sizeof(dfloat));
+    dfloat * q_exakt = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
+    DGBasis.ConvertToModal(q, q_modal);
+           cout <<"\n Modal Coefficients: \n";
+    for (int ie=0;ie<Nelem;ie++){
+            cout <<"Ele: " << ie <<"\n";
+        for(int j=0;j<ngl;++j){
+            for(int i=0;i<ngl;++i){
+                int id = ie*ngl2*Neq +  j*ngl+i;
+                cout <<q_modal[id]<<"  ";
+          }
+            cout <<"\n";
+        }
+    }
+
+    DGBasis.EvaluteModalPolynomial(q_modal, q_exakt);
+           cout <<"\n q_init : \n";
+    for (int ie=0;ie<1;ie++){
+            cout <<"Ele: " << ie <<"\n";
+        for(int j=0;j<ngl;++j){
+            for(int i=0;i<ngl;++i){
+                int id = ie*ngl2*Neq +  j*ngl+i;
+    
+               cout <<q[id]<<"  ";
+          }
+            cout <<"\n";
+        }
+    
+    
+    }
+    
+           cout <<"\n q_exakt : \n";
+    for (int ie=0;ie<1;ie++){
+            cout <<"Ele: " << ie <<"\n";
+        for(int j=0;j<ngl;++j){
+            for(int i=0;i<ngl;++i){
+                int id = ie*ngl2*Neq +  j*ngl+i;
+    
+               cout <<q_exakt[id]<<"  ";
+          }
+            cout <<"\n";
+        }
+    
+    
+    }
 
 
     //
@@ -853,25 +848,7 @@ int main(int argc, char *argv[])
         o_ViscParaR = device.malloc(Nfaces*sizeof(dfloat));
 
     }
-//    int Dloads = Nelem_global / NEpad + 1;
-//    if (Nelem_global % NEpad == 0){
-//
-//        Dloads--;
-//    }
-    // loading Jac, Xxi,Xeta,Yxi,Yeta,Bx,By, Q,D  storing Qt
-//    int VolKernelPackageSize = (7*NoSpaceDofs+2*NoDofs+Dloads*ngl2)/2;
-//    int VolKernelPackageSize = (7*NoSpaceDofs+2*NoDofs)/2;
-//    o_PackSend    = device.malloc(VolKernelPackageSize*sizeof(dfloat));
-//    o_PackReceive = device.malloc(VolKernelPackageSize*sizeof(dfloat));
-//    dfloat * PackSend = (dfloat*) calloc(VolKernelPackageSize,sizeof(dfloat));
-//    o_PackReceive.copyFrom(PackSend);
-//    for (int i = 0; i < VolKernelPackageSize; i++)
-//   {
-//        int locIndex = i % NoSpaceDofs;
-//        PackSend[i] = 1.24f*(t+dt)*i*J[locIndex];
-//    }
-//    o_PackSend.copyFrom(PackSend);
-//    free(PackSend);
+
 
     if(MPI.rank==0)
     {
@@ -1051,17 +1028,6 @@ int main(int argc, char *argv[])
     }
 
 
-//    std::ostringstream oss1;
-//    cout << "Kernel Version FD: V " << KernelVersion << ".\n";
-//    oss1 << "okl/DG/VolumeKernelFluxDiffV" << KernelVersion << ".okl";
-//    std::string var1 = oss1.str();
-//    VolumeKernel=device.buildKernelFromSource(var1,"VolumeKernelFluxDiff",info);
-
-//    std::ostringstream oss2;
-//    cout << "Kernel Version STD: V " << KernelVersionSTD << ".\n";
-//    oss2 << "okl/DG/VolumeKernelV" << KernelVersionSTD << ".okl";
-//    std::string var2 = oss2.str();
-//    VolumeKernelSTD=device.buildKernelFromSource(var2,"VolumeKernel",info);
 
     switch(NumFlux)
     {
