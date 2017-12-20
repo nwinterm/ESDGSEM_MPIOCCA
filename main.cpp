@@ -1500,12 +1500,12 @@ int main(int argc, char *argv[])
                 else
                 {
                     SendSolution(MPI, DGMeshPartition,  q);
-//                    if(ArtificialViscosity==1)
-//                    {
-//                        SendViscPara(MPI, DGMeshPartition,  ViscPara);
-//                        //            SendViscosity(MPI, DGMeshPartition,  Qx,Qy);
+                    if(ArtificialViscosity==1)
+                    {
+                        SendViscPara(MPI, DGMeshPartition,  ViscPara);
+                        //            SendViscosity(MPI, DGMeshPartition,  Qx,Qy);
 //                        SendViscosity(MPI, DGMeshPartition,  QtVisc,Qy);
-//                    }
+                    }
                 }
 //
                 plotCount=plotCount+1;
