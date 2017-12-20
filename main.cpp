@@ -1478,8 +1478,8 @@ int main(int argc, char *argv[])
                     PlotSolution(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount);
                     if(ArtificialViscosity==1)
                     {
-//                      CollectViscPara(MPI,   DGMeshPartition, ViscPara, ViscPara_Global);
-//                      PlotViscoseParameter(Nelem_global, ngl, x_phy_global,y_phy_global, ViscPara_Global, plotCount);
+                      CollectViscPara(MPI,   DGMeshPartition, ViscPara, ViscPara_Global);
+                      PlotViscoseParameter(Nelem_global, ngl, x_phy_global,y_phy_global, ViscPara_Global, plotCount);
 //                        CollectViscosity( MPI, DGMeshPartition, Qx,Qy, Qx_global, Qy_global);
 //                        PlotViscosity(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Qx_global,Qy_global,plotCount);
 //                        CollectViscosity( MPI, DGMeshPartition, QtVisc,Qy, QtVisc_global, Qy_global);
