@@ -91,7 +91,7 @@ dfloat Qinv;
                                 H=Q[id]+b[xid];
                             }
 
-								plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<< " " << qExact[id] << " \n";
+								plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<< " " << qExact[id]+b[xid] << " \n";
 
                             
 

@@ -1182,8 +1182,18 @@ int main(int argc, char *argv[])
 
             if(MPI.rank==0)
             {
+
                 CollectSolution( MPI, DGMeshPartition, q, Q_global);
-                PlotSolution(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount);
+
+		if (Testcase == 31){
+			dfloat * q_exakt = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
+			InitQ(0,DGMeshPartition,Testcase,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,t,b_global,g_const);
+			PlotSolutionWithExact(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount,q_exakt);
+			free(q_exakt);
+		}else{
+			PlotSolution(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount);
+		}
+
 				if (EntropyPlot){
 					dfloat TotalEntropy=0.0;
 					DGBasis.calcTotalEntropy(g_const,Q_global,b_global,J_global,&TotalEntropy);
