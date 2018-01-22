@@ -183,29 +183,26 @@ kernel void ShockCapturing(const int Nelem,
 
             
 			
-			if(nenner1*nenner2==zero){
-				viscStar=zero;
-				sigma_dof=zero;
-			}else{
-				sigma_dof = max(term1,term2);
-				sigma_dof = log10(sigma_dof);
-			}
-			
-			
-            if (sigmaMin >= sigma_dof)
-            {
-                viscStar    =   zero;
-            }
-            else if(sigmaMax >=sigma_dof)
-            {
-                dfloat delta = one+sin(PI*(sigma_dof - half*(sigmaMax + sigmaMin))/(sigmaMax - sigmaMin)) ;
-                viscStar    =   eps0 * half * delta;
-            }
-            else
-            {
-                viscStar    =   eps0;
-            }
-
+	if(nenner1*nenner2<PosPresTOL){
+		viscStar=zero;
+		sigma_dof=zero;
+	}else{
+		sigma_dof = max(term1,term2);
+		sigma_dof = log10(sigma_dof);			
+            	if (sigmaMin >= sigma_dof)
+            	{
+                	viscStar    =   zero;
+            	}
+            	else if(sigmaMax >=sigma_dof)
+            	{
+                	dfloat delta = one+sin(PI*(sigma_dof - half*(sigmaMax + sigmaMin))/(sigmaMax - sigmaMin)) ;
+                	viscStar    =   eps0 * half * delta;
+            	}
+            	else
+            	{
+                	viscStar    =   eps0;
+            	}
+	}
 
             occaUnroll(ngl)
             for (int i=0; i<ngl; ++i)
