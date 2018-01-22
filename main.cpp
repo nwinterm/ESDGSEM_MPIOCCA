@@ -1717,7 +1717,7 @@ int main(int argc, char *argv[])
         o_SurfacePartsVisc.free();
 
         o_ViscPara.free();
-		o_ViscParaForPlot.free();
+		o_ViscForPlot.free();
         o_ViscParaL.free();
         o_ViscParaR.free();
         if (PositivityPreserving == 1)
