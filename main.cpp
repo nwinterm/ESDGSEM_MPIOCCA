@@ -297,8 +297,8 @@ int main(int argc, char *argv[])
     cout <<"Creating Mesh Partitioning .\n";
     MeshPartitioning DGMeshPartition(MPI.numtasks, ngl);
 
-
     Mesh DGMesh(DGBasis.x_GL,ngl,NelemX);
+
     if(MPI.rank==0)
     {
         if (Cartesian)
@@ -616,55 +616,49 @@ int main(int argc, char *argv[])
     InitB(1,DGMeshPartition,Testcase,Nelem,ngl,ngl2,x_phy,y_phy,b);
 
     CalcBDerivatives(Nelem,ngl,ngl2,g_const,x_phy,y_phy,b,Dmat0,y_eta,y_xi,x_eta,x_xi,Bx,By,J);
+//	cout << "i am rank: " << MPI.rank << " and my Nelem_global is " << DGMeshPartition.global_NumElements << "\n";
 
     InitQ(1,DGMeshPartition,Testcase,Nelem,ngl,ngl2,x_phy,y_phy,q,0.0,b, g_const);
 
 
-    dfloat * q_modal = (dfloat*) malloc(NoDofs*sizeof(dfloat));
-    dfloat * q_exakt = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
-    DGBasis.ConvertToModal(q, q_modal);
-           cout <<"\n Modal Coefficients: \n";
-    for (int ie=0;ie<Nelem;ie++){
-            cout <<"Ele: " << ie <<"\n";
-        for(int j=0;j<ngl;++j){
-            for(int i=0;i<ngl;++i){
-                int id = ie*ngl2*Neq +  j*ngl+i;
-                cout <<q_modal[id]<<"  ";
-          }
-            cout <<"\n";
-        }
-    }
+//    dfloat * q_modal = (dfloat*) malloc(NoDofs*sizeof(dfloat));
+//    dfloat * q_exakt = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
+//    DGBasis.ConvertToModal(q, q_modal);
+//           cout <<"\n Modal Coefficients: \n";
+//    for (int ie=0;ie<Nelem;ie++){
+//            cout <<"Ele: " << ie <<"\n";
+//        for(int j=0;j<ngl;++j){
+//            for(int i=0;i<ngl;++i){
+//                int id = ie*ngl2*Neq +  j*ngl+i;
+//                cout <<q_modal[id]<<"  ";
+//          }
+//            cout <<"\n";
+//        }
+//    }
 
-    DGBasis.EvaluteModalPolynomial(q_modal, q_exakt);
-           cout <<"\n q_init : \n";
-    for (int ie=0;ie<1;ie++){
-            cout <<"Ele: " << ie <<"\n";
-        for(int j=0;j<ngl;++j){
-            for(int i=0;i<ngl;++i){
-                int id = ie*ngl2*Neq +  j*ngl+i;
-    
-               cout <<q[id]<<"  ";
-          }
-            cout <<"\n";
-        }
-    
-    
-    }
-    
-           cout <<"\n q_exakt : \n";
-    for (int ie=0;ie<1;ie++){
-            cout <<"Ele: " << ie <<"\n";
-        for(int j=0;j<ngl;++j){
-            for(int i=0;i<ngl;++i){
-                int id = ie*ngl2*Neq +  j*ngl+i;
-    
-               cout <<q_exakt[id]<<"  ";
-          }
-            cout <<"\n";
-        }
-    
-    
-    }
+//    DGBasis.EvaluteModalPolynomial(q_modal, q_exakt);
+//           cout <<"\n q_init : \n";
+//    for (int ie=0;ie<1;ie++){
+//            cout <<"Ele: " << ie <<"\n";
+//        for(int j=0;j<ngl;++j){
+//            for(int i=0;i<ngl;++i){
+//                int id = ie*ngl2*Neq +  j*ngl+i;
+//               cout <<q[id]<<"  ";
+//          }
+//            cout <<"\n";
+//        }
+//    } 
+//           cout <<"\n q_exakt : \n";
+//    for (int ie=0;ie<1;ie++){
+//            cout <<"Ele: " << ie <<"\n";
+//        for(int j=0;j<ngl;++j){
+//            for(int i=0;i<ngl;++i){
+//                int id = ie*ngl2*Neq +  j*ngl+i;
+//               cout <<q_exakt[id]<<"  ";
+//          }
+//            cout <<"\n";
+//        }
+//    }
 
 
     //
@@ -1236,7 +1230,7 @@ int main(int argc, char *argv[])
     dfloat LocalLambdas[DGMeshPartition.NumElements];
     dfloat rkD=0.0;
 
-
+    cout << "Minimum Ele Size: " << globalMinEleSize << ".\n";
     while (t<T)
     {
         FindLambdaMax(Nelem, o_q, o_LambdaMax);
@@ -1254,6 +1248,7 @@ int main(int argc, char *argv[])
             ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara);
             o_ViscPara.copyTo(ViscPara);
             GetGlobalViscParaMax(MPI,  DGMeshPartition,ViscPara, &maxViscPara);
+//	   cout << "Visc para max: " << maxViscPara <<"\n";
             dt_v = DFL/(pow(ngl,2)) * pow(globalMinEleSize,2) / maxViscPara;
 	    dt=fmin(T-t,fmin(dt_i,dt_v));
         }else{

@@ -150,6 +150,8 @@ void MeshPartitioning::DivideMesh(const Mesh GlobalMesh,const MPI_setup MPI)
 
 
         global_NumElements=GlobalMesh.m_num_elements;
+
+	MPI_Bcast(&global_NumElements,1,MPI_INT,0,MPI_COMM_WORLD);
         global_NumEdges=GlobalMesh.m_num_edges;
 
         ElementsPerProc= (int*) calloc(NumProcessors,sizeof(int));
@@ -692,6 +694,7 @@ void MeshPartitioning::SplitEdgeRealValuesBetweenProcs(const MPI_setup MPI,const
 
 void MeshPartitioning::ReceiveMesh(const MPI_setup MPI)
 {
+	MPI_Bcast(&global_NumElements,1,MPI_INT,0,MPI_COMM_WORLD);
 
 //    MPI_Recv(&global_NumElements,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&reqs[MPI.rank], stats);
