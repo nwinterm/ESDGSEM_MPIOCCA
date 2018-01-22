@@ -3,7 +3,7 @@
 
 
 
-void PlotSolution(const int Nelem, const int ngl,const int PlotVar, const dfloat x[], const dfloat y[], const dfloat Q[], const dfloat b[], const int plotCount){
+void PlotSolution(const int Nelem, const int ngl,const int PlotVar, const dfloat x[], const dfloat y[], const dfloat Q[], const dfloat b[], const int plotCount, dfloat exactQ[]){
 
   ostringstream os;
   os << "movie/plot_" << plotCount << ".tec";
@@ -20,8 +20,11 @@ dfloat Qinv;
     case 1:
 
         plotfile <<"TITLE = H_solution.tec\n";
-        plotfile <<"VARIABLES = \"x\",\"y\",\"H\",\"u\",\"v\",\"bottom\"\n";
-
+		if (exactQ == nullptr){
+			plotfile <<"VARIABLES = \"x\",\"y\",\"H\",\"u\",\"v\",\"bottom\"\n";
+		}else{
+			plotfile <<"VARIABLES = \"x\",\"y\",\"H\",\"u\",\"v\",\"bottom\",\"exact\"\n";
+		}
         for (int ie=0; ie<Nelem;ie++){
                 plotfile <<"ZONE I ="<<ngl<<",J="<<ngl<<",F=POINT\n";
                   for(int j=0;j<ngl;++j){
@@ -40,8 +43,13 @@ dfloat Qinv;
                             }else{
                                 H=Q[id]+b[xid];
                             }
-
-                            plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<<" \n";
+							if (exactQ == nullptr){
+								plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<<" \n";
+							
+							}else{
+								plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<< " " << exactQ[id] << " \n";
+							}
+                            
 
                             //plotfile <<x[xid]<<" "<<y[xid]<<" "<<Q[id]+b[xid]<< " " << Q[id+ngl2]<<" " << Q[id+ngl2+ngl2]<<" "<<b[xid]<<" \n";
                 }

@@ -1436,7 +1436,17 @@ int main(int argc, char *argv[])
                 {
                     cout << "we have time: "<<t<< " and we do plot number " <<  plotCount <<"!\n";
                     CollectSolution( MPI, DGMeshPartition, q, Q_global);
-                    PlotSolution(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount);
+                    
+					
+					if (Testcase == 31){
+						dfloat * q_exakt = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
+						InitQ(0,DGMeshPartition,Testcase,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,t,b_global,g_const);
+						PlotSolution(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount,q_exakt);
+						
+						free(q_exakt);
+					}else{
+						PlotSolution(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount);
+					}
                     if(ArtificialViscosity==1)
                     {
                       CollectViscPara(MPI,   DGMeshPartition, ViscPara, ViscPara_Global);
