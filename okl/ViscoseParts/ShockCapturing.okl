@@ -183,12 +183,9 @@ kernel void ShockCapturing(const int Nelem,
 
             
 			
-	if(nenner1*nenner2<PosPresTOL){
-		viscStar=zero;
-		sigma_dof=zero;
-	}else{
-		sigma_dof = max(term1,term2);
-		sigma_dof = log10(sigma_dof);			
+
+			sigma_dof = max(term1,term2);
+			sigma_dof = log10(sigma_dof);			
             	if (sigmaMin >= sigma_dof)
             	{
                 	viscStar    =   zero;
@@ -202,7 +199,7 @@ kernel void ShockCapturing(const int Nelem,
             	{
                 	viscStar    =   eps0;
             	}
-	}
+	
 
             occaUnroll(ngl)
             for (int i=0; i<ngl; ++i)
@@ -213,7 +210,9 @@ kernel void ShockCapturing(const int Nelem,
                     MaxLambdaTotal = max(MaxLambdaTotal, s_MaxLambda[i][j]);
                 }
             }
-
+			if (MaxLambdaTotal<PosPresTOL){
+				viscStar=zero;
+			}
 
 			ViscParaForPlot[ie] = viscStar;
             ViscPara[ie] = MaxLambdaTotal * sqrt(EleSizes[ie]) /ngl * viscStar;
