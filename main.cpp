@@ -750,6 +750,8 @@ int main(int argc, char *argv[])
     occa::memory o_Qavg;
 
     occa::memory o_GLw;
+	
+	occa::memory o_ViscForPlot;
 
 //   occa::memory o_PackSend, o_PackReceive;
 
@@ -838,6 +840,8 @@ int main(int argc, char *argv[])
 
 
         o_ViscPara = device.malloc(Nelem*sizeof(dfloat));
+		o_ViscForPlot = device.malloc(Nelem*sizeof(dfloat));
+		
         o_ViscParaL = device.malloc(Nfaces*sizeof(dfloat));
         o_ViscParaR = device.malloc(Nfaces*sizeof(dfloat));
 
@@ -1255,7 +1259,7 @@ int main(int argc, char *argv[])
 	}
 	if ( ArtificialViscosity==1)
         {
-            ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara);
+            ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara,o_ViscForPlot);
             o_ViscPara.copyTo(ViscPara);
             GetGlobalViscParaMax(MPI,  DGMeshPartition,ViscPara, &maxViscPara);
 //	   cout << "Visc para max: " << maxViscPara <<"\n";
@@ -1327,7 +1331,7 @@ int main(int argc, char *argv[])
                 // at first RK step we already now o_ViscPara from time step computation!
                 if (rkstage>0)
                 {
-                    ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara);
+                    ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara,o_ViscForPlot);
                 }
 
                 calcNumFluxesGradient(Nfaces,o_EdgeData,o_nx,o_ny,o_scal, o_qL, o_qR, o_bL,o_bR, o_SurfGradientX,o_SurfGradientY);
@@ -1459,6 +1463,8 @@ int main(int argc, char *argv[])
 					}
                     if(ArtificialViscosity==1)
                     {
+					
+					  o_ViscForPlot.copyTo(ViscPara);
                       CollectViscPara(MPI,   DGMeshPartition, ViscPara, ViscPara_Global);
                       PlotViscoseParameter(Nelem_global, ngl, x_phy_global,y_phy_global, ViscPara_Global, plotCount);
 //                        CollectViscosity( MPI, DGMeshPartition, Qx,Qy, Qx_global, Qy_global);
@@ -1483,6 +1489,7 @@ int main(int argc, char *argv[])
                     SendSolution(MPI, DGMeshPartition,  q);
                     if(ArtificialViscosity==1)
                     {
+						o_ViscForPlot.copyTo(ViscPara);
                         SendViscPara(MPI, DGMeshPartition,  ViscPara);
                         //            SendViscosity(MPI, DGMeshPartition,  Qx,Qy);
 //                        SendViscosity(MPI, DGMeshPartition,  QtVisc,Qy);
@@ -1710,6 +1717,7 @@ int main(int argc, char *argv[])
         o_SurfacePartsVisc.free();
 
         o_ViscPara.free();
+		o_ViscParaForPlot.free();
         o_ViscParaL.free();
         o_ViscParaR.free();
         if (PositivityPreserving == 1)

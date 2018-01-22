@@ -2,7 +2,8 @@ kernel void ShockCapturing(const int Nelem,
                            const dfloat * restrict  Q,
                            const dfloat * restrict VdmInv,
                            const dfloat * restrict EleSizes,
-                           dfloat * restrict  ViscPara)
+                           dfloat * restrict  ViscPara,
+						   dfloat * restrict  ViscParaForPlot)
 {
 
 
@@ -210,7 +211,7 @@ kernel void ShockCapturing(const int Nelem,
             }
 
 
-
+			ViscParaForPlot[ie] = viscStar;
             ViscPara[ie] = MaxLambdaTotal * sqrt(EleSizes[ie]) /ngl * viscStar;
 
         }
