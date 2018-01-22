@@ -181,10 +181,17 @@ kernel void ShockCapturing(const int Nelem,
             term1= zaehler1/nenner1 ;
             term2= zaehler2/nenner2 ;
 
-            sigma_dof = max(term1,term2);
-            sigma_dof = log10(sigma_dof);
-
-
+            
+			
+			if(nenner1*nenner2==zero){
+				viscStar=zero;
+				sigma_dof=zero;
+			}else{
+				sigma_dof = max(term1,term2);
+				sigma_dof = log10(sigma_dof);
+			}
+			
+			
             if (sigmaMin >= sigma_dof)
             {
                 viscStar    =   zero;
