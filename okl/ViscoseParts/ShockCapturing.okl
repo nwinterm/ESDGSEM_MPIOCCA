@@ -34,18 +34,20 @@ kernel void ShockCapturing(const int Nelem,
 
                 //ABUSE OF NOTATION, THESE ARE NODAL VALUES NOW
 
-                s_Q1modal[i][j]=Q[Fid]*Q[Fid];
-
+		const dfloat r_h = Q[Fid];
+		const dfloat r_h2 = r_h*r_h;
                 dfloat c;
 
                 dfloat Qinv;
-                if (Q[Fid]>=PosPresTOL)
+                if (r_h2>PosPresTOL)
                 {
-                    Qinv = one/Q[Fid];
-                    c=sqrt(g_const*Q[Fid]);
+	            s_Q1modal[i][j]=r_h2;
+	            Qinv = one/r_h;
+                    c=sqrt(g_const*r_h);
                 }
                 else
                 {
+	            s_Q1modal[i][j]=zero;
                     Qinv = zero;
                     c=zero;
                 }
@@ -184,8 +186,8 @@ kernel void ShockCapturing(const int Nelem,
             
 			
 
-			sigma_dof = max(term1,term2);
-			sigma_dof = log10(sigma_dof);			
+		sigma_dof = max(term1,term2);
+		sigma_dof = log10(sigma_dof);			
             	if (sigmaMin >= sigma_dof)
             	{
                 	viscStar    =   zero;
@@ -210,12 +212,12 @@ kernel void ShockCapturing(const int Nelem,
                     MaxLambdaTotal = max(MaxLambdaTotal, s_MaxLambda[i][j]);
                 }
             }
-			if (MaxLambdaTotal<PosPresTOL){
-				viscStar=zero;
-			}
+		if (MaxLambdaTotal<PosPresTOL){
+			viscStar=zero;
+		}
 
-			ViscParaForPlot[ie] = viscStar;
-            ViscPara[ie] = MaxLambdaTotal * sqrt(EleSizes[ie]) /ngl * viscStar;
+		ViscParaForPlot[ie] = viscStar;
+           	ViscPara[ie] = MaxLambdaTotal * sqrt(EleSizes[ie]) /ngl * viscStar;
 
         }
 
