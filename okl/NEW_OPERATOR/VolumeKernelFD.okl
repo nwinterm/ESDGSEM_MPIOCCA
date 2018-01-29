@@ -162,7 +162,7 @@ kernel void VolumeKernelFD(const int Nelem,
 									
 									}
 								}
-								if (i>0 && i<ngl-1){
+								if ((i>0) && (i<ngl-1)){
 									if (r_h_xp1 > PosPresTOL){
 										if (r_h_xm1 > PosPresTOL){
 											const dfloat r_Dp1 = s_DcentralFD[i][i+1];
@@ -228,7 +228,7 @@ kernel void VolumeKernelFD(const int Nelem,
 									
 									}
 								}
-								if (j>0 && j<ngl-1){
+								if ((j>0) && (j<ngl-1)){
 									if (r_h_yp1 > PosPresTOL){
 										if (r_h_ym1 > PosPresTOL){
 											const dfloat r_Dp1 = s_DcentralFD[j][j+1];
@@ -298,9 +298,9 @@ kernel void VolumeKernelFD(const int Nelem,
 							const dfloat r_Bx=Bx[xid];
 							const dfloat r_By=By[xid];
 							
-							Qt[id]              =   r_Jac *FluxDeriv1;
-							Qt[id+ngl2]         =   r_Jac *FluxDeriv2 - g_const *r_h*r_Bx ;
-							Qt[id+ngl2+ngl2]    =   r_Jac *FluxDeriv3 - g_const *r_h*r_By;
+							Qt[id]              =  - r_Jac *FluxDeriv1;
+							Qt[id+ngl2]         =  - r_Jac *FluxDeriv2 - g_const *r_h*r_Bx ;
+							Qt[id+ngl2+ngl2]    =  - r_Jac *FluxDeriv3 - g_const *r_h*r_By;
 
 							
 						
