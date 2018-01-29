@@ -240,6 +240,14 @@ case 5: {    // Dry Lake + Lake at Rest
     v= 0.0;
     w= 0.0;
         break;}
+case 6: {    // Easy WB- debug test no bottom
+
+        h=5.0-b;
+
+
+    v= 0.0;
+    w= 0.0;
+        break;}
 
 case 20: {    //  Dam Break (CARTESIAN)
     if (x<0.0){

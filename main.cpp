@@ -1354,24 +1354,16 @@ int main(int argc, char *argv[])
             CollectEdgeDataMPI(MPI, DGMeshPartition, qL, qR);
 
 
+
+
+
+
+
 			VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_Qt);
-				o_Qt.copyTo(Qt);
-           cout <<"\n q_t : \n";
-			for (int ie=0;ie<1;ie++){
-					cout <<"Ele: " << ie <<"\n";
-				for(int j=0;j<ngl;++j){
-					for(int i=0;i<ngl;++i){
-						int id = ie*ngl2*Neq +  j*ngl+i;
-					   cout <<Qt[id]<<"  ";
-				  }
-					cout <<"\n";
-				}
-			}		
-			VolumeKernelFD(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_isPartlyDry,o_DcentralFD,o_DupwindFD,o_DdownwindFD,o_Bx,o_By,o_Qt);
 
 			o_Qt.copyTo(Qt);
-           cout <<"\n q_t : \n";
-			for (int ie=0;ie<1;ie++){
+           cout <<"\n q_t ESDGSEM : \n";
+			for (int ie=0;ie<Nelem;ie++){
 					cout <<"Ele: " << ie <<"\n";
 				for(int j=0;j<ngl;++j){
 					for(int i=0;i<ngl;++i){
@@ -1381,6 +1373,21 @@ int main(int argc, char *argv[])
 					cout <<"\n";
 				}
 			}
+
+			VolumeKernelFD(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_isPartlyDry,o_DcentralFD,o_DupwindFD,o_DdownwindFD,o_Bx,o_By,o_Qt);
+			o_Qt.copyTo(Qt);
+		        cout <<"\n q_t NEW : \n";
+			for (int ie=0;ie<Nelem;ie++){
+					cout <<"Ele: " << ie <<"\n";
+				for(int j=0;j<ngl;++j){
+					for(int i=0;i<ngl;++i){
+						int id = ie*ngl2*Neq +  j*ngl+i;
+					   cout <<Qt[id]<<"  ";
+				  }
+					cout <<"\n";
+				}
+			}
+
 
             MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Recv_q_reqs, MPI.stats);
             MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Send_q_reqs, MPI.stats);

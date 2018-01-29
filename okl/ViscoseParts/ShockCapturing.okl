@@ -225,7 +225,7 @@ kernel void ShockCapturing(const int Nelem,
            	ViscPara[ie] = MaxLambdaTotal * sqrt(EleSizes[ie]) /ngl * viscStar;
 
         }
-		
+	isPartlyDry[ie]=1;		
 
     }\\elem
 
