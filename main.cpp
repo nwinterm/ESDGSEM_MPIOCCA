@@ -614,8 +614,6 @@ int main(int argc, char *argv[])
     }
 
            cout <<"\n D central: \n";
-    for (int ie=0;ie<Nelem;ie++){
-            cout <<"Ele: " << ie <<"\n";
         for(int j=0;j<ngl;++j){
             for(int i=0;i<ngl;++i){
                 int id = ie*ngl2*Neq +  j*ngl+i;
@@ -623,11 +621,8 @@ int main(int argc, char *argv[])
           }
             cout <<"\n";
         }
-    }
 
 	           cout <<"\n D upwind: \n";
-    for (int ie=0;ie<Nelem;ie++){
-            cout <<"Ele: " << ie <<"\n";
         for(int j=0;j<ngl;++j){
             for(int i=0;i<ngl;++i){
                 int id = ie*ngl2*Neq +  j*ngl+i;
@@ -635,10 +630,8 @@ int main(int argc, char *argv[])
           }
             cout <<"\n";
         }
-    }
+
 	           cout <<"\n D downwind: \n";
-    for (int ie=0;ie<Nelem;ie++){
-            cout <<"Ele: " << ie <<"\n";
         for(int j=0;j<ngl;++j){
             for(int i=0;i<ngl;++i){
                 int id = ie*ngl2*Neq +  j*ngl+i;
@@ -646,7 +639,6 @@ int main(int argc, char *argv[])
           }
             cout <<"\n";
         }
-    }
     //initialise time integrator
     RungeKutta RK(rkorder,rkSSP);
 
