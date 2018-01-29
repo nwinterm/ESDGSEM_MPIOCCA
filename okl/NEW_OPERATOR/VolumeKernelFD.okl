@@ -298,9 +298,9 @@ kernel void VolumeKernelFD(const int Nelem,
 							const dfloat r_Bx=Bx[xid];
 							const dfloat r_By=By[xid];
 							
-							Qt[id]              = -  r_Jac *FluxDeriv1;
-							Qt[id+ngl2]         = -  r_Jac *FluxDeriv2 - g_const *r_h*r_Bx ;
-							Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3 - g_const *r_h*r_By;
+							Qt[id]              =   r_Jac *FluxDeriv1;
+							Qt[id+ngl2]         =   r_Jac *FluxDeriv2 - g_const *r_h*r_Bx ;
+							Qt[id+ngl2+ngl2]    =   r_Jac *FluxDeriv3 - g_const *r_h*r_By;
 
 							
 						
