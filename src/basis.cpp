@@ -164,10 +164,10 @@ void basis :: FiniteDifferenceOperators(){
 
 	DdownwindFD[0] = (-1.0/(x_GL[1]-x_GL[0]));							// FIRST ENTRY NORMAL UPWIND
 	DdownwindFD[1] = (1.0/(x_GL[1]-x_GL[0]));							// SECOND ENTRY NORMAL UPWIND
-	for (int i=0;i<ngl-1;i++){
+	for (int i=1;i<ngl;i++){
 		const int id = i*ngl+i;
 		const int idm1 = id-1;
-		DdownwindFD[id] = (1.0/(x_GL[i]-x_GL[i-]));
+		DdownwindFD[id] = (1.0/(x_GL[i]-x_GL[i-1]));
 		DdownwindFD[idm1] = (-1.0/(x_GL[i]-x_GL[i-1]));
     };
 	
