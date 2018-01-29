@@ -102,13 +102,18 @@ kernel void VolumeKernelFD(const int Nelem,
 					if (eleID<Nelem)
 					{
 					    if (isPartlyDry[eleID]==1){
-							dfloat xiDeriv1=zero;
-							dfloat xiDeriv2=zero;
-							dfloat xiDeriv3=zero;
-							dfloat etaDeriv1=zero;
-							dfloat etaDeriv2=zero;
-							dfloat etaDeriv3=zero;
-							
+							dfloat FxiDeriv1=zero;
+							dfloat FxiDeriv2=zero;
+							dfloat FxiDeriv3=zero;
+							dfloat FetaDeriv1=zero;
+							dfloat FetaDeriv2=zero;
+							dfloat FetaDeriv3=zero;
+							dfloat GxiDeriv1=zero;
+							dfloat GxiDeriv2=zero;
+							dfloat GxiDeriv3=zero;
+							dfloat GetaDeriv1=zero;
+							dfloat GetaDeriv2=zero;
+							dfloat GetaDeriv3=zero;							
 							
 							const dfloat r_h = s_Q1[ieLoc][i][j];
 							const dfloat r_h_xp1 = s_Q1[ieLoc][i+1][j];
