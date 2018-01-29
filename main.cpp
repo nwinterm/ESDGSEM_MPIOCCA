@@ -616,7 +616,7 @@ int main(int argc, char *argv[])
            cout <<"\n D central: \n";
         for(int j=0;j<ngl;++j){
             for(int i=0;i<ngl;++i){
-                int id = ie*ngl2*Neq +  j*ngl+i;
+                int id =   j*ngl+i;
                 cout <<DCentralFD[id]<<"  ";
           }
             cout <<"\n";
@@ -625,7 +625,7 @@ int main(int argc, char *argv[])
 	           cout <<"\n D upwind: \n";
         for(int j=0;j<ngl;++j){
             for(int i=0;i<ngl;++i){
-                int id = ie*ngl2*Neq +  j*ngl+i;
+                int id =   j*ngl+i;
                 cout <<DupwindFD[id]<<"  ";
           }
             cout <<"\n";
@@ -634,7 +634,7 @@ int main(int argc, char *argv[])
 	           cout <<"\n D downwind: \n";
         for(int j=0;j<ngl;++j){
             for(int i=0;i<ngl;++i){
-                int id = ie*ngl2*Neq +  j*ngl+i;
+                int id =   j*ngl+i;
                 cout <<DdownwindFD[id]<<"  ";
           }
             cout <<"\n";
