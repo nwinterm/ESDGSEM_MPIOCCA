@@ -155,7 +155,7 @@ kernel void VolumeKernelFD(const int Nelem,
 									
 									}
 								}
-								if (i>0 && i<ngl){
+								if (i>0 && i<ngl-1){
 									if (r_h_xp1 > PosPresTOL){
 										if (r_h_xm1 > PosPresTOL){
 											const dfloat r_Dp1 = s_DcentralFD[i][i+1];
