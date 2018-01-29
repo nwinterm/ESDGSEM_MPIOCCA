@@ -148,8 +148,8 @@ void basis :: FiniteDifferenceOperators(){
 		const int id = i*ngl+i;
 		const int idp1 = id+1;
 		const int idm1 = id-1;
-		DCentralFD[idp1]=(1.0/(x_GL[idp1]-x_GL[idm1]));
-		DCentralFD[idm1]=(-1.0/(x_GL[idp1]-x_GL[idm1]));
+		DCentralFD[idp1]=(1.0/(x_GL[i+1]-x_GL[i-1]));
+		DCentralFD[idm1]=(-1.0/(x_GL[i+1]-x_GL[i-1]));
     };
 
 
@@ -158,8 +158,8 @@ void basis :: FiniteDifferenceOperators(){
 	for (int i=0;i<ngl-1;i++){
 		const int id = i*ngl+i;
 		const int idp1 = id+1;
-		DupwindFD[id] = (-1.0/(x_GL[idp1]-x_GL[id]));
-		DupwindFD[idp1] = (1.0/(x_GL[idp1]-x_GL[id]));
+		DupwindFD[id] = (-1.0/(x_GL[i+1]-x_GL[i]));
+		DupwindFD[idp1] = (1.0/(x_GL[i+1]-x_GL[i]));
     };
 
 	DdownwindFD[0] = (-1.0/(x_GL[1]-x_GL[0]));							// FIRST ENTRY NORMAL UPWIND
@@ -167,8 +167,8 @@ void basis :: FiniteDifferenceOperators(){
 	for (int i=0;i<ngl-1;i++){
 		const int id = i*ngl+i;
 		const int idm1 = id-1;
-		DdownwindFD[id] = (1.0/(x_GL[id]-x_GL[idm1]));
-		DdownwindFD[idm1] = (-1.0/(x_GL[id]-x_GL[idm1]));
+		DdownwindFD[id] = (1.0/(x_GL[i]-x_GL[i-]));
+		DdownwindFD[idm1] = (-1.0/(x_GL[i]-x_GL[i-1]));
     };
 	
 };
