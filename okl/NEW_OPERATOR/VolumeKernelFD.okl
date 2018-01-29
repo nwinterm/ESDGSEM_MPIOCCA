@@ -1,0 +1,286 @@
+kernel void VolumeKernelFD(const int Nelem,
+                         const dfloat * restrict  Jac,
+                         const dfloat * restrict  Y_xi,
+                         const dfloat * restrict  Y_eta,
+                         const dfloat * restrict  X_xi,
+                         const dfloat * restrict  X_eta,
+                         const dfloat * restrict  Q,
+						 const int * restrict isPartlyDry,
+                         const dfloat * restrict DcentralFD,
+						 const dfloat * restrict DupwindFD,
+						 const dfloat * restrict DdownwindFD,
+                         const dfloat * restrict  Bx,
+                         const dfloat * restrict  By,
+                         dfloat * restrict  Qt)
+{
+
+
+
+    for(int iEo = 0; iEo < Nelem; iEo+=NEpad; outer0)
+    {
+		shared dfloat s_Q1[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_F1[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_F2[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_F3[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_G1[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_G2[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_G3[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_DcentralFD[ngl][ngl+nglPad];
+		shared dfloat s_DupwindFD[ngl][ngl+nglPad];
+		shared dfloat s_DdownwindFD[ngl][ngl+nglPad];
+
+
+        for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
+        {
+			for (int i=0; i<ngl; ++i; inner1)
+			{
+				for (int j=0; j<ngl; ++j; inner0)
+				{
+
+					const int eleID     =   iEo + ieLoc;
+					if (eleID<Nelem)
+					{
+						if (isPartlyDry[eleID]==1){
+							const int xid=eleID*ngl2   +i*ngl+j;
+							const int Fid  = eleID*ngl2*Neq   +i*ngl+j;
+							const int id=i*ngl+j;
+							if(ieLoc==0){
+								s_DcentralFD[i][j]=DcentralFD[id];
+								s_DupwindFD[i][j]=DupwindFD[id];
+								s_DdownwindFD[i][j]=DdownwindFD[id];
+							}
+							s_Q1[ieLoc][i][j] = Q[Fid];
+							
+							dfloat r_invQ1=zero;
+							dfloat r_h=s_Q1[ieLoc][i][j];
+							dfloat r_hu=zero;
+							dfloat r_hv=zero;
+
+							if (r_h>PosPresTOL)
+							{
+								r_hu      =   Q[Fid+ngl2];
+								r_hv      =   Q[Fid+ngl2+ngl2];
+								r_invQ1   =   one/r_h;
+							}else{
+								r_h		  =	  zero;
+							}
+
+
+							const dfloat F1 = r_hu;
+							const dfloat F2 = r_hu*r_hu*r_invQ1 + half_g*r_h*r_h;
+							const dfloat F3 = r_hv*r_hu*r_invQ1;
+							const dfloat G1 = r_hv;
+							const dfloat G2 = r_hu*r_hv*r_invQ1;
+							const dfloat G3 = r_hv*r_hv*r_invQ1 + half_g*r_h*r_h;
+
+
+							s_F1[ieLoc][i][j]= F1;
+							s_G1[ieLoc][i][j]= G1;
+
+							s_F2[ieLoc][i][j]=F2;
+							s_G2[ieLoc][i][j]=G2;
+
+							s_F3[ieLoc][i][j]= F3 ;
+							s_G3[ieLoc][i][j]=  G3;
+						}
+					}
+
+				}
+			}
+		}
+
+        barrier(localMemFence);
+
+        for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
+        {
+			for (int i=0; i<ngl; ++i; inner1)
+			{
+				for (int j=0; j<ngl; ++j; inner0)
+				{
+
+					const int eleID     =   iEo + ieLoc;
+					if (eleID<Nelem)
+					{
+					    if (isPartlyDry[eleID]==1){
+							dfloat xiDeriv1=zero;
+							dfloat xiDeriv2=zero;
+							dfloat xiDeriv3=zero;
+							dfloat etaDeriv1=zero;
+							dfloat etaDeriv2=zero;
+							dfloat etaDeriv3=zero;
+							
+							
+							const dfloat r_h = s_Q1[ieLoc][i][j];
+							const dfloat r_h_xp1 = s_Q1[ieLoc][i+1][j];
+							const dfloat r_h_yp1 = s_Q1[ieLoc][i][j+1];
+							dfloat r_h_xm1 = zero;
+							dfloat r_h_ym1 = zero;
+							
+							if (i>0){
+								r_h_xm1 = s_Q1[ieLoc][i-1][j];
+							}
+							if (j>0){
+								r_h_ym1 = s_Q1[ieLoc][i][j-1];
+							}
+							
+							if(r_h > PosPresTOL){
+							
+								if (i==0){
+									if (r_h_xp1 > PosPresTOL){
+										const dfloat r_Dp1 = s_DupwindFD[i][i+1];
+										const dfloat r_D = s_DupwindFD[i][i];
+										xiDeriv1 = r_D* s_F1[ieLoc][i][j] + r_Dp1* s_F1[ieLoc][i+1][j]  ;
+										xiDeriv2 = r_D* s_F2[ieLoc][i][j] + r_Dp1* s_F2[ieLoc][i+1][j]  ;
+										xiDeriv3 = r_D* s_F3[ieLoc][i][j] + r_Dp1* s_F3[ieLoc][i+1][j]  ;
+									}
+								}
+								if (i==ngl-1){
+									if (r_h_xm1 > PosPresTOL){
+										const dfloat r_Dp1 = s_DcentralFD[i][i+1];
+										const dfloat r_Dm1 = s_DcentralFD[i][i-1];
+										xiDeriv1 = r_Dm1* s_F1[ieLoc][i-1][j] + r_Dp1* s_F1[ieLoc][i+1][j]  ;
+										xiDeriv2 = r_Dm1* s_F2[ieLoc][i-1][j] + r_Dp1* s_F2[ieLoc][i+1][j]  ;
+										xiDeriv3 = r_Dm1* s_F3[ieLoc][i-1][j] + r_Dp1* s_F3[ieLoc][i+1][j]  ;
+									
+									}
+								}
+								if (i>0 && i<ngl){
+									if (r_h_xp1 > PosPresTOL){
+										if (r_h_xm1 > PosPresTOL){
+											const dfloat r_Dp1 = s_DcentralFD[i][i+1];
+											const dfloat r_Dm1 = s_DcentralFD[i][i-1];
+											xiDeriv1 = r_Dm1* s_F1[ieLoc][i-1][j] + r_Dp1* s_F1[ieLoc][i+1][j]  ;
+											xiDeriv2 = r_Dm1* s_F2[ieLoc][i-1][j] + r_Dp1* s_F2[ieLoc][i+1][j]  ;
+											xiDeriv3 = r_Dm1* s_F3[ieLoc][i-1][j] + r_Dp1* s_F3[ieLoc][i+1][j]  ;
+										
+										} else{
+											const dfloat r_Dp1 = s_DupwindFD[i][i+1];
+											const dfloat r_D = s_DupwindFD[i][i];
+											xiDeriv1 = r_D* s_F1[ieLoc][i][j] + r_Dp1* s_F1[ieLoc][i+1][j]  ;
+											xiDeriv2 = r_D* s_F2[ieLoc][i][j] + r_Dp1* s_F2[ieLoc][i+1][j]  ;
+											xiDeriv3 = r_D* s_F3[ieLoc][i][j] + r_Dp1* s_F3[ieLoc][i+1][j]  ;
+										}
+									
+									}else{
+										if (r_h_xm1 > PosPresTOL){
+											const dfloat r_D = s_DdownwindFD[i][i];
+											const dfloat r_Dm1 = s_DdownwindFD[i][i-1];
+											xiDeriv1 = r_Dm1* s_F1[ieLoc][i-1][j] + r_D* s_F1[ieLoc][i][j]  ;
+											xiDeriv2 = r_Dm1* s_F2[ieLoc][i-1][j] + r_D* s_F2[ieLoc][i][j]  ;
+											xiDeriv3 = r_Dm1* s_F3[ieLoc][i-1][j] + r_D* s_F3[ieLoc][i][j]  ;
+										
+										}
+									
+									}
+								}
+
+								if (j==0){
+									if (r_h_yp1 > PosPresTOL){
+										const dfloat r_Dp1 = s_DupwindFD[i][i+1];
+										const dfloat r_D = s_DupwindFD[i][i];
+										etaDeriv1 = r_D* s_F1[ieLoc][i][j] + r_Dp1* s_F1[ieLoc][i][j+1]  ;
+										etaDeriv2 = r_D* s_F2[ieLoc][i][j] + r_Dp1* s_F2[ieLoc][i][j+1]  ;
+										etaDeriv3 = r_D* s_F3[ieLoc][i][j] + r_Dp1* s_F3[ieLoc][i][j+1]  ;
+									
+									}
+								}
+								if (j==ngl-1){
+									if (r_h_ym1 > PosPresTOL){
+										const dfloat r_Dp1 = s_DcentralFD[i][i+1];
+										const dfloat r_Dm1 = s_DcentralFD[i][i-1];
+										etaDeriv1 = r_Dm1* s_F1[ieLoc][i][j-1] + r_Dp1* s_F1[ieLoc][i][j+1]  ;
+										etaDeriv2 = r_Dm1* s_F2[ieLoc][i][j-1] + r_Dp1* s_F2[ieLoc][i][j+1]  ;
+										etaDeriv3 = r_Dm1* s_F3[ieLoc][i][j-1] + r_Dp1* s_F3[ieLoc][i][j+1]  ;
+									
+									}
+								}
+								if (j>0 && j<ngl){
+									if (r_h_yp1 > PosPresTOL){
+										if (r_h_ym1 > PosPresTOL){
+											const dfloat r_Dp1 = s_DcentralFD[i][i+1];
+											const dfloat r_Dm1 = s_DcentralFD[i][i-1];
+											etaDeriv1 = r_Dm1* s_F1[ieLoc][i][j-1] + r_Dp1* s_F1[ieLoc][i][j+1]  ;
+											etaDeriv2 = r_Dm1* s_F2[ieLoc][i][j-1] + r_Dp1* s_F2[ieLoc][i][j+1]  ;
+											etaDeriv3 = r_Dm1* s_F3[ieLoc][i][j-1] + r_Dp1* s_F3[ieLoc][i][j+1]  ;
+										
+										} else{
+											const dfloat r_Dp1 = s_DupwindFD[i][i+1];
+											const dfloat r_D = s_DupwindFD[i][i];
+											etaDeriv1 = r_D* s_F1[ieLoc][i][j] + r_Dp1* s_F1[ieLoc][i][j+1]  ;
+											etaDeriv2 = r_D* s_F2[ieLoc][i][j] + r_Dp1* s_F2[ieLoc][i][j+1]  ;
+											etaDeriv3 = r_D* s_F3[ieLoc][i][j] + r_Dp1* s_F3[ieLoc][i][j+1]  ;
+										}
+									
+									}else{
+										if (r_h_xm1 > PosPresTOL){
+											const dfloat r_D = s_DdownwindFD[i][i];
+											const dfloat r_Dm1 = s_DdownwindFD[i][i-1];
+											etaDeriv1 = r_Dm1* s_F1[ieLoc][i][j-1] + r_D* s_F1[ieLoc][i][j]  ;
+											etaDeriv2 = r_Dm1* s_F2[ieLoc][i][j-1] + r_D* s_F2[ieLoc][i][j]  ;
+											etaDeriv3 = r_Dm1* s_F3[ieLoc][i][j-1] + r_D* s_F3[ieLoc][i][j]  ;
+										
+										}
+									
+									}
+
+								}
+
+							}
+
+							const int xid=eleID*ngl2   +i*ngl+j;
+							
+							const dfloat r_Yeta=Y_eta[xid];
+							const dfloat r_Yxi=Y_xi[xid];
+							const dfloat r_Xeta=X_eta[xid];
+							const dfloat r_Xxi=X_xi[xid];	
+
+							const dfloat xDeriv1= r_Yeta * xiDeriv1 - r_Yxi* etaDeriv1;
+							const dfloat xDeriv2= r_Yeta * xiDeriv2 - r_Yxi* etaDeriv2;
+							const dfloat xDeriv3= r_Yeta * xiDeriv3 - r_Yxi* etaDeriv3;
+							
+							const dfloat yDeriv1= -r_Xeta * xiDeriv1 + r_Xxi* etaDeriv1;
+							const dfloat yDeriv2= -r_Xeta * xiDeriv2 + r_Xxi* etaDeriv2;
+							const dfloat yDeriv3= -r_Xeta * xiDeriv3 + r_Xxi* etaDeriv3;
+
+
+
+							const dfloat FluxDeriv1=  xDeriv1+ yDeriv1;
+							const dfloat FluxDeriv2=  xDeriv2+ yDeriv2;
+							const dfloat FluxDeriv3=  xDeriv3+ yDeriv3;
+
+
+
+
+							const int id  = eleID*ngl2*Neq   +i*ngl+j;
+							const int xid=eleID*ngl2   +i*ngl+j;
+
+							const dfloat r_Jac=Jac[xid];
+							const dfloat r_Bx=Bx[xid];
+							const dfloat r_By=By[xid];
+							
+							Qt[id]              = -  r_Jac *FluxDeriv1;
+							Qt[id+ngl2]         = -  r_Jac *FluxDeriv2 - g_const *r_h*r_Bx ;
+							Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3 - g_const *r_h*r_By;
+
+							
+						
+						
+						
+						}
+
+
+
+					}
+
+				}
+			}
+		}
+	}
+
+
+}
+
+
+
+
+

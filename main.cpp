@@ -752,6 +752,8 @@ int main(int argc, char *argv[])
     occa::kernel scaleGradient;
     occa::kernel SurfaceKernelVisc;
     occa::kernel UpdateQt;
+	
+	occa::kernel VolumeKernelFD;
 
 //    occa::kernel MemCopyKernel;
 
@@ -782,6 +784,9 @@ int main(int argc, char *argv[])
     occa::memory o_GLw;
 	
 	occa::memory o_ViscForPlot;
+	
+	occa::memory o_DcentralFD, o_DupwindFD, o_DdownwindFD;
+	occa::memory o_isPartlyDry;
 
 //   occa::memory o_PackSend, o_PackReceive;
 
@@ -800,7 +805,9 @@ int main(int argc, char *argv[])
         o_Qtmp = device.malloc(NoDofs*sizeof(dfloat));
     }
 
-
+	o_DcentralFD  = device.malloc(ngl2*sizeof(dfloat));
+	o_DupwindFD  = device.malloc(ngl2*sizeof(dfloat));
+	o_DdownwindFD  = device.malloc(ngl2*sizeof(dfloat));
 
     o_D  = device.malloc(ngl2*sizeof(dfloat));
     o_Dstrong  = device.malloc(ngl2*sizeof(dfloat));
@@ -846,6 +853,8 @@ int main(int argc, char *argv[])
     o_LambdaMax = device.malloc(Nelem*sizeof(dfloat));
     //pospres
     o_EleSizes = device.malloc(Nelem*sizeof(dfloat));
+	
+	o_isPartlyDry= device.malloc(Nelem*sizeof(int));
 
 
     if (PositivityPreserving == 1)
@@ -952,6 +961,7 @@ int main(int argc, char *argv[])
     o_Bx.copyFrom(Bx);
     o_By.copyFrom(By);
     o_D.copyFrom(Dmat);
+	
     o_Dstrong.copyFrom(DGBasis.Dstrong);
     o_Dhat.copyFrom(Dhat);
     o_Jac.copyFrom(J);
@@ -967,6 +977,9 @@ int main(int argc, char *argv[])
     o_Qt.copyFrom(Qt);
     o_VdmInv.copyFrom(VdmInv);
     //o_SubCellMat.copyFrom(SubCellMat);
+	o_DcentralFD.copyFrom(DCentralFD);
+	o_DupwindFD.copyFrom(DupwindFD);
+	o_DdownwindFD.copyFrom(DdownwindFD);
 
     dfloat * qavgtmp = (dfloat*) calloc(Nelem*4,sizeof(dfloat));
     if(PositivityPreserving == 1)
@@ -1055,7 +1068,8 @@ int main(int argc, char *argv[])
         VolumeKernel=device.buildKernelFromSource(var,"VolumeKernel",info);
     }
 
-
+	// FD = FINITE DIFFERENCE HERE
+	VolumeKernelFD=device.buildKernelFromSource("okl/NEW_OPERATOR/VolumeKernelFD.okl","VolumeKernelFD",info);
 
     switch(NumFlux)
     {
@@ -1289,7 +1303,7 @@ int main(int argc, char *argv[])
 	}
 	if ( ArtificialViscosity==1)
         {
-            ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara,o_ViscForPlot);
+            ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara,o_ViscForPlot,o_isPartlyDry);
             o_ViscPara.copyTo(ViscPara);
             GetGlobalViscParaMax(MPI,  DGMeshPartition,ViscPara, &maxViscPara);
 //	   cout << "Visc para max: " << maxViscPara <<"\n";
@@ -1361,7 +1375,7 @@ int main(int argc, char *argv[])
                 // at first RK step we already now o_ViscPara from time step computation!
                 if (rkstage>0)
                 {
-                    ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara,o_ViscForPlot);
+                    ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara,o_ViscForPlot,o_isPartlyDry);
                 }
 
                 calcNumFluxesGradient(Nfaces,o_EdgeData,o_nx,o_ny,o_scal, o_qL, o_qR, o_bL,o_bR, o_SurfGradientX,o_SurfGradientY);
@@ -1720,6 +1734,12 @@ int main(int argc, char *argv[])
 
     o_DBSurf1.free();
     o_DBSurf2.free();
+	
+	
+	o_isPartlyDry.free();
+	o_DcentralFD.free();
+	o_DupwindFD.free();
+	o_DdownwindFD.free();
 
 //viscose term
 
