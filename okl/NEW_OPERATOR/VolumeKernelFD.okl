@@ -116,16 +116,23 @@ kernel void VolumeKernelFD(const int Nelem,
 							dfloat GetaDeriv3=zero;							
 							
 							const dfloat r_h = s_Q1[ieLoc][i][j];
-							const dfloat r_h_xp1 = s_Q1[ieLoc][i+1][j];
-							const dfloat r_h_yp1 = s_Q1[ieLoc][i][j+1];
+							dfloat r_h_xp1 = zero ;
+							dfloat r_h_yp1 = zero;
 							dfloat r_h_xm1 = zero;
 							dfloat r_h_ym1 = zero;
 							
 							if (i>0){
 								r_h_xm1 = s_Q1[ieLoc][i-1][j];
 							}
+							if (i<ngl-1){
+								r_h_xp1 = s_Q1[ieLoc][i+1][j];
+							}
+							
 							if (j>0){
 								r_h_ym1 = s_Q1[ieLoc][i][j-1];
+							}
+							if (j<ngl-1){
+								r_h_yp1 = s_Q1[ieLoc][i][j+1];
 							}
 							
 							if(r_h > PosPresTOL){
@@ -144,8 +151,8 @@ kernel void VolumeKernelFD(const int Nelem,
 								}
 								if (i==ngl-1){
 									if (r_h_xm1 > PosPresTOL){
-										const dfloat r_D = s_DcentralFD[i][i];
-										const dfloat r_Dm1 = s_DcentralFD[i][i-1];
+										const dfloat r_D = s_DdownwindFD[i][i];
+										const dfloat r_Dm1 = s_DdownwindFD[i][i-1];
 										FxiDeriv1 = r_Dm1* s_F1[ieLoc][i-1][j] + r_D* s_F1[ieLoc][i][j]  ;
 										FxiDeriv2 = r_Dm1* s_F2[ieLoc][i-1][j] + r_D* s_F2[ieLoc][i][j]  ;
 										FxiDeriv3 = r_Dm1* s_F3[ieLoc][i-1][j] + r_D* s_F3[ieLoc][i][j]  ;
