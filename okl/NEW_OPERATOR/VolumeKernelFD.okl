@@ -196,8 +196,8 @@ kernel void VolumeKernelFD(const int Nelem,
 
 								if (j==0){
 									if (r_h_yp1 > PosPresTOL){
-										const dfloat r_Dp1 = s_DupwindFD[i][i+1];
-										const dfloat r_D = s_DupwindFD[i][i];
+										const dfloat r_Dp1 = s_DupwindFD[j][j+1];
+										const dfloat r_D = s_DupwindFD[j][j];
 										
 										FetaDeriv1 = r_D* s_F1[ieLoc][i][j] + r_Dp1* s_F1[ieLoc][i][j+1]  ;
 										FetaDeriv2 = r_D* s_F2[ieLoc][i][j] + r_Dp1* s_F2[ieLoc][i][j+1]  ;
@@ -210,8 +210,8 @@ kernel void VolumeKernelFD(const int Nelem,
 								}
 								if (j==ngl-1){
 									if (r_h_ym1 > PosPresTOL){
-										const dfloat r_Dp1 = s_DcentralFD[i][i+1];
-										const dfloat r_Dm1 = s_DcentralFD[i][i-1];
+										const dfloat r_Dp1 = s_DcentralFD[j][j+1];
+										const dfloat r_Dm1 = s_DcentralFD[j][j-1];
 										FetaDeriv1 = r_Dm1* s_F1[ieLoc][i][j-1] + r_Dp1* s_F1[ieLoc][i][j+1]  ;
 										FetaDeriv2 = r_Dm1* s_F2[ieLoc][i][j-1] + r_Dp1* s_F2[ieLoc][i][j+1]  ;
 										FetaDeriv3 = r_Dm1* s_F3[ieLoc][i][j-1] + r_Dp1* s_F3[ieLoc][i][j+1]  ;
@@ -224,8 +224,8 @@ kernel void VolumeKernelFD(const int Nelem,
 								if (j>0 && j<ngl){
 									if (r_h_yp1 > PosPresTOL){
 										if (r_h_ym1 > PosPresTOL){
-											const dfloat r_Dp1 = s_DcentralFD[i][i+1];
-											const dfloat r_Dm1 = s_DcentralFD[i][i-1];
+											const dfloat r_Dp1 = s_DcentralFD[j][j+1];
+											const dfloat r_Dm1 = s_DcentralFD[j][j-1];
 											FetaDeriv1 = r_Dm1* s_F1[ieLoc][i][j-1] + r_Dp1* s_F1[ieLoc][i][j+1]  ;
 											FetaDeriv2 = r_Dm1* s_F2[ieLoc][i][j-1] + r_Dp1* s_F2[ieLoc][i][j+1]  ;
 											FetaDeriv3 = r_Dm1* s_F3[ieLoc][i][j-1] + r_Dp1* s_F3[ieLoc][i][j+1]  ;
@@ -234,8 +234,8 @@ kernel void VolumeKernelFD(const int Nelem,
 											GetaDeriv3 = r_Dm1* s_G3[ieLoc][i][j-1] + r_Dp1* s_G3[ieLoc][i][j+1]  ;
 										
 										} else{
-											const dfloat r_Dp1 = s_DupwindFD[i][i+1];
-											const dfloat r_D = s_DupwindFD[i][i];
+											const dfloat r_Dp1 = s_DupwindFD[j][j+1];
+											const dfloat r_D = s_DupwindFD[j][j];
 											FetaDeriv1 = r_D* s_F1[ieLoc][i][j] + r_Dp1* s_F1[ieLoc][i][j+1]  ;
 											FetaDeriv2 = r_D* s_F2[ieLoc][i][j] + r_Dp1* s_F2[ieLoc][i][j+1]  ;
 											FetaDeriv3 = r_D* s_F3[ieLoc][i][j] + r_Dp1* s_F3[ieLoc][i][j+1]  ;
@@ -246,8 +246,8 @@ kernel void VolumeKernelFD(const int Nelem,
 									
 									}else{
 										if (r_h_xm1 > PosPresTOL){
-											const dfloat r_D = s_DdownwindFD[i][i];
-											const dfloat r_Dm1 = s_DdownwindFD[i][i-1];
+											const dfloat r_D = s_DdownwindFD[j][j];
+											const dfloat r_Dm1 = s_DdownwindFD[j][j-1];
 											FetaDeriv1 = r_Dm1* s_F1[ieLoc][i][j-1] + r_D* s_F1[ieLoc][i][j]  ;
 											FetaDeriv2 = r_Dm1* s_F2[ieLoc][i][j-1] + r_D* s_F2[ieLoc][i][j]  ;
 											FetaDeriv3 = r_Dm1* s_F3[ieLoc][i][j-1] + r_D* s_F3[ieLoc][i][j]  ;
