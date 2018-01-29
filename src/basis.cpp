@@ -30,6 +30,10 @@ D = (dfloat*) calloc(ngl2,sizeof(dfloat));
 Dhat = (dfloat*) calloc(ngl2,sizeof(dfloat));
 D0 = (dfloat*) calloc(ngl2,sizeof(dfloat));
 Dstrong = (dfloat*) calloc(ngl2,sizeof(dfloat));
+
+DCentralFD = (dfloat*) calloc(ngl2,sizeof(dfloat));
+DupwindFD = (dfloat*) calloc(ngl2,sizeof(dfloat));
+DdownwindFD = (dfloat*) calloc(ngl2,sizeof(dfloat));
 //Dhat.resize(ngl,ngl);
 //D0.resize(ngl,ngl);
 
@@ -79,6 +83,9 @@ BarycentricWeights();
 
 
 PolynomialDerivativeMatrix();
+
+FiniteDifferenceOperators();
+
 //include surface terms for strong form DG
 for (int i=0;i<ngl;++i){
     for(int j=0;j<ngl;++j){
@@ -131,7 +138,40 @@ ModalTrafoMatrix();
 
 
 
+void basis :: FiniteDifferenceOperators(){
 
+	DCentralFD[0] = (-1.0/(x_GL[1]-x_GL[0]));							// FIRST ENTRY NORMAL UPWIND
+	DCentralFD[1] = (1.0/(x_GL[1]-x_GL[0]));							// SECOND ENTRY NORMAL UPWIND
+	DCentralFD[(ngl-1)*(ngl)+ngl-1)] = (1.0/(x_GL[N]-x_GL[N-1]));		//last entry		DOWNWIND
+	DCentralFD[(ngl-1)*(ngl)+ngl-2)] = (-1.0/(x_GL[N]-x_GL[N-1]));		//second last entry		DOWNWIND
+    for (int i=1;i<ngl-1;i++){
+		const int id = i*ngl+i;
+		const int idp1 = id+1;
+		const int idm1 = id-1;
+		DCentralFD[idp1]=(1.0/(x_GL[idp1]-x_GL[idm1]));
+		DCentralFD[idm1]=(-1.0/(x_GL[idp1]-x_GL[idm1]));
+    };
+
+
+	DupwindFD[(ngl-1)*(ngl)+ngl-1)] = (1.0/(x_GL[N]-x_GL[N-1]));		//last entry DOWNWIND
+	DupwindFD[(ngl-1)*(ngl)+ngl-2)] = (-1.0/(x_GL[N]-x_GL[N-1]));		//second last entry		 DOWNWIND
+	for (int i=0;i<ngl-1;i++){
+		const int id = i*ngl+i;
+		const int idp1 = id+1;
+		DupwindFD[id] = (-1.0/(x_GL[idp1]-x_GL[id]));
+		DupwindFD[idp1] = (1.0/(x_GL[idp1]-x_GL[id]));
+    };
+
+	DdownwindFD[0] = (-1.0/(x_GL[1]-x_GL[0]));							// FIRST ENTRY NORMAL UPWIND
+	DdownwindFD[1] = (1.0/(x_GL[1]-x_GL[0]));							// SECOND ENTRY NORMAL UPWIND
+	for (int i=0;i<ngl-1;i++){
+		const int id = i*ngl+i;
+		const int idm1 = id-1;
+		DdownwindFD[id] = (1.0/(x_GL[id]-x_GL[idm1]));
+		DdownwindFD[idm1] = (-1.0/(x_GL[id]-x_GL[idm1]));
+    };
+	
+};
 
 
 void basis :: ConvertToModal(const dfloat Q_nodal[], dfloat Q_modal[]){

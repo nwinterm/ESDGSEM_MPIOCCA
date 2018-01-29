@@ -591,6 +591,9 @@ int main(int argc, char *argv[])
     dfloat Dmat0[ngl2];
     dfloat Dhat[ngl2];
     dfloat VdmInv[ngl2];
+	dfloat DCentralFD[ngl2];
+	dfloat DupwindFD[ngl2];
+	dfloat DdownwindFD[ngl2];
     //dfloat SubCellMat[ngl2];
     dfloat GLw[ngl];
     for (int i=0; i<ngl; i++)
@@ -602,13 +605,48 @@ int main(int argc, char *argv[])
             Dmat0[Did] =DGBasis.D0[Did];;
             Dhat[Did] = DGBasis.Dhat[Did];
             VdmInv[Did] = DGBasis.VdmInv[Did];
+			DCentralFD[Did] = DGBasis.DCentralFD[Did];
+			DupwindFD[Did] = DGBasis.DupwindFD[Did];
+			DdownwindFD[Did] = DGBasis.DdownwindFD[Did];
             //            SubCellMat[Did] = DGBasis.SubCellMat(i+1,l+1);
         }
         GLw[i] = DGBasis.w_GL[i];
     }
 
+           cout <<"\n D central: \n";
+    for (int ie=0;ie<Nelem;ie++){
+            cout <<"Ele: " << ie <<"\n";
+        for(int j=0;j<ngl;++j){
+            for(int i=0;i<ngl;++i){
+                int id = ie*ngl2*Neq +  j*ngl+i;
+                cout <<DCentralFD[id]<<"  ";
+          }
+            cout <<"\n";
+        }
+    }
 
-
+	           cout <<"\n D upwind: \n";
+    for (int ie=0;ie<Nelem;ie++){
+            cout <<"Ele: " << ie <<"\n";
+        for(int j=0;j<ngl;++j){
+            for(int i=0;i<ngl;++i){
+                int id = ie*ngl2*Neq +  j*ngl+i;
+                cout <<DupwindFD[id]<<"  ";
+          }
+            cout <<"\n";
+        }
+    }
+	           cout <<"\n D downwind: \n";
+    for (int ie=0;ie<Nelem;ie++){
+            cout <<"Ele: " << ie <<"\n";
+        for(int j=0;j<ngl;++j){
+            for(int i=0;i<ngl;++i){
+                int id = ie*ngl2*Neq +  j*ngl+i;
+                cout <<DdownwindFD[id]<<"  ";
+          }
+            cout <<"\n";
+        }
+    }
     //initialise time integrator
     RungeKutta RK(rkorder,rkSSP);
 

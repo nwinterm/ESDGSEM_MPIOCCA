@@ -22,6 +22,9 @@ class basis
 
 
         dfloat * D;
+		dfloat * DCentralFD;
+		dfloat * DupwindFD;
+		dfloat * DdownwindFD;
         dfloat * Dstrong;
         dfloat * D0;
         dfloat *  Dhat;
@@ -60,6 +63,7 @@ class basis
         void qAndLEvaluation( const dfloat x_GL,dfloat *q, dfloat *del_q, dfloat *L_N);
         void BarycentricWeights();
         void PolynomialDerivativeMatrix();
+		void FiniteDifferenceOperators();
         void ModalTrafoMatrix();
 //        void SubCellAverageMatrix();
         void calcEntropyPointwise(const dfloat g_const,const dfloat h,const dfloat hu,const dfloat hv,const dfloat b,dfloat *Entropy);
