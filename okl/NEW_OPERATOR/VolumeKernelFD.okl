@@ -129,18 +129,24 @@ kernel void VolumeKernelFD(const int Nelem,
 									if (r_h_xp1 > PosPresTOL){
 										const dfloat r_Dp1 = s_DupwindFD[i][i+1];
 										const dfloat r_D = s_DupwindFD[i][i];
-										xiDeriv1 = r_D* s_F1[ieLoc][i][j] + r_Dp1* s_F1[ieLoc][i+1][j]  ;
-										xiDeriv2 = r_D* s_F2[ieLoc][i][j] + r_Dp1* s_F2[ieLoc][i+1][j]  ;
-										xiDeriv3 = r_D* s_F3[ieLoc][i][j] + r_Dp1* s_F3[ieLoc][i+1][j]  ;
+										FxiDeriv1 = r_D* s_F1[ieLoc][i][j] + r_Dp1* s_F1[ieLoc][i+1][j]  ;
+										FxiDeriv2 = r_D* s_F2[ieLoc][i][j] + r_Dp1* s_F2[ieLoc][i+1][j]  ;
+										FxiDeriv3 = r_D* s_F3[ieLoc][i][j] + r_Dp1* s_F3[ieLoc][i+1][j]  ;
+										GxiDeriv1 = r_D* s_G1[ieLoc][i][j] + r_Dp1* s_G1[ieLoc][i+1][j]  ;
+										GxiDeriv2 = r_D* s_G2[ieLoc][i][j] + r_Dp1* s_G2[ieLoc][i+1][j]  ;
+										GxiDeriv3 = r_D* s_G3[ieLoc][i][j] + r_Dp1* s_G3[ieLoc][i+1][j]  ;
 									}
 								}
 								if (i==ngl-1){
 									if (r_h_xm1 > PosPresTOL){
 										const dfloat r_Dp1 = s_DcentralFD[i][i+1];
 										const dfloat r_Dm1 = s_DcentralFD[i][i-1];
-										xiDeriv1 = r_Dm1* s_F1[ieLoc][i-1][j] + r_Dp1* s_F1[ieLoc][i+1][j]  ;
-										xiDeriv2 = r_Dm1* s_F2[ieLoc][i-1][j] + r_Dp1* s_F2[ieLoc][i+1][j]  ;
-										xiDeriv3 = r_Dm1* s_F3[ieLoc][i-1][j] + r_Dp1* s_F3[ieLoc][i+1][j]  ;
+										FxiDeriv1 = r_Dm1* s_F1[ieLoc][i-1][j] + r_Dp1* s_F1[ieLoc][i+1][j]  ;
+										FxiDeriv2 = r_Dm1* s_F2[ieLoc][i-1][j] + r_Dp1* s_F2[ieLoc][i+1][j]  ;
+										FxiDeriv3 = r_Dm1* s_F3[ieLoc][i-1][j] + r_Dp1* s_F3[ieLoc][i+1][j]  ;
+										GxiDeriv1 = r_Dm1* s_G1[ieLoc][i-1][j] + r_Dp1* s_G1[ieLoc][i+1][j]  ;
+										GxiDeriv2 = r_Dm1* s_G2[ieLoc][i-1][j] + r_Dp1* s_G2[ieLoc][i+1][j]  ;
+										GxiDeriv3 = r_Dm1* s_G3[ieLoc][i-1][j] + r_Dp1* s_G3[ieLoc][i+1][j]  ;
 									
 									}
 								}
@@ -149,25 +155,34 @@ kernel void VolumeKernelFD(const int Nelem,
 										if (r_h_xm1 > PosPresTOL){
 											const dfloat r_Dp1 = s_DcentralFD[i][i+1];
 											const dfloat r_Dm1 = s_DcentralFD[i][i-1];
-											xiDeriv1 = r_Dm1* s_F1[ieLoc][i-1][j] + r_Dp1* s_F1[ieLoc][i+1][j]  ;
-											xiDeriv2 = r_Dm1* s_F2[ieLoc][i-1][j] + r_Dp1* s_F2[ieLoc][i+1][j]  ;
-											xiDeriv3 = r_Dm1* s_F3[ieLoc][i-1][j] + r_Dp1* s_F3[ieLoc][i+1][j]  ;
+											FxiDeriv1 = r_Dm1* s_F1[ieLoc][i-1][j] + r_Dp1* s_F1[ieLoc][i+1][j]  ;
+											FxiDeriv2 = r_Dm1* s_F2[ieLoc][i-1][j] + r_Dp1* s_F2[ieLoc][i+1][j]  ;
+											FxiDeriv3 = r_Dm1* s_F3[ieLoc][i-1][j] + r_Dp1* s_F3[ieLoc][i+1][j]  ;
+											GxiDeriv1 = r_Dm1* s_G1[ieLoc][i-1][j] + r_Dp1* s_G1[ieLoc][i+1][j]  ;
+											GxiDeriv2 = r_Dm1* s_G2[ieLoc][i-1][j] + r_Dp1* s_G2[ieLoc][i+1][j]  ;
+											GxiDeriv3 = r_Dm1* s_G3[ieLoc][i-1][j] + r_Dp1* s_G3[ieLoc][i+1][j]  ;
 										
 										} else{
 											const dfloat r_Dp1 = s_DupwindFD[i][i+1];
 											const dfloat r_D = s_DupwindFD[i][i];
-											xiDeriv1 = r_D* s_F1[ieLoc][i][j] + r_Dp1* s_F1[ieLoc][i+1][j]  ;
-											xiDeriv2 = r_D* s_F2[ieLoc][i][j] + r_Dp1* s_F2[ieLoc][i+1][j]  ;
-											xiDeriv3 = r_D* s_F3[ieLoc][i][j] + r_Dp1* s_F3[ieLoc][i+1][j]  ;
+											FxiDeriv1 = r_D* s_F1[ieLoc][i][j] + r_Dp1* s_F1[ieLoc][i+1][j]  ;
+											FxiDeriv2 = r_D* s_F2[ieLoc][i][j] + r_Dp1* s_F2[ieLoc][i+1][j]  ;
+											FxiDeriv3 = r_D* s_F3[ieLoc][i][j] + r_Dp1* s_F3[ieLoc][i+1][j]  ;
+											GxiDeriv1 = r_D* s_G1[ieLoc][i][j] + r_Dp1* s_G1[ieLoc][i+1][j]  ;
+											GxiDeriv2 = r_D* s_G2[ieLoc][i][j] + r_Dp1* s_G2[ieLoc][i+1][j]  ;
+											GxiDeriv3 = r_D* s_G3[ieLoc][i][j] + r_Dp1* s_G3[ieLoc][i+1][j]  ;
 										}
 									
 									}else{
 										if (r_h_xm1 > PosPresTOL){
 											const dfloat r_D = s_DdownwindFD[i][i];
 											const dfloat r_Dm1 = s_DdownwindFD[i][i-1];
-											xiDeriv1 = r_Dm1* s_F1[ieLoc][i-1][j] + r_D* s_F1[ieLoc][i][j]  ;
-											xiDeriv2 = r_Dm1* s_F2[ieLoc][i-1][j] + r_D* s_F2[ieLoc][i][j]  ;
-											xiDeriv3 = r_Dm1* s_F3[ieLoc][i-1][j] + r_D* s_F3[ieLoc][i][j]  ;
+											FxiDeriv1 = r_Dm1* s_F1[ieLoc][i-1][j] + r_D* s_F1[ieLoc][i][j]  ;
+											FxiDeriv2 = r_Dm1* s_F2[ieLoc][i-1][j] + r_D* s_F2[ieLoc][i][j]  ;
+											FxiDeriv3 = r_Dm1* s_F3[ieLoc][i-1][j] + r_D* s_F3[ieLoc][i][j]  ;
+											GxiDeriv1 = r_Dm1* s_G1[ieLoc][i-1][j] + r_D* s_G1[ieLoc][i][j]  ;
+											GxiDeriv2 = r_Dm1* s_G2[ieLoc][i-1][j] + r_D* s_G2[ieLoc][i][j]  ;
+											GxiDeriv3 = r_Dm1* s_G3[ieLoc][i-1][j] + r_D* s_G3[ieLoc][i][j]  ;
 										
 										}
 									
@@ -178,9 +193,13 @@ kernel void VolumeKernelFD(const int Nelem,
 									if (r_h_yp1 > PosPresTOL){
 										const dfloat r_Dp1 = s_DupwindFD[i][i+1];
 										const dfloat r_D = s_DupwindFD[i][i];
-										etaDeriv1 = r_D* s_G1[ieLoc][i][j] + r_Dp1* s_G1[ieLoc][i][j+1]  ;
-										etaDeriv2 = r_D* s_G2[ieLoc][i][j] + r_Dp1* s_G2[ieLoc][i][j+1]  ;
-										etaDeriv3 = r_D* s_G3[ieLoc][i][j] + r_Dp1* s_G3[ieLoc][i][j+1]  ;
+										
+										FetaDeriv1 = r_D* s_F1[ieLoc][i][j] + r_Dp1* s_F1[ieLoc][i][j+1]  ;
+										FetaDeriv2 = r_D* s_F2[ieLoc][i][j] + r_Dp1* s_F2[ieLoc][i][j+1]  ;
+										FetaDeriv3 = r_D* s_F3[ieLoc][i][j] + r_Dp1* s_F3[ieLoc][i][j+1]  ;
+										GetaDeriv1 = r_D* s_G1[ieLoc][i][j] + r_Dp1* s_G1[ieLoc][i][j+1]  ;
+										GetaDeriv2 = r_D* s_G2[ieLoc][i][j] + r_Dp1* s_G2[ieLoc][i][j+1]  ;
+										GetaDeriv3 = r_D* s_G3[ieLoc][i][j] + r_Dp1* s_G3[ieLoc][i][j+1]  ;
 									
 									}
 								}
@@ -188,9 +207,12 @@ kernel void VolumeKernelFD(const int Nelem,
 									if (r_h_ym1 > PosPresTOL){
 										const dfloat r_Dp1 = s_DcentralFD[i][i+1];
 										const dfloat r_Dm1 = s_DcentralFD[i][i-1];
-										etaDeriv1 = r_Dm1* s_G1[ieLoc][i][j-1] + r_Dp1* s_G1[ieLoc][i][j+1]  ;
-										etaDeriv2 = r_Dm1* s_G2[ieLoc][i][j-1] + r_Dp1* s_G2[ieLoc][i][j+1]  ;
-										etaDeriv3 = r_Dm1* s_G3[ieLoc][i][j-1] + r_Dp1* s_G3[ieLoc][i][j+1]  ;
+										FetaDeriv1 = r_Dm1* s_F1[ieLoc][i][j-1] + r_Dp1* s_F1[ieLoc][i][j+1]  ;
+										FetaDeriv2 = r_Dm1* s_F2[ieLoc][i][j-1] + r_Dp1* s_F2[ieLoc][i][j+1]  ;
+										FetaDeriv3 = r_Dm1* s_F3[ieLoc][i][j-1] + r_Dp1* s_F3[ieLoc][i][j+1]  ;
+										GetaDeriv1 = r_Dm1* s_G1[ieLoc][i][j-1] + r_Dp1* s_G1[ieLoc][i][j+1]  ;
+										GetaDeriv2 = r_Dm1* s_G2[ieLoc][i][j-1] + r_Dp1* s_G2[ieLoc][i][j+1]  ;
+										GetaDeriv3 = r_Dm1* s_G3[ieLoc][i][j-1] + r_Dp1* s_G3[ieLoc][i][j+1]  ;
 									
 									}
 								}
@@ -199,25 +221,34 @@ kernel void VolumeKernelFD(const int Nelem,
 										if (r_h_ym1 > PosPresTOL){
 											const dfloat r_Dp1 = s_DcentralFD[i][i+1];
 											const dfloat r_Dm1 = s_DcentralFD[i][i-1];
-											etaDeriv1 = r_Dm1* s_G1[ieLoc][i][j-1] + r_Dp1* s_G1[ieLoc][i][j+1]  ;
-											etaDeriv2 = r_Dm1* s_G2[ieLoc][i][j-1] + r_Dp1* s_G2[ieLoc][i][j+1]  ;
-											etaDeriv3 = r_Dm1* s_G3[ieLoc][i][j-1] + r_Dp1* s_G3[ieLoc][i][j+1]  ;
+											FetaDeriv1 = r_Dm1* s_F1[ieLoc][i][j-1] + r_Dp1* s_F1[ieLoc][i][j+1]  ;
+											FetaDeriv2 = r_Dm1* s_F2[ieLoc][i][j-1] + r_Dp1* s_F2[ieLoc][i][j+1]  ;
+											FetaDeriv3 = r_Dm1* s_F3[ieLoc][i][j-1] + r_Dp1* s_F3[ieLoc][i][j+1]  ;
+											GetaDeriv1 = r_Dm1* s_G1[ieLoc][i][j-1] + r_Dp1* s_G1[ieLoc][i][j+1]  ;
+											GetaDeriv2 = r_Dm1* s_G2[ieLoc][i][j-1] + r_Dp1* s_G2[ieLoc][i][j+1]  ;
+											GetaDeriv3 = r_Dm1* s_G3[ieLoc][i][j-1] + r_Dp1* s_G3[ieLoc][i][j+1]  ;
 										
 										} else{
 											const dfloat r_Dp1 = s_DupwindFD[i][i+1];
 											const dfloat r_D = s_DupwindFD[i][i];
-											etaDeriv1 = r_D* s_G1[ieLoc][i][j] + r_Dp1* s_G1[ieLoc][i][j+1]  ;
-											etaDeriv2 = r_D* s_G2[ieLoc][i][j] + r_Dp1* s_G2[ieLoc][i][j+1]  ;
-											etaDeriv3 = r_D* s_G3[ieLoc][i][j] + r_Dp1* s_G3[ieLoc][i][j+1]  ;
+											FetaDeriv1 = r_D* s_F1[ieLoc][i][j] + r_Dp1* s_F1[ieLoc][i][j+1]  ;
+											FetaDeriv2 = r_D* s_F2[ieLoc][i][j] + r_Dp1* s_F2[ieLoc][i][j+1]  ;
+											FetaDeriv3 = r_D* s_F3[ieLoc][i][j] + r_Dp1* s_F3[ieLoc][i][j+1]  ;
+											GetaDeriv1 = r_D* s_G1[ieLoc][i][j] + r_Dp1* s_G1[ieLoc][i][j+1]  ;
+											GetaDeriv2 = r_D* s_G2[ieLoc][i][j] + r_Dp1* s_G2[ieLoc][i][j+1]  ;
+											GetaDeriv3 = r_D* s_G3[ieLoc][i][j] + r_Dp1* s_G3[ieLoc][i][j+1]  ;
 										}
 									
 									}else{
 										if (r_h_xm1 > PosPresTOL){
 											const dfloat r_D = s_DdownwindFD[i][i];
 											const dfloat r_Dm1 = s_DdownwindFD[i][i-1];
-											etaDeriv1 = r_Dm1* s_G1[ieLoc][i][j-1] + r_D* s_G1[ieLoc][i][j]  ;
-											etaDeriv2 = r_Dm1* s_G2[ieLoc][i][j-1] + r_D* s_G2[ieLoc][i][j]  ;
-											etaDeriv3 = r_Dm1* s_G3[ieLoc][i][j-1] + r_D* s_G3[ieLoc][i][j]  ;
+											FetaDeriv1 = r_Dm1* s_F1[ieLoc][i][j-1] + r_D* s_F1[ieLoc][i][j]  ;
+											FetaDeriv2 = r_Dm1* s_F2[ieLoc][i][j-1] + r_D* s_F2[ieLoc][i][j]  ;
+											FetaDeriv3 = r_Dm1* s_F3[ieLoc][i][j-1] + r_D* s_F3[ieLoc][i][j]  ;
+											GetaDeriv1 = r_Dm1* s_G1[ieLoc][i][j-1] + r_D* s_G1[ieLoc][i][j]  ;
+											GetaDeriv2 = r_Dm1* s_G2[ieLoc][i][j-1] + r_D* s_G2[ieLoc][i][j]  ;
+											GetaDeriv3 = r_Dm1* s_G3[ieLoc][i][j-1] + r_D* s_G3[ieLoc][i][j]  ;
 										
 										}
 									
@@ -234,19 +265,17 @@ kernel void VolumeKernelFD(const int Nelem,
 							const dfloat r_Xeta=X_eta[xid];
 							const dfloat r_Xxi=X_xi[xid];	
 
-							const dfloat xDeriv1= r_Yeta * xiDeriv1 - r_Yxi* etaDeriv1;
-							const dfloat xDeriv2= r_Yeta * xiDeriv2 - r_Yxi* etaDeriv2;
-							const dfloat xDeriv3= r_Yeta * xiDeriv3 - r_Yxi* etaDeriv3;
+							const dfloat FxDeriv1= r_Yeta * FxiDeriv1 - r_Yxi* FetaDeriv1;
+							const dfloat FxDeriv2= r_Yeta * FxiDeriv2 - r_Yxi* FetaDeriv2;
+							const dfloat FxDeriv3= r_Yeta * FxiDeriv3 - r_Yxi* FetaDeriv3;
 							
-							const dfloat yDeriv1= -r_Xeta * xiDeriv1 + r_Xxi* etaDeriv1;
-							const dfloat yDeriv2= -r_Xeta * xiDeriv2 + r_Xxi* etaDeriv2;
-							const dfloat yDeriv3= -r_Xeta * xiDeriv3 + r_Xxi* etaDeriv3;
+							const dfloat GyDeriv1= -r_Xeta * GxiDeriv1 + r_Xxi* GetaDeriv1;
+							const dfloat GyDeriv2= -r_Xeta * GxiDeriv2 + r_Xxi* GetaDeriv2;
+							const dfloat GyDeriv3= -r_Xeta * GxiDeriv3 + r_Xxi* GetaDeriv3;
 
-
-
-							const dfloat FluxDeriv1=  xDeriv1+ yDeriv1;
-							const dfloat FluxDeriv2=  xDeriv2+ yDeriv2;
-							const dfloat FluxDeriv3=  xDeriv3+ yDeriv3;
+							const dfloat FluxDeriv1=  FxDeriv1+ GyDeriv1;
+							const dfloat FluxDeriv2=  FxDeriv2+ GyDeriv2;
+							const dfloat FluxDeriv3=  FxDeriv3+ GyDeriv3;
 
 
 
