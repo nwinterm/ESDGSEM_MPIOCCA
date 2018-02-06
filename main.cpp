@@ -1362,27 +1362,34 @@ int main(int argc, char *argv[])
 			VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_Qt);
 
 			o_Qt.copyTo(Qt);
+	device.finish();
            cout <<"\n q_t ESDGSEM : \n";
 			for (int ie=0;ie<Nelem;ie++){
 					cout <<"Ele: " << ie <<"\n";
 				for(int j=0;j<ngl;++j){
 					for(int i=0;i<ngl;++i){
 						int id = ie*ngl2*Neq +  j*ngl+i;
-					   cout <<Qt[id]<<"  ";
-				  }
+					   cout <<"( " << Qt[id]<<",  ";
+					   cout <<Qt[id+ngl2]<<",  ";
+					   cout <<Qt[id+ngl2+ngl2]<<"  ) ";
+					}				  
 					cout <<"\n";
 				}
 			}
 
 			VolumeKernelFD(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_isPartlyDry,o_DcentralFD,o_DupwindFD,o_DdownwindFD,o_Bx,o_By,o_Qt);
 			o_Qt.copyTo(Qt);
+	device.finish();
+
 		        cout <<"\n q_t NEW : \n";
 			for (int ie=0;ie<Nelem;ie++){
 					cout <<"Ele: " << ie <<"\n";
 				for(int j=0;j<ngl;++j){
 					for(int i=0;i<ngl;++i){
 						int id = ie*ngl2*Neq +  j*ngl+i;
-					   cout <<Qt[id]<<"  ";
+					   cout <<"( " << Qt[id]<<",  ";
+					   cout <<Qt[id+ngl2]<<",  ";
+					   cout <<Qt[id+ngl2+ngl2]<<"  ) ";
 				  }
 					cout <<"\n";
 				}

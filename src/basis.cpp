@@ -104,10 +104,27 @@ for (int i=0;i<ngl;++i){
     }
 }
 
+//include surface terms for strong form DG
 D[0] = D[0] + 1.0/w_GL[0];
 D[ngl2-1] = D[ngl2-1] - 1.0/w_GL[ngl-1];
 Dstrong[0] = D0[0] + 1.0/w_GL[0];
 Dstrong[ngl2-1] = D0[ngl2-1] - 1.0/w_GL[ngl-1];
+
+
+
+//DCentralFD [0] = DCentralFD [0] + 1.0/w_GL[0];
+//DCentralFD [ngl2-1] = DCentralFD [ngl2-1] - 1.0/w_GL[ngl-1];
+
+
+
+DupwindFD[0] = DupwindFD[0] + 1.0/w_GL[0];
+DupwindFD[ngl2-1] = DupwindFD[ngl2-1] - 1.0/w_GL[ngl-1];
+
+DdownwindFD[ngl2-1] = DdownwindFD[ngl2-1] - 1.0/w_GL[ngl-1];
+DdownwindFD[0] = DdownwindFD[0] + 1.0/w_GL[0];
+
+
+
 //cout << "D: ";
 //for(int i = 0; i < ngl; ++i){
 //        for(int j = 0; j < ngl; ++j){
@@ -153,8 +170,8 @@ void basis :: FiniteDifferenceOperators(){
     };
 
 
-	DupwindFD[(ngl-1)*(ngl)+ngl-1] = (1.0/(x_GL[N]-x_GL[N-1]));		//last entry DOWNWIND
-	DupwindFD[(ngl-1)*(ngl)+ngl-2] = (-1.0/(x_GL[N]-x_GL[N-1]));		//second last entry		 DOWNWIND
+	DupwindFD[ngl2-1] = (1.0/(x_GL[N]-x_GL[N-1]));		//last entry DOWNWIND
+	DupwindFD[ngl2-2] = (-1.0/(x_GL[N]-x_GL[N-1]));		//second last entry		 DOWNWIND
 	for (int i=0;i<ngl-1;i++){
 		const int id = i*ngl+i;
 		const int idp1 = id+1;

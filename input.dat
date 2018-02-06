@@ -1,5 +1,5 @@
 meshFile=meshFiles/CurveDamN3.mesh
-N=1
+N=2
 CFL=0.1
 DFL=0.01
 T=0.001
@@ -17,7 +17,7 @@ NumTimeChecks=100
 Testcase=6
 ES=1
 NumFlux=3
-FluxDifferencing=1
+FluxDifferencing=0
 Cartesian=1
 rkOrder=3
 rkSSP=1
