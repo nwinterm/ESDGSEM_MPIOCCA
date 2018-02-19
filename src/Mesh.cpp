@@ -1786,10 +1786,10 @@ void Mesh::InitDomain(const int Testcase, int *fixedDomain,int *fixedDisc, int *
         *fixedDomain = 1 ;
         *fixedDisc = 0;
 
-        *xL=-5.0;
-        *xR=5.0;
-        *yL=-5.0;
-        *yR=5.0;
+        *xL=-20.0;
+        *xR=20.0;
+        *yL=-20.0;
+        *yR=20.0;
         break;
     }
     case 31:     // Two-dimensional oscillating lake  (Xing_PosPres paper, 6.8)

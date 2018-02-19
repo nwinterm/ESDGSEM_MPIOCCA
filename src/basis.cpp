@@ -34,6 +34,13 @@ Dstrong = (dfloat*) calloc(ngl2,sizeof(dfloat));
 DCentralFD = (dfloat*) calloc(ngl2,sizeof(dfloat));
 DupwindFD = (dfloat*) calloc(ngl2,sizeof(dfloat));
 DdownwindFD = (dfloat*) calloc(ngl2,sizeof(dfloat));
+
+DCentralFDnoBD = (dfloat*) calloc(ngl2,sizeof(dfloat));
+DupwindFDnoBD = (dfloat*) calloc(ngl2,sizeof(dfloat));
+DdownwindFDnoBD = (dfloat*) calloc(ngl2,sizeof(dfloat));
+
+
+
 //Dhat.resize(ngl,ngl);
 //D0.resize(ngl,ngl);
 
@@ -94,7 +101,9 @@ for (int i=0;i<ngl;++i){
         if (FluxDifferencing){
             D[i*ngl+j]=2*D[i*ngl+j];
         }
-
+	DCentralFDnoBD[i*ngl+j] =DCentralFD[i*ngl+j];
+	DupwindFDnoBD[i*ngl+j] =DupwindFD[i*ngl+j];
+	DdownwindFDnoBD[i*ngl+j] =DdownwindFD[i*ngl+j];
     }
 }
 // Dhat = - M^(-1) * D0^T * M

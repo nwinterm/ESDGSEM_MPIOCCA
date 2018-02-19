@@ -223,7 +223,7 @@ case 3:  {   // Entropy Glitch
     v= 0.0;
     w= 0.0;
         break;}
-case 4: {    // smaller discontinuous bottom WB test
+case 4: {    // WB _ smooth bottom
 
         h=5.0-b;
 
@@ -551,6 +551,10 @@ case 2: {    // WELL BALANCED (CARTESIAN 20x20)
         b[xid] =0.0;//b[xid] =2.0+sin(y[xid])+cos(x[xid]);
     }
     break;}
+case 4: {    // WELL BALANCED smooth bottom
+        b[xid] =2.0+sin(y[xid])+cos(x[xid]);
+    break;}
+
 case 5: {    // WELL BALANCED (CARTESIAN 4x4)
         b[xid] = 0.25 - 0.25*cos((2*x[xid]-1)*PI);
     break;}

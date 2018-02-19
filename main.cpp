@@ -594,6 +594,9 @@ int main(int argc, char *argv[])
 	dfloat DCentralFD[ngl2];
 	dfloat DupwindFD[ngl2];
 	dfloat DdownwindFD[ngl2];
+	dfloat DCentralFDnoBD[ngl2];
+	dfloat DupwindFDnoBD[ngl2];
+	dfloat DdownwindFDnoBD[ngl2];
     //dfloat SubCellMat[ngl2];
     dfloat GLw[ngl];
     for (int i=0; i<ngl; i++)
@@ -608,6 +611,9 @@ int main(int argc, char *argv[])
 			DCentralFD[Did] = DGBasis.DCentralFD[Did];
 			DupwindFD[Did] = DGBasis.DupwindFD[Did];
 			DdownwindFD[Did] = DGBasis.DdownwindFD[Did];
+			DCentralFDnoBD[Did] = DGBasis.DCentralFDnoBD[Did];
+			DupwindFDnoBD[Did] = DGBasis.DupwindFDnoBD[Did];
+			DdownwindFDnoBD[Did] = DGBasis.DdownwindFDnoBD[Did];
             //            SubCellMat[Did] = DGBasis.SubCellMat(i+1,l+1);
         }
         GLw[i] = DGBasis.w_GL[i];
@@ -786,6 +792,7 @@ int main(int argc, char *argv[])
 	occa::memory o_ViscForPlot;
 	
 	occa::memory o_DcentralFD, o_DupwindFD, o_DdownwindFD;
+occa::memory o_DcentralFDnoBD, o_DupwindFDnoBD, o_DdownwindFDnoBD;
 	occa::memory o_isPartlyDry;
 
 //   occa::memory o_PackSend, o_PackReceive;
@@ -808,6 +815,10 @@ int main(int argc, char *argv[])
 	o_DcentralFD  = device.malloc(ngl2*sizeof(dfloat));
 	o_DupwindFD  = device.malloc(ngl2*sizeof(dfloat));
 	o_DdownwindFD  = device.malloc(ngl2*sizeof(dfloat));
+	o_DcentralFDnoBD  = device.malloc(ngl2*sizeof(dfloat));
+	o_DupwindFDnoBD  = device.malloc(ngl2*sizeof(dfloat));
+	o_DdownwindFDnoBD  = device.malloc(ngl2*sizeof(dfloat));
+
 
     o_D  = device.malloc(ngl2*sizeof(dfloat));
     o_Dstrong  = device.malloc(ngl2*sizeof(dfloat));
@@ -980,6 +991,9 @@ int main(int argc, char *argv[])
 	o_DcentralFD.copyFrom(DCentralFD);
 	o_DupwindFD.copyFrom(DupwindFD);
 	o_DdownwindFD.copyFrom(DdownwindFD);
+	o_DcentralFDnoBD.copyFrom(DCentralFDnoBD);
+	o_DupwindFDnoBD.copyFrom(DupwindFDnoBD);
+	o_DdownwindFDnoBD.copyFrom(DdownwindFDnoBD);
 
     dfloat * qavgtmp = (dfloat*) calloc(Nelem*4,sizeof(dfloat));
     if(PositivityPreserving == 1)
@@ -1357,43 +1371,50 @@ int main(int argc, char *argv[])
 
 
 
+// CORRECT VOLUME KERNEL
+
+//			VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_Qt);
+
+//			o_Qt.copyTo(Qt);
+//	device.finish();
+ //         cout <<"\n q_t ESDGSEM : \n";
+//			for (int ie=0;ie<Nelem;ie++){
+//					cout <<"Ele: " << ie <<"\n";
+//				for(int j=0;j<ngl;++j){
+//					for(int i=0;i<ngl;++i){
+//						int id = ie*ngl2*Neq +  j*ngl+i;
+//					   cout <<"( " << Qt[id]<<",  ";
+//					   cout <<Qt[id+ngl2]<<",  ";
+//					   cout <<Qt[id+ngl2+ngl2]<<"  ) ";
+//					}				  
+//					cout <<"\n";
+//				}
+//			}
+//
 
 
-			VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_Qt);
+// NEW ONE FOR PARTIALLY WET ELEMENTS
 
-			o_Qt.copyTo(Qt);
-	device.finish();
-           cout <<"\n q_t ESDGSEM : \n";
-			for (int ie=0;ie<Nelem;ie++){
-					cout <<"Ele: " << ie <<"\n";
-				for(int j=0;j<ngl;++j){
-					for(int i=0;i<ngl;++i){
-						int id = ie*ngl2*Neq +  j*ngl+i;
-					   cout <<"( " << Qt[id]<<",  ";
-					   cout <<Qt[id+ngl2]<<",  ";
-					   cout <<Qt[id+ngl2+ngl2]<<"  ) ";
-					}				  
-					cout <<"\n";
-				}
-			}
 
-			VolumeKernelFD(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_isPartlyDry,o_DcentralFD,o_DupwindFD,o_DdownwindFD,o_Bx,o_By,o_Qt);
-			o_Qt.copyTo(Qt);
-	device.finish();
+			VolumeKernelFD(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_isPartlyDry,o_DcentralFD,o_DupwindFD,o_DdownwindFD,o_DcentralFDnoBD,o_DupwindFDnoBD,o_DdownwindFDnoBD,o_B,o_Qt);
 
-		        cout <<"\n q_t NEW : \n";
-			for (int ie=0;ie<Nelem;ie++){
-					cout <<"Ele: " << ie <<"\n";
-				for(int j=0;j<ngl;++j){
-					for(int i=0;i<ngl;++i){
-						int id = ie*ngl2*Neq +  j*ngl+i;
-					   cout <<"( " << Qt[id]<<",  ";
-					   cout <<Qt[id+ngl2]<<",  ";
-					   cout <<Qt[id+ngl2+ngl2]<<"  ) ";
-				  }
-					cout <<"\n";
-				}
-			}
+
+//			o_Qt.copyTo(Qt);
+//	device.finish();
+
+//		        cout <<"\n q_t NEW : \n";
+//			for (int ie=0;ie<Nelem;ie++){
+//					cout <<"Ele: " << ie <<"\n";
+//				for(int j=0;j<ngl;++j){
+//					for(int i=0;i<ngl;++i){
+//						int id = ie*ngl2*Neq +  j*ngl+i;
+//					   cout <<"( " << Qt[id]<<",  ";
+//					   cout <<Qt[id+ngl2]<<",  ";
+//					   cout <<Qt[id+ngl2+ngl2]<<"  ) ";
+//				  }
+//					cout <<"\n";
+//				}
+//			}
 
 
             MPI_Waitall(DGMeshPartition.NumProcessors,MPI.Recv_q_reqs, MPI.stats);
@@ -1778,7 +1799,9 @@ int main(int argc, char *argv[])
 	o_DcentralFD.free();
 	o_DupwindFD.free();
 	o_DdownwindFD.free();
-
+	o_DcentralFDnoBD.free();
+	o_DupwindFDnoBD.free();
+	o_DdownwindFDnoBD.free();
 //viscose term
 
     o_LambdaMax.free();
