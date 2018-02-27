@@ -1,6 +1,5 @@
 
 
-
 kernel void modifyGradient(const int Nelem, const dfloat * Q,dfloat * qGradientX,dfloat * qGradientY)
 {
 
@@ -10,30 +9,32 @@ kernel void modifyGradient(const int Nelem, const dfloat * Q,dfloat * qGradientX
     {
 
         shared dfloat s_AmodX1[ngl][ngl];
-		shared dfloat s_AmodY1[ngl][ngl];
+        shared dfloat s_AmodY1[ngl][ngl];
         shared dfloat s_AmodX2[ngl][ngl];
-		shared dfloat s_AmodY2[ngl][ngl];
+        shared dfloat s_AmodY2[ngl][ngl];
         shared dfloat s_AmodX3[ngl][ngl];
-		shared dfloat s_AmodY3[ngl][ngl];
+        shared dfloat s_AmodY3[ngl][ngl];
 
 
 
 
-        for (int i=0; i<ngl; ++i;inner1){
-            for (int j=0; j<ngl;++j;inner0){
-                        const int id=j*ngl+i;
-                        const int Fid = ie*ngl2*Neq   +j*ngl+i;
-                        const int Xid = ie*ngl2       +j*ngl+i;
+        for (int i=0; i<ngl; ++i; inner1)
+        {
+            for (int j=0; j<ngl; ++j; inner0)
+            {
+                const int id=j*ngl+i;
+                const int Fid = ie*ngl2*Neq   +j*ngl+i;
+                const int Xid = ie*ngl2       +j*ngl+i;
 
 
 
 
-                    s_AmodX1[i][j] = 0.0 ;
-                    s_AmodX2[i][j] = Q[Fid];// + B[Xid];
-                    s_AmodX3[i][j] = Q[Fid];// + B[Xid];
-                    s_AmodY1[i][j] = 0.0 ;
-                    s_AmodY2[i][j] = Q[Fid];// + B[Xid];
-                    s_AmodY3[i][j] = Q[Fid];// + B[Xid];
+                s_AmodX1[i][j] = 0.0 ;
+                s_AmodX2[i][j] = Q[Fid];// + B[Xid];
+                s_AmodX3[i][j] = Q[Fid];// + B[Xid];
+                s_AmodY1[i][j] = 0.0 ;
+                s_AmodY2[i][j] = Q[Fid];// + B[Xid];
+                s_AmodY3[i][j] = Q[Fid];// + B[Xid];
 
 
 //                    s_AmodX1[i][j] = 0.0;
@@ -83,35 +84,37 @@ kernel void modifyGradient(const int Nelem, const dfloat * Q,dfloat * qGradientX
             }
         }
 
-            barrier(localMemFence);
+        barrier(localMemFence);
 
 
 
-            for (int j=0; j<ngl; ++j;inner1){
-                for (int i=0; i<ngl;++i;inner0){
+        for (int j=0; j<ngl; ++j; inner1)
+        {
+            for (int i=0; i<ngl; ++i; inner0)
+            {
 
-                        const int id  = ie*ngl2*Neq   +j*ngl+i;
+                const int id  = ie*ngl2*Neq   +j*ngl+i;
 
-                        dfloat modvarX1 = s_AmodX1[i][j];
-                        dfloat modvarX2 = s_AmodX2[i][j];
-                        dfloat modvarX3 = s_AmodX3[i][j];
-						dfloat modvarY1 = s_AmodY1[i][j];
-						dfloat modvarY2 = s_AmodY2[i][j];
-						dfloat modvarY3 = s_AmodY3[i][j];
-
-
-
-                        qGradientX[id]              =   modvarX1*qGradientX[id] ;
-                        qGradientX[id+ngl2]         =   modvarX2*qGradientX[id+ngl2];
-                        qGradientX[id+ngl2+ngl2]    =   modvarX3*qGradientX[id+ngl2+ngl2] ;
-                        qGradientY[id]              =   modvarY1*qGradientY[id];
-                        qGradientY[id+ngl2]         =   modvarY2*qGradientY[id+ngl2]   ;
-                        qGradientY[id+ngl2+ngl2]    =   modvarY3*qGradientY[id+ngl2+ngl2] ;
+                dfloat modvarX1 = s_AmodX1[i][j];
+                dfloat modvarX2 = s_AmodX2[i][j];
+                dfloat modvarX3 = s_AmodX3[i][j];
+                dfloat modvarY1 = s_AmodY1[i][j];
+                dfloat modvarY2 = s_AmodY2[i][j];
+                dfloat modvarY3 = s_AmodY3[i][j];
 
 
 
-                }
+                qGradientX[id]              =   modvarX1*qGradientX[id] ;
+                qGradientX[id+ngl2]         =   modvarX2*qGradientX[id+ngl2];
+                qGradientX[id+ngl2+ngl2]    =   modvarX3*qGradientX[id+ngl2+ngl2] ;
+                qGradientY[id]              =   modvarY1*qGradientY[id];
+                qGradientY[id+ngl2]         =   modvarY2*qGradientY[id+ngl2]   ;
+                qGradientY[id+ngl2+ngl2]    =   modvarY3*qGradientY[id+ngl2+ngl2] ;
+
+
+
             }
+        }
 
 
 

@@ -4,7 +4,8 @@
 
 //MPI_setup::MPI_setup(int argc, char *argv[]){
 
-MPI_setup::MPI_setup(){
+MPI_setup::MPI_setup()
+{
 
 
 //    MPI_Init(&argc,&argv);
@@ -35,7 +36,8 @@ MPI_setup::MPI_setup(){
 
 
 
-    for (int i=0; i<numtasks;i++){
+    for (int i=0; i<numtasks; i++)
+    {
 
         reqs[i]   = MPI_REQUEST_NULL;
         Send_b_reqs[i] = MPI_REQUEST_NULL;
@@ -50,7 +52,7 @@ MPI_setup::MPI_setup(){
         Recv_ViscPar_reqs[i]= MPI_REQUEST_NULL;
     }
 
-     stats = new MPI_Status[numtasks];   // required variable for Waitall routine
+    stats = new MPI_Status[numtasks];   // required variable for Waitall routine
 }
 
 

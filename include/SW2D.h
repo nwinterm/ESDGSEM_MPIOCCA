@@ -9,9 +9,9 @@ using namespace Constants;
 
 
 
-void InitQ(const int, const MeshPartitioning ,const int,const int,const int,const int,const dfloat[],const dfloat[], dfloat[],const dfloat,const dfloat[],const dfloat);
-void InitQNodal(const int,const dfloat ,const dfloat , dfloat [],const dfloat ,const dfloat ,const dfloat);
-void InitB(const int, const MeshPartitioning ,const int,const int,const int,const int,const dfloat[],const dfloat[],dfloat[]);
+void InitQ(const int, const MeshPartitioning,const int,const int,const int,const int,const dfloat[],const dfloat[], dfloat[],const dfloat,const dfloat[],const dfloat);
+void InitQNodal(const int,const dfloat,const dfloat, dfloat [],const dfloat,const dfloat,const dfloat);
+void InitB(const int, const MeshPartitioning,const int,const int,const int,const int,const dfloat[],const dfloat[],dfloat[]);
 void CalcBDerivatives(const int,const int,const int,const dfloat,const dfloat[],const dfloat[],const dfloat[],const dfloat[], const dfloat[], const dfloat[], const dfloat[], const dfloat[], dfloat[],dfloat[], const dfloat[]);
 
 

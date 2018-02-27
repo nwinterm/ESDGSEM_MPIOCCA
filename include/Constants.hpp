@@ -9,8 +9,9 @@
 #include <sstream>
 #include <algorithm>
 using namespace std;
-namespace Constants{
- //   #define PI 3.14159265359
+namespace Constants
+{
+//   #define PI 3.14159265359
 
 const dfloat PI  = atan(1.0)*4;
 const int Neq=3;

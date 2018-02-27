@@ -49,7 +49,8 @@ void MeshPartitioning::DivideMesh(const Mesh GlobalMesh,const MPI_setup MPI)
 
         ElementLocalToGlobal= (int*) calloc(ElementsPerProc[0]*1,sizeof(int));
 
-        for (int i = 0;i<NumElements;i++){
+        for (int i = 0; i<NumElements; i++)
+        {
             ElementLocalToGlobal[i]=i+1;
         }
 
@@ -76,24 +77,27 @@ void MeshPartitioning::DivideMesh(const Mesh GlobalMesh,const MPI_setup MPI)
 
         for (int is=0; is<global_NumEdges; is++)
         {
-                int glbEdgeInfoID=(is)*7;
-                int id1 =  10*(is);
-                MyEdgeInfo[id1+0]= GlobalMesh.EdgeInfo[glbEdgeInfoID+0]	;		//	!these are not even used after the inital mesh generation
-                MyEdgeInfo[id1+1] = GlobalMesh.EdgeInfo[glbEdgeInfoID+1]	;		//	! ""
-                MyEdgeInfo[id1+2] = GlobalMesh.EdgeInfo[glbEdgeInfoID+2] ;//!this is changed to be the local element on left processor
-                MyEdgeInfo[id1+3] = GlobalMesh.EdgeInfo[glbEdgeInfoID+3] ;//!this is changed to be the local element on right processor
-                MyEdgeInfo[id1+4] = GlobalMesh.EdgeInfo[glbEdgeInfoID+4];	//!local side left element <- fine as is
-                MyEdgeInfo[id1+5] = GlobalMesh.EdgeInfo[glbEdgeInfoID+5]	;//!local side right element <- fine as is
-                MyEdgeInfo[id1+6] = GlobalMesh.EdgeInfo[glbEdgeInfoID+6];
+            int glbEdgeInfoID=(is)*7;
+            int id1 =  10*(is);
+            MyEdgeInfo[id1+0]= GlobalMesh.EdgeInfo[glbEdgeInfoID+0]	;		//	!these are not even used after the inital mesh generation
+            MyEdgeInfo[id1+1] = GlobalMesh.EdgeInfo[glbEdgeInfoID+1]	;		//	! ""
+            MyEdgeInfo[id1+2] = GlobalMesh.EdgeInfo[glbEdgeInfoID+2] ;//!this is changed to be the local element on left processor
+            MyEdgeInfo[id1+3] = GlobalMesh.EdgeInfo[glbEdgeInfoID+3] ;//!this is changed to be the local element on right processor
+            MyEdgeInfo[id1+4] = GlobalMesh.EdgeInfo[glbEdgeInfoID+4];	//!local side left element <- fine as is
+            MyEdgeInfo[id1+5] = GlobalMesh.EdgeInfo[glbEdgeInfoID+5]	;//!local side right element <- fine as is
+            MyEdgeInfo[id1+6] = GlobalMesh.EdgeInfo[glbEdgeInfoID+6];
 
-                MyEdgeInfo[id1+7]= 0;
-                if (MyEdgeInfo[id1+3]==-1){
-                    MyEdgeInfo[id1+8]= -1;
-                }else{
-                    MyEdgeInfo[id1+8]= -0;
-                }
+            MyEdgeInfo[id1+7]= 0;
+            if (MyEdgeInfo[id1+3]==-1)
+            {
+                MyEdgeInfo[id1+8]= -1;
+            }
+            else
+            {
+                MyEdgeInfo[id1+8]= -0;
+            }
 
-                MyEdgeInfo[id1+9] = is 	;	//!global side id
+            MyEdgeInfo[id1+9] = is 	;	//!global side id
         }
 
 
@@ -151,7 +155,7 @@ void MeshPartitioning::DivideMesh(const Mesh GlobalMesh,const MPI_setup MPI)
 
         global_NumElements=GlobalMesh.m_num_elements;
 
-	MPI_Bcast(&global_NumElements,1,MPI_INT,0,MPI_COMM_WORLD);
+        MPI_Bcast(&global_NumElements,1,MPI_INT,0,MPI_COMM_WORLD);
         global_NumEdges=GlobalMesh.m_num_edges;
 
         ElementsPerProc= (int*) calloc(NumProcessors,sizeof(int));
@@ -694,7 +698,7 @@ void MeshPartitioning::SplitEdgeRealValuesBetweenProcs(const MPI_setup MPI,const
 
 void MeshPartitioning::ReceiveMesh(const MPI_setup MPI)
 {
-	MPI_Bcast(&global_NumElements,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&global_NumElements,1,MPI_INT,0,MPI_COMM_WORLD);
 
 //    MPI_Recv(&global_NumElements,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 //    MPI_Wait(&reqs[MPI.rank], stats);

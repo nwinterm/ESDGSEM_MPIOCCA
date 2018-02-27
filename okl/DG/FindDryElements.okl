@@ -1,7 +1,6 @@
-
 kernel void FindDryElements(const int Nelem,
-                          const dfloat * restrict  Q,
-			int  * restrict  isPartlyDry)
+                            const dfloat * restrict  Q,
+                            int  * restrict  isPartlyDry)
 {
 
 
@@ -9,7 +8,7 @@ kernel void FindDryElements(const int Nelem,
     for(int ie = 0; ie < Nelem; ie++; outer0)
     {
 
-	shared dfloat s_Minh[ngl][ngl];
+        shared dfloat s_Minh[ngl][ngl];
 
 
 
@@ -20,17 +19,17 @@ kernel void FindDryElements(const int Nelem,
             {
                 const int Fid = ie*ngl2*Neq   +j*ngl+i;
 
-		const dfloat r_h = Q[Fid];
+                const dfloat r_h = Q[Fid];
                 if (r_h>PosPresTOL)
                 {
-		   s_Minh[i][j] =r_h;
+                    s_Minh[i][j] =r_h;
                 }
                 else
                 {
-		   s_Minh[i][j] =zero;
+                    s_Minh[i][j] =zero;
                 }
 
-		isPartlyDry[ie] = 0;
+                isPartlyDry[ie] = 0;
 
             }
         }
@@ -43,28 +42,31 @@ kernel void FindDryElements(const int Nelem,
         {
             for (int j=0; j<ngl; ++j; inner0)
             {
-		if (i==0){
-			if (j==0){
-				isPartlyDry[ie] = 1;
-            			occaUnroll(ngl)
-            			for (int k=0; k<ngl; ++k)
-            			{
-                			occaUnroll(ngl)
-                			for (int l=0; l<ngl; ++l)
-                			{
-		    				if (s_Minh[l][k] == zero){
-							isPartlyDry[ie] = 1;
-		    				}
-                			}
-            			}
+                if (i==0)
+                {
+                    if (j==0)
+                    {
+                        isPartlyDry[ie] = 1;
+                        occaUnroll(ngl)
+                        for (int k=0; k<ngl; ++k)
+                        {
+                            occaUnroll(ngl)
+                            for (int l=0; l<ngl; ++l)
+                            {
+                                if (s_Minh[l][k] == zero)
+                                {
+                                    isPartlyDry[ie] = 1;
+                                }
+                            }
+                        }
 
-				}
-			}
+                    }
+                }
 
 
 
 
-		}
+            }
 
         }
 

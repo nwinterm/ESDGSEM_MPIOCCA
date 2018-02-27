@@ -68,7 +68,6 @@ kernel void calcAvg(const int Nelem,
                 }
             }
 
-
         }
 
         barrier(localMemFence);

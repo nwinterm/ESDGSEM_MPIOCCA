@@ -34,7 +34,7 @@ kernel void VolumeKernel(int Nelem,
 
                 int id=j*ngl+i;
                 int xid=ie*ngl2   +j*ngl+i;
-				int Fid = ie*ngl2*Neq   +j*ngl+i;
+                int Fid = ie*ngl2*Neq   +j*ngl+i;
 
 
 

@@ -6,19 +6,19 @@ using namespace Constants;
 
 class RungeKutta
 {
-    public:
-        RungeKutta(int,int);
-        int rkStages;
-        dfloat * CoeffsA;
-        dfloat * CoeffsB;
-        dfloat * CoeffsC;
-        virtual ~RungeKutta();
+public:
+    RungeKutta(int,int);
+    int rkStages;
+    dfloat * CoeffsA;
+    dfloat * CoeffsB;
+    dfloat * CoeffsC;
+    virtual ~RungeKutta();
 
 
 
-    protected:
+protected:
 
-    private:
+private:
 };
 
 #endif // RUNGEKUTTA_H

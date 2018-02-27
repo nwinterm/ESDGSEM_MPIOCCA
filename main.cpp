@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
 
 
 
-	cout.precision(17);
+    cout.precision(17);
     //initialize polynomial basis
 
     int ngl, ngl2;;
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
     int Nfaces_global, Nelem_global,NoDofs_global,NoSpaceDofs_global;
     int PlotVar;
     int EntropyPlot;
-	int ArtificialViscosity;
+    int ArtificialViscosity;
     int PositivityPreserving;
     int rkorder;
     int rkSSP;
@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
     int NEsurfpad;
     int KernelVersion=-1;
     int KernelVersionSTD=-1;
-	
+
 
     int N=0;
     int NelemX=0;
@@ -192,11 +192,11 @@ int main(int argc, char *argv[])
                       &ArtificialViscosity,
                       &PositivityPreserving,
                       &PosPresTOL,
-		      &epsilon_0,
+                      &epsilon_0,
                       &sigma_min,
                       &sigma_max,
                       &PlotVar,
-					  &EntropyPlot,
+                      &EntropyPlot,
                       &NumPlots,
                       &NumTimeChecks,
                       &Testcase,
@@ -222,11 +222,11 @@ int main(int argc, char *argv[])
                    &ArtificialViscosity,
                    &PositivityPreserving,
                    &PosPresTOL,
-		   &epsilon_0,
+                   &epsilon_0,
                    &sigma_min,
                    &sigma_max,
                    &PlotVar,
-				   &EntropyPlot,
+                   &EntropyPlot,
                    &NumPlots,
                    &NumTimeChecks,
                    &Testcase,
@@ -263,7 +263,7 @@ int main(int argc, char *argv[])
         cout <<"ArtificialViscosity: " <<ArtificialViscosity <<"\n";
         cout <<"PositivityPreserving: " <<PositivityPreserving <<"\n";
         cout <<"PosPresTOL: " <<PosPresTOL <<"\n";
-	cout <<"epsilon_0: " <<epsilon_0 <<"\n";
+        cout <<"epsilon_0: " <<epsilon_0 <<"\n";
         cout <<"sigma_min: " <<sigma_min <<"\n";
         cout <<"sigma_max: " <<sigma_max <<"\n";
         cout <<"PlotVar: " <<PlotVar <<"\n";
@@ -362,9 +362,9 @@ int main(int argc, char *argv[])
 
 
     dfloat * Q_global ;
-	dfloat * EntropyOverTime;
-	dfloat * MassOverTime;
-	dfloat * EntropyTimes;
+    dfloat * EntropyOverTime;
+    dfloat * MassOverTime;
+    dfloat * EntropyTimes;
     dfloat * QtVisc_global;
     dfloat * Qx_global;
     dfloat * Qy_global ;
@@ -393,12 +393,13 @@ int main(int argc, char *argv[])
 
         x_phy_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
         y_phy_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
-		
-		if (EntropyPlot){
-			EntropyOverTime = (dfloat*) calloc(NumPlots,sizeof(dfloat));
-			MassOverTime = (dfloat*) calloc(NumPlots,sizeof(dfloat));
-			EntropyTimes = (dfloat*) calloc(NumPlots,sizeof(dfloat));
-		}
+
+        if (EntropyPlot)
+        {
+            EntropyOverTime = (dfloat*) calloc(NumPlots,sizeof(dfloat));
+            MassOverTime = (dfloat*) calloc(NumPlots,sizeof(dfloat));
+            EntropyTimes = (dfloat*) calloc(NumPlots,sizeof(dfloat));
+        }
 
 
 
@@ -591,9 +592,9 @@ int main(int argc, char *argv[])
     dfloat Dmat0[ngl2];
     dfloat Dhat[ngl2];
     dfloat VdmInv[ngl2];
-	dfloat DCentralFD[ngl2];
-	dfloat DforwardFD[ngl2];
-	dfloat DbackwardFD[ngl2];
+    dfloat DCentralFD[ngl2];
+    dfloat DforwardFD[ngl2];
+    dfloat DbackwardFD[ngl2];
 
     //dfloat SubCellMat[ngl2];
     dfloat GLw[ngl];
@@ -606,50 +607,58 @@ int main(int argc, char *argv[])
             Dmat0[Did] =DGBasis.D0[Did];;
             Dhat[Did] = DGBasis.Dhat[Did];
             VdmInv[Did] = DGBasis.VdmInv[Did];
-			DCentralFD[Did] = DGBasis.DCentralFD[Did];
-			DforwardFD[Did] = DGBasis.DforwardFD[Did];
-			DbackwardFD[Did] = DGBasis.DbackwardFD[Did];
+            DCentralFD[Did] = DGBasis.DCentralFD[Did];
+            DforwardFD[Did] = DGBasis.DforwardFD[Did];
+            DbackwardFD[Did] = DGBasis.DbackwardFD[Did];
 
             //            SubCellMat[Did] = DGBasis.SubCellMat(i+1,l+1);
         }
         GLw[i] = DGBasis.w_GL[i];
     }
 
-           cout <<"\n D central: \n";
-        for(int j=0;j<ngl;++j){
-            for(int i=0;i<ngl;++i){
-                int id =   j*ngl+i;
-                cout <<DCentralFD[id]<<"  ";
-          }
-            cout <<"\n";
+    cout <<"\n D central: \n";
+    for(int j=0; j<ngl; ++j)
+    {
+        for(int i=0; i<ngl; ++i)
+        {
+            int id =   j*ngl+i;
+            cout <<DCentralFD[id]<<"  ";
         }
+        cout <<"\n";
+    }
 
-	           cout <<"\n D forward: \n";
-        for(int j=0;j<ngl;++j){
-            for(int i=0;i<ngl;++i){
-                int id =   j*ngl+i;
-                cout <<DforwardFD[id]<<"  ";
-          }
-            cout <<"\n";
+    cout <<"\n D forward: \n";
+    for(int j=0; j<ngl; ++j)
+    {
+        for(int i=0; i<ngl; ++i)
+        {
+            int id =   j*ngl+i;
+            cout <<DforwardFD[id]<<"  ";
         }
+        cout <<"\n";
+    }
 
-	           cout <<"\n D backward: \n";
-        for(int j=0;j<ngl;++j){
-            for(int i=0;i<ngl;++i){
-                int id =   j*ngl+i;
-                cout <<DbackwardFD[id]<<"  ";
-          }
-            cout <<"\n";
+    cout <<"\n D backward: \n";
+    for(int j=0; j<ngl; ++j)
+    {
+        for(int i=0; i<ngl; ++i)
+        {
+            int id =   j*ngl+i;
+            cout <<DbackwardFD[id]<<"  ";
         }
+        cout <<"\n";
+    }
 
-	           cout <<"\n D matrix: \n";
-        for(int j=0;j<ngl;++j){
-            for(int i=0;i<ngl;++i){
-                int id =   j*ngl+i;
-                cout <<Dmat0[id]<<"  ";
-          }
-            cout <<"\n";
+    cout <<"\n D matrix: \n";
+    for(int j=0; j<ngl; ++j)
+    {
+        for(int i=0; i<ngl; ++i)
+        {
+            int id =   j*ngl+i;
+            cout <<Dmat0[id]<<"  ";
         }
+        cout <<"\n";
+    }
     //initialise time integrator
     RungeKutta RK(rkorder,rkSSP);
 
@@ -688,7 +697,7 @@ int main(int argc, char *argv[])
 //          }
 //            cout <<"\n";
 //        }
-//    } 
+//    }
 //           cout <<"\n q_exakt : \n";
 //    for (int ie=0;ie<1;ie++){
 //            cout <<"Ele: " << ie <<"\n";
@@ -764,8 +773,8 @@ int main(int argc, char *argv[])
     occa::kernel scaleGradient;
     occa::kernel SurfaceKernelVisc;
     occa::kernel UpdateQt;
-	
-	occa::kernel VolumeKernelFD;
+
+    occa::kernel VolumeKernelFD;
 
 //    occa::kernel MemCopyKernel;
 
@@ -794,12 +803,12 @@ int main(int argc, char *argv[])
     occa::memory o_Qavg;
 
     occa::memory o_GLw;
-	
-	occa::memory o_ViscForPlot;
-	
-	occa::memory o_DcentralFD, o_DforwardFD, o_DbackwardFD;
 
-	occa::memory o_isPartlyDry;
+    occa::memory o_ViscForPlot;
+
+    occa::memory o_DcentralFD, o_DforwardFD, o_DbackwardFD;
+
+    occa::memory o_isPartlyDry;
 
 //   occa::memory o_PackSend, o_PackReceive;
 
@@ -818,9 +827,9 @@ int main(int argc, char *argv[])
         o_Qtmp = device.malloc(NoDofs*sizeof(dfloat));
     }
 
-	o_DcentralFD  = device.malloc(ngl2*sizeof(dfloat));
-	o_DforwardFD  = device.malloc(ngl2*sizeof(dfloat));
-	o_DbackwardFD  = device.malloc(ngl2*sizeof(dfloat));
+    o_DcentralFD  = device.malloc(ngl2*sizeof(dfloat));
+    o_DforwardFD  = device.malloc(ngl2*sizeof(dfloat));
+    o_DbackwardFD  = device.malloc(ngl2*sizeof(dfloat));
 
 
 
@@ -868,8 +877,8 @@ int main(int argc, char *argv[])
     o_LambdaMax = device.malloc(Nelem*sizeof(dfloat));
     //pospres
     o_EleSizes = device.malloc(Nelem*sizeof(dfloat));
-	
-	o_isPartlyDry= device.malloc(Nelem*sizeof(int));
+
+    o_isPartlyDry= device.malloc(Nelem*sizeof(int));
 
 
     if (PositivityPreserving == 1)
@@ -894,8 +903,8 @@ int main(int argc, char *argv[])
 
 
         o_ViscPara = device.malloc(Nelem*sizeof(dfloat));
-		o_ViscForPlot = device.malloc(Nelem*sizeof(dfloat));
-		
+        o_ViscForPlot = device.malloc(Nelem*sizeof(dfloat));
+
         o_ViscParaL = device.malloc(Nfaces*sizeof(dfloat));
         o_ViscParaR = device.malloc(Nfaces*sizeof(dfloat));
 
@@ -941,19 +950,19 @@ int main(int argc, char *argv[])
     dfloat half = 0.5;
     dfloat one = 1.0;
     dfloat fourth = 0.25;
-	dfloat eight = 8.0;
-	dfloat two = 2.0;
-	dfloat onepointfive = 1.5;
+    dfloat eight = 8.0;
+    dfloat two = 2.0;
+    dfloat onepointfive = 1.5;
     dfloat halfg = half*g_const;
     dfloat fourthg = fourth*g_const;
     info.addDefine("zero",zero );
     info.addDefine("half",half );
     info.addDefine("fourth",fourth );
     info.addDefine("one",one );
-	info.addDefine("two",two );
-	info.addDefine("eight",eight );
-	info.addDefine("onepointfive",onepointfive );
-	
+    info.addDefine("two",two );
+    info.addDefine("eight",eight );
+    info.addDefine("onepointfive",onepointfive );
+
     info.addDefine("half_g",halfg);
     info.addDefine("fourth_g",fourthg);
     info.addDefine("g_const",g_const);
@@ -976,7 +985,7 @@ int main(int argc, char *argv[])
     o_Bx.copyFrom(Bx);
     o_By.copyFrom(By);
     o_D.copyFrom(Dmat);
-	
+
     o_Dstrong.copyFrom(DGBasis.Dstrong);
     o_Dhat.copyFrom(Dhat);
     o_Jac.copyFrom(J);
@@ -992,9 +1001,9 @@ int main(int argc, char *argv[])
     o_Qt.copyFrom(Qt);
     o_VdmInv.copyFrom(VdmInv);
     //o_SubCellMat.copyFrom(SubCellMat);
-	o_DcentralFD.copyFrom(DCentralFD);
-	o_DforwardFD.copyFrom(DforwardFD);
-	o_DbackwardFD.copyFrom(DbackwardFD);
+    o_DcentralFD.copyFrom(DCentralFD);
+    o_DforwardFD.copyFrom(DforwardFD);
+    o_DbackwardFD.copyFrom(DbackwardFD);
 
 
     dfloat * qavgtmp = (dfloat*) calloc(Nelem*4,sizeof(dfloat));
@@ -1091,8 +1100,8 @@ int main(int argc, char *argv[])
         VolumeKernel=device.buildKernelFromSource(var,"VolumeKernel",info);
     }
 
-	// FD = FINITE DIFFERENCE HERE
-	VolumeKernelFD=device.buildKernelFromSource("okl/NEW_OPERATOR/VolumeKernelFD.okl","VolumeKernelFD",info);
+    // FD = FINITE DIFFERENCE HERE
+    VolumeKernelFD=device.buildKernelFromSource("okl/NEW_OPERATOR/VolumeKernelFD.okl","VolumeKernelFD",info);
 
     switch(NumFlux)
     {
@@ -1114,7 +1123,7 @@ int main(int argc, char *argv[])
         calcNumFluxes=device.buildKernelFromSource("okl/RiemannSolvers/calcLFTypeESFlux.okl","calcNumFluxes",info);
         break;
     }
-	case 3:
+    case 3:
     {
         calcNumFluxes=device.buildKernelFromSource("okl/RiemannSolvers/calcESFluxRotated.okl","calcNumFluxes",info);
         break;
@@ -1126,7 +1135,7 @@ int main(int argc, char *argv[])
     // adds additional surface terms due to a possibly discontinuous bottom topography
     calcDiscBottomSurf      =   device.buildKernelFromSource("okl/DiscontinuousBathimetry/calcDiscBottomSurf.okl","calcDiscBottomSurf",info);
     // standard dg kernel for the surface parts
-   SurfaceKernel=device.buildKernelFromSource("okl/DG/SurfaceKernel.okl","SurfaceKernel",info);
+    SurfaceKernel=device.buildKernelFromSource("okl/DG/SurfaceKernel.okl","SurfaceKernel",info);
     //kernel to compute eigenvalues
     FindLambdaMax           =   device.buildKernelFromSource("okl/DG/FindLambdaMax.okl","FindLambdaMax",info);
     FindDryElements=   device.buildKernelFromSource("okl/DG/FindDryElements.okl","FindDryElements",info);
@@ -1179,12 +1188,14 @@ int main(int argc, char *argv[])
 
     if (NumPlots>0)
     {
-	if (Testcase == 32){
-		NumPlots=5;      
-    	}
-	if (Testcase == 31){
-		NumPlots=5;
-	}
+        if (Testcase == 32)
+        {
+            NumPlots=5;
+        }
+        if (Testcase == 31)
+        {
+            NumPlots=5;
+        }
         mCheckpoints = (dfloat*) calloc(NumPlots,sizeof(dfloat));
         mCheckpoints[0]=0.0;
         if (NumPlots>1)
@@ -1197,20 +1208,22 @@ int main(int argc, char *argv[])
             }
         }
 
-	if (Testcase == 32){
-		mCheckpoints[1]=8.0;
-		mCheckpoints[2]=30.0;
-		mCheckpoints[3]=300.0;
-		mCheckpoints[4]=900.0;    
-    	}
-	if (Testcase == 31){
-		mCheckpoints[1]=T/12.0;
-		mCheckpoints[2]=T/6.0;
-		mCheckpoints[3]=T/4.0;
-		mCheckpoints[4]=T;    
-    	}
+        if (Testcase == 32)
+        {
+            mCheckpoints[1]=8.0;
+            mCheckpoints[2]=30.0;
+            mCheckpoints[3]=300.0;
+            mCheckpoints[4]=900.0;
+        }
+        if (Testcase == 31)
+        {
+            mCheckpoints[1]=T/12.0;
+            mCheckpoints[2]=T/6.0;
+            mCheckpoints[3]=T/4.0;
+            mCheckpoints[4]=T;
+        }
     }
-    
+
 
     dfloat * tCheckpoints;
     int timeCount=0;
@@ -1257,24 +1270,28 @@ int main(int argc, char *argv[])
 
                 CollectSolution( MPI, DGMeshPartition, q, Q_global);
 
-		if (Testcase == 31){
-			dfloat * q_exakt = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
-			InitQ(0,DGMeshPartition,Testcase,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,t,b_global,g_const);
-			PlotSolutionWithExact(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount,q_exakt);
-			free(q_exakt);
-		}else{
-			PlotSolution(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount);
-		}
+                if (Testcase == 31)
+                {
+                    dfloat * q_exakt = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
+                    InitQ(0,DGMeshPartition,Testcase,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,t,b_global,g_const);
+                    PlotSolutionWithExact(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount,q_exakt);
+                    free(q_exakt);
+                }
+                else
+                {
+                    PlotSolution(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount);
+                }
 
-				if (EntropyPlot){
-					dfloat TotalEntropy=0.0;
-					DGBasis.calcTotalEntropy(g_const,Q_global,b_global,J_global,&TotalEntropy);
-					EntropyOverTime[plotCount] = TotalEntropy;
-					dfloat TotalMass=0.0;
-					DGBasis.calcTotalMass(Q_global,J_global,&TotalMass);
-					MassOverTime[plotCount] = TotalMass;
-					EntropyTimes[plotCount] = t;
-				}
+                if (EntropyPlot)
+                {
+                    dfloat TotalEntropy=0.0;
+                    DGBasis.calcTotalEntropy(g_const,Q_global,b_global,J_global,&TotalEntropy);
+                    EntropyOverTime[plotCount] = TotalEntropy;
+                    dfloat TotalMass=0.0;
+                    DGBasis.calcTotalMass(Q_global,J_global,&TotalMass);
+                    MassOverTime[plotCount] = TotalMass;
+                    EntropyTimes[plotCount] = t;
+                }
             }
             else
             {
@@ -1320,23 +1337,27 @@ int main(int argc, char *argv[])
         globalLambdaMax=0.0;
         o_LambdaMax.copyTo(LocalLambdas);
         GetGlobalLambdaMax(MPI,  DGMeshPartition,LocalLambdas, &globalLambdaMax);
-	dt_i = globalMinEleSize/(ngl) * CFL /globalLambdaMax;
-	if (Testcase==32){
-		if (t==0.0){
-			dt_i = 0.0001;		
-		}
-	}
-	if ( ArtificialViscosity==1)
+        dt_i = globalMinEleSize/(ngl) * CFL /globalLambdaMax;
+        if (Testcase==32)
+        {
+            if (t==0.0)
+            {
+                dt_i = 0.0001;
+            }
+        }
+        if ( ArtificialViscosity==1)
         {
             ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara,o_ViscForPlot);
             o_ViscPara.copyTo(ViscPara);
             GetGlobalViscParaMax(MPI,  DGMeshPartition,ViscPara, &maxViscPara);
 //	   cout << "Visc para max: " << maxViscPara <<"\n";
             dt_v = DFL/(pow(ngl,2)) * pow(globalMinEleSize,2) / maxViscPara;
-	    dt=fmin(T-t,fmin(dt_i,dt_v));
-        }else{
-	    dt=fmin(T-t,dt_i);
-	}
+            dt=fmin(T-t,fmin(dt_i,dt_v));
+        }
+        else
+        {
+            dt=fmin(T-t,dt_i);
+        }
 
 
 //cout << "timestep " << dt << "\n" ;
@@ -1380,7 +1401,7 @@ int main(int argc, char *argv[])
 
 
 
-	    FindDryElements(Nelem, o_q, o_isPartlyDry);
+            FindDryElements(Nelem, o_q, o_isPartlyDry);
 //device.finish();
 //	o_isPartlyDry.copyTo(isDryElement);
 //	for (int ie=0;ie<Nelem;ie++){
@@ -1392,11 +1413,11 @@ int main(int argc, char *argv[])
 
 // CORRECT VOLUME KERNEL
 
-			VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_isPartlyDry,o_Qt);
+            VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_isPartlyDry,o_Qt);
 
 //			o_Qt.copyTo(Qt);
 //	device.finish();
- //         cout <<"\n q_t ESDGSEM : \n";
+//         cout <<"\n q_t ESDGSEM : \n";
 //			for (int ie=0;ie<Nelem;ie++){
 //					cout <<"Ele: " << ie <<"\n";
 //				for(int j=0;j<ngl;++j){
@@ -1405,7 +1426,7 @@ int main(int argc, char *argv[])
 //					   cout <<"( " << Qt[id]<<",  ";
 //					   cout <<Qt[id+ngl2]<<",  ";
 //					   cout <<Qt[id+ngl2+ngl2]<<"  ) ";
-//					}				  
+//					}
 //					cout <<"\n";
 //				}
 //			}
@@ -1415,7 +1436,7 @@ int main(int argc, char *argv[])
 // NEW ONE FOR PARTIALLY WET ELEMENTS
 
 
-			VolumeKernelFD(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_isPartlyDry,o_DcentralFD,o_DforwardFD,o_DbackwardFD,o_B,o_Qt);
+            VolumeKernelFD(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_isPartlyDry,o_DcentralFD,o_DforwardFD,o_DbackwardFD,o_B,o_Qt);
 
 
 //			o_Qt.copyTo(Qt);
@@ -1473,9 +1494,9 @@ int main(int argc, char *argv[])
                 o_qGradientXR.copyTo(qGradientXR);
                 o_qGradientYL.copyTo(qGradientYL);
                 o_qGradientYR.copyTo(qGradientYR);
-                    
+
                 // not an OCCA kernel, this is MPI communication for exchanging gradient data
-				CollectViscoseEdgeDataMPI(MPI, DGMeshPartition, ViscParaL, ViscParaL, qGradientXL,  qGradientXR,qGradientYL,qGradientYR);
+                CollectViscoseEdgeDataMPI(MPI, DGMeshPartition, ViscParaL, ViscParaL, qGradientXL,  qGradientXR,qGradientYL,qGradientYR);
                 VolumeKernelViscose(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_qGradientX,o_qGradientY,o_Dstrong,o_ViscPara,o_QtVisc);
 
 
@@ -1550,14 +1571,14 @@ int main(int argc, char *argv[])
 //						int id = ie*ngl2*Neq +  j*ngl+i;
 //						if (q[id]<0){
 //							cout << "Less than zero at Element: " << ie << " node: (" <<i <<", " <<j <<"\n";
- //							cout << "Water height: " <<q[id] <<" \n";
+//							cout << "Water height: " <<q[id] <<" \n";
 //						}
 //				  	}
 //				}
 //			}
 
 
-               preservePosivitity(Nelem,o_EleSizes,o_GLw, o_Jac,o_q);
+                preservePosivitity(Nelem,o_EleSizes,o_GLw, o_Jac,o_q);
 //
             }
 
@@ -1588,23 +1609,26 @@ int main(int argc, char *argv[])
                 {
                     cout << "we have time: "<<t<< " and we do plot number " <<  plotCount <<"!\n";
                     CollectSolution( MPI, DGMeshPartition, q, Q_global);
-                    
-					
-					if (Testcase == 31){
-						dfloat * q_exakt = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
-						InitQ(0,DGMeshPartition,Testcase,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,t,b_global,g_const);
-						PlotSolutionWithExact(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount,q_exakt);
-						
-						free(q_exakt);
-					}else{
-						PlotSolution(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount);
-					}
+
+
+                    if (Testcase == 31)
+                    {
+                        dfloat * q_exakt = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
+                        InitQ(0,DGMeshPartition,Testcase,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,t,b_global,g_const);
+                        PlotSolutionWithExact(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount,q_exakt);
+
+                        free(q_exakt);
+                    }
+                    else
+                    {
+                        PlotSolution(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Q_global,b_global,plotCount);
+                    }
                     if(ArtificialViscosity==1)
                     {
-					
-					  o_ViscForPlot.copyTo(ViscPara);
-                      CollectViscPara(MPI,   DGMeshPartition, ViscPara, ViscPara_Global);
-                      PlotViscoseParameter(Nelem_global, ngl, x_phy_global,y_phy_global, ViscPara_Global, plotCount);
+
+                        o_ViscForPlot.copyTo(ViscPara);
+                        CollectViscPara(MPI,   DGMeshPartition, ViscPara, ViscPara_Global);
+                        PlotViscoseParameter(Nelem_global, ngl, x_phy_global,y_phy_global, ViscPara_Global, plotCount);
 //                        CollectViscosity( MPI, DGMeshPartition, Qx,Qy, Qx_global, Qy_global);
 //                        PlotViscosity(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Qx_global,Qy_global,plotCount);
 //                        CollectViscosity( MPI, DGMeshPartition, QtVisc,Qy, QtVisc_global, Qy_global);
@@ -1612,22 +1636,23 @@ int main(int argc, char *argv[])
 
                     }
 
-				if (EntropyPlot){
-					dfloat TotalEntropy=0.0;
-					DGBasis.calcTotalEntropy(g_const,Q_global,b_global,J_global,&TotalEntropy);
-					EntropyOverTime[plotCount] = TotalEntropy;
-					dfloat TotalMass=0.0;
-					DGBasis.calcTotalMass(Q_global,J_global,&TotalMass);
-					MassOverTime[plotCount] = TotalMass;
-					EntropyTimes[plotCount] = t;
-				}
+                    if (EntropyPlot)
+                    {
+                        dfloat TotalEntropy=0.0;
+                        DGBasis.calcTotalEntropy(g_const,Q_global,b_global,J_global,&TotalEntropy);
+                        EntropyOverTime[plotCount] = TotalEntropy;
+                        dfloat TotalMass=0.0;
+                        DGBasis.calcTotalMass(Q_global,J_global,&TotalMass);
+                        MassOverTime[plotCount] = TotalMass;
+                        EntropyTimes[plotCount] = t;
+                    }
                 }
                 else
                 {
                     SendSolution(MPI, DGMeshPartition,  q);
                     if(ArtificialViscosity==1)
                     {
-						o_ViscForPlot.copyTo(ViscPara);
+                        o_ViscForPlot.copyTo(ViscPara);
                         SendViscPara(MPI, DGMeshPartition,  ViscPara);
                         //            SendViscosity(MPI, DGMeshPartition,  Qx,Qy);
 //                        SendViscosity(MPI, DGMeshPartition,  QtVisc,Qy);
@@ -1693,10 +1718,11 @@ int main(int argc, char *argv[])
     {
         dfloat * q_exakt = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
 
-		if (EntropyPlot){
-			PlotEntropy(NumPlots, EntropyTimes,EntropyOverTime);
-			PlotMass(NumPlots, EntropyTimes,MassOverTime);
-		}
+        if (EntropyPlot)
+        {
+            PlotEntropy(NumPlots, EntropyTimes,EntropyOverTime);
+            PlotMass(NumPlots, EntropyTimes,MassOverTime);
+        }
 
         InitQ(0,DGMeshPartition,Testcase,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,0,b_global,g_const);
 
@@ -1707,11 +1733,11 @@ int main(int argc, char *argv[])
         cout <<"Entropydifference is: " <<  EntropyDelta <<"\n";
         cout <<"relative Entropydifference is: " <<  relEntropyDelta <<"\n";
 
-		dfloat MassDelta=0.0;
-		dfloat relMassError=0.0;
-		DGBasis.checkConservation(Q_global,q_exakt,J_global,&MassDelta,&relMassError);
-		cout <<"Mass difference is: " <<  MassDelta <<"\n";
-		cout <<"relative mass difference is: " <<  relMassError <<"\n";
+        dfloat MassDelta=0.0;
+        dfloat relMassError=0.0;
+        DGBasis.checkConservation(Q_global,q_exakt,J_global,&MassDelta,&relMassError);
+        cout <<"Mass difference is: " <<  MassDelta <<"\n";
+        cout <<"relative mass difference is: " <<  relMassError <<"\n";
 
         InitQ(0,DGMeshPartition,Testcase,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,T,b_global,g_const);
 
@@ -1828,12 +1854,12 @@ int main(int argc, char *argv[])
 
     o_DBSurf1.free();
     o_DBSurf2.free();
-	
-	
-	o_isPartlyDry.free();
-	o_DcentralFD.free();
-	o_DforwardFD.free();
-	o_DbackwardFD.free();
+
+
+    o_isPartlyDry.free();
+    o_DcentralFD.free();
+    o_DforwardFD.free();
+    o_DbackwardFD.free();
 
 //viscose term
 
@@ -1861,7 +1887,7 @@ int main(int argc, char *argv[])
         o_SurfacePartsVisc.free();
 
         o_ViscPara.free();
-		o_ViscForPlot.free();
+        o_ViscForPlot.free();
         o_ViscParaL.free();
         o_ViscParaR.free();
         if (PositivityPreserving == 1)

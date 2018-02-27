@@ -1,6 +1,5 @@
 
 
-
 kernel void calcGradient(const int Nelem,
                          const dfloat * restrict  Jac,
                          const dfloat * restrict  Y_xi,
@@ -32,28 +31,33 @@ kernel void calcGradient(const int Nelem,
 
 
 
-        for (int i=0; i<ngl; ++i;inner1){
-            for (int j=0; j<ngl;++j;inner0){
-                        const int id=j*ngl+i;
-                        const int Fid = ie*ngl2*Neq   +j*ngl+i;
-                        const int Xid = ie*ngl2       +j*ngl+i;
+        for (int i=0; i<ngl; ++i; inner1)
+        {
+            for (int j=0; j<ngl; ++j; inner0)
+            {
+                const int id=j*ngl+i;
+                const int Fid = ie*ngl2*Neq   +j*ngl+i;
+                const int Xid = ie*ngl2       +j*ngl+i;
 
-                        s_D[i][j]=D[id];
-
-
-                        dfloat Qinv;
-                        if (Q[Fid]>=PosPresTOL){
-                            Qinv =  one/Q[Fid];
-                        }else{
-                            Qinv = zero;
-                        }
+                s_D[i][j]=D[id];
 
 
+                dfloat Qinv;
+                if (Q[Fid]>=PosPresTOL)
+                {
+                    Qinv =  one/Q[Fid];
+                }
+                else
+                {
+                    Qinv = zero;
+                }
 
 
-                            s_Q1[i][j]= zero;
-                            s_Q2[i][j]= Q[Fid+ngl2]*Qinv;
-                            s_Q3[i][j]= Q[Fid+ngl2+ngl2]*Qinv;
+
+
+                s_Q1[i][j]= zero;
+                s_Q2[i][j]= Q[Fid+ngl2]*Qinv;
+                s_Q3[i][j]= Q[Fid+ngl2+ngl2]*Qinv;
 
 
 
@@ -63,71 +67,74 @@ kernel void calcGradient(const int Nelem,
             }
         }
 
-            barrier(localMemFence);
+        barrier(localMemFence);
 
 
 
-            for (int j=0; j<ngl; ++j;inner1){
-                for (int i=0; i<ngl;++i;inner0){
+        for (int j=0; j<ngl; ++j; inner1)
+        {
+            for (int i=0; i<ngl; ++i; inner0)
+            {
 
-                    const int xid=ie*ngl2   +j*ngl+i;
+                const int xid=ie*ngl2   +j*ngl+i;
 
-                    dfloat h_xi=zero;
-                    dfloat h_eta=zero;
-                    dfloat hu_xi=zero;
-                    dfloat hu_eta=zero;
-                    dfloat hv_xi=zero;
-                    dfloat hv_eta=zero;
+                dfloat h_xi=zero;
+                dfloat h_eta=zero;
+                dfloat hu_xi=zero;
+                dfloat hu_eta=zero;
+                dfloat hv_xi=zero;
+                dfloat hv_eta=zero;
 
-                    const dfloat r_Yeta=Y_eta[xid];
-                    const dfloat r_Yxi=Y_xi[xid];
-                    const dfloat r_Xeta=X_eta[xid];
-                    const dfloat r_Xxi=X_xi[xid];
+                const dfloat r_Yeta=Y_eta[xid];
+                const dfloat r_Yxi=Y_xi[xid];
+                const dfloat r_Xeta=X_eta[xid];
+                const dfloat r_Xxi=X_xi[xid];
 
-	// unroll loop
-                    occaUnroll(ngl)
-                    for (int l=0; l<ngl; ++l){
+                // unroll loop
+                occaUnroll(ngl)
+                for (int l=0; l<ngl; ++l)
+                {
 
-                          h_xi+= s_D[l][i] * s_Q1[l][j];
-                          h_eta+= s_D[l][j] * s_Q1[i][l];
+                    h_xi+= s_D[l][i] * s_Q1[l][j];
+                    h_eta+= s_D[l][j] * s_Q1[i][l];
 
-                          hu_xi+= s_D[l][i] * s_Q2[l][j];
-                          hu_eta+= s_D[l][j] * s_Q2[i][l];
+                    hu_xi+= s_D[l][i] * s_Q2[l][j];
+                    hu_eta+= s_D[l][j] * s_Q2[i][l];
 
-                          hv_xi+= s_D[l][i] * s_Q3[l][j];
-                          hv_eta+= s_D[l][j] * s_Q3[i][l];
+                    hv_xi+= s_D[l][i] * s_Q3[l][j];
+                    hv_eta+= s_D[l][j] * s_Q3[i][l];
 
-
-                     }
-
-
-
-
-                        const int id  = ie*ngl2*Neq   +j*ngl+i;
-
-
-                        const dfloat r_Jac=Jac[xid];
-
-
-                        dfloat h_x  = r_Yeta * h_xi - r_Yxi * h_eta;
-                        dfloat hu_x = r_Yeta * hu_xi - r_Yxi * hu_eta;
-                        dfloat hv_x = r_Yeta * hv_xi - r_Yxi * hv_eta;
-
-                        dfloat h_y  = - r_Xeta * h_xi + r_Xxi * h_eta;
-                        dfloat hu_y = - r_Xeta * hu_xi + r_Xxi * hu_eta;
-                        dfloat hv_y = - r_Xeta * hv_xi + r_Xxi * hv_eta;
-
-
-
-                        qGradientX[id]              =   r_Jac *h_x;
-                        qGradientX[id+ngl2]         =   r_Jac *hu_x ;
-                        qGradientX[id+ngl2+ngl2]    =   r_Jac *hv_x ;
-                        qGradientY[id]              =   r_Jac *h_y;
-                        qGradientY[id+ngl2]         =   r_Jac *hu_y ;
-                        qGradientY[id+ngl2+ngl2]    =   r_Jac *hv_y ;
 
                 }
+
+
+
+
+                const int id  = ie*ngl2*Neq   +j*ngl+i;
+
+
+                const dfloat r_Jac=Jac[xid];
+
+
+                dfloat h_x  = r_Yeta * h_xi - r_Yxi * h_eta;
+                dfloat hu_x = r_Yeta * hu_xi - r_Yxi * hu_eta;
+                dfloat hv_x = r_Yeta * hv_xi - r_Yxi * hv_eta;
+
+                dfloat h_y  = - r_Xeta * h_xi + r_Xxi * h_eta;
+                dfloat hu_y = - r_Xeta * hu_xi + r_Xxi * hu_eta;
+                dfloat hv_y = - r_Xeta * hv_xi + r_Xxi * hv_eta;
+
+
+
+                qGradientX[id]              =   r_Jac *h_x;
+                qGradientX[id+ngl2]         =   r_Jac *hu_x ;
+                qGradientX[id+ngl2+ngl2]    =   r_Jac *hv_x ;
+                qGradientY[id]              =   r_Jac *h_y;
+                qGradientY[id+ngl2]         =   r_Jac *hu_y ;
+                qGradientY[id+ngl2+ngl2]    =   r_Jac *hv_y ;
+
             }
+        }
 
 
 

@@ -1,4 +1,3 @@
-
 kernel void addS(const int Nelem,
                  const dfloat * restrict  Bx,
                  const dfloat * restrict  By,
@@ -50,8 +49,8 @@ kernel void addS(const int Nelem,
             {
                 int id = ie*ngl2*Neq   +j*ngl+i;
                 int idLoc=j*ngl+i;
-				
-				
+
+
                 dfloat sinY=sin(two*PI*s_y[idLoc]);
                 dfloat sinX=sin(two*PI*s_x[idLoc]);
                 dfloat cosY=cos(two*PI*s_y[idLoc]);

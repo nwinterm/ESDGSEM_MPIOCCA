@@ -21,34 +21,34 @@ kernel void SurfaceKernel(const int Nelem,
             {
 
 
-                    const int iside = 2*is;
+                const int iside = 2*is;
 
-                    const int ifa = ElemToEdge[ie*4 + iside]-1;        //get id of element side
+                const int ifa = ElemToEdge[ie*4 + iside]-1;        //get id of element side
 
-                    const int reversedOrder = ElemEdgeOrientation[ie*4 + is];
-                    //increment = j if order is correct, else increment = ngl-1-j
-                    const int increment  = reversedOrder*j + (1-reversedOrder)*(ngl-1 -j);
+                const int reversedOrder = ElemEdgeOrientation[ie*4 + is];
+                //increment = j if order is correct, else increment = ngl-1-j
+                const int increment  = reversedOrder*j + (1-reversedOrder)*(ngl-1 -j);
 
-                    //THIS WAY THE STORAGE IN THE SHARED VARIABLES SHOULD ALWAYS BE IN THE CORRECT ORDER FOR THE LOCAL COORDINATES
+                //THIS WAY THE STORAGE IN THE SHARED VARIABLES SHOULD ALWAYS BE IN THE CORRECT ORDER FOR THE LOCAL COORDINATES
 
-                    const int idFaceLoc = ifa*ngl*Neq + increment;        //get local id on the side storage SurfaceParts
-                    const int edgeIDx = ifa*ngl+increment;
-
-
-                    const int xid = ie*ngl2 + is*(ngl2-ngl) + j;
+                const int idFaceLoc = ifa*ngl*Neq + increment;        //get local id on the side storage SurfaceParts
+                const int edgeIDx = ifa*ngl+increment;
 
 
-
-                    const int id    = ie*ngl2*Neq+ is*(ngl2-ngl) +j;
-
-
-                    const int r_Masterslave = ElemEdgeMasterSlave[ie*4+iside];
-                    const dfloat r_Jac = Jac[xid];
+                const int xid = ie*ngl2 + is*(ngl2-ngl) + j;
 
 
-                    Qt[id]              +=    - r_Masterslave*  FStar[idFaceLoc] * r_Jac;
-                    Qt[id+ngl2]         +=    - r_Masterslave* r_Jac * (FStar[idFaceLoc+ngl]      - DBSurf1[edgeIDx]);
-                    Qt[id+ngl2+ngl2]    +=    - r_Masterslave* r_Jac * (FStar[idFaceLoc+ngl+ngl]   - DBSurf2[edgeIDx]);
+
+                const int id    = ie*ngl2*Neq+ is*(ngl2-ngl) +j;
+
+
+                const int r_Masterslave = ElemEdgeMasterSlave[ie*4+iside];
+                const dfloat r_Jac = Jac[xid];
+
+
+                Qt[id]              +=    - r_Masterslave*  FStar[idFaceLoc] * r_Jac;
+                Qt[id+ngl2]         +=    - r_Masterslave* r_Jac * (FStar[idFaceLoc+ngl]      - DBSurf1[edgeIDx]);
+                Qt[id+ngl2+ngl2]    +=    - r_Masterslave* r_Jac * (FStar[idFaceLoc+ngl+ngl]   - DBSurf2[edgeIDx]);
 
 
             }

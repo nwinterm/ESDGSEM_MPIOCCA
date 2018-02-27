@@ -1,4 +1,3 @@
-
 kernel void SurfaceKernelGradient(const int Nelem,
                                   const dfloat * restrict Jac,
                                   const int * restrict  ElemEdgeMasterSlave,

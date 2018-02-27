@@ -89,12 +89,12 @@ void ReadInputFile(int *N,
                    dfloat *g_const,
                    int *ArtificialViscosity,
                    int *PositivityPreserving,
-		   dfloat *PosPresTOL,
+                   dfloat *PosPresTOL,
                    dfloat *epsilon_0,
                    dfloat *sigma_min,
                    dfloat *sigma_max,
                    int *PlotVar,
-				   int *EntropyPlot,
+                   int *EntropyPlot,
                    int *NumPlots,
                    int *NumTimeChecks,
                    int *Testcase,
@@ -131,10 +131,11 @@ void ReadInputFile(int *N,
     std::getline(InputStream, current_string);
     *meshFile= getStrValue(current_string);
     std::getline(InputStream, current_string);
-	if (*N ==0){
-		*N= getIntValue(current_string);
-	}
-    
+    if (*N ==0)
+    {
+        *N= getIntValue(current_string);
+    }
+
     std::getline(InputStream, current_string);
     *CFL= getDfloatValue(current_string);
     std::getline(InputStream, current_string);
@@ -158,7 +159,7 @@ void ReadInputFile(int *N,
     *sigma_max= getDfloatValue(current_string);
     std::getline(InputStream, current_string);
     *PlotVar= getIntValue(current_string);
-	std::getline(InputStream, current_string);
+    std::getline(InputStream, current_string);
     *EntropyPlot= getIntValue(current_string);
     std::getline(InputStream, current_string);
     *NumPlots= getIntValue(current_string);
@@ -181,22 +182,25 @@ void ReadInputFile(int *N,
     std::getline(InputStream, current_string);
     *rkSSP= getIntValue(current_string);
     std::getline(InputStream, current_string);
-    if (*NEpad==0){
-			*NEpad= getIntValue(current_string);
-	}
-	
+    if (*NEpad==0)
+    {
+        *NEpad= getIntValue(current_string);
+    }
+
     std::getline(InputStream, current_string);
     *NEsurfpad= getIntValue(current_string);
     std::getline(InputStream, current_string);
     *Nedgepad= getIntValue(current_string);
     std::getline(InputStream, current_string);
-	 if (*KernelVersion==-1){
-			*KernelVersion= getIntValue(current_string);
-	}
+    if (*KernelVersion==-1)
+    {
+        *KernelVersion= getIntValue(current_string);
+    }
     std::getline(InputStream, current_string);
-    if (*KernelVersionSTD==-1){
-			*KernelVersionSTD= getIntValue(current_string);
-	}
+    if (*KernelVersionSTD==-1)
+    {
+        *KernelVersionSTD= getIntValue(current_string);
+    }
 
 }
 
@@ -242,15 +246,17 @@ void ReadCartesianData(const int fixedDomain,const int fixedDisc, dfloat *xL,dfl
     if (!fixedDisc)
     {
         std::getline(InputStream, current_string);
-		if (*NelemX==0){
-			*NelemX= getIntValue(current_string);
-		}
-        
+        if (*NelemX==0)
+        {
+            *NelemX= getIntValue(current_string);
+        }
+
         std::getline(InputStream, current_string);
-		if (*NelemY==0){
-			*NelemY= getIntValue(current_string);
-		}
-        
+        if (*NelemY==0)
+        {
+            *NelemY= getIntValue(current_string);
+        }
+
         std::getline(InputStream, current_string);
         *PeriodicBD_X= getBoolValue(current_string);
         std::getline(InputStream, current_string);

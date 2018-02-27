@@ -3,7 +3,7 @@ kernel void ShockCapturing(const int Nelem,
                            const dfloat * restrict VdmInv,
                            const dfloat * restrict EleSizes,
                            dfloat * restrict  ViscPara,
-						   dfloat * restrict  ViscParaForPlot)
+                           dfloat * restrict  ViscParaForPlot)
 {
 
 
@@ -34,20 +34,20 @@ kernel void ShockCapturing(const int Nelem,
 
                 //ABUSE OF NOTATION, THESE ARE NODAL VALUES NOW
 
-		const dfloat r_h = Q[Fid];
-		const dfloat r_h2 = r_h*r_h;
+                const dfloat r_h = Q[Fid];
+                const dfloat r_h2 = r_h*r_h;
                 dfloat c;
 
                 dfloat Qinv;
                 if (r_h2>PosPresTOL)
                 {
-	            s_Q1modal[i][j]=r_h2;
-	            Qinv = one/r_h;
+                    s_Q1modal[i][j]=r_h2;
+                    Qinv = one/r_h;
                     c=sqrt(g_const*r_h);
                 }
                 else
                 {
-	            s_Q1modal[i][j]=zero;
+                    s_Q1modal[i][j]=zero;
                     Qinv = zero;
                     c=zero;
 
@@ -184,25 +184,25 @@ kernel void ShockCapturing(const int Nelem,
             term1= zaehler1/nenner1 ;
             term2= zaehler2/nenner2 ;
 
-            
-			
 
-		sigma_dof = max(term1,term2);
-		sigma_dof = log10(sigma_dof);			
-            	if (sigmaMin >= sigma_dof)
-            	{
-                	viscStar    =   zero;
-            	}
-            	else if(sigmaMax >=sigma_dof)
-            	{
-                	dfloat delta = one+sin(PI*(sigma_dof - half*(sigmaMax + sigmaMin))/(sigmaMax - sigmaMin)) ;
-                	viscStar    =   eps0 * half * delta;
-            	}
-            	else
-            	{
-                	viscStar    =   eps0;
-            	}
-	
+
+
+            sigma_dof = max(term1,term2);
+            sigma_dof = log10(sigma_dof);
+            if (sigmaMin >= sigma_dof)
+            {
+                viscStar    =   zero;
+            }
+            else if(sigmaMax >=sigma_dof)
+            {
+                dfloat delta = one+sin(PI*(sigma_dof - half*(sigmaMax + sigmaMin))/(sigmaMax - sigmaMin)) ;
+                viscStar    =   eps0 * half * delta;
+            }
+            else
+            {
+                viscStar    =   eps0;
+            }
+
 
             occaUnroll(ngl)
             for (int i=0; i<ngl; ++i)
@@ -214,12 +214,13 @@ kernel void ShockCapturing(const int Nelem,
 
                 }
             }
-		if (MaxLambdaTotal<PosPresTOL){
-			viscStar=zero;
-		}
+            if (MaxLambdaTotal<PosPresTOL)
+            {
+                viscStar=zero;
+            }
 
-		ViscParaForPlot[ie] = viscStar;
-           	ViscPara[ie] = MaxLambdaTotal * sqrt(EleSizes[ie]) /ngl * viscStar;
+            ViscParaForPlot[ie] = viscStar;
+            ViscPara[ie] = MaxLambdaTotal * sqrt(EleSizes[ie]) /ngl * viscStar;
 
         }
 

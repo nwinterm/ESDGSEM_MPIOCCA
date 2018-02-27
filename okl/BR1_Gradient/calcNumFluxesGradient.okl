@@ -1,4 +1,3 @@
-
 kernel void calcNumFluxesGradient(const int Nfaces,
                                   const int * restrict  EdgeData,
                                   const dfloat * restrict  normalx,

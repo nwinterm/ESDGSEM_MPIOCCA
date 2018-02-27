@@ -53,51 +53,53 @@ kernel void PosPres(const int Nelem,
             for (int j=0; j<ngl; ++j; inner0)
             {
 
-	    if (i==0){
-		if (j==0){
+                if (i==0)
+                {
+                    if (j==0)
+                    {
 
-            		s_Hmin = zero;
-            		s_Havg = zero;
-            		s_HUavg = zero;
-            		s_HVavg = zero;
+                        s_Hmin = zero;
+                        s_Havg = zero;
+                        s_HUavg = zero;
+                        s_HVavg = zero;
 
-            		occaUnroll(ngl) // <- #pragma unroll ngl
-            		for (int l=0; l<ngl; ++l)
-            		{
-                		occaUnroll(ngl)
-                		for (int k=0; k<ngl; ++k)
-                		{
+                        occaUnroll(ngl) // <- #pragma unroll ngl
+                        for (int l=0; l<ngl; ++l)
+                        {
+                            occaUnroll(ngl)
+                            for (int k=0; k<ngl; ++k)
+                            {
 
-                    			const int xid=ie*ngl2   +k*ngl+l;
-                    			dfloat r_Weights = s_GLw[l] * s_GLw[k] /Jac[xid];
-                    			s_Havg += s_H[l][k] * r_Weights;
-                    			s_HUavg += s_Hu[l][k] * r_Weights;
-                    			s_HVavg += s_Hv[l][k] * r_Weights;
-                    			s_Hmin = min(s_Hmin, s_H[l][k]);
+                                const int xid=ie*ngl2   +k*ngl+l;
+                                dfloat r_Weights = s_GLw[l] * s_GLw[k] /Jac[xid];
+                                s_Havg += s_H[l][k] * r_Weights;
+                                s_HUavg += s_Hu[l][k] * r_Weights;
+                                s_HVavg += s_Hv[l][k] * r_Weights;
+                                s_Hmin = min(s_Hmin, s_H[l][k]);
 
 
 
-                		}
+                            }
 
-            		}
-            		s_Havg =   s_Havg/ EleSizes[ie];
-            		s_HUavg =   s_HUavg/ EleSizes[ie];
-            		s_HVavg =   s_HVavg/ EleSizes[ie];
+                        }
+                        s_Havg =   s_Havg/ EleSizes[ie];
+                        s_HUavg =   s_HUavg/ EleSizes[ie];
+                        s_HVavg =   s_HVavg/ EleSizes[ie];
 
-            		if (s_Havg == s_Hmin)
-            		{
-            		    s_theta = one;
-            		}
-            		else
-            		{
-            		    s_theta = min(one,s_Havg/(s_Havg-s_Hmin));
-            		}
+                        if (s_Havg == s_Hmin)
+                        {
+                            s_theta = one;
+                        }
+                        else
+                        {
+                            s_theta = min(one,s_Havg/(s_Havg-s_Hmin));
+                        }
 
-		   }
-		}
+                    }
+                }
 
-	   }
-	}
+            }
+        }
 
 
 
@@ -125,48 +127,52 @@ kernel void PosPres(const int Nelem,
                 dfloat r_huAvg = s_HUavg;
                 dfloat r_hvAvg = s_HVavg;
                 dfloat r_theta = s_theta;
-		
-		if (s_Hmin<zero){
+
+                if (s_Hmin<zero)
+                {
 //			if (fabs(s_Hmin) < pow(10.0f,-15.0f)){
 //				Q[id]=fabs(r_h);
 //			}
 //			else{
-                		if (r_hAvg>zero)
-                		{
-                   			h_new =  fabs(r_theta * ( r_h - r_hAvg ) + r_hAvg);
-                    			if (h_new > PosPresTOL)
-                    			{
-                        			hu_new = r_theta * (r_hu -  r_huAvg) +  r_huAvg;
-                        			hv_new = r_theta * (r_hv -  r_hvAvg) + r_hvAvg;
-                    			}
-                    			else
-                   			{
-                       				hu_new = zero;
-                        			hv_new = zero;
-                    			}
-                		}
-                		else
-                		{
-                    			h_new=zero;
-                    			hu_new = zero;
-                    			hv_new = zero;
-                		}
+                    if (r_hAvg>zero)
+                    {
+                        h_new =  fabs(r_theta * ( r_h - r_hAvg ) + r_hAvg);
+                        if (h_new > PosPresTOL)
+                        {
+                            hu_new = r_theta * (r_hu -  r_huAvg) +  r_huAvg;
+                            hv_new = r_theta * (r_hv -  r_hvAvg) + r_hvAvg;
+                        }
+                        else
+                        {
+                            hu_new = zero;
+                            hv_new = zero;
+                        }
+                    }
+                    else
+                    {
+                        h_new=zero;
+                        hu_new = zero;
+                        hv_new = zero;
+                    }
 
-                		Q[id]=h_new;
-                		Q[id+ngl2] =hu_new;
-                		Q[id+ngl2+ngl2] = hv_new;
+                    Q[id]=h_new;
+                    Q[id+ngl2] =hu_new;
+                    Q[id+ngl2+ngl2] = hv_new;
 //			}
-		}else{
-			if (r_h<PosPresTOL){
-			     Q[id+ngl2] =  zero;
-                	     Q[id+ngl2+ngl2] = zero;
-			}
+                }
+                else
+                {
+                    if (r_h<PosPresTOL)
+                    {
+                        Q[id+ngl2] =  zero;
+                        Q[id+ngl2+ngl2] = zero;
+                    }
 
 
-		}
+                }
 
 
-		
+
 
 
             }

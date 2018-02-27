@@ -35,7 +35,8 @@ kernel void PosPres(const int Nelem,
                         s_H[ieLoc][i][j] = Q[Fid];
                         s_Hu[ieLoc][i][j] = Q[Fid+ngl2];
                         s_Hv[ieLoc][i][j] = Q[Fid+ngl2+ngl2];
-                        if ((i==0)&&(j==0)){
+                        if ((i==0)&&(j==0))
+                        {
                             s_Havg[ieLoc]  =   Qavg[eleID*4];
                             s_HUavg[ieLoc] =   Qavg[eleID*4+1];
                             s_HVavg[ieLoc] =   Qavg[eleID*4+2];

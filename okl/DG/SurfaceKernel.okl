@@ -15,7 +15,7 @@ kernel void SurfaceKernel(const int Nelem,
 
 
         //SIDE 1 (BOTTOM) and 3 (TOP)
-        for (int ieLoc=0; ieLoc<NEsurfpad;ieLoc++;inner2)
+        for (int ieLoc=0; ieLoc<NEsurfpad; ieLoc++; inner2)
         {
             for (int is=0; is<2; is++; inner1)
             {
@@ -72,7 +72,7 @@ kernel void SurfaceKernel(const int Nelem,
 
         //SIDE 2 (RIGHT) and 4 (LEFT)
         //Then do sides 1 and 3
-        for (int ieLoc=0; ieLoc<NEsurfpad;ieLoc++;inner2)
+        for (int ieLoc=0; ieLoc<NEsurfpad; ieLoc++; inner2)
         {
             for (int is=0; is<2; is++; inner1)
             {
