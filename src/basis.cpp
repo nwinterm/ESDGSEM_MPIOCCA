@@ -32,12 +32,9 @@ D0 = (dfloat*) calloc(ngl2,sizeof(dfloat));
 Dstrong = (dfloat*) calloc(ngl2,sizeof(dfloat));
 
 DCentralFD = (dfloat*) calloc(ngl2,sizeof(dfloat));
-DupwindFD = (dfloat*) calloc(ngl2,sizeof(dfloat));
-DdownwindFD = (dfloat*) calloc(ngl2,sizeof(dfloat));
+DforwardFD= (dfloat*) calloc(ngl2,sizeof(dfloat));
+DbackwardFD= (dfloat*) calloc(ngl2,sizeof(dfloat));
 
-DCentralFDnoBD = (dfloat*) calloc(ngl2,sizeof(dfloat));
-DupwindFDnoBD = (dfloat*) calloc(ngl2,sizeof(dfloat));
-DdownwindFDnoBD = (dfloat*) calloc(ngl2,sizeof(dfloat));
 
 
 
@@ -101,9 +98,6 @@ for (int i=0;i<ngl;++i){
         if (FluxDifferencing){
             D[i*ngl+j]=2*D[i*ngl+j];
         }
-	DCentralFDnoBD[i*ngl+j] =DCentralFD[i*ngl+j];
-	DupwindFDnoBD[i*ngl+j] =DupwindFD[i*ngl+j];
-	DdownwindFDnoBD[i*ngl+j] =DdownwindFD[i*ngl+j];
     }
 }
 // Dhat = - M^(-1) * D0^T * M
@@ -118,19 +112,6 @@ D[0] = D[0] + 1.0/w_GL[0];
 D[ngl2-1] = D[ngl2-1] - 1.0/w_GL[ngl-1];
 Dstrong[0] = D0[0] + 1.0/w_GL[0];
 Dstrong[ngl2-1] = D0[ngl2-1] - 1.0/w_GL[ngl-1];
-
-
-
-//DCentralFD [0] = DCentralFD [0] + 1.0/w_GL[0];
-//DCentralFD [ngl2-1] = DCentralFD [ngl2-1] - 1.0/w_GL[ngl-1];
-
-
-
-DupwindFD[0] = DupwindFD[0] + 1.0/w_GL[0];
-DupwindFD[ngl2-1] = DupwindFD[ngl2-1] - 1.0/w_GL[ngl-1];
-
-DdownwindFD[ngl2-1] = DdownwindFD[ngl2-1] - 1.0/w_GL[ngl-1];
-DdownwindFD[0] = DdownwindFD[0] + 1.0/w_GL[0];
 
 
 
@@ -168,8 +149,8 @@ void basis :: FiniteDifferenceOperators(){
 
 	DCentralFD[0] = (-1.0/(x_GL[1]-x_GL[0]));							// FIRST ENTRY NORMAL UPWIND
 	DCentralFD[1] = (1.0/(x_GL[1]-x_GL[0]));							// SECOND ENTRY NORMAL UPWIND
-	DCentralFD[(ngl-1)*(ngl)+ngl-1] = (1.0/(x_GL[N]-x_GL[N-1]));		//last entry		DOWNWIND
-	DCentralFD[(ngl-1)*(ngl)+ngl-2] = (-1.0/(x_GL[N]-x_GL[N-1]));		//second last entry		DOWNWIND
+	DCentralFD[ngl2-1] = (1.0/(x_GL[N]-x_GL[N-1]));		//last entry		DOWNWIND
+	DCentralFD[ngl2-2] = (-1.0/(x_GL[N]-x_GL[N-1]));		//second last entry		DOWNWIND
     for (int i=1;i<ngl-1;i++){
 		const int id = i*ngl+i;
 		const int idp1 = id+1;
@@ -179,22 +160,22 @@ void basis :: FiniteDifferenceOperators(){
     };
 
 
-	DupwindFD[ngl2-1] = (1.0/(x_GL[N]-x_GL[N-1]));		//last entry DOWNWIND
-	DupwindFD[ngl2-2] = (-1.0/(x_GL[N]-x_GL[N-1]));		//second last entry		 DOWNWIND
+	DforwardFD[ngl2-2] = (-1.0/(x_GL[N]-x_GL[N-1]));		
+	DforwardFD[ngl2-1] = (1.0/(x_GL[N]-x_GL[N-1]));	
 	for (int i=0;i<ngl-1;i++){
 		const int id = i*ngl+i;
 		const int idp1 = id+1;
-		DupwindFD[id] = (-1.0/(x_GL[i+1]-x_GL[i]));
-		DupwindFD[idp1] = (1.0/(x_GL[i+1]-x_GL[i]));
+		DforwardFD[id] = (-1.0/(x_GL[i+1]-x_GL[i]));
+		DforwardFD[idp1] = (1.0/(x_GL[i+1]-x_GL[i]));
     };
 
-	DdownwindFD[0] = (-1.0/(x_GL[1]-x_GL[0]));							// FIRST ENTRY NORMAL UPWIND
-	DdownwindFD[1] = (1.0/(x_GL[1]-x_GL[0]));							// SECOND ENTRY NORMAL UPWIND
+	DbackwardFD[0] = (-1.0/(x_GL[1]-x_GL[0]));		
+	DbackwardFD[1] = (1.0/(x_GL[1]-x_GL[0]));		
 	for (int i=1;i<ngl;i++){
 		const int id = i*ngl+i;
 		const int idm1 = id-1;
-		DdownwindFD[id] = (1.0/(x_GL[i]-x_GL[i-1]));
-		DdownwindFD[idm1] = (-1.0/(x_GL[i]-x_GL[i-1]));
+		DbackwardFD[id] = (1.0/(x_GL[i]-x_GL[i-1]));
+		DbackwardFD[idm1] = (-1.0/(x_GL[i]-x_GL[i-1]));
     };
 	
 };

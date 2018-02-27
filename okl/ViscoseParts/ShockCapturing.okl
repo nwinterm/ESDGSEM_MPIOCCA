@@ -3,8 +3,7 @@ kernel void ShockCapturing(const int Nelem,
                            const dfloat * restrict VdmInv,
                            const dfloat * restrict EleSizes,
                            dfloat * restrict  ViscPara,
-						   dfloat * restrict  ViscParaForPlot,
-						   int * restrict isPartlyDry)
+						   dfloat * restrict  ViscParaForPlot)
 {
 
 
@@ -17,7 +16,6 @@ kernel void ShockCapturing(const int Nelem,
         shared dfloat s_Q1modal[ngl][ngl];
         shared dfloat s_VdmInv[ngl][ngl];
         shared dfloat s_Q1[ngl][ngl];
-	shared int s_partlydry[ngl][ngl];
 
 
         shared dfloat s_MaxLambda[ngl][ngl];
@@ -46,14 +44,13 @@ kernel void ShockCapturing(const int Nelem,
 	            s_Q1modal[i][j]=r_h2;
 	            Qinv = one/r_h;
                     c=sqrt(g_const*r_h);
-			s_partlydry[i][j] = 0;
                 }
                 else
                 {
 	            s_Q1modal[i][j]=zero;
                     Qinv = zero;
                     c=zero;
-			s_partlydry[i][j] = 1;
+
                 }
                 const dfloat u =Q[Fid+ngl2]*Qinv;
                 const dfloat v =Q[Fid+ngl2+ngl2]*Qinv;
@@ -206,7 +203,7 @@ kernel void ShockCapturing(const int Nelem,
                 	viscStar    =   eps0;
             	}
 	
-	isPartlyDry[ie]=0;
+
             occaUnroll(ngl)
             for (int i=0; i<ngl; ++i)
             {
@@ -214,7 +211,7 @@ kernel void ShockCapturing(const int Nelem,
                 for (int j=0; i<ngl; ++i)
                 {
                     MaxLambdaTotal = max(MaxLambdaTotal, s_MaxLambda[i][j]);
-		    isPartlyDry[ie] = max(isPartlyDry[ie],s_partlydry[i][j]);
+
                 }
             }
 		if (MaxLambdaTotal<PosPresTOL){
@@ -225,7 +222,7 @@ kernel void ShockCapturing(const int Nelem,
            	ViscPara[ie] = MaxLambdaTotal * sqrt(EleSizes[ie]) /ngl * viscStar;
 
         }
-	isPartlyDry[ie]=1;		
+
 
     }\\elem
 

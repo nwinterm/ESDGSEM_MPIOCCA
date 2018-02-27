@@ -48,6 +48,7 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
                                  const dfloat * restrict D,
                                  const dfloat * restrict Bx,
                                  const dfloat * restrict By,
+				const int * restrict isPartlyDry,
                                  dfloat * restrict Qt)
 {
 
@@ -76,13 +77,16 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
                     if (eleID<Nelem)
                     {
                         const int id        =   i*ngl+j;
-                        const int xid       =   eleID*ngl2   +i*ngl+j;
-                        const int Fid       =   eleID*ngl2*Neq   +i*ngl+j;
-
                         if (ieLoc==0)
                         {
                             s_D[i][j]       =   D[id];
                         }
+
+		if (isPartlyDry[eleID]==0){
+                        const int xid       =   eleID*ngl2   +i*ngl+j;
+                        const int Fid       =   eleID*ngl2*Neq   +i*ngl+j;
+
+
 
                         s_Yeta[ieLoc][i][j]    =   Y_eta[xid];
                         s_Yxi[ieLoc][i][j]     =   Y_xi[xid];
@@ -101,6 +105,7 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
 
 					}
 				}
+		}
             }
         }
 
@@ -115,6 +120,7 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
                     const int eleID     =   iEo + ieLoc;
                     if (eleID<Nelem)
                     {
+		if (isPartlyDry[eleID]==0){
 					
 						// read memory earlier to not stall later
 						const int id  = eleID*ngl2*Neq   +i*ngl+j;
@@ -179,7 +185,8 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
 						Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3 - g_const*H_ij*r_By;
 
 					}
-				}				
+				}		
+		}		
             }
         }
 

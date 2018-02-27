@@ -1712,6 +1712,16 @@ void Mesh::InitDomain(const int Testcase, int *fixedDomain,int *fixedDisc, int *
         *yR=2.0;
         break;
     }
+    case 7:      // convergence test, periodic	No Botttom
+    {
+        *fixedDomain = 1 ;
+        *fixedDisc = 0 ;
+        *xL=0.0;
+        *xR=2.0;
+        *yL=0.0;
+        *yR=2.0;
+        break;
+    }
 
     case 2:      // WELL BALANCED (CARTESIAN 20x20)
     {

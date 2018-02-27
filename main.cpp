@@ -460,7 +460,7 @@ int main(int argc, char *argv[])
     dfloat * b = (dfloat*) calloc(NoSpaceDofs,sizeof(dfloat));
     dfloat * J = (dfloat*) calloc(NoSpaceDofs,sizeof(dfloat));
 
-
+    int * isDryElement = (int*) calloc(Nelem,sizeof(int));
 
 
     // THESE ARE NEEDED THROUGHOUT RUNTIME FOR MPI COMMUNICATION
@@ -592,11 +592,9 @@ int main(int argc, char *argv[])
     dfloat Dhat[ngl2];
     dfloat VdmInv[ngl2];
 	dfloat DCentralFD[ngl2];
-	dfloat DupwindFD[ngl2];
-	dfloat DdownwindFD[ngl2];
-	dfloat DCentralFDnoBD[ngl2];
-	dfloat DupwindFDnoBD[ngl2];
-	dfloat DdownwindFDnoBD[ngl2];
+	dfloat DforwardFD[ngl2];
+	dfloat DbackwardFD[ngl2];
+
     //dfloat SubCellMat[ngl2];
     dfloat GLw[ngl];
     for (int i=0; i<ngl; i++)
@@ -609,11 +607,9 @@ int main(int argc, char *argv[])
             Dhat[Did] = DGBasis.Dhat[Did];
             VdmInv[Did] = DGBasis.VdmInv[Did];
 			DCentralFD[Did] = DGBasis.DCentralFD[Did];
-			DupwindFD[Did] = DGBasis.DupwindFD[Did];
-			DdownwindFD[Did] = DGBasis.DdownwindFD[Did];
-			DCentralFDnoBD[Did] = DGBasis.DCentralFDnoBD[Did];
-			DupwindFDnoBD[Did] = DGBasis.DupwindFDnoBD[Did];
-			DdownwindFDnoBD[Did] = DGBasis.DdownwindFDnoBD[Did];
+			DforwardFD[Did] = DGBasis.DforwardFD[Did];
+			DbackwardFD[Did] = DGBasis.DbackwardFD[Did];
+
             //            SubCellMat[Did] = DGBasis.SubCellMat(i+1,l+1);
         }
         GLw[i] = DGBasis.w_GL[i];
@@ -628,20 +624,29 @@ int main(int argc, char *argv[])
             cout <<"\n";
         }
 
-	           cout <<"\n D upwind: \n";
+	           cout <<"\n D forward: \n";
         for(int j=0;j<ngl;++j){
             for(int i=0;i<ngl;++i){
                 int id =   j*ngl+i;
-                cout <<DupwindFD[id]<<"  ";
+                cout <<DforwardFD[id]<<"  ";
           }
             cout <<"\n";
         }
 
-	           cout <<"\n D downwind: \n";
+	           cout <<"\n D backward: \n";
         for(int j=0;j<ngl;++j){
             for(int i=0;i<ngl;++i){
                 int id =   j*ngl+i;
-                cout <<DdownwindFD[id]<<"  ";
+                cout <<DbackwardFD[id]<<"  ";
+          }
+            cout <<"\n";
+        }
+
+	           cout <<"\n D matrix: \n";
+        for(int j=0;j<ngl;++j){
+            for(int i=0;i<ngl;++i){
+                int id =   j*ngl+i;
+                cout <<Dmat0[id]<<"  ";
           }
             cout <<"\n";
         }
@@ -755,6 +760,7 @@ int main(int argc, char *argv[])
     occa::kernel preservePosivitity;
     occa::kernel calcAvg;
     occa::kernel FindLambdaMax;
+    occa::kernel FindDryElements;
     occa::kernel scaleGradient;
     occa::kernel SurfaceKernelVisc;
     occa::kernel UpdateQt;
@@ -791,8 +797,8 @@ int main(int argc, char *argv[])
 	
 	occa::memory o_ViscForPlot;
 	
-	occa::memory o_DcentralFD, o_DupwindFD, o_DdownwindFD;
-occa::memory o_DcentralFDnoBD, o_DupwindFDnoBD, o_DdownwindFDnoBD;
+	occa::memory o_DcentralFD, o_DforwardFD, o_DbackwardFD;
+
 	occa::memory o_isPartlyDry;
 
 //   occa::memory o_PackSend, o_PackReceive;
@@ -813,11 +819,9 @@ occa::memory o_DcentralFDnoBD, o_DupwindFDnoBD, o_DdownwindFDnoBD;
     }
 
 	o_DcentralFD  = device.malloc(ngl2*sizeof(dfloat));
-	o_DupwindFD  = device.malloc(ngl2*sizeof(dfloat));
-	o_DdownwindFD  = device.malloc(ngl2*sizeof(dfloat));
-	o_DcentralFDnoBD  = device.malloc(ngl2*sizeof(dfloat));
-	o_DupwindFDnoBD  = device.malloc(ngl2*sizeof(dfloat));
-	o_DdownwindFDnoBD  = device.malloc(ngl2*sizeof(dfloat));
+	o_DforwardFD  = device.malloc(ngl2*sizeof(dfloat));
+	o_DbackwardFD  = device.malloc(ngl2*sizeof(dfloat));
+
 
 
     o_D  = device.malloc(ngl2*sizeof(dfloat));
@@ -989,11 +993,9 @@ occa::memory o_DcentralFDnoBD, o_DupwindFDnoBD, o_DdownwindFDnoBD;
     o_VdmInv.copyFrom(VdmInv);
     //o_SubCellMat.copyFrom(SubCellMat);
 	o_DcentralFD.copyFrom(DCentralFD);
-	o_DupwindFD.copyFrom(DupwindFD);
-	o_DdownwindFD.copyFrom(DdownwindFD);
-	o_DcentralFDnoBD.copyFrom(DCentralFDnoBD);
-	o_DupwindFDnoBD.copyFrom(DupwindFDnoBD);
-	o_DdownwindFDnoBD.copyFrom(DdownwindFDnoBD);
+	o_DforwardFD.copyFrom(DforwardFD);
+	o_DbackwardFD.copyFrom(DbackwardFD);
+
 
     dfloat * qavgtmp = (dfloat*) calloc(Nelem*4,sizeof(dfloat));
     if(PositivityPreserving == 1)
@@ -1049,6 +1051,13 @@ occa::memory o_DcentralFDnoBD, o_DupwindFDnoBD, o_DdownwindFDnoBD;
         addS = device.buildKernelFromSource("okl/ManufacturedSolutions/S_ConvTest.okl","addS",info);
         break;
     }
+    case 7:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
+    {
+        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/Dirichlet_ConvTest.okl","CollectEdgeData",info);
+        addS = device.buildKernelFromSource("okl/ManufacturedSolutions/S_ConvTest.okl","addS",info);
+        break;
+    }
+
     case 32:  // Inflow Boundaries for 3 Mound PP test case
     {
         CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/3MoundInflow.okl","CollectEdgeData",info);
@@ -1120,6 +1129,7 @@ occa::memory o_DcentralFDnoBD, o_DupwindFDnoBD, o_DdownwindFDnoBD;
    SurfaceKernel=device.buildKernelFromSource("okl/DG/SurfaceKernel.okl","SurfaceKernel",info);
     //kernel to compute eigenvalues
     FindLambdaMax           =   device.buildKernelFromSource("okl/DG/FindLambdaMax.okl","FindLambdaMax",info);
+    FindDryElements=   device.buildKernelFromSource("okl/DG/FindDryElements.okl","FindDryElements",info);
 
     if (rkSSP)
     {
@@ -1150,7 +1160,7 @@ occa::memory o_DcentralFDnoBD, o_DupwindFDnoBD, o_DdownwindFDnoBD;
     }
     if (PositivityPreserving)
     {
-        calcAvg      =   device.buildKernelFromSource("okl/Positivity/calcAvg.okl","calcAvg",info);
+        //calcAvg      =   device.buildKernelFromSource("okl/Positivity/calcAvg.okl","calcAvg",info);
         preservePosivitity      =   device.buildKernelFromSource("okl/Positivity/PosPres.okl","PosPres",info);
     }
 
@@ -1306,6 +1316,7 @@ occa::memory o_DcentralFDnoBD, o_DupwindFDnoBD, o_DdownwindFDnoBD;
     while (t<T)
     {
         FindLambdaMax(Nelem, o_q, o_LambdaMax);
+
         globalLambdaMax=0.0;
         o_LambdaMax.copyTo(LocalLambdas);
         GetGlobalLambdaMax(MPI,  DGMeshPartition,LocalLambdas, &globalLambdaMax);
@@ -1317,7 +1328,7 @@ occa::memory o_DcentralFDnoBD, o_DupwindFDnoBD, o_DdownwindFDnoBD;
 	}
 	if ( ArtificialViscosity==1)
         {
-            ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara,o_ViscForPlot,o_isPartlyDry);
+            ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara,o_ViscForPlot);
             o_ViscPara.copyTo(ViscPara);
             GetGlobalViscParaMax(MPI,  DGMeshPartition,ViscPara, &maxViscPara);
 //	   cout << "Visc para max: " << maxViscPara <<"\n";
@@ -1369,11 +1380,19 @@ occa::memory o_DcentralFDnoBD, o_DupwindFDnoBD, o_DdownwindFDnoBD;
 
 
 
-
+	    FindDryElements(Nelem, o_q, o_isPartlyDry);
+//device.finish();
+//	o_isPartlyDry.copyTo(isDryElement);
+//	for (int ie=0;ie<Nelem;ie++){
+//		if (isDryElement[ie]==1){
+//		}else{
+//			cout << "Element "<< ie << " is not marked dry! "<< isDryElement[ie] << " \n" ;
+//		}
+//	}
 
 // CORRECT VOLUME KERNEL
 
-//			VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_Qt);
+			VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_isPartlyDry,o_Qt);
 
 //			o_Qt.copyTo(Qt);
 //	device.finish();
@@ -1396,12 +1415,12 @@ occa::memory o_DcentralFDnoBD, o_DupwindFDnoBD, o_DdownwindFDnoBD;
 // NEW ONE FOR PARTIALLY WET ELEMENTS
 
 
-			VolumeKernelFD(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_isPartlyDry,o_DcentralFD,o_DupwindFD,o_DdownwindFD,o_DcentralFDnoBD,o_DupwindFDnoBD,o_DdownwindFDnoBD,o_B,o_Qt);
+			VolumeKernelFD(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_isPartlyDry,o_DcentralFD,o_DforwardFD,o_DbackwardFD,o_B,o_Qt);
 
 
 //			o_Qt.copyTo(Qt);
 //	device.finish();
-
+//
 //		        cout <<"\n q_t NEW : \n";
 //			for (int ie=0;ie<Nelem;ie++){
 //					cout <<"Ele: " << ie <<"\n";
@@ -1480,12 +1499,12 @@ occa::memory o_DcentralFDnoBD, o_DupwindFDnoBD, o_DdownwindFDnoBD;
 
 
 
-                UpdateQt(Nelem,o_QtVisc,o_Qt);
+                UpdateQt(Nelem,o_QtVisc,o_isPartlyDry,o_Qt);
 
             }
 
             // add manufactured source term for convergence test
-            if (Testcase==1)
+            if ((Testcase==1)||(Testcase==7))
             {
                 addS(Nelem,o_Bx,o_By,o_B,o_x,o_y,intermediatetime,o_Qt);
             }
@@ -1522,6 +1541,22 @@ occa::memory o_DcentralFDnoBD, o_DupwindFDnoBD, o_DdownwindFDnoBD;
 //                preservePosivitity(Nelem,o_Qavg,o_q);
 
 //                // old kernel header
+
+
+//			o_q.copyTo(q);
+//			for (int ie=0;ie<Nelem;ie++){
+//				for(int j=0;j<ngl;++j){
+//					for(int i=0;i<ngl;++i){
+//						int id = ie*ngl2*Neq +  j*ngl+i;
+//						if (q[id]<0){
+//							cout << "Less than zero at Element: " << ie << " node: (" <<i <<", " <<j <<"\n";
+ //							cout << "Water height: " <<q[id] <<" \n";
+//						}
+//				  	}
+//				}
+//			}
+
+
                preservePosivitity(Nelem,o_EleSizes,o_GLw, o_Jac,o_q);
 //
             }
@@ -1797,11 +1832,9 @@ occa::memory o_DcentralFDnoBD, o_DupwindFDnoBD, o_DdownwindFDnoBD;
 	
 	o_isPartlyDry.free();
 	o_DcentralFD.free();
-	o_DupwindFD.free();
-	o_DdownwindFD.free();
-	o_DcentralFDnoBD.free();
-	o_DupwindFDnoBD.free();
-	o_DdownwindFDnoBD.free();
+	o_DforwardFD.free();
+	o_DbackwardFD.free();
+
 //viscose term
 
     o_LambdaMax.free();

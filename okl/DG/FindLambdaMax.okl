@@ -21,11 +21,11 @@ kernel void FindLambdaMax(const int Nelem,
             {
                 const int Fid = ie*ngl2*Neq   +j*ngl+i;
 
-
+		const dfloat r_h = Q[Fid];
                 dfloat Qinv;
-                if (Q[Fid]>=PosPresTOL)
+                if (r_h>PosPresTOL)
                 {
-                    Qinv =  one/Q[Fid];
+                    Qinv =  one/r_h;
                 }
                 else
                 {
@@ -38,6 +38,7 @@ kernel void FindLambdaMax(const int Nelem,
 
                 s_MaxLambda[i][j] =  c + max(fabs(u),fabs(v));
 
+
             }
         }
 
@@ -45,22 +46,31 @@ kernel void FindLambdaMax(const int Nelem,
 
 
 
-        for (int k=0; k<1; ++k; inner0)
+        for (int i=0; i<ngl; ++i; inner1)
         {
-
-            LambdaMax[ie]=zero;
-
-
-            occaUnroll(ngl)
-            for (int i=0; i<ngl; ++i)
+            for (int j=0; j<ngl; ++j; inner0)
             {
-                occaUnroll(ngl)
-                for (int j=0; i<ngl; ++i)
-                {
-                    LambdaMax[ie] = max(LambdaMax[ie], s_MaxLambda[i][j]);
-                }
-            }
+		if (i==0){
+			if (j==0){
+            			LambdaMax[ie]=zero;
+            			occaUnroll(ngl)
+            			for (int k=0; k<ngl; ++k)
+            			{
+                			occaUnroll(ngl)
+                			for (int l=0; l<ngl; ++l)
+                			{
+                    				LambdaMax[ie] = max(LambdaMax[ie], s_MaxLambda[l][k]);
 
+                			}
+            			}
+
+				}
+			}
+
+
+
+
+		}
 
         }
 

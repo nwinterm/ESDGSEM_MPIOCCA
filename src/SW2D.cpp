@@ -240,6 +240,7 @@ case 5: {    // Dry Lake + Lake at Rest
     v= 0.0;
     w= 0.0;
         break;}
+
 case 6: {    // Easy WB- debug test no bottom
 
         h=5.0-b;
@@ -248,6 +249,12 @@ case 6: {    // Easy WB- debug test no bottom
     v= 0.0;
     w= 0.0;
         break;}
+case 7:{     // periodic conv test  _ NO BOTTOM
+    h=8.0+cos(2.0*PI*x)*sin(2.0*PI*y)*cos(t)-b;
+    v= 0.5;
+    w= 1.5;
+    break;}
+
 
 case 20: {    //  Dam Break (CARTESIAN)
     if (x<0.0){

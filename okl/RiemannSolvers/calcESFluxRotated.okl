@@ -37,7 +37,7 @@ kernel void calcNumFluxes(const int Nfaces,
                     dfloat hL=qL[edgeID];
                     dfloat uL;
                     dfloat vL;
-                    if(hL>=PosPresTOL)
+                    if(hL>PosPresTOL)
                     {
                         uL=qL[edgeID+ngl]/hL;
                         vL=qL[edgeID+ngl+ngl]/hL;
@@ -55,7 +55,7 @@ kernel void calcNumFluxes(const int Nfaces,
                     dfloat uR;
                     dfloat vR;
 
-                    if(hR>=PosPresTOL)
+                    if(hR>PosPresTOL)
                     {
                         uR=qR[edgeID+ngl]/hR;
                         vR=qR[edgeID+ngl+ngl]/hR;

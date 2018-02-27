@@ -23,11 +23,8 @@ class basis
 
         dfloat * D;
 		dfloat * DCentralFD;
-		dfloat * DupwindFD;
-		dfloat * DdownwindFD;
-		dfloat * DCentralFDnoBD;
-		dfloat * DupwindFDnoBD;
-		dfloat * DdownwindFDnoBD;
+		dfloat * DbackwardFD;
+		dfloat * DforwardFD;
         dfloat * Dstrong;
         dfloat * D0;
         dfloat *  Dhat;
