@@ -61,18 +61,42 @@
 		<Unit filename="meshFiles/PeriodicXandY6.mesh" />
 		<Unit filename="meshFiles/PeriodicXandY7.mesh" />
 		<Unit filename="okl/BR1_Gradient/CollectEdgeDataGradient.okl" />
+		<Unit filename="okl/BR1_Gradient/ModifyGradient.okl">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="okl/BR1_Gradient/SurfaceKernelGradient.okl" />
 		<Unit filename="okl/BR1_Gradient/calcGradient.okl" />
 		<Unit filename="okl/BR1_Gradient/calcNumFluxesGradient.okl" />
+		<Unit filename="okl/BR1_Gradient/calcNumFluxesGradientMod.okl">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="okl/BR1_Gradient/scaleGradient.okl" />
+		<Unit filename="okl/DG/FindDryElements.okl">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="okl/DG/FindLambdaMax.okl" />
+		<Unit filename="okl/DG/FluxesOpt.okl">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="okl/DG/MemCopyComparison.okl" />
 		<Unit filename="okl/DG/SurfaceKernel.okl" />
 		<Unit filename="okl/DG/SurfaceKernel_V0.okl" />
 		<Unit filename="okl/DG/SurfaceKernel_V1.okl" />
 		<Unit filename="okl/DG/VolumeKernel.okl" />
+		<Unit filename="okl/DG/VolumeKernelFluxDiffOpt.okl">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="okl/DG/VolumeKernelFluxDiffOptPt1.okl">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="okl/DG/VolumeKernelFluxDiffOptPt2.okl">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV0.okl" />
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV1.okl" />
+		<Unit filename="okl/DG/VolumeKernelFluxDiffV10.okl">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV2.okl" />
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV3.okl" />
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV4.okl" />
@@ -81,28 +105,72 @@
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV7.okl" />
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV8.okl" />
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV9.okl" />
+		<Unit filename="okl/DG/VolumeKernelFluxDiffV99.okl">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="okl/DG/VolumeKernelFluxDiffVM1.okl">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="okl/DG/VolumeKernelV0.okl" />
 		<Unit filename="okl/DG/VolumeKernelV1.okl" />
 		<Unit filename="okl/DG/VolumeKernelV2.okl" />
 		<Unit filename="okl/DG/VolumeKernelV3.okl" />
 		<Unit filename="okl/DG/VolumeKernelV4.okl" />
 		<Unit filename="okl/DG/VolumeKernelV5.okl" />
+		<Unit filename="okl/DG/VolumeKernelV6.okl">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="okl/DG/VolumeKernelV7.okl">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="okl/DiscontinuousBathimetry/calcDiscBottomSurf.okl" />
 		<Unit filename="okl/GatherEdgeData/3MoundInflow.okl" />
 		<Unit filename="okl/GatherEdgeData/CollectEdgeData_Bottom.okl" />
 		<Unit filename="okl/GatherEdgeData/Dirichlet_ConvTest.okl" />
 		<Unit filename="okl/GatherEdgeData/SolidWalls.okl" />
 		<Unit filename="okl/ManufacturedSolutions/S_ConvTest.okl" />
+		<Unit filename="okl/NEW_OPERATOR/VolumeKernelFD.okl">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="okl/NEW_OPERATOR/VolumeKernelFD_Central.okl">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="okl/NEW_OPERATOR/VolumeKernelFD_Forward.okl">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="okl/NEW_OPERATOR/VolumeKernelFD_KindaWorking.okl">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="okl/NEW_OPERATOR/VolumeKernelFD_NotWBforDrylake.okl">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="okl/NEW_OPERATOR/VolumeKernelFD_buPreFlip.okl">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="okl/Positivity/PosPres.okl" />
-		<Unit filename="okl/Positivity/PosPres_V0.okl" />
+		<Unit filename="okl/Positivity/PosPres_NEW.okl">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="okl/Positivity/calcAvg.okl" />
 		<Unit filename="okl/RiemannSolvers/calcESFlux.okl" />
+		<Unit filename="okl/RiemannSolvers/calcESFluxRotated.okl">
+			<Option target="Release" />
+		</Unit>
+		<Unit filename="okl/RiemannSolvers/calcESFlux_V0.okl">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="okl/RiemannSolvers/calcLFTypeESFlux.okl" />
 		<Unit filename="okl/RiemannSolvers/calcLaxFriedrich.okl" />
 		<Unit filename="okl/RungeKutta/UpdateKernelLS.okl" />
 		<Unit filename="okl/RungeKutta/UpdateKernelSSP.okl" />
+		<Unit filename="okl/RungeKutta/UpdateKernelSSP_V1.okl">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="okl/RungeKutta/rkLS.okl" />
 		<Unit filename="okl/ViscoseParts/ShockCapturing.okl" />
+		<Unit filename="okl/ViscoseParts/ShockCapturing_new.okl">
+			<Option target="Release" />
+		</Unit>
 		<Unit filename="okl/ViscoseParts/SurfaceKernelVisc.okl" />
 		<Unit filename="okl/ViscoseParts/UpdateQt.okl" />
 		<Unit filename="okl/ViscoseParts/VolumeKernelViscose.okl" />

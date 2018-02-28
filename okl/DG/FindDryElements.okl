@@ -46,7 +46,7 @@ kernel void FindDryElements(const int Nelem,
                 {
                     if (j==0)
                     {
-                        isPartlyDry[ie] = 1;
+                        isPartlyDry[ie] = 0;
                         occaUnroll(ngl)
                         for (int k=0; k<ngl; ++k)
                         {
@@ -55,7 +55,7 @@ kernel void FindDryElements(const int Nelem,
                             {
                                 if (s_Minh[l][k] == zero)
                                 {
-                                    isPartlyDry[ie] = 1;
+                                    isPartlyDry[ie] = 0;
                                 }
                             }
                         }

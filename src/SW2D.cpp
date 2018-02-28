@@ -5,13 +5,14 @@
 
 
 
+SW2D::SW2D(int tcase)
+{
+Testcase = tcase;
 
-
-
-
+}
 //  void InitQ(const int Nelem,const int ngl,const int ngl2,const dfloat x[NoSpaceDofs],const dfloat y[NoSpaceDofs], dfloat q[NoDofs],const dfloat t,const dfloat b[NoSpaceDofs]){
 
-void InitQ(const int IsMeshSplit,const MeshPartitioning MeshSplit, const int Testcase,const int Nelem,const int ngl,const int ngl2,const dfloat x[],const dfloat y[], dfloat q[],const dfloat t,const dfloat b[],const dfloat g_const)
+void SW2D :: InitQ(const int IsMeshSplit,const MeshPartitioning MeshSplit,const int Nelem,const int ngl,const int ngl2,const dfloat x[],const dfloat y[], dfloat q[],const dfloat t,const dfloat b[],const dfloat g_const)
 {
 
     int globalEleID;
@@ -37,7 +38,7 @@ void InitQ(const int IsMeshSplit,const MeshPartitioning MeshSplit, const int Tes
 
                 dfloat qNodal[Neq];
 
-                InitQNodal(Testcase,x[xid],y[xid],qNodal,t,b[xid],g_const);
+                InitQNodal(x[xid],y[xid],qNodal,t,b[xid],g_const);
 
 
 
@@ -245,7 +246,7 @@ void InitQ(const int IsMeshSplit,const MeshPartitioning MeshSplit, const int Tes
 
 
 
-void InitQNodal(const int Testcase,const dfloat x,const dfloat y, dfloat q[],const dfloat t,const dfloat b,const dfloat g_const)
+void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,const dfloat b,const dfloat g_const)
 {
 
     dfloat h,v,w;
@@ -663,7 +664,7 @@ void InitQNodal(const int Testcase,const dfloat x,const dfloat y, dfloat q[],con
 
 //    void InitB(const int Nelem,const int ngl,const int ngl2,const dfloat x[NoSpaceDofs],const dfloat y[NoSpaceDofs],dfloat b[NoSpaceDofs],const dfloat t){
 
-void InitB(const int IsMeshSplit,const MeshPartitioning MeshSplit,const int Testcase,const int Nelem,const int ngl,const int ngl2,const dfloat x[],const dfloat y[],dfloat b[])
+void   SW2D::InitB(const int IsMeshSplit,const MeshPartitioning MeshSplit,const int Nelem,const int ngl,const int ngl2,const dfloat x[],const dfloat y[],dfloat b[])
 {
 
     int globalEleID;
@@ -880,7 +881,7 @@ void InitB(const int IsMeshSplit,const MeshPartitioning MeshSplit,const int Test
 
 }
 
-void CalcBDerivatives(const int Nelem,const int ngl,const int ngl2,const dfloat g_const,const dfloat x[],const dfloat y[],const dfloat b[],const dfloat D[],const dfloat y_eta[],const dfloat y_xi[],const dfloat x_eta[],const dfloat x_xi[],dfloat Bx[],dfloat By[],const dfloat J[])
+void  SW2D::CalcBDerivatives(const int Nelem,const int ngl,const int ngl2,const dfloat g_const,const dfloat x[],const dfloat y[],const dfloat b[],const dfloat D[],const dfloat y_eta[],const dfloat y_xi[],const dfloat x_eta[],const dfloat x_xi[],dfloat Bx[],dfloat By[],const dfloat J[])
 {
 
 
