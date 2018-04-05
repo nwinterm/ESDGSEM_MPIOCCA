@@ -9,7 +9,7 @@ using namespace Constants;
 class SW2D
 {
 public:
-    SW2D(const int);
+    SW2D(const int, const dfloat);
     void InitQ(const int, const MeshPartitioning,const int,const int,const int,const dfloat[],const dfloat[], dfloat[],const dfloat,const dfloat[],const dfloat);
 
     void InitB(const int, const MeshPartitioning,const int,const int,const int,const dfloat[],const dfloat[],dfloat[]);
@@ -18,6 +18,7 @@ public:
 
 private:
     int Testcase;
+    dfloat PosPresTOL;
     void InitQNodal(const dfloat,const dfloat, dfloat [],const dfloat,const dfloat,const dfloat);
 };
 

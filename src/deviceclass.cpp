@@ -94,9 +94,9 @@ void deviceclass:: initDeviceVariables(const int N,
                                        const int Nedgepad,
                                        const int ES,
                                        const int Testcase,
-                                       const int epsilon_0,
-                                       const int sigma_max,
-                                       const int sigma_min,
+                                       const dfloat epsilon_0,
+                                       const dfloat sigma_max,
+                                       const dfloat sigma_min,
                                        const dfloat PosPresTOL,
                                        const dfloat geomface,
                                        const dfloat g_const,
@@ -112,7 +112,7 @@ void deviceclass:: initDeviceVariables(const int N,
         nglPad=1;
     }
     dfloat TOL_PosPres = PosPresTOL;//pow(10.0,-4);
-    dfloat ZeroTOL = pow(10.0,-5);
+    dfloat ZeroTOL = pow(10.0,-10);
 
     dfloat zero = 0.0;
     dfloat half = 0.5;
@@ -158,6 +158,8 @@ void deviceclass:: initDeviceVariables(const int N,
     info.addDefine("geomFace",geomface );
     info.addDefine("PosPresTOL",TOL_PosPres);
     info.addDefine("ZeroTOL",ZeroTOL);
+
+	cout << "eps0, sigmaMax, sigmaMin, PosPresTOL "  << epsilon_0 << " " <<  sigma_max << "  "<< sigma_min <<  " " <<TOL_PosPres << "\n";
 
 
     const int NoDofs=ngl2*Nelem*Neq;
@@ -550,6 +552,28 @@ void deviceclass:: DGtimeloop(const int Nelem,
             mCheckpoints[3]=T/4.0;
             mCheckpoints[4]=T;
         }
+        if ((Testcase == 33)||(Testcase == 36))
+        {
+	    if ((NumPlots==7)&& (T==50))
+		{
+            	mCheckpoints[1]=5.0;
+
+            	mCheckpoints[2]=10.0;
+
+            	mCheckpoints[3]=20.0;
+
+            	mCheckpoints[4]=30.0;
+
+            	mCheckpoints[5]=40.0;
+
+            	mCheckpoints[6]=50.0;
+
+		}
+
+
+
+
+        }
     }
 
 
@@ -631,6 +655,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
 
     cout << "about to enter time loop";
 
+
     while (t<T)
     {
         FindLambdaMax(Nelem, o_q, o_LambdaMax);
@@ -654,11 +679,18 @@ void deviceclass:: DGtimeloop(const int Nelem,
 //	   cout << "Visc para max: " << maxViscPara <<"\n";
             dt_v = DFL/(pow(ngl,2)) * pow(globalMinEleSize,2) / maxViscPara;
             dt=fmin(T-t,fmin(dt_i,dt_v));
+	//	if (!(std::isfinite(dt_v))){
+	//		dt= T-t;
+	//	}
         }
         else
         {
             dt=fmin(T-t,dt_i);
         }
+
+	//if (!(std::isfinite(dt_i))){
+	//	dt= T-t;
+	//}	 
 
 
 //cout << "timestep " << dt << "\n" ;
@@ -1108,10 +1140,10 @@ void deviceclass:: initGlobalVars(const int Nelem_glb,
     x_phy_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
     y_phy_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
     ViscPara_Global = (dfloat*) calloc(Nelem_global,sizeof(dfloat));
-    std::memcpy(b_global, b_glb, sizeof(b_glb));
-    std::memcpy(J_global, J_glb, sizeof(J_glb));
-    std::memcpy(x_phy_global, x_glb, sizeof(x_glb));
-    std::memcpy(y_phy_global, y_glb, sizeof(y_glb));
+    std::memcpy(b_global, b_glb, NoSpaceDofs_global*sizeof(dfloat));
+    std::memcpy(J_global, J_glb, NoSpaceDofs_global*sizeof(dfloat));
+    std::memcpy(x_phy_global, x_glb, NoSpaceDofs_global*sizeof(dfloat));
+    std::memcpy(y_phy_global, y_glb, NoSpaceDofs_global*sizeof(dfloat));
 }
 
 

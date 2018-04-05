@@ -117,46 +117,55 @@ kernel void CollectEdgeData(const int Nfaces,
 
                     if (cpuL==-1)
                     {
+                        const dfloat tx = - ny;
+                        const dfloat ty = nx;
                         dfloat vx;
                         dfloat vy;
-                        vx = qNodalR[1];
-                        vy = qNodalR[2];
+                        if(qNodalR[0]>=PosPresTOL)
+                        {
+                            vx = qNodalR[1]/qNodalR[0];
+                            vy = qNodalR[2]/qNodalR[0];
+                        }
+                        else
+                        {
+                            vx = zero;
+                            vy = zero;
+                        }
+                        const dfloat v_n  = nx * vx + ny * vy;
+                        const dfloat v_t  = tx*vx + ty * vy;
 
-                        const dfloat v_n  = nx * vx + ny * vy;		//Cartesian e.g. n = (1,0) => v_n = vx,   e.g. n = (0,1) => v_n = vy,
-                        const dfloat v_t  = -ny*vx + nx * vy;		//Cartesian e.g. n = (1,0) => v_t = vy,   e.g. n = (0,1) => v_t = -vx,	
-
-                        const dfloat vTilde_x = - nx * v_n - ny * v_t;	//Cartesian e.g. n = (1,0) => vTilde_x = -vx,   e.g. n = (0,1) => vTilde_x = vx,
-                        const dfloat vTilde_y = - ny * v_n + nx * v_t;  //Cartesian e.g. n = (1,0) => vTilde_y = vy,   e.g. n = (0,1) => vTilde_y = -vy,
-
+                        const dfloat vTilde_x = - nx * v_n + tx * v_t;
+                        const dfloat vTilde_y = - ny * v_n + ty * v_t;
 
                         qNodalL[0]=qNodalR[0];
-                        //qNodalL[1]=qNodalR[0] * vTilde_x;
-                        //qNodalL[2]=qNodalR[0] * vTilde_y;
-			qNodalL[1]= vTilde_x;
-                        qNodalL[2]= vTilde_y;
-
-
+                        qNodalL[1]=qNodalR[0] * vTilde_x;
+                        qNodalL[2]=qNodalR[0] * vTilde_y;
                     }
                     if (cpuR==-1)
                     {
+                        const dfloat tx = - ny;
+                        const dfloat ty = nx;
                         dfloat vx;
                         dfloat vy;
-                            vx = qNodalL[1];
-                            vy = qNodalL[2];
-
+                        if(qNodalL[0]>=PosPresTOL)
+                        {
+                            vx = qNodalL[1]/qNodalL[0];
+                            vy = qNodalL[2]/qNodalL[0];
+                        }
+                        else
+                        {
+                            vx = zero;
+                            vy = zero;
+                        }
                         const dfloat v_n  = nx * vx + ny * vy;
-                        const dfloat v_t  = -ny*vx + nx * vy;
+                        const dfloat v_t = tx*vx + ty * vy;
 
-                        const dfloat vTilde_x = - nx * v_n - ny * v_t;
-                        const dfloat vTilde_y = - ny * v_n + nx * v_t;
+                        const dfloat vTilde_x = -nx * v_n + tx * v_t;
+                        const dfloat vTilde_y = -ny * v_n + ty * v_t;
 
                         qNodalR[0]=qNodalL[0];
-                        //qNodalR[1]=qNodalL[0]*vTilde_x;
-                        //qNodalR[2]=qNodalL[0]*vTilde_y;
-                        qNodalR[1]=vTilde_x;
-                        qNodalR[2]=vTilde_y;
-
-
+                        qNodalR[1]=qNodalL[0]*vTilde_x;
+                        qNodalR[2]=qNodalL[0]*vTilde_y;
                     }
 
 

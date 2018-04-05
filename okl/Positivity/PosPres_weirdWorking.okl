@@ -86,10 +86,6 @@ kernel void PosPres(const int Nelem,
                         s_HUavg =   s_HUavg/ EleSizes[ie];
                         s_HVavg =   s_HVavg/ EleSizes[ie];
 
-			if (fabs(s_Havg) < ZeroTOL)
-			{
-				s_Havg=zero;
-			}
                         if (s_Havg == s_Hmin)
                         {
                             s_theta = one;
@@ -134,6 +130,10 @@ kernel void PosPres(const int Nelem,
 
                 if (s_Hmin<zero)
                 {
+//			if (fabs(s_Hmin) < pow(10.0f,-15.0f)){
+//				Q[id]=fabs(r_h);
+//			}
+//			else{
                     if (r_hAvg>zero)
                     {
                         h_new =  fabs(r_theta * ( r_h - r_hAvg ) + r_hAvg);
@@ -141,6 +141,8 @@ kernel void PosPres(const int Nelem,
                         {
                             hu_new = r_theta * (r_hu -  r_huAvg) +  r_huAvg;
                             hv_new = r_theta * (r_hv -  r_hvAvg) + r_hvAvg;
+//                            hu_new = r_hu ;
+//                            hv_new = r_hv ;
 
                         }
                         else
@@ -149,9 +151,9 @@ kernel void PosPres(const int Nelem,
                             hv_new = zero;
                         }
                     }
-                    if (r_hAvg<zero)
+                    else
                     {
-                        h_new=-one/zero;
+                        h_new=zero;
                         hu_new = zero;
                         hv_new = zero;
                     }
@@ -159,7 +161,7 @@ kernel void PosPres(const int Nelem,
                     Q[id]=h_new;
                     Q[id+ngl2] =hu_new;
                     Q[id+ngl2+ngl2] = hv_new;
-
+//			}
                 }
                 else
                 {
@@ -171,6 +173,8 @@ kernel void PosPres(const int Nelem,
 
 
                 }
+
+
 
 
 

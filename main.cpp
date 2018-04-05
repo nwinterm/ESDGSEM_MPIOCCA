@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
 
     basis DGBasis(N,Fluxdifferencing);
 
-    SW2D SW_Problem(Testcase);
+    SW2D SW_Problem(Testcase,PosPresTOL);
 
 
 

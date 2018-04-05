@@ -1736,11 +1736,11 @@ void Mesh::InitDomain(const int Testcase, int *fixedDomain,int *fixedDisc, int *
     case 3:     // Entropy Glitch
     {
         *fixedDomain = 1 ;
-        *fixedDisc = 1;
-        *PeriodicBD_X=0;
-        *PeriodicBD_Y=0;
-        *NelemX=40;
-        *NelemY=40;
+        *fixedDisc = 0;
+        //*PeriodicBD_X=0;
+        //*PeriodicBD_Y=0;
+        //*NelemX=40;
+        //*NelemY=40;
 
         *xL=-1.0;
         *xR=1.0;
@@ -1748,6 +1748,18 @@ void Mesh::InitDomain(const int Testcase, int *fixedDomain,int *fixedDisc, int *
         *yR=1.0;
         break;
     }
+    case 9:     // Entropy Glitch	(other way)
+    {
+        *fixedDomain = 1 ;
+        *fixedDisc = 0;
+
+        *xL=-5.0;
+        *xR=5.0;
+        *yL=-5.0;
+        *yR=5.0;
+        break;
+    }
+
     case 4:      // WELL BALANCED (CARTESIAN 20x20)
     {
         *fixedDomain = 0 ;
@@ -1879,6 +1891,24 @@ void Mesh::InitDomain(const int Testcase, int *fixedDomain,int *fixedDisc, int *
 
 
         break;
+    }
+    case 36:     // Dam Break Three Mound (4.6)
+    {
+
+        *fixedDomain = 1 ;
+        *fixedDisc = 1;
+        *xL=0.0;
+        *xR=75.0;
+        *yL=0.0;
+        *yR=30.0;
+        *NelemX=150;
+        *NelemY=100;
+        *PeriodicBD_X=0;
+        *PeriodicBD_Y=0;
+
+
+        break;
+
     }
 
     default:

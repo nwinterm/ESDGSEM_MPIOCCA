@@ -75,7 +75,7 @@ kernel void calcNumFluxesGradient(const int Nfaces,
 
 
             dfloat hLinv;
-            if (hL>=PosPresTOL)
+            if (hL>PosPresTOL)
             {
                 hLinv =  one/hL;
             }
@@ -84,7 +84,7 @@ kernel void calcNumFluxesGradient(const int Nfaces,
                 hLinv = zero;
             }
             dfloat hRinv;
-            if (hR>=PosPresTOL)
+            if (hR>PosPresTOL)
             {
                 hRinv =  one/hR;
             }

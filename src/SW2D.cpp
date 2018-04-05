@@ -5,9 +5,10 @@
 
 
 
-SW2D::SW2D(int tcase)
+SW2D::SW2D(const int tcase, const dfloat postol)
 {
 Testcase = tcase;
+PosPresTOL = postol;
 
 }
 //  void InitQ(const int Nelem,const int ngl,const int ngl2,const dfloat x[NoSpaceDofs],const dfloat y[NoSpaceDofs], dfloat q[NoDofs],const dfloat t,const dfloat b[NoSpaceDofs]){
@@ -65,6 +66,21 @@ void SW2D :: InitQ(const int IsMeshSplit,const MeshPartitioning MeshSplit,const 
 
 
                 }
+                if (Testcase==9)
+                {
+                    int NelemY = sqrt(MeshSplit.global_NumElements);
+                    if( globalEleID < (NelemY/2)*NelemY+1)
+                    {
+                        qNodal[0] = 10.0;
+                    }
+                    if( globalEleID > (NelemY/2)*NelemY+1)
+                    {
+                        qNodal[0] = 5.0;
+                    }
+
+
+                }
+
                 if (Testcase==20)
                 {
                     int NelemX = sqrt(MeshSplit.global_NumElements);
@@ -200,6 +216,28 @@ void SW2D :: InitQ(const int IsMeshSplit,const MeshPartitioning MeshSplit,const 
 
                 }
 
+                if (Testcase==36)
+                {
+
+                    for (int i=31; i<= 14881; i=i+150)
+                    {
+                        if( globalEleID == i)
+                        {
+                            qNodal[0] = 1.875;
+                        }
+                    }
+                    for (int i=32; i<= 14882; i=i+150)
+                    {
+                        if( globalEleID == i)
+                        {
+                            qNodal[0] = 0.1*PosPresTOL;
+                        }
+                    }
+
+
+                }
+
+
                 if (Testcase==43 ||Testcase==44 || Testcase==45 || Testcase == 46)
                 {
                     if( globalEleID % 20 == 3)
@@ -327,6 +365,22 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
         break;
     }
 
+    case 9:      // Dam Break (CARTESIAN)	(other direction)
+    {
+        if (y<0.0)
+        {
+            h=10.0-b;
+
+        }
+        else
+        {
+            h=5.0-b;
+        }
+
+        v= 0.0;
+        w= 0.0;
+        break;
+    }
 
     case 20:      //  Dam Break (CARTESIAN)
     {
@@ -558,6 +612,26 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
         break;
     }
 
+
+    case 36:      // Dam Break over 3 Mounds		// low minimal water height
+    {
+
+
+        if (x<16.0)
+        {
+            h=1.875-b;
+
+        }
+        else
+        {
+            h=0.1*PosPresTOL;
+        }
+        v= 0.0;
+        w= 0.0;
+        break;
+    }
+
+
     case 43:      //curved dam break PARTIAL
     {
         if (x<1.0/25.0 * y*y - 0.25)
@@ -625,7 +699,7 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
         w= 0.0;
         break;
     }
-    case 47:      //curved dam break PARTIAL
+    case 47:      //curved dam break PARTIAL, WET DRY
     {
         if (x<1.0/25.0 * y*y - 0.25)
         {
@@ -807,6 +881,26 @@ void   SW2D::InitB(const int IsMeshSplit,const MeshPartitioning MeshSplit,const 
 
                     break;
                 }
+
+                case 36:     // Dam Break Three Mound (4.6)
+                {
+
+                    dfloat Xm30Pow2 = pow((x[xid]-30),2);
+                    dfloat Xm475Pow2 = pow((x[xid]-47.5),2);
+                    dfloat Ym225Pow2 = pow((y[xid]-22.5),2);
+                    dfloat Ym75Pow2 = pow((y[xid]-7.5),2);
+                    dfloat Ym15Pow2 = pow((y[xid]-15),2);
+                    dfloat m1 = 1.0-0.1 * sqrt(  Xm30Pow2 + Ym225Pow2  );
+                    dfloat m2 = 1.0-0.1 * sqrt(  Xm30Pow2 + Ym75Pow2  );
+                    dfloat m3 = 2.8-0.28 * sqrt(  Xm475Pow2 + Ym15Pow2  );
+                    dfloat zero = 0.0;
+                    b[xid] = max(max(zero,m1),max(m2,m3));
+
+
+                    break;
+
+                }
+
                 case 43:      //curved dam break PARTIAL
                 {
                     if (x[xid] >= 2.25)

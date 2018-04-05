@@ -39,24 +39,24 @@ kernel void ShockCapturing(const int Nelem,
                 dfloat c;
 
                 dfloat Qinv;
-                //if ((r_h2>PosPresTOL)&&(r_h>PosPresTOL))
-		if (r_h2>PosPresTOL)
+                if ((r_h2>PosPresTOL)&&(r_h>PosPresTOL))
+		//if (r_h2>PosPresTOL)
                 {
-                    
+                    s_Q1modal[i][j]=r_h2;
                     Qinv = one/r_h;
                     c=sqrt(g_const*r_h);
-                    const dfloat u =Q[Fid+ngl2]*Qinv;
-                    const dfloat v =Q[Fid+ngl2+ngl2]*Qinv;
-                    s_MaxLambda[i][j] =  c + max(fabs(u),fabs(v));
                 }
                 else
                 {
+                    s_Q1modal[i][j]=zero;
                     Qinv = zero;
                     c=zero;
-		    s_MaxLambda[i][j] =  zero;
-                }
 
- 		s_Q1modal[i][j]=r_h2;
+                }
+                const dfloat u =Q[Fid+ngl2]*Qinv;
+                const dfloat v =Q[Fid+ngl2+ngl2]*Qinv;
+
+                s_MaxLambda[i][j] =  c + max(fabs(u),fabs(v));
 
             }
         }
@@ -182,18 +182,8 @@ kernel void ShockCapturing(const int Nelem,
                 }
             }
 
-		if (nenner1<ZeroTOL){
-            		term1=zero;
-		}else{
-			term1= zaehler1/nenner1 ;
-		}
-		if (nenner1<ZeroTOL){
-            		term2=zero;
-		}else{
-			term2= zaehler2/nenner2 ;
-		}
-
-
+            term1= zaehler1/nenner1 ;
+            term2= zaehler2/nenner2 ;
 
 
 
@@ -225,12 +215,13 @@ kernel void ShockCapturing(const int Nelem,
 
                 }
             }
+            if (MaxLambdaTotal<PosPresTOL)
+            {
+                viscStar=zero;
+            }
 
             ViscParaForPlot[ie] = viscStar;
-            //ViscPara[ie] = MaxLambdaTotal * sqrt(EleSizes[ie]) /ngl * viscStar;
-	    ViscPara[ie] = viscStar;
-	    //ViscPara[ie] = eps0;
-
+            ViscPara[ie] = MaxLambdaTotal * sqrt(EleSizes[ie]) /ngl * viscStar;
 
         }
 
