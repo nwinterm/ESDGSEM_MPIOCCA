@@ -439,12 +439,12 @@ int main(int argc, char *argv[])
         int idFace;
         for (int is=0; is<4; is++)
         {
-            int ifa  = DGMeshPartition.MyElementToEdge[id+is];//(is+1,ie);
+            int ifa  = DGMeshPartition.MyElementToEdge[id+is];
             idFace = (ifa-1)*8;
-            if ((EdgeData[idFace+5] == MPI.rank) && (EdgeData[idFace]==ie-1))
+            if ((EdgeData[idFace+5] == MPI.rank) && (EdgeData[idFace]==ie-1))	//if left element is on this processor and this is the left element
             {
                 //this is the left element to this edge!
-                ElemEdgeMasterSlave[id+is]=+1;
+                ElemEdgeMasterSlave[id+is]=1;
                 ElemEdgeOrientation[id+is]=1;   //order is never reversed for left element! as it is master
             }
             else
@@ -472,6 +472,10 @@ int main(int argc, char *argv[])
             }
         }
     }
+
+
+
+
     for(int is=0; is<Nfaces; ++is)
     {
         for (int i=0; i<ngl; i++)
@@ -482,14 +486,20 @@ int main(int argc, char *argv[])
             Scal[id] = DGMeshPartition.scal_global[id];
         }
     }
-//        for(int ie=0;ie<Nfaces;++ie){
-//        cout <<"\n face: " << ie <<"\n";
-//            for(int i=0;i<ngl;++i){
-//                int id = ie*ngl  +i ;
-//                cout << normalsX[id] << " ";
-//          }
-//           cout  <<"\n";
-//        }
+
+//for(int ie=0;ie<Nfaces;++ie){
+//	if (EdgeData[ie*8 + 4] == 0){
+//		cout << "\n face "<< ie << " is rotated for right element !\n  the normal is: " ;
+//
+//		for(int i=0;i<ngl;++i){
+//			int id = ie*ngl  +i ;
+//			cout << normalsX[id] << " ";
+//			cout << normalsY[id] << " ";
+//			dfloat  normalNorm = pow(normalsX[id],2) + pow(normalsY[id],2);
+//			cout  << " NORMALNORM: " << sqrt(normalNorm) <<" ";
+//		}         
+//	}
+//}
 
 
     if(MPI.rank==0)
@@ -542,49 +552,110 @@ int main(int argc, char *argv[])
         GLw[i] = DGBasis.w_GL[i];
     }
 
-    cout <<"\n D central: \n";
-    for(int j=0; j<ngl; ++j)
-    {
-        for(int i=0; i<ngl; ++i)
-        {
-            int id =   j*ngl+i;
-            cout <<DCentralFD[id]<<"  ";
-        }
-        cout <<"\n";
-    }
+//    cout <<"\n D central: \n";
+//    for(int j=0; j<ngl; ++j)
+//    {
+//        for(int i=0; i<ngl; ++i)
+//        {
+//            int id =   j*ngl+i;
+//            cout <<DCentralFD[id]<<"  ";
+//        }
+//       cout <<"\n";
+//    }
 
-    cout <<"\n D forward: \n";
-    for(int j=0; j<ngl; ++j)
-    {
-        for(int i=0; i<ngl; ++i)
-        {
-            int id =   j*ngl+i;
-            cout <<DforwardFD[id]<<"  ";
-        }
-        cout <<"\n";
-    }
+//    cout <<"\n D forward: \n";
+//    for(int j=0; j<ngl; ++j)
+//    {
+//        for(int i=0; i<ngl; ++i)
+//        {
+//            int id =   j*ngl+i;
+//            cout <<DforwardFD[id]<<"  ";
+//        }
+//       cout <<"\n";
+//    }
 
-    cout <<"\n D backward: \n";
-    for(int j=0; j<ngl; ++j)
-    {
-        for(int i=0; i<ngl; ++i)
-        {
-            int id =   j*ngl+i;
-            cout <<DbackwardFD[id]<<"  ";
-        }
-        cout <<"\n";
-    }
+//    cout <<"\n D backward: \n";
+//    for(int j=0; j<ngl; ++j)
+//    {
+//        for(int i=0; i<ngl; ++i)
+//        {
+//            int id =   j*ngl+i;
+//            cout <<DbackwardFD[id]<<"  ";
+//        }
+//        cout <<"\n";
+//    }
 
-    cout <<"\n D matrix: \n";
-    for(int j=0; j<ngl; ++j)
-    {
-        for(int i=0; i<ngl; ++i)
-        {
-            int id =   j*ngl+i;
-            cout <<Dmat0[id]<<"  ";
-        }
-        cout <<"\n";
-    }
+//    cout <<"\n D matrix: \n";
+//    for(int j=0; j<ngl; ++j)
+//    {
+//        for(int i=0; i<ngl; ++i)
+//        {
+//            int id =   j*ngl+i;
+//            cout <<Dmat0[id]<<"  ";
+//        }
+//        cout <<"\n";
+//    }
+
+//MetricIdentities 
+    dfloat * MetricIdentities1 = (dfloat*) calloc(Nelem*ngl2,sizeof(dfloat));
+    dfloat * MetricIdentities2 = (dfloat*) calloc(Nelem*ngl2,sizeof(dfloat));
+			for (int ie=0;ie<Nelem;ie++){
+				for(int j=0;j<ngl;++j){
+					for(int i=0;i<ngl;++i){
+						int ele_ij = ie*ngl2 +  j*ngl+i;
+						int loc_ij = j*ngl+i;
+						for (int l=0;l<ngl;l++){
+							
+							int loc_il = i*ngl+l;
+							int loc_jl = j*ngl+l;
+							int ele_il = ie*ngl2 + i*ngl+l;
+							int ele_lj = ie*ngl2 + l*ngl+j;
+							MetricIdentities1[ele_ij] += Dmat0[loc_jl] *y_eta[ele_il]- Dmat0[loc_il] *y_xi[ele_lj];
+							MetricIdentities2[ele_ij] += -Dmat0[loc_jl] *x_eta[ele_il]+ Dmat0[loc_il] *x_xi[ele_lj];
+						}
+					}
+				  }
+			}
+
+			for (int ie=0;ie<Nelem;ie++){
+				for(int j=0;j<ngl;++j){
+					for(int i=0;i<ngl;++i){
+						int id = ie*ngl2+  j*ngl+i;
+					if(abs(MetricIdentities1[id]) >0.000000000001)
+					   cout <<"Metric Identities1 for Ele: " << ie <<" "<<MetricIdentities1[id]<<"\n ";
+					if(abs(MetricIdentities2[id]) >0.000000000001)
+					   cout <<"Metric Identities2 for Ele: " << ie <<" "<<MetricIdentities2[id]<<"\n  ";
+				  }
+					
+				}
+			}
+			cout << "Metric IDs 1 \n"; 
+			for (int ie=255;ie<256;ie++){
+				for(int j=0;j<ngl;++j){
+					for(int i=0;i<ngl;++i){
+						int id = ie*ngl2+  j*ngl+i;
+					   cout <<MetricIdentities1[id] << "  ,  ";	//*J[id]
+				  }
+					cout << "\n";
+				}
+			}
+			cout << "Metric IDs 2 \n"; 
+			for (int ie=255;ie<256;ie++){
+				for(int j=0;j<ngl;++j){
+					for(int i=0;i<ngl;++i){
+						int id = ie*ngl2+  j*ngl+i;
+					   cout <<MetricIdentities2[id] << " , ";	//*J[id]
+				  }
+					cout << "\n";
+				}
+			}
+
+
+free(MetricIdentities1);
+free(MetricIdentities2);
+
+
+
     //initialise time integrator
     RungeKutta RK(rkorder,rkSSP);
 
@@ -605,10 +676,7 @@ int main(int argc, char *argv[])
         cout <<"Allocating Memory on the device...      ";
     }
 
-    // NEEDED PARAMETERS: (Nelem,Neq,ngl,DGMetrics.Jac,o_F,o_D,o_Qt);
-    //o_Ftilde  = device.malloc(NoDofs*sizeof(dfloat));
-    //o_Gtilde  = device.malloc(NoDofs*sizeof(dfloat));
-    //cout <<"rank: " << MPI.rank << " I AM AT: Device Memory Allocation" << "\n";
+
 
 
 
@@ -821,7 +889,7 @@ int main(int argc, char *argv[])
         DGBasis.LinfNorm(Q_global,q_exakt,LinfError);
         for(int ik=0; ik<Neq; ik++)
         {
-            L2Error[ik]= sqrt(L2Error[ik]);
+            L2Error[ik]= sqrt(fabs(L2Error[ik]));
         }
 
         for(int ik=0; ik<Neq; ik++)

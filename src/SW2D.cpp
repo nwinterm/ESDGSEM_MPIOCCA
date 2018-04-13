@@ -359,12 +359,18 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
     }
     case 7:      // periodic conv test  _ NO BOTTOM
     {
-        h=8.0+cos(2.0*PI*x)*sin(2.0*PI*y)*cos(t)-b;
+        h=1.0+0.001*cos(2.0*PI*x)*sin(2.0*PI*y)*cos(t)-b;
         v= 0.5;
         w= 1.5;
         break;
     }
-
+    case 8:      // periodic conv test  _ NO BOTTOM
+    {
+        h=8.0+cos(x)*sin(y)*cos(t)-b;
+        v= 0.5;
+        w= 1.5;
+        break;
+    }
     case 9:      // Dam Break (CARTESIAN)	(other direction)
     {
         if (y<0.0)
@@ -788,6 +794,11 @@ void   SW2D::InitB(const int IsMeshSplit,const MeshPartitioning MeshSplit,const 
                 case 5:      // WELL BALANCED (CARTESIAN 4x4)
                 {
                     b[xid] = 0.25 - 0.25*cos((2*x[xid]-1)*PI);
+                    break;
+                }
+                case 8:      // convergence test
+                {
+                      b[xid] =  2.0+sin(y[xid])+cos(x[xid]);
                     break;
                 }
                 case 30:     // Steeper Dam Break To Test Shock Capturing

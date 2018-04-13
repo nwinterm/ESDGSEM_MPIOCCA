@@ -29,7 +29,7 @@ kernel void SurfaceKernel(const int Nelem,
 
                         const int ifa = ElemToEdge[ie*4 + iside]-1;        //get id of element side
 
-                        const int reversedOrder = ElemEdgeOrientation[ie*4 + is];
+                        const int reversedOrder = ElemEdgeOrientation[ie*4 + iside];
                         //increment = j if order is correct, else increment = ngl-1-j
                         const int increment  = reversedOrder*j + (1-reversedOrder)*(ngl-1 -j);
 
@@ -48,6 +48,7 @@ kernel void SurfaceKernel(const int Nelem,
 
                         const int r_Masterslave = ElemEdgeMasterSlave[ie*4+iside];
                         const dfloat r_Jac = Jac[xid];
+			
 
 
                         Qt[id]              +=    - r_Masterslave*  FStar[idFaceLoc] * r_Jac;
@@ -87,7 +88,7 @@ kernel void SurfaceKernel(const int Nelem,
 
                         const int ifa = ElemToEdge[ie*4 + iside]-1;        //get id of element side
 
-                        const int reversedOrder = ElemEdgeOrientation[ie*4 + is];
+                        const int reversedOrder = ElemEdgeOrientation[ie*4 + iside];
                         //increment = j if order is correct, else increment = ngl-1-j
                         const int increment  = reversedOrder*j + (1-reversedOrder)*(ngl-1 -j);
 

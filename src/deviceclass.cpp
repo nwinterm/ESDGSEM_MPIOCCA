@@ -278,11 +278,21 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
     }
     case 7:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
     {
-        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/Dirichlet_ConvTest.okl","CollectEdgeData",info);
-        addS = device.buildKernelFromSource("okl/ManufacturedSolutions/S_ConvTest.okl","addS",info);
+        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/Dirichlet_ConvTest2.okl","CollectEdgeData",info);
+        addS = device.buildKernelFromSource("okl/ManufacturedSolutions/S_ConvTest2.okl","addS",info);
         break;
     }
-
+    case 8:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
+    {
+        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/Dirichlet_ConvTest3.okl","CollectEdgeData",info);
+        addS = device.buildKernelFromSource("okl/ManufacturedSolutions/S_ConvTest3.okl","addS",info);
+        break;
+    }
+    case 6:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
+    {
+        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/InnerOuter.okl","CollectEdgeData",info);
+        break;
+    }
     case 32:  // Inflow Boundaries for 3 Mound PP test case
     {
         CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/3MoundInflow.okl","CollectEdgeData",info);
@@ -488,6 +498,14 @@ void deviceclass:: DGtimeloop(const int Nelem,
     dfloat * qGradientXR = (dfloat*) calloc(Nfaces*ngl*Neq,sizeof(dfloat));
     dfloat * qGradientYL = (dfloat*) calloc(Nfaces*ngl*Neq,sizeof(dfloat));
     dfloat * qGradientYR = (dfloat*) calloc(Nfaces*ngl*Neq,sizeof(dfloat));
+
+//DEBUG VARIABLES
+dfloat * Qt = (dfloat*) calloc(ngl2*Nelem*Neq,sizeof(dfloat));
+dfloat * SurfParts = (dfloat*) calloc(ngl*Nfaces*Neq,sizeof(dfloat));
+dfloat * scal = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
+dfloat * nx = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
+dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
+
 
     //  dfloat * Qx = (dfloat*) calloc(ngl2*Nelem*Neq,sizeof(dfloat));
     //  dfloat * Qy = (dfloat*) calloc(ngl2*Nelem*Neq,sizeof(dfloat));
@@ -722,7 +740,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
 
 
 
-            FindDryElements(Nelem, o_q, o_isPartlyDry);
+//            FindDryElements(Nelem, o_q, o_isPartlyDry);
 //device.finish();
 //	o_isPartlyDry.copyTo(isDryElement);
 //	for (int ie=0;ie<Nelem;ie++){
@@ -734,24 +752,28 @@ void deviceclass:: DGtimeloop(const int Nelem,
 
 // CORRECT VOLUME KERNEL
 
-            VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_isPartlyDry,o_Qt);
+            VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_Qt); //o_isPartlyDry,
 
-//			o_Qt.copyTo(Qt);
-//	device.finish();
-//         cout <<"\n q_t ESDGSEM : \n";
-//			for (int ie=0;ie<Nelem;ie++){
-//					cout <<"Ele: " << ie <<"\n";
-//				for(int j=0;j<ngl;++j){
-//					for(int i=0;i<ngl;++i){
-//						int id = ie*ngl2*Neq +  j*ngl+i;
+if (rkstage ==3){
+			o_Qt.copyTo(Qt);
+	device.finish();
+
+		        cout <<"\n q_t NEW : \n";
+//			for (int ie=2098;ie<2099;ie++){
+//			for (int ie=0;ie<16;ie++){
+			for (int ie=0;ie<Nelem;ie++){
+					cout <<"Ele: " << ie <<"\n";
+				for(int j=0;j<ngl;++j){
+					for(int i=0;i<ngl;++i){
+						int id = ie*ngl2*Neq +  j*ngl+i;
 //					   cout <<"( " << Qt[id]<<",  ";
-//					   cout <<Qt[id+ngl2]<<",  ";
+					   cout <<Qt[id+ngl2]<<",  ";
 //					   cout <<Qt[id+ngl2+ngl2]<<"  ) ";
-//					}
-//					cout <<"\n";
-//				}
-//			}
-//
+				  }
+					cout <<"\n";
+				}
+			}
+}
 
 
 // NEW ONE FOR PARTIALLY WET ELEMENTS
@@ -786,8 +808,43 @@ void deviceclass:: DGtimeloop(const int Nelem,
             calcNumFluxes(Nfaces,o_nx,o_ny,o_scal,o_qL,o_qR,o_bL,o_bR,o_SurfaceParts);
             calcDiscBottomSurf(Nfaces,o_qL,o_qR, o_bL,o_bR,o_nx,o_ny,o_scal,o_DBSurf1,o_DBSurf2);
 
-            SurfaceKernel(Nelem,o_Jac,o_ElemEdgeMasterSlave,o_ElemEdgeOrientation,o_ElemToEdge, o_SurfaceParts,o_DBSurf1,o_DBSurf2,o_Qt);
+if (rkstage ==3){
+o_SurfaceParts.copyTo(SurfParts);
+o_scal.copyTo(scal);
+o_nx.copyTo(nx);
+o_ny.copyTo(ny);
+for(int ie=0;ie<Nfaces;++ie){
+	cout << "Printing SurfaceParts for face " << ie << " : " ;
+	for(int i=0;i<ngl;++i){
+		int id = ie*ngl*Neq  +i ;
+		int idx = ie*ngl+i;
+		cout << SurfParts[id+ngl+ngl]/scal[idx]*0.16666666666666666/ny[idx] << " ";
+	}
+           cout << "\n";
+}
+}
 
+            SurfaceKernel(Nelem,o_Jac,o_ElemEdgeMasterSlave,o_ElemEdgeOrientation,o_ElemToEdge, o_SurfaceParts,o_DBSurf1,o_DBSurf2,o_Qt);
+if (rkstage==4){
+			o_Qt.copyTo(Qt);
+	device.finish();
+
+		        cout <<"\n q_t NEW : \n";
+//			for (int ie=2098;ie<2099;ie++){
+//			for (int ie=0;ie<16;ie++){
+			for (int ie=0;ie<Nelem;ie++){
+					cout <<"Ele: " << ie <<"\n";
+				for(int j=0;j<ngl;++j){
+					for(int i=0;i<ngl;++i){
+						int id = ie*ngl2*Neq +  j*ngl+i;
+//					   cout <<"( " << Qt[id]<<",  ";
+					   cout <<Qt[id+ngl2]<<",  ";
+//					   cout <<Qt[id+ngl2+ngl2]<<"  ) ";
+				  }
+					cout <<"\n";
+				}
+			}
+}
             if ( ArtificialViscosity==1)
             {
 
@@ -846,7 +903,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
             }
 
             // add manufactured source term for convergence test
-            if ((Testcase==1)||(Testcase==7))
+            if ((Testcase==1)||(Testcase==7)||(Testcase==8))
             {
                 addS(Nelem,o_Bx,o_By,o_B,o_x,o_y,intermediatetime,o_Qt);
             }

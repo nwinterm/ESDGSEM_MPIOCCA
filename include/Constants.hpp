@@ -14,6 +14,7 @@ namespace Constants
 //   #define PI 3.14159265359
 
 const dfloat PI  = atan(1.0)*4;
+//const dfloat PI  =3.141592653589793238463;
 const int Neq=3;
 
 

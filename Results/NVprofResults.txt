@@ -1,0 +1,1575 @@
+==5756== NVPROF is profiling process 5756, command: ./main CUDA Nelem 3000 N 1 Nepad 32 KernelV 7 STDKernelV 7
+cat: write error: Broken pipe
+cat: write error: Broken pipe
+==5756== Profiling application: ./main CUDA Nelem 3000 N 1 Nepad 32 KernelV 7 STDKernelV 7
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 1.738 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 1
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=1.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 3000  NelemY: 3000.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 9000000 Elements. and 18006000edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 7.
+Found cached binary of [7c0d2a4ff2eb73fb/parsedSource.occa] in [4daa094e908831c4/binary]
+Found cached binary of [7c0d2a4ff2eb73fb/parsedSource.occa] in [59fed70cad8fdd3a/binary]
+Kernel Version STD: V 7.
+Found cached binary of [4e5b5b3d3504bb7d/parsedSource.occa] in [841893041629baac/binary]
+Found cached binary of [4e5b5b3d3504bb7d/parsedSource.occa] in [7b4886228f3daf2c/binary]
+rank: 0 GB allocated on device: 7.44402
+Entering Time Loop!
+Elapsed Time MemCpy: 0.0724951324462891
+Bandwidth MemCpy: 240.490057863108
+Elapsed Time STD: 0.0763917770385742
+Bandwidth Standard Volume: 228.222974679568
+Elapsed Time FD : 6.39856591796875
+Bandwidth FD Volume: 2.7247290752826
+Floating Point Operations FD: 772
+flop_count_sp should be : 6912000000
+we managed 6.47082924842834 in time 6.39856591796875 !
+Achieved GFLOPS/s : 7 1 1.011293676018350e+01
+MemoryBound : 7 1 8.925880993765367e+02
+SharedMemBound : 7 1 3.554525538461538e+03
+minBound : 7 1 8.925880993765367e+02
+Bytes ReadWrite: 1.872000000000000e+09. 
+time taken in seconds = 6.547641000000000e+00
+==5756== Profiling result:
+==5756== Metric result:
+Invocations                               Metric Name                            Metric Description         Min         Max         Avg
+Device "GeForce GTX 1080 (0)"
+    Kernel: VolumeKernelFluxDiff0
+         10                             flop_count_sp   Floating Point Operations(Single Precision)  7236000000  7236000000  7236000000
+==5807== NVPROF is profiling process 5807, command: ./main CUDA Nelem 2000 N 2 Nepad 16 KernelV 7 STDKernelV 7
+cat: write error: Broken pipe
+cat: write error: Broken pipe
+==5807== Profiling application: ./main CUDA Nelem 2000 N 2 Nepad 16 KernelV 7 STDKernelV 7
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 3.701 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 2
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=2.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 2000  NelemY: 2000.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 4000000 Elements. and 8004000edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 7.
+Found cached binary of [ba3d60cf7c40e99f/parsedSource.occa] in [b7c08d7bbf8974b5/binary]
+Found cached binary of [ba3d60cf7c40e99f/parsedSource.occa] in [38b759ef5914cd27/binary]
+Kernel Version STD: V 7.
+Found cached binary of [d90494dd4aaa17bd/parsedSource.occa] in [51b1f9dfdba4772b/binary]
+Found cached binary of [d90494dd4aaa17bd/parsedSource.occa] in [b2b0c943115d2069/binary]
+rank: 0 GB allocated on device: 6.16992
+Entering Time Loop!
+Elapsed Time MemCpy: 0.0725005722045898
+Bandwidth MemCpy: 240.472013760162
+Elapsed Time STD: 0.075228385925293
+Bandwidth Standard Volume: 231.752394822285
+Elapsed Time FD : 7.489884765625
+Bandwidth FD Volume: 2.32772053808053
+Floating Point Operations FD: 2547
+flop_count_sp should be : 10152000000
+we managed 9.4883143901825 in time 7.489884765625 !
+Achieved GFLOPS/s : 7 2 1.266817138993825e+01
+MemoryBound : 7 2 1.308722690271652e+03
+SharedMemBound : 7 2 3.871828114285715e+03
+minBound : 7 2 1.308722690271652e+03
+Bytes ReadWrite: 1.872000000000000e+09. 
+time taken in seconds = 7.637829000000000e+00
+==5807== Profiling result:
+==5807== Metric result:
+Invocations                               Metric Name                            Metric Description         Min         Max         Avg
+Device "GeForce GTX 1080 (0)"
+    Kernel: VolumeKernelFluxDiff0
+         10                             flop_count_sp   Floating Point Operations(Single Precision)  1.0152e+10  1.0152e+10  1.0152e+10
+==5855== NVPROF is profiling process 5855, command: ./main CUDA Nelem 1750 N 3 Nepad 4 KernelV 7 STDKernelV 7
+cat: write error: Broken pipe
+cat: write error: Broken pipe
+==5855== Profiling application: ./main CUDA Nelem 1750 N 3 Nepad 4 KernelV 7 STDKernelV 7
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 3.8 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 3
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=3.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 1750  NelemY: 1750.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 3062500 Elements. and 6128500edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 7.
+Found cached binary of [e8a8eda986825479/parsedSource.occa] in [b3e39f937380b32f/binary]
+Found cached binary of [e8a8eda986825479/parsedSource.occa] in [892be0e58325284b/binary]
+Kernel Version STD: V 7.
+Found cached binary of [8472915b5ed1726b/parsedSource.occa] in [bac4bc4dfcca01e3/binary]
+Found cached binary of [8472915b5ed1726b/parsedSource.occa] in [944723a3396216af/binary]
+rank: 0 GB allocated on device: 7.64477
+Entering Time Loop!
+Elapsed Time MemCpy: 0.0987170867919922
+Bandwidth MemCpy: 240.384921925465
+Elapsed Time STD: 0.0979596481323242
+Bandwidth Standard Volume: 242.243614116985
+Elapsed Time FD : 13.0726044921875
+Bandwidth FD Volume: 1.81525412287843
+Floating Point Operations FD: 5968
+flop_count_sp should be : 18228000000
+we managed 17.0217826962471 in time 13.0726044921875 !
+Achieved GFLOPS/s : 7 3 1.302095745833948e+01
+MemoryBound : 7 3 1.724299536119201e+03
+SharedMemBound : 7 3 4.059325090909091e+03
+minBound : 7 3 1.724299536119201e+03
+Bytes ReadWrite: 2.548000000000000e+09. 
+time taken in seconds = 1.326960300000000e+01
+==5855== Profiling result:
+==5855== Metric result:
+Invocations                               Metric Name                            Metric Description         Min         Max         Avg
+Device "GeForce GTX 1080 (0)"
+    Kernel: VolumeKernelFluxDiff0
+         10                             flop_count_sp   Floating Point Operations(Single Precision)  1.8228e+10  1.8228e+10  1.8228e+10
+==5907== NVPROF is profiling process 5907, command: ./main CUDA Nelem 1300 N 4 Nepad 16 KernelV 7 STDKernelV 7
+cat: write error: Broken pipe
+cat: write error: Broken pipe
+==5907== Profiling application: ./main CUDA Nelem 1300 N 4 Nepad 16 KernelV 7 STDKernelV 7
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 3.724 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 4
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=4.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 1300  NelemY: 1300.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 1690000 Elements. and 3382600edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 7.
+Found cached binary of [97479d64d4a37dcc/parsedSource.occa] in [e964b61b33e9f7c7/binary]
+Found cached binary of [97479d64d4a37dcc/parsedSource.occa] in [533ca1fee3172c8a/binary]
+Kernel Version STD: V 7.
+Found cached binary of [b187accac7497636/parsedSource.occa] in [fdfd602355b7a609/binary]
+Found cached binary of [b187accac7497636/parsedSource.occa] in [4911f9b68d955fb4/binary]
+rank: 0 GB allocated on device: 6.23364
+Entering Time Loop!
+Elapsed Time MemCpy: 0.0850700836181641
+Bandwidth MemCpy: 240.52118082006
+Elapsed Time STD: 0.0876342697143555
+Bandwidth Standard Volume: 233.483510857058
+Elapsed Time FD : 13.20922265625
+Bandwidth FD Volume: 1.5490053803144
+Floating Point Operations FD: 11575
+flop_count_sp should be : 19519500000
+we managed 18.2182993739843 in time 13.20922265625 !
+Achieved GFLOPS/s : 7 4 1.379210559779933e+01
+MemoryBound : 7 4 2.141563590763227e+03
+SharedMemBound : 7 4 4.183143849056604e+03
+minBound : 7 4 2.141563590763227e+03
+Bytes ReadWrite: 2.197000000000000e+09. 
+time taken in seconds = 1.338225200000000e+01
+==5907== Profiling result:
+==5907== Metric result:
+Invocations                               Metric Name                            Metric Description         Min         Max         Avg
+Device "GeForce GTX 1080 (0)"
+    Kernel: VolumeKernelFluxDiff0
+         10                             flop_count_sp   Floating Point Operations(Single Precision)  1.9520e+10  1.9520e+10  1.9520e+10
+==5956== NVPROF is profiling process 5956, command: ./main CUDA Nelem 1100 N 5 Nepad 4 KernelV 7 STDKernelV 7
+cat: write error: Broken pipe
+cat: write error: Broken pipe
+==5956== Profiling application: ./main CUDA Nelem 1100 N 5 Nepad 4 KernelV 7 STDKernelV 7
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 1.272 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 5
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=5.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 1100  NelemY: 1100.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 1210000 Elements. and 2422200edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 7.
+Found cached binary of [58eb6076f5fd99ca/parsedSource.occa] in [25681a8e11376fc2/binary]
+Found cached binary of [58eb6076f5fd99ca/parsedSource.occa] in [6277b919e160459b/binary]
+Kernel Version STD: V 7.
+Found cached binary of [708ce33ce6d77778/parsedSource.occa] in [13f69f6b2e02caf1/binary]
+Found cached binary of [708ce33ce6d77778/parsedSource.occa] in [6d924eb0d38415a2/binary]
+rank: 0 GB allocated on device: 6.1943
+Entering Time Loop!
+Elapsed Time MemCpy: 0.0876945571899414
+Bandwidth MemCpy: 240.557391223703
+Elapsed Time STD: 0.0900994567871094
+Bandwidth Standard Volume: 234.136527060042
+Elapsed Time FD : 18.222798828125
+Bandwidth FD Volume: 1.15764730221196
+Floating Point Operations FD: 19908
+flop_count_sp should be : 24045120000
+we managed 22.4343314766884 in time 18.222798828125 !
+Achieved GFLOPS/s : 7 5 1.231113381006178e+01
+MemoryBound : 7 5 2.558235333590533e+03
+SharedMemBound : 7 5 4.271015225806452e+03
+minBound : 7 5 2.558235333590533e+03
+Bytes ReadWrite: 2.265120000000000e+09. 
+time taken in seconds = 1.840102800000000e+01
+==5956== Profiling result:
+==5956== Metric result:
+Invocations                               Metric Name                            Metric Description         Min         Max         Avg
+Device "GeForce GTX 1080 (0)"
+    Kernel: VolumeKernelFluxDiff0
+         10                             flop_count_sp   Floating Point Operations(Single Precision)  2.4045e+10  2.4045e+10  2.4045e+10
+==6004== NVPROF is profiling process 6004, command: ./main CUDA Nelem 1000 N 6 Nepad 5 KernelV 7 STDKernelV 7
+cat: write error: Broken pipe
+cat: write error: Broken pipe
+==6004== Profiling application: ./main CUDA Nelem 1000 N 6 Nepad 5 KernelV 7 STDKernelV 7
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 1.301 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 6
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=6.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 1000  NelemY: 1000.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 1000000 Elements. and 2002000edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 7.
+Found cached binary of [95669494d96a986c/parsedSource.occa] in [8f3f739d1103202d/binary]
+Found cached binary of [95669494d96a986c/parsedSource.occa] in [69fade304e088618/binary]
+Kernel Version STD: V 7.
+Found cached binary of [69f3f13631cbbbde/parsedSource.occa] in [3f90b11392010811/binary]
+Found cached binary of [69f3f13631cbbbde/parsedSource.occa] in [68a1aa62fec72df4/binary]
+rank: 0 GB allocated on device: 6.78837
+Entering Time Loop!
+Elapsed Time MemCpy: 0.0986720657348633
+Bandwidth MemCpy: 240.494602240986
+Elapsed Time STD: 0.106202049255371
+Bandwidth Standard Volume: 223.44295018396
+Elapsed Time FD : 23.882958984375
+Bandwidth FD Volume: 0.993599629624092
+Floating Point Operations FD: 31507
+flop_count_sp should be : 31458000000
+we managed 29.3431803584099 in time 23.882958984375 !
+Achieved GFLOPS/s : 7 6 1.228624157400560e+01
+MemoryBound : 7 6 2.973808254633734e+03
+SharedMemBound : 7 6 4.336609352112677e+03
+minBound : 7 6 2.973808254633734e+03
+Bytes ReadWrite: 2.548000000000000e+09. 
+time taken in seconds = 2.408839300000000e+01
+==6004== Profiling result:
+==6004== Metric result:
+Invocations                               Metric Name                            Metric Description         Min         Max         Avg
+Device "GeForce GTX 1080 (0)"
+    Kernel: VolumeKernelFluxDiff0
+         10                             flop_count_sp   Floating Point Operations(Single Precision)  3.1458e+10  3.1458e+10  3.1458e+10
+==6056== NVPROF is profiling process 6056, command: ./main CUDA Nelem 800 N 7 Nepad 1 KernelV 7 STDKernelV 7
+cat: write error: Broken pipe
+cat: write error: Broken pipe
+==6056== Profiling application: ./main CUDA Nelem 800 N 7 Nepad 1 KernelV 7 STDKernelV 7
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 1.841 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 7
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=7.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 800  NelemY: 800.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 640000 Elements. and 1281600edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 7.
+Found cached binary of [e7d02f37121934ff/parsedSource.occa] in [db5f2674b1f5f1a0/binary]
+Found cached binary of [e7d02f37121934ff/parsedSource.occa] in [b356dfde5d990116/binary]
+Kernel Version STD: V 7.
+Found cached binary of [b29b065da12caa3d/parsedSource.occa] in [d8e0149119219b35/binary]
+Found cached binary of [b29b065da12caa3d/parsedSource.occa] in [bc3d0b75c9f92ae7/binary]
+rank: 0 GB allocated on device: 5.5655
+Entering Time Loop!
+Elapsed Time MemCpy: 0.0824561614990234
+Bandwidth MemCpy: 240.56935734857
+Elapsed Time STD: 0.0817936019897461
+Bandwidth Standard Volume: 242.518061299425
+Elapsed Time FD : 23.6461484375
+Bandwidth FD Volume: 0.838886122773034
+Floating Point Operations FD: 46912
+flop_count_sp should be : 29982720000
+we managed 27.9617309570312 in time 23.6461484375 !
+Achieved GFLOPS/s : 7 7 1.182506784601219e+01
+MemoryBound : 7 7 3.391102671855810e+03
+SharedMemBound : 7 7 4.387444800000000e+03
+minBound : 7 7 3.391102671855810e+03
+Bytes ReadWrite: 2.129920000000000e+09. 
+time taken in seconds = 2.381097800000000e+01
+==6056== Profiling result:
+==6056== Metric result:
+Invocations                               Metric Name                            Metric Description         Min         Max         Avg
+Device "GeForce GTX 1080 (0)"
+    Kernel: VolumeKernelFluxDiff0
+         10                             flop_count_sp   Floating Point Operations(Single Precision)  2.9983e+10  2.9983e+10  2.9983e+10
+==6114== NVPROF is profiling process 6114, command: ./main CUDA Nelem 800 N 8 Nepad 3 KernelV 7 STDKernelV 7
+cat: write error: Broken pipe
+cat: write error: Broken pipe
+==6114== Profiling application: ./main CUDA Nelem 800 N 8 Nepad 3 KernelV 7 STDKernelV 7
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 3.251 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 8
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=8.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 800  NelemY: 800.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 640000 Elements. and 1281600edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 7.
+Found cached binary of [cf5db866edfa49ee/parsedSource.occa] in [93d2ef0fe85e8dbb/binary]
+Found cached binary of [cf5db866edfa49ee/parsedSource.occa] in [a7f13c3490b5b16c/binary]
+Kernel Version STD: V 7.
+Found cached binary of [3250cc8c78e6d2cc/parsedSource.occa] in [449fa23b40243df9/binary]
+Found cached binary of [3250cc8c78e6d2cc/parsedSource.occa] in [ea3fa8b07e585046/binary]
+rank: 0 GB allocated on device: 6.93889
+Entering Time Loop!
+Elapsed Time MemCpy: 0.104363037109375
+Bandwidth MemCpy: 240.559081785665
+Elapsed Time STD: 0.112223937988281
+Bandwidth Standard Volume: 223.708745472968
+Elapsed Time FD : 33.70285546875
+Bandwidth FD Volume: 0.744906508075343
+Floating Point Operations FD: 66663
+flop_count_sp should be : 42612480000
+we managed 39.7342443466187 in time 33.70285546875 !
+Achieved GFLOPS/s : 7 8 1.178957800280783e+01
+MemoryBound : 7 8 3.807310082876967e+03
+SharedMemBound : 7 8 4.427998921348315e+03
+minBound : 7 8 3.807310082876967e+03
+Bytes ReadWrite: 2.695680000000000e+09. 
+time taken in seconds = 3.392025400000000e+01
+==6114== Profiling result:
+==6114== Metric result:
+Invocations                               Metric Name                            Metric Description         Min         Max         Avg
+Device "GeForce GTX 1080 (0)"
+    Kernel: VolumeKernelFluxDiff0
+         10                             flop_count_sp   Floating Point Operations(Single Precision)  4.2612e+10  4.2612e+10  4.2612e+10
+==6170== NVPROF is profiling process 6170, command: ./main CUDA Nelem 700 N 9 Nepad 4 KernelV 7 STDKernelV 7
+cat: write error: Broken pipe
+cat: write error: Broken pipe
+==6170== Profiling application: ./main CUDA Nelem 700 N 9 Nepad 4 KernelV 7 STDKernelV 7
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 3.751 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 9
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=9.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 700  NelemY: 700.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 490000 Elements. and 981400edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 7.
+Found cached binary of [9c2cd82fe0142cf1/parsedSource.occa] in [9c28a20d8eb0b0f7/binary]
+Found cached binary of [9c2cd82fe0142cf1/parsedSource.occa] in [4f1f321932d72a43/binary]
+Kernel Version STD: V 7.
+Found cached binary of [1b56f249dd772e43/parsedSource.occa] in [dbd036363e26276a/binary]
+Found cached binary of [1b56f249dd772e43/parsedSource.occa] in [7a2bd28c83c5c862/binary]
+rank: 0 GB allocated on device: 6.48102
+Entering Time Loop!
+Elapsed Time MemCpy: 0.0986600952148438
+Bandwidth MemCpy: 240.523781672087
+Elapsed Time STD: 0.100882270812988
+Bandwidth Standard Volume: 235.22566462835
+Elapsed Time FD : 32.042419921875
+Bandwidth FD Volume: 0.740583865359124
+Floating Point Operations FD: 91300
+flop_count_sp should be : 44688000000
+we managed 41.6645780205727 in time 32.042419921875 !
+Achieved GFLOPS/s : 7 9 1.300294363601693e+01
+MemoryBound : 7 9 4.223042551281066e+03
+SharedMemBound : 7 9 4.461104326530613e+03
+minBound : 7 9 4.223042551281066e+03
+Bytes ReadWrite: 2.548000000000000e+09. 
+time taken in seconds = 3.224275600000000e+01
+==6170== Profiling result:
+==6170== Metric result:
+Invocations                               Metric Name                            Metric Description         Min         Max         Avg
+Device "GeForce GTX 1080 (0)"
+    Kernel: VolumeKernelFluxDiff0
+         10                             flop_count_sp   Floating Point Operations(Single Precision)  4.4688e+10  4.4688e+10  4.4688e+10
+==6222== NVPROF is profiling process 6222, command: ./main CUDA Nelem 650 N 10 Nepad 1 KernelV 7 STDKernelV 7
+cat: write error: Broken pipe
+cat: write error: Broken pipe
+==6222== Profiling application: ./main CUDA Nelem 650 N 10 Nepad 1 KernelV 7 STDKernelV 7
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 3.751 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 10
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=10.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 650  NelemY: 650.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 422500 Elements. and 846300edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 7.
+Found cached binary of [9df22b4b1588945b/parsedSource.occa] in [82dc64bfdfb05445/binary]
+Found cached binary of [9df22b4b1588945b/parsedSource.occa] in [c44f99ef26e6a6f3/binary]
+Kernel Version STD: V 7.
+Found cached binary of [e8f39db11a83fd29/parsedSource.occa] in [40ea35256a4da6d3/binary]
+Found cached binary of [e8f39db11a83fd29/parsedSource.occa] in [7fddbbcd2e40d24b/binary]
+rank: 0 GB allocated on device: 6.69641
+Entering Time Loop!
+Elapsed Time MemCpy: 0.102910659790039
+Bandwidth MemCpy: 240.577603693508
+Elapsed Time STD: 0.110977600097656
+Bandwidth Standard Volume: 223.090064166276
+Elapsed Time FD : 44.04765234375
+Bandwidth FD Volume: 0.562073086973918
+Floating Point Operations FD: 121363
+flop_count_sp should be : 51224745000
+we managed 47.7543729357421 in time 44.04765234375 !
+Achieved GFLOPS/s : 7 10 1.084152511990076e+01
+MemoryBound : 7 10 4.640371855857481e+03
+SharedMemBound : 7 10 4.488640598130841e+03
+minBound : 7 10 4.488640598130841e+03
+Bytes ReadWrite: 2.658370000000000e+09. 
+time taken in seconds = 4.426263100000000e+01
+==6222== Profiling result:
+==6222== Metric result:
+Invocations                               Metric Name                            Metric Description         Min         Max         Avg
+Device "GeForce GTX 1080 (0)"
+    Kernel: VolumeKernelFluxDiff0
+         10                             flop_count_sp   Floating Point Operations(Single Precision)  5.1225e+10  5.1225e+10  5.1225e+10
+==6275== NVPROF is profiling process 6275, command: ./main CUDA Nelem 600 N 11 Nepad 2 KernelV 7 STDKernelV 7
+cat: write error: Broken pipe
+cat: write error: Broken pipe
+==6275== Profiling application: ./main CUDA Nelem 600 N 11 Nepad 2 KernelV 7 STDKernelV 7
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 1.3 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 11
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=11.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 600  NelemY: 600.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 360000 Elements. and 721200edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 7.
+Found cached binary of [fa8d4ddf85940c45/parsedSource.occa] in [2bab4d90de27e0f8/binary]
+Found cached binary of [fa8d4ddf85940c45/parsedSource.occa] in [c29be1e23e9736ac/binary]
+Kernel Version STD: V 7.
+Found cached binary of [2825f25976161797/parsedSource.occa] in [6c87cffa9a2c61be/binary]
+Found cached binary of [2825f25976161797/parsedSource.occa] in [a4bce3c88b21f2a4/binary]
+rank: 0 GB allocated on device: 6.73592
+Entering Time Loop!
+Elapsed Time MemCpy: 0.104378051757813
+Bandwidth MemCpy: 240.524477671288
+Elapsed Time STD: 0.103482559204102
+Bandwidth Standard Volume: 242.605870713714
+Elapsed Time FD : 43.35082421875
+Bandwidth FD Volume: 0.579123392273035
+Floating Point Operations FD: 157392
+flop_count_sp should be : 56609280000
+we managed 52.7697801589966 in time 43.35082421875 !
+Achieved GFLOPS/s : 7 11 1.217272822604667e+01
+MemoryBound : 7 11 5.055639501821498e+03
+SharedMemBound : 7 11 4.511904000000000e+03
+minBound : 7 11 4.511904000000000e+03
+Bytes ReadWrite: 2.695680000000000e+09. 
+time taken in seconds = 4.355979000000000e+01
+==6275== Profiling result:
+==6275== Metric result:
+Invocations                               Metric Name                            Metric Description         Min         Max         Avg
+Device "GeForce GTX 1080 (0)"
+    Kernel: VolumeKernelFluxDiff0
+         10                             flop_count_sp   Floating Point Operations(Single Precision)  5.6609e+10  5.6609e+10  5.6609e+10
+==6331== NVPROF is profiling process 6331, command: ./main CUDA Nelem 550 N 12 Nepad 2 KernelV 7 STDKernelV 7
+cat: write error: Broken pipe
+cat: write error: Broken pipe
+==6331== Profiling application: ./main CUDA Nelem 550 N 12 Nepad 2 KernelV 7 STDKernelV 7
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 1.255 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 12
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=12.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 550  NelemY: 550.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 302500 Elements. and 606100edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 7.
+Found cached binary of [ba6943b55ecc9d59/parsedSource.occa] in [f42e1a38359e06e8/binary]
+Found cached binary of [ba6943b55ecc9d59/parsedSource.occa] in [b81ab68488849418/binary]
+Kernel Version STD: V 7.
+Found cached binary of [9e344d8756d6003b/parsedSource.occa] in [7f2fe34b91d6fc07/binary]
+Found cached binary of [9e344d8756d6003b/parsedSource.occa] in [59d7d2e99b2ad3b3/binary]
+rank: 0 GB allocated on device: 6.59776
+Entering Time Loop!
+Elapsed Time MemCpy: 0.102928382873535
+Bandwidth MemCpy: 240.536178997632
+Elapsed Time STD: 0.11025740814209
+Bandwidth Standard Volume: 224.547269376218
+Elapsed Time FD : 47.743828125
+Bandwidth FD Volume: 0.518559170873052
+Floating Point Operations FD: 199927
+flop_count_sp should be : 60426795000
+we managed 56.3244498334825 in time 47.743828125 !
+Achieved GFLOPS/s : 7 12 1.179722113736193e+01
+MemoryBound : 7 12 5.472198072196137e+03
+SharedMemBound : 7 12 4.531817472000000e+03
+minBound : 7 12 4.531817472000000e+03
+Bytes ReadWrite: 2.658370000000000e+09. 
+time taken in seconds = 4.795824800000000e+01
+==6331== Profiling result:
+==6331== Metric result:
+Invocations                               Metric Name                            Metric Description         Min         Max         Avg
+Device "GeForce GTX 1080 (0)"
+    Kernel: VolumeKernelFluxDiff0
+         10                             flop_count_sp   Floating Point Operations(Single Precision)  6.0427e+10  6.0427e+10  6.0427e+10
+==6381== NVPROF is profiling process 6381, command: ./main CUDA Nelem 550 N 13 Nepad 2 KernelV 7 STDKernelV 7
+cat: write error: Broken pipe
+cat: write error: Broken pipe
+==6381== Profiling application: ./main CUDA Nelem 550 N 13 Nepad 2 KernelV 7 STDKernelV 7
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 1.794 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 13
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=13.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 550  NelemY: 550.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 302500 Elements. and 606100edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 7.
+Found cached binary of [99feef134ec2213d/parsedSource.occa] in [cf06a4bfb2510c4f/binary]
+Found cached binary of [99feef134ec2213d/parsedSource.occa] in [643b36d3f549d767/binary]
+Kernel Version STD: V 7.
+Found cached binary of [360e99d5b086409f/parsedSource.occa] in [678228e867b31d98/binary]
+Found cached binary of [360e99d5b086409f/parsedSource.occa] in [34e65fc29173bb44/binary]
+rank: 0 GB allocated on device: 7.60753
+Entering Time Loop!
+Elapsed Time MemCpy: 0.119330589294434
+Bandwidth MemCpy: 240.62078468923
+Elapsed Time STD: 0.128096603393555
+Bandwidth Standard Volume: 224.154421528554
+Elapsed Time FD : 57.2251875
+Bandwidth FD Volume: 0.501761921417119
+Floating Point Operations FD: 249508
+flop_count_sp should be : 75416880000
+we managed 70.2926609665155 in time 57.2251875 !
+Achieved GFLOPS/s : 7 13 1.228351780699985e+01
+MemoryBound : 7 13 5.890581902103661e+03
+SharedMemBound : 7 13 4.549056000000000e+03
+minBound : 7 13 4.549056000000000e+03
+Bytes ReadWrite: 3.083080000000000e+09. 
+time taken in seconds = 5.747408400000000e+01
+==6381== Profiling result:
+==6381== Metric result:
+Invocations                               Metric Name                            Metric Description         Min         Max         Avg
+Device "GeForce GTX 1080 (0)"
+    Kernel: VolumeKernelFluxDiff0
+         10                             flop_count_sp   Floating Point Operations(Single Precision)  7.5417e+10  7.5417e+10  7.5417e+10
+==6437== NVPROF is profiling process 6437, command: ./main CUDA Nelem 500 N 14 Nepad 2 KernelV 7 STDKernelV 7
+cat: write error: Broken pipe
+cat: write error: Broken pipe
+==6437== Profiling application: ./main CUDA Nelem 500 N 14 Nepad 2 KernelV 7 STDKernelV 7
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 2.802 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 14
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=14.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 500  NelemY: 500.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 250000 Elements. and 501000edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 7.
+Found cached binary of [cbb651e6ee05ff76/parsedSource.occa] in [57f522f840b6c022/binary]
+Found cached binary of [cbb651e6ee05ff76/parsedSource.occa] in [d93319e9ad1ad121/binary]
+Kernel Version STD: V 7.
+Found cached binary of [577b937c1f037714/parsedSource.occa] in [3e3704cd31010ea9/binary]
+Found cached binary of [577b937c1f037714/parsedSource.occa] in [2165c9b2d231066e/binary]
+rank: 0 GB allocated on device: 7.18142
+Entering Time Loop!
+Elapsed Time MemCpy: 0.113216003417969
+Bandwidth MemCpy: 240.612497218562
+Elapsed Time STD: 0.121217086791992
+Bandwidth Standard Volume: 224.73057246664
+Elapsed Time FD : 61.3902890625
+Bandwidth FD Volume: 0.443737694080071
+Floating Point Operations FD: 306675
+flop_count_sp should be : 76612500000
+we managed 71.4033376425505 in time 61.3902890625 !
+Achieved GFLOPS/s : 7 14 1.163104763521416e+01
+MemoryBound : 7 14 6.306823725171162e+03
+SharedMemBound : 7 14 4.564124643356644e+03
+minBound : 7 14 4.564124643356644e+03
+Bytes ReadWrite: 2.925000000000000e+09. 
+time taken in seconds = 6.162611900000000e+01
+==6437== Profiling result:
+==6437== Metric result:
+Invocations                               Metric Name                            Metric Description         Min         Max         Avg
+Device "GeForce GTX 1080 (0)"
+    Kernel: VolumeKernelFluxDiff0
+         10                             flop_count_sp   Floating Point Operations(Single Precision)  7.6612e+10  7.6612e+10  7.6612e+10
+==6490== NVPROF is profiling process 6490, command: ./main CUDA Nelem 475 N 15 Nepad 2 KernelV 7 STDKernelV 7
+cat: write error: Broken pipe
+cat: write error: Broken pipe
+==6490== Profiling application: ./main CUDA Nelem 475 N 15 Nepad 2 KernelV 7 STDKernelV 7
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 2.632 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 15
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=15.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 475  NelemY: 475.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 225625 Elements. and 452200edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 7.
+Found cached binary of [827c833023604dc4/parsedSource.occa] in [17a925f4bcfa9654/binary]
+Found cached binary of [827c833023604dc4/parsedSource.occa] in [3654e12baa828b55/binary]
+Kernel Version STD: V 7.
+Found cached binary of [7769ef92c9b2bbc6/parsedSource.occa] in [df68645a68a5eae2/binary]
+Found cached binary of [7769ef92c9b2bbc6/parsedSource.occa] in [d87b6bcd3c72ef93/binary]
+rank: 0 GB allocated on device: 7.34203
+Entering Time Loop!
+Elapsed Time MemCpy: 0.116265533447266
+Bandwidth MemCpy: 240.591162003985
+Elapsed Time STD: 0.115124099731445
+Bandwidth Standard Volume: 242.976577956686
+Elapsed Time FD : 64.08930859375
+Bandwidth FD Volume: 0.436460626692089
+Floating Point Operations FD: 371968
+flop_count_sp should be : 83867520000
+we managed 78.1615078449249 in time 64.08930859375 !
+Achieved GFLOPS/s : 7 15 1.219571712660780e+01
+MemoryBound : 7 15 6.722672276765196e+03
+SharedMemBound : 7 15 4.577408842105263e+03
+minBound : 7 15 4.577408842105263e+03
+Bytes ReadWrite: 3.003520000000000e+09. 
+time taken in seconds = 6.432018200000000e+01
+==6490== Profiling result:
+==6490== Metric result:
+Invocations                               Metric Name                            Metric Description         Min         Max         Avg
+Device "GeForce GTX 1080 (0)"
+    Kernel: VolumeKernelFluxDiff0
+         10                             flop_count_sp   Floating Point Operations(Single Precision)  8.3868e+10  8.3868e+10  8.3868e+10

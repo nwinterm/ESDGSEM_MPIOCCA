@@ -1,0 +1,1530 @@
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 1.635 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 1
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=1.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 3000  NelemY: 3000.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 9000000 Elements. and 18006000edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 10.
+Compiling [VolumeKernelFluxDiff]
+mpiCC -x c++ -fPIC -shared  /home/nwinterm/._occa/kernels/32e1a5c981ce158b/source.occa -o /home/nwinterm/._occa/kernels/32e1a5c981ce158b/binary -I/opt/occa/occa//include -L/opt/occa/occa//lib -locca
+
+Compiling [VolumeKernelFluxDiff0]
+/usr/local/cuda/bin/nvcc -o /home/nwinterm/._occa/kernels/326aa15533212de9/binary -ptx -I. -I/opt/occa/occa/include -L  /usr/lib64/nvidia  --ftz=true --prec-div=false --prec-sqrt=false --use_fast_math --fmad=true -arch=sm_61  -x cu /home/nwinterm/._occa/kernels/326aa15533212de9/source.occa
+Kernel Version STD: V 7.
+Found cached binary of [4e5b5b3d3504bb7d/parsedSource.occa] in [841893041629baac/binary]
+Found cached binary of [4e5b5b3d3504bb7d/parsedSource.occa] in [7b4886228f3daf2c/binary]
+rank: 0 GB allocated on device: 7.44402
+Entering Time Loop!
+Elapsed Time MemCpy: 0.0722116470336914
+Bandwidth MemCpy: 259.237959096348
+Elapsed Time STD: 0.0764839706420899
+Bandwidth Standard Volume: 244.757167323348
+Achieved GFLOPS/sSD : 7 1 3.059464591541846e+02
+MemoryBoundSD : 7 1 3.240474488704347e+02
+SharedMemBoundSD : 7 1 2.781222366710013e+03
+minBoundSD : 7 1 3.240474488704347e+02
+Elapsed Time FD : 7.591792297363281e-02
+Bandwidth FD Volume: 2.465820884812889e+02
+Floating Point Operations FD: 7.720000000000000e+02
+flop_count_sp should be : 6.912000000000000e+09
+we managed 6.948000000000000e+00 in time 7.591792297363281e-02 !
+Achieved GFLOPS/s : 10 1 9.151989053247838e+02
+MemoryBound : 10 1 9.621716558768294e+02
+SharedMemBound : 10 1 4.507077359829666e+03
+minBound : 10 1 9.621716558768294e+02
+Bytes ReadWrite: 1.872000000000000e+09. 
+time taken in seconds = 2.246930000000000e-01
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 3.079 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 2
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=2.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 2000  NelemY: 2000.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 4000000 Elements. and 8004000edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 10.
+Compiling [VolumeKernelFluxDiff]
+mpiCC -x c++ -fPIC -shared  /home/nwinterm/._occa/kernels/d32741286848822a/source.occa -o /home/nwinterm/._occa/kernels/d32741286848822a/binary -I/opt/occa/occa//include -L/opt/occa/occa//lib -locca
+
+Compiling [VolumeKernelFluxDiff0]
+/usr/local/cuda/bin/nvcc -o /home/nwinterm/._occa/kernels/72413f7240621a24/binary -ptx -I. -I/opt/occa/occa/include -L  /usr/lib64/nvidia  --ftz=true --prec-div=false --prec-sqrt=false --use_fast_math --fmad=true -arch=sm_61  -x cu /home/nwinterm/._occa/kernels/72413f7240621a24/source.occa
+Kernel Version STD: V 7.
+Found cached binary of [d90494dd4aaa17bd/parsedSource.occa] in [51b1f9dfdba4772b/binary]
+Found cached binary of [d90494dd4aaa17bd/parsedSource.occa] in [b2b0c943115d2069/binary]
+rank: 0 GB allocated on device: 6.16992
+Entering Time Loop!
+Elapsed Time MemCpy: 0.072159553527832
+Bandwidth MemCpy: 259.425108454692
+Elapsed Time STD: 0.0752884826660156
+Bandwidth Standard Volume: 248.6436083862
+Achieved GFLOPS/sSD : 7 2 3.681838047257193e+02
+MemoryBoundSD : 7 2 3.841487182886790e+02
+SharedMemBoundSD : 7 2 2.469403508771930e+03
+minBoundSD : 7 2 3.841487182886790e+02
+Elapsed Time FD : 7.480108642578125e-02
+Bandwidth FD Volume: 2.502637447461979e+02
+Floating Point Operations FD: 2.547000000000000e+03
+flop_count_sp should be : 1.015200000000000e+10
+we managed 1.018800000000000e+01 in time 7.480108642578125e-02 !
+Achieved GFLOPS/s : 10 2 1.362012303137961e+03
+MemoryBound : 10 2 1.411871263320729e+03
+SharedMemBound : 10 2 5.011750269106567e+03
+minBound : 10 2 1.411871263320729e+03
+Bytes ReadWrite: 1.872000000000000e+09. 
+time taken in seconds = 2.223220000000000e-01
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 1.847 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 3
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=3.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 1750  NelemY: 1750.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 3062500 Elements. and 6128500edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 10.
+Compiling [VolumeKernelFluxDiff]
+mpiCC -x c++ -fPIC -shared  /home/nwinterm/._occa/kernels/4d865790be38d6b0/source.occa -o /home/nwinterm/._occa/kernels/4d865790be38d6b0/binary -I/opt/occa/occa//include -L/opt/occa/occa//lib -locca
+
+Compiling [VolumeKernelFluxDiff0]
+/usr/local/cuda/bin/nvcc -o /home/nwinterm/._occa/kernels/f4dd96c8eef7d2f8/binary -ptx -I. -I/opt/occa/occa/include -L  /usr/lib64/nvidia  --ftz=true --prec-div=false --prec-sqrt=false --use_fast_math --fmad=true -arch=sm_61  -x cu /home/nwinterm/._occa/kernels/f4dd96c8eef7d2f8/source.occa
+Kernel Version STD: V 7.
+Found cached binary of [8472915b5ed1726b/parsedSource.occa] in [bac4bc4dfcca01e3/binary]
+Found cached binary of [8472915b5ed1726b/parsedSource.occa] in [944723a3396216af/binary]
+rank: 0 GB allocated on device: 7.64477
+Entering Time Loop!
+Elapsed Time MemCpy: 0.0982389450073242
+Bandwidth MemCpy: 259.367606177981
+Elapsed Time STD: 0.0980197143554687
+Bandwidth Standard Volume: 259.947707127535
+Achieved GFLOPS/sSD : 7 3 4.449104987375113e+02
+MemoryBoundSD : 7 3 4.439176336507751e+02
+SharedMemBoundSD : 7 3 2.273645962732919e+03
+minBoundSD : 7 3 4.439176336507751e+02
+Elapsed Time FD : 9.789389038085938e-02
+Bandwidth FD Volume: 2.602818204575304e+02
+Floating Point Operations FD: 5.968000000000000e+03
+flop_count_sp should be : 1.822800000000000e+10
+we managed 1.827700000000000e+01 in time 9.789389038085938e-02 !
+Achieved GFLOPS/s : 10 3 1.867021519820362e+03
+MemoryBound : 10 3 1.860463790468979e+03
+SharedMemBound : 10 3 5.308474048442907e+03
+minBound : 10 3 1.860463790468979e+03
+Bytes ReadWrite: 2.548000000000000e+09. 
+time taken in seconds = 2.942340000000000e-01
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 1.411 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 4
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=4.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 1300  NelemY: 1300.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 1690000 Elements. and 3382600edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 10.
+Compiling [VolumeKernelFluxDiff]
+mpiCC -x c++ -fPIC -shared  /home/nwinterm/._occa/kernels/59970b5cfabcec30/source.occa -o /home/nwinterm/._occa/kernels/59970b5cfabcec30/binary -I/opt/occa/occa//include -L/opt/occa/occa//lib -locca
+
+Compiling [VolumeKernelFluxDiff0]
+/usr/local/cuda/bin/nvcc -o /home/nwinterm/._occa/kernels/70c7cfcd2a898b3d/binary -ptx -I. -I/opt/occa/occa/include -L  /usr/lib64/nvidia  --ftz=true --prec-div=false --prec-sqrt=false --use_fast_math --fmad=true -arch=sm_61  -x cu /home/nwinterm/._occa/kernels/70c7cfcd2a898b3d/source.occa
+Kernel Version STD: V 7.
+Found cached binary of [b187accac7497636/parsedSource.occa] in [fdfd602355b7a609/binary]
+Found cached binary of [b187accac7497636/parsedSource.occa] in [4911f9b68d955fb4/binary]
+rank: 0 GB allocated on device: 6.23364
+Entering Time Loop!
+Elapsed Time MemCpy: 0.084672737121582
+Bandwidth MemCpy: 259.469585451728
+Elapsed Time STD: 0.0876852188110352
+Bandwidth Standard Volume: 250.555342142056
+Achieved GFLOPS/sSD : 7 4 4.866555683913019e+02
+MemoryBoundSD : 7 4 5.039697717427786e+02
+SharedMemBoundSD : 7 4 2.160795838751626e+03
+minBoundSD : 7 4 5.039697717427786e+02
+Elapsed Time FD : 8.709164428710937e-02
+Bandwidth FD Volume: 2.522630061682258e+02
+Floating Point Operations FD: 1.157500000000000e+04
+flop_count_sp should be : 1.951950000000000e+10
+we managed 1.956175000000000e+01 in time 8.709164428710937e-02 !
+Achieved GFLOPS/s : 10 4 2.246110997228626e+03
+MemoryBound : 10 4 2.310277270464421e+03
+SharedMemBound : 10 4 5.531790849673203e+03
+minBound : 10 4 2.310277270464421e+03
+Bytes ReadWrite: 2.197000000000000e+09. 
+time taken in seconds = 2.595240000000000e-01
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 1.556 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 5
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=5.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 1100  NelemY: 1100.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 1210000 Elements. and 2422200edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 10.
+Compiling [VolumeKernelFluxDiff]
+mpiCC -x c++ -fPIC -shared  /home/nwinterm/._occa/kernels/d8125c613cf8bfe7/source.occa -o /home/nwinterm/._occa/kernels/d8125c613cf8bfe7/binary -I/opt/occa/occa//include -L/opt/occa/occa//lib -locca
+
+Compiling [VolumeKernelFluxDiff0]
+/usr/local/cuda/bin/nvcc -o /home/nwinterm/._occa/kernels/4b79ef4e21bb6dcc/binary -ptx -I. -I/opt/occa/occa/include -L  /usr/lib64/nvidia  --ftz=true --prec-div=false --prec-sqrt=false --use_fast_math --fmad=true -arch=sm_61  -x cu /home/nwinterm/._occa/kernels/4b79ef4e21bb6dcc/source.occa
+Kernel Version STD: V 7.
+Found cached binary of [708ce33ce6d77778/parsedSource.occa] in [13f69f6b2e02caf1/binary]
+Found cached binary of [708ce33ce6d77778/parsedSource.occa] in [6d924eb0d38415a2/binary]
+rank: 0 GB allocated on device: 6.1943
+Entering Time Loop!
+Elapsed Time MemCpy: 0.0873113632202148
+Bandwidth MemCpy: 259.430149348025
+Elapsed Time STD: 0.0901938552856445
+Bandwidth Standard Volume: 251.139059620675
+Achieved GFLOPS/sSD : 7 5 5.457444949449280e+02
+MemoryBoundSD : 7 5 5.637616706985929e+02
+SharedMemBoundSD : 7 5 2.065640000000000e+03
+minBoundSD : 7 5 5.637616706985929e+02
+Elapsed Time FD : 9.021024322509766e-02
+Bandwidth FD Volume: 2.510934367340021e+02
+Floating Point Operations FD: 1.990800000000000e+04
+flop_count_sp should be : 2.404512000000000e+10
+we managed 2.408868000000000e+01 in time 9.021024322509766e-02 !
+Achieved GFLOPS/s : 10 5 2.670282125267368e+03
+MemoryBound : 10 5 2.758939857489574e+03
+SharedMemBound : 10 5 5.672042394014962e+03
+minBound : 10 5 2.758939857489574e+03
+Bytes ReadWrite: 2.265120000000000e+09. 
+time taken in seconds = 2.677990000000000e-01
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 3 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 6
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=6.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 1000  NelemY: 1000.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 1000000 Elements. and 2002000edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 10.
+Compiling [VolumeKernelFluxDiff]
+mpiCC -x c++ -fPIC -shared  /home/nwinterm/._occa/kernels/ce6cde9ece4a2f0a/source.occa -o /home/nwinterm/._occa/kernels/ce6cde9ece4a2f0a/binary -I/opt/occa/occa//include -L/opt/occa/occa//lib -locca
+
+Compiling [VolumeKernelFluxDiff0]
+/usr/local/cuda/bin/nvcc -o /home/nwinterm/._occa/kernels/940850bdab19e32b/binary -ptx -I. -I/opt/occa/occa/include -L  /usr/lib64/nvidia  --ftz=true --prec-div=false --prec-sqrt=false --use_fast_math --fmad=true -arch=sm_61  -x cu /home/nwinterm/._occa/kernels/940850bdab19e32b/source.occa
+Kernel Version STD: V 7.
+Found cached binary of [69f3f13631cbbbde/parsedSource.occa] in [3f90b11392010811/binary]
+Found cached binary of [69f3f13631cbbbde/parsedSource.occa] in [68a1aa62fec72df4/binary]
+rank: 0 GB allocated on device: 6.78837
+Entering Time Loop!
+Elapsed Time MemCpy: 0.0981828460693359
+Bandwidth MemCpy: 259.515801589274
+Elapsed Time STD: 0.106237373352051
+Bandwidth Standard Volume: 239.840267092862
+Achieved GFLOPS/sSD : 7 6 5.765391035886115e+02
+MemoryBoundSD : 7 6 6.238360615126776e+02
+SharedMemBoundSD : 7 6 2.002044392523364e+03
+minBoundSD : 7 6 6.238360615126776e+02
+Elapsed Time FD : 1.056924819946289e-01
+Bandwidth FD Volume: 2.410767494446279e+02
+Floating Point Operations FD: 3.150700000000000e+04
+flop_count_sp should be : 3.145800000000000e+10
+we managed 3.150700000000000e+01 in time 1.056924819946289e-01 !
+Achieved GFLOPS/s : 10 6 2.981006728709533e+03
+MemoryBound : 10 6 3.209012700421214e+03
+SharedMemBound : 10 6 5.789533712784589e+03
+minBound : 10 6 3.209012700421214e+03
+Bytes ReadWrite: 2.548000000000000e+09. 
+time taken in seconds = 3.101810000000000e-01
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 3.147 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 7
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=7.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 800  NelemY: 800.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 640000 Elements. and 1281600edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 10.
+Compiling [VolumeKernelFluxDiff]
+mpiCC -x c++ -fPIC -shared  /home/nwinterm/._occa/kernels/e6f7c7531c1fbfdf/source.occa -o /home/nwinterm/._occa/kernels/e6f7c7531c1fbfdf/binary -I/opt/occa/occa//include -L/opt/occa/occa//lib -locca
+
+Compiling [VolumeKernelFluxDiff0]
+/usr/local/cuda/bin/nvcc -o /home/nwinterm/._occa/kernels/d52b53178c4e73a5/binary -ptx -I. -I/opt/occa/occa/include -L  /usr/lib64/nvidia  --ftz=true --prec-div=false --prec-sqrt=false --use_fast_math --fmad=true -arch=sm_61  -x cu /home/nwinterm/._occa/kernels/d52b53178c4e73a5/source.occa
+Kernel Version STD: V 7.
+Found cached binary of [b29b065da12caa3d/parsedSource.occa] in [d8e0149119219b35/binary]
+Found cached binary of [b29b065da12caa3d/parsedSource.occa] in [bc3d0b75c9f92ae7/binary]
+rank: 0 GB allocated on device: 5.5655
+Entering Time Loop!
+Elapsed Time MemCpy: 0.0820786895751953
+Bandwidth MemCpy: 259.497320318291
+Elapsed Time STD: 0.0818330917358398
+Bandwidth Standard Volume: 260.276124831683
+Achieved GFLOPS/sSD : 7 7 6.857274827296258e+02
+MemoryBoundSD : 7 7 6.836756323770348e+02
+SharedMemBoundSD : 7 7 1.929729452054795e+03
+minBoundSD : 7 7 6.836756323770348e+02
+Elapsed Time FD : 8.151644897460937e-02
+Bandwidth FD Volume: 2.612871422629590e+02
+Floating Point Operations FD: 4.691200000000000e+04
+flop_count_sp should be : 2.998272000000000e+10
+we managed 3.002368000000000e+01 in time 8.151644897460937e-02 !
+Achieved GFLOPS/s : 10 7 3.683143755360557e+03
+MemoryBound : 10 7 3.657914149871288e+03
+SharedMemBound : 10 7 5.842691860465116e+03
+minBound : 10 7 3.657914149871288e+03
+Bytes ReadWrite: 2.129920000000000e+09. 
+time taken in seconds = 2.455100000000000e-01
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 1.896 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 8
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=8.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 800  NelemY: 800.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 640000 Elements. and 1281600edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 10.
+Compiling [VolumeKernelFluxDiff]
+mpiCC -x c++ -fPIC -shared  /home/nwinterm/._occa/kernels/37fe6f24417e7adc/source.occa -o /home/nwinterm/._occa/kernels/37fe6f24417e7adc/binary -I/opt/occa/occa//include -L/opt/occa/occa//lib -locca
+
+Compiling [VolumeKernelFluxDiff0]
+/usr/local/cuda/bin/nvcc -o /home/nwinterm/._occa/kernels/86874aa18b5f466f/binary -ptx -I. -I/opt/occa/occa/include -L  /usr/lib64/nvidia  --ftz=true --prec-div=false --prec-sqrt=false --use_fast_math --fmad=true -arch=sm_61  -x cu /home/nwinterm/._occa/kernels/86874aa18b5f466f/source.occa
+Kernel Version STD: V 7.
+Found cached binary of [3250cc8c78e6d2cc/parsedSource.occa] in [449fa23b40243df9/binary]
+Found cached binary of [3250cc8c78e6d2cc/parsedSource.occa] in [ea3fa8b07e585046/binary]
+rank: 0 GB allocated on device: 6.93889
+Entering Time Loop!
+Elapsed Time MemCpy: 0.103911743164063
+Bandwidth MemCpy: 259.420150015565
+Elapsed Time STD: 0.112325378417969
+Bandwidth Standard Volume: 239.988508204195
+Achieved GFLOPS/sSD : 7 8 6.876593792774049e+02
+MemoryBoundSD : 7 8 7.433385067753702e+02
+SharedMemBoundSD : 7 8 1.907169087136929e+03
+minBoundSD : 7 8 7.433385067753702e+02
+Elapsed Time FD : 1.120856628417969e-01
+Bandwidth FD Volume: 2.405017672781944e+02
+Floating Point Operations FD: 6.666300000000000e+04
+flop_count_sp should be : 4.261248000000000e+10
+we managed 4.266432000000000e+01 in time 1.120856628417969e-01 !
+Achieved GFLOPS/s : 10 8 3.806402970576039e+03
+MemoryBound : 10 8 4.105822758900199e+03
+SharedMemBound : 10 8 5.945548594847775e+03
+minBound : 10 8 4.105822758900199e+03
+Bytes ReadWrite: 2.695680000000000e+09. 
+time taken in seconds = 3.283970000000000e-01
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 1.426 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 9
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=9.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 700  NelemY: 700.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 490000 Elements. and 981400edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 10.
+Compiling [VolumeKernelFluxDiff]
+mpiCC -x c++ -fPIC -shared  /home/nwinterm/._occa/kernels/f883ed56f65b0148/source.occa -o /home/nwinterm/._occa/kernels/f883ed56f65b0148/binary -I/opt/occa/occa//include -L/opt/occa/occa//lib -locca
+
+Compiling [VolumeKernelFluxDiff0]
+/usr/local/cuda/bin/nvcc -o /home/nwinterm/._occa/kernels/9e45c6ecd300da98/binary -ptx -I. -I/opt/occa/occa/include -L  /usr/lib64/nvidia  --ftz=true --prec-div=false --prec-sqrt=false --use_fast_math --fmad=true -arch=sm_61  -x cu /home/nwinterm/._occa/kernels/9e45c6ecd300da98/source.occa
+Kernel Version STD: V 7.
+Found cached binary of [1b56f249dd772e43/parsedSource.occa] in [dbd036363e26276a/binary]
+Found cached binary of [1b56f249dd772e43/parsedSource.occa] in [7a2bd28c83c5c862/binary]
+rank: 0 GB allocated on device: 6.48102
+Entering Time Loop!
+Elapsed Time MemCpy: 0.0982084197998047
+Bandwidth MemCpy: 259.448222992899
+Elapsed Time STD: 0.100877182006836
+Bandwidth Standard Volume: 252.584375307722
+Achieved GFLOPS/sSD : 7 9 7.820400850873691e+02
+MemoryBoundSD : 7 9 8.032916134972462e+02
+SharedMemBoundSD : 7 9 1.875900849858357e+03
+minBoundSD : 7 9 8.032916134972462e+02
+Elapsed Time FD : 1.080349426269531e-01
+Bandwidth FD Volume: 2.358496184700441e+02
+Floating Point Operations FD: 9.130000000000000e+04
+flop_count_sp should be : 4.468800000000000e+10
+we managed 4.473700000000000e+01 in time 1.080349426269531e-01 !
+Achieved GFLOPS/s : 10 9 4.140975031983659e+03
+MemoryBound : 10 9 4.555312069086867e+03
+SharedMemBound : 10 9 6.008270400000000e+03
+minBound : 10 9 4.555312069086867e+03
+Bytes ReadWrite: 2.548000000000000e+09. 
+time taken in seconds = 3.071970000000000e-01
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 1.699 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 10
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=10.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 650  NelemY: 650.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 422500 Elements. and 846300edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 10.
+Compiling [VolumeKernelFluxDiff]
+mpiCC -x c++ -fPIC -shared  /home/nwinterm/._occa/kernels/24b6015cadab9842/source.occa -o /home/nwinterm/._occa/kernels/24b6015cadab9842/binary -I/opt/occa/occa//include -L/opt/occa/occa//lib -locca
+
+Compiling [VolumeKernelFluxDiff0]
+/usr/local/cuda/bin/nvcc -o /home/nwinterm/._occa/kernels/17aa7cde62e46850/binary -ptx -I. -I/opt/occa/occa/include -L  /usr/lib64/nvidia  --ftz=true --prec-div=false --prec-sqrt=false --use_fast_math --fmad=true -arch=sm_61  -x cu /home/nwinterm/._occa/kernels/17aa7cde62e46850/source.occa
+Kernel Version STD: V 7.
+Found cached binary of [e8f39db11a83fd29/parsedSource.occa] in [40ea35256a4da6d3/binary]
+Found cached binary of [e8f39db11a83fd29/parsedSource.occa] in [7fddbbcd2e40d24b/binary]
+rank: 0 GB allocated on device: 6.69641
+Entering Time Loop!
+Elapsed Time MemCpy: 0.102436157226563
+Bandwidth MemCpy: 259.514811173594
+Elapsed Time STD: 0.111048606872559
+Bandwidth Standard Volume: 239.387964862161
+Achieved GFLOPS/sSD : 7 10 7.964253446375744e+02
+MemoryBoundSD : 7 10 8.633858140967661e+02
+SharedMemBoundSD : 7 10 1.833889175257732e+03
+minBoundSD : 7 10 8.633858140967661e+02
+Elapsed Time FD : 1.189867858886719e-01
+Bandwidth FD Volume: 2.234172458853760e+02
+Floating Point Operations FD: 1.213630000000000e+05
+flop_count_sp should be : 5.122474500000000e+10
+we managed 5.127586750000000e+01 in time 1.189867858886719e-01 !
+Achieved GFLOPS/s : 10 10 4.309374954289080e+03
+MemoryBound : 10 10 5.005641453982985e+03
+SharedMemBound : 10 10 6.031197368421052e+03
+minBound : 10 10 5.005641453982985e+03
+Bytes ReadWrite: 2.658370000000000e+09. 
+time taken in seconds = 3.325470000000000e-01
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 1.979 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 11
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=11.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 600  NelemY: 600.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 360000 Elements. and 721200edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 10.
+Compiling [VolumeKernelFluxDiff]
+mpiCC -x c++ -fPIC -shared  /home/nwinterm/._occa/kernels/e6c38ed9a6b9ebf3/source.occa -o /home/nwinterm/._occa/kernels/e6c38ed9a6b9ebf3/binary -I/opt/occa/occa//include -L/opt/occa/occa//lib -locca
+
+Compiling [VolumeKernelFluxDiff0]
+/usr/local/cuda/bin/nvcc -o /home/nwinterm/._occa/kernels/4d97618d72893db3/binary -ptx -I. -I/opt/occa/occa/include -L  /usr/lib64/nvidia  --ftz=true --prec-div=false --prec-sqrt=false --use_fast_math --fmad=true -arch=sm_61  -x cu /home/nwinterm/._occa/kernels/4d97618d72893db3/source.occa
+Kernel Version STD: V 7.
+Found cached binary of [2825f25976161797/parsedSource.occa] in [6c87cffa9a2c61be/binary]
+Found cached binary of [2825f25976161797/parsedSource.occa] in [a4bce3c88b21f2a4/binary]
+rank: 0 GB allocated on device: 6.73592
+Entering Time Loop!
+Elapsed Time MemCpy: 0.103884834289551
+Bandwidth MemCpy: 259.487346582902
+Elapsed Time STD: 0.103591804504395
+Bandwidth Standard Volume: 260.221357557841
+Achieved GFLOPS/sSD : 7 11 9.257875220807800e+02
+MemoryBoundSD : 7 11 9.231761368814781e+02
+SharedMemBoundSD : 7 11 1.820346889952153e+03
+minBoundSD : 7 11 9.231761368814781e+02
+Elapsed Time FD : 1.226662063598633e-01
+Bandwidth FD Volume: 2.197573463788176e+02
+Floating Point Operations FD: 1.573920000000000e+05
+flop_count_sp should be : 5.660928000000000e+10
+we managed 5.666112000000000e+01 in time 1.226662063598633e-01 !
+Achieved GFLOPS/s : 10 11 4.619130376770147e+03
+MemoryBound : 10 11 5.454224419521382e+03
+SharedMemBound : 10 11 6.091475609756098e+03
+minBound : 10 11 5.454224419521382e+03
+Bytes ReadWrite: 2.695680000000000e+09. 
+time taken in seconds = 3.302230000000000e-01
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 1.298 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 12
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=12.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 550  NelemY: 550.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 302500 Elements. and 606100edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 10.
+Compiling [VolumeKernelFluxDiff]
+mpiCC -x c++ -fPIC -shared  /home/nwinterm/._occa/kernels/a22ebb29fb3b3f2b/source.occa -o /home/nwinterm/._occa/kernels/a22ebb29fb3b3f2b/binary -I/opt/occa/occa//include -L/opt/occa/occa//lib -locca
+
+Compiling [VolumeKernelFluxDiff0]
+/usr/local/cuda/bin/nvcc -o /home/nwinterm/._occa/kernels/e8999e13c663f5c7/binary -ptx -I. -I/opt/occa/occa/include -L  /usr/lib64/nvidia  --ftz=true --prec-div=false --prec-sqrt=false --use_fast_math --fmad=true -arch=sm_61  -x cu /home/nwinterm/._occa/kernels/e8999e13c663f5c7/source.occa
+Kernel Version STD: V 7.
+Found cached binary of [9e344d8756d6003b/parsedSource.occa] in [7f2fe34b91d6fc07/binary]
+Found cached binary of [9e344d8756d6003b/parsedSource.occa] in [59d7d2e99b2ad3b3/binary]
+rank: 0 GB allocated on device: 6.59776
+Entering Time Loop!
+Elapsed Time MemCpy: 0.102472129821777
+Bandwidth MemCpy: 259.423709122033
+Elapsed Time STD: 0.110424896240234
+Bandwidth Standard Volume: 240.740094898219
+Achieved GFLOPS/sSD : 7 12 9.120345902874830e+02
+MemoryBoundSD : 7 12 9.828167441738567e+02
+SharedMemBoundSD : 7 12 1.800580000000000e+03
+minBoundSD : 7 12 9.828167441738567e+02
+Elapsed Time FD : 1.326841888427734e-01
+Bandwidth FD Volume: 2.003531862526653e+02
+Floating Point Operations FD: 1.999270000000000e+05
+flop_count_sp should be : 6.042679500000000e+10
+we managed 6.047791750000000e+01 in time 1.326841888427734e-01 !
+Achieved GFLOPS/s : 10 12 4.558034987248136e+03
+MemoryBound : 10 12 5.901889382526258e+03
+SharedMemBound : 10 12 6.128059193954660e+03
+minBound : 10 12 5.901889382526258e+03
+Bytes ReadWrite: 2.658370000000000e+09. 
+time taken in seconds = 3.456560000000000e-01
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 3.356 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 13
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=13.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 550  NelemY: 550.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 302500 Elements. and 606100edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 10.
+Compiling [VolumeKernelFluxDiff]
+mpiCC -x c++ -fPIC -shared  /home/nwinterm/._occa/kernels/8f7e6faeb838404c/source.occa -o /home/nwinterm/._occa/kernels/8f7e6faeb838404c/binary -I/opt/occa/occa//include -L/opt/occa/occa//lib -locca
+
+Compiling [VolumeKernelFluxDiff0]
+/usr/local/cuda/bin/nvcc -o /home/nwinterm/._occa/kernels/9722785c413b2308/binary -ptx -I. -I/opt/occa/occa/include -L  /usr/lib64/nvidia  --ftz=true --prec-div=false --prec-sqrt=false --use_fast_math --fmad=true -arch=sm_61  -x cu /home/nwinterm/._occa/kernels/9722785c413b2308/source.occa
+Kernel Version STD: V 7.
+Found cached binary of [360e99d5b086409f/parsedSource.occa] in [678228e867b31d98/binary]
+Found cached binary of [360e99d5b086409f/parsedSource.occa] in [34e65fc29173bb44/binary]
+rank: 0 GB allocated on device: 7.60753
+Entering Time Loop!
+Elapsed Time MemCpy: 0.118778717041016
+Bandwidth MemCpy: 259.565019458442
+Elapsed Time STD: 0.128107360839844
+Bandwidth Standard Volume: 240.663766686629
+Achieved GFLOPS/sSD : 7 13 9.672832161058758e+02
+MemoryBoundSD : 7 13 1.043251712823354e+03
+SharedMemBoundSD : 7 13 1.783437759336100e+03
+minBoundSD : 7 13 1.043251712823354e+03
+Elapsed Time FD : 1.647227478027344e-01
+Bandwidth FD Volume: 1.871678345052972e+02
+Floating Point Operations FD: 2.495080000000000e+05
+flop_count_sp should be : 7.541688000000000e+10
+we managed 7.547617000000000e+01 in time 1.647227478027344e-01 !
+Achieved GFLOPS/s : 10 13 4.582012563946988e+03
+MemoryBound : 10 13 6.354351341742245e+03
+SharedMemBound : 10 13 6.159822352941176e+03
+minBound : 10 13 6.159822352941176e+03
+Bytes ReadWrite: 3.083080000000000e+09. 
+time taken in seconds = 4.116870000000000e-01
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 2.867 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 14
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=14.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 500  NelemY: 500.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 250000 Elements. and 501000edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 10.
+Compiling [VolumeKernelFluxDiff]
+mpiCC -x c++ -fPIC -shared  /home/nwinterm/._occa/kernels/d018fff3ae802485/source.occa -o /home/nwinterm/._occa/kernels/d018fff3ae802485/binary -I/opt/occa/occa//include -L/opt/occa/occa//lib -locca
+
+Compiling [VolumeKernelFluxDiff0]
+/usr/local/cuda/bin/nvcc -o /home/nwinterm/._occa/kernels/e183610838f76e52/binary -ptx -I. -I/opt/occa/occa/include -L  /usr/lib64/nvidia  --ftz=true --prec-div=false --prec-sqrt=false --use_fast_math --fmad=true -arch=sm_61  -x cu /home/nwinterm/._occa/kernels/e183610838f76e52/source.occa
+Kernel Version STD: V 7.
+Found cached binary of [577b937c1f037714/parsedSource.occa] in [3e3704cd31010ea9/binary]
+Found cached binary of [577b937c1f037714/parsedSource.occa] in [2165c9b2d231066e/binary]
+rank: 0 GB allocated on device: 7.18142
+Entering Time Loop!
+Elapsed Time MemCpy: 0.11271305847168
+Bandwidth MemCpy: 259.508528972704
+Elapsed Time STD: 0.121354080200195
+Bandwidth Standard Volume: 241.030214655716
+Achieved GFLOPS/sSD : 7 14 1.024378412286791e+03
+MemoryBoundSD : 7 14 1.102911248133993e+03
+SharedMemBoundSD : 7 14 1.768429961089494e+03
+minBoundSD : 7 14 1.102911248133993e+03
+Elapsed Time FD : 1.677039947509766e-01
+Bandwidth FD Volume: 1.744144499565039e+02
+Floating Point Operations FD: 3.066750000000000e+05
+flop_count_sp should be : 7.661250000000000e+10
+we managed 7.666875000000000e+01 in time 1.677039947509766e-01 !
+Achieved GFLOPS/s : 10 14 4.571671063282978e+03
+MemoryBound : 10 14 6.802117788265307e+03
+SharedMemBound : 10 14 6.187658940397351e+03
+minBound : 10 14 6.187658940397351e+03
+Bytes ReadWrite: 2.925000000000000e+09. 
+time taken in seconds = 4.018410000000000e-01
+Number of tasks= 1 My rank= 0 Running on pcm243
+==============o=======================o==========================================
+   CPU Info   |  Processor Name       | Intel(R) Core(TM) i7-6850K CPU @ 3.60GHz
+              |  Cores                | 12
+              |  Memory (RAM)         | 31 GB
+              |  Clock Frequency      | 1.998 GHz
+              |  SIMD Instruction Set | SSE2
+              |  SIMD Width           | 128 bits
+              |  L1 Cache Size (d)    |    32K
+              |  L2 Cache Size        |   256K
+              |  L3 Cache Size        | 15360K
+==============o=======================o==========================================
+    OpenCL    |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 0
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device Name          | GeForce GTX 1080
+              |  Driver Vendor        | NVIDIA
+              |  Platform ID          | 0
+              |  Device ID            | 1
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+     CUDA     |  Device ID            | 0 
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+              |-----------------------+------------------------------------------
+              |  Device ID            | 1
+              |  Device Name          | GeForce GTX 1080
+              |  Memory               | 7 GB
+==============o=======================o==========================================
+Initializing device... ... device initialized.
+ reading in possible other input parameters ... 
+.rank 0 reading input file 
+Polynomial Order: 15
+Testcase: 1
+CFL: 0.1
+T: 0.0001
+g_const: 9.81
+ArtificialViscosity: 0
+PositivityPreserving: 0
+epsilon_0: 1.1
+sigma_min: -8
+sigma_max: -3.5
+PlotVar: 1
+NumPlots: 0
+Fluxdifferencing: 1
+NumFlux: 0
+Cartesian: 1
+rkorder: 3
+rkSSP: 0
+Setting up Basis for N=15.
+Entropy Stability activated.
+Creating Mesh Partitioning .
+Cartesian Mesh will be generated.
+NelemX: 475  NelemY: 475.
+Mesh Reading/Generating  completed.
+Global Mesh created.
+using 1 processors for a problem with 225625 Elements. and 452200edges. 
+Mesh Partitions created! 
+Sorting Edges for MPI! 
+done! 
+Initializing Host Memory... ... finished.
+Loading Mesh Data into global arrays on HOST... 
+          ...finished.
+ Element Sizes calculated... 
+ ... and distributed 
+declaring occa Kernels and Variables... ... finished.
+Allocating Memory on the device...       ...Memory on Device allocated.
+Copy Necessary Data onto Device...         done.
+Build Kernels...
+Kernel Version FD: V 10.
+Compiling [VolumeKernelFluxDiff]
+mpiCC -x c++ -fPIC -shared  /home/nwinterm/._occa/kernels/e80123f5116c5537/source.occa -o /home/nwinterm/._occa/kernels/e80123f5116c5537/binary -I/opt/occa/occa//include -L/opt/occa/occa//lib -locca
+
+Compiling [VolumeKernelFluxDiff0]
+/usr/local/cuda/bin/nvcc -o /home/nwinterm/._occa/kernels/67498954aab4ace2/binary -ptx -I. -I/opt/occa/occa/include -L  /usr/lib64/nvidia  --ftz=true --prec-div=false --prec-sqrt=false --use_fast_math --fmad=true -arch=sm_61  -x cu /home/nwinterm/._occa/kernels/67498954aab4ace2/source.occa
+Kernel Version STD: V 7.
+Found cached binary of [7769ef92c9b2bbc6/parsedSource.occa] in [df68645a68a5eae2/binary]
+Found cached binary of [7769ef92c9b2bbc6/parsedSource.occa] in [d87b6bcd3c72ef93/binary]
+rank: 0 GB allocated on device: 7.34203
+Entering Time Loop!
+Elapsed Time MemCpy: 0.115763679504395
+Bandwidth MemCpy: 259.452706829864
+Elapsed Time STD: 0.115107452392578
+Bandwidth Standard Volume: 260.931845642486
+Achieved GFLOPS/sSD : 7 15 1.169175385282678e+03
+MemoryBoundSD : 7 15 1.162547705603044e+03
+SharedMemBoundSD : 7 15 1.755181318681319e+03
+minBoundSD : 7 15 1.162547705603044e+03
+Elapsed Time FD : 1.739457855224609e-01
+Bandwidth FD Volume: 1.726698919998937e+02
+Floating Point Operations FD: 3.719680000000000e+05
+flop_count_sp should be : 8.386752000000000e+10
+we managed 8.392528000000000e+01 in time 1.739457855224609e-01 !
+Achieved GFLOPS/s : 10 15 4.824795251458568e+03
+MemoryBound : 10 15 7.249707365842160e+03
+SharedMemBound : 10 15 6.212254677754678e+03
+minBound : 10 15 6.212254677754678e+03
+Bytes ReadWrite: 3.003520000000000e+09. 
+time taken in seconds = 4.048830000000000e-01

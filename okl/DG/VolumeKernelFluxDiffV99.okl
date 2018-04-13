@@ -48,8 +48,7 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
                                  const dfloat * restrict D,
                                  const dfloat * restrict Bx,
                                  const dfloat * restrict By,
-                                 const int * restrict isPartlyDry,
-                                 dfloat * restrict Qt)
+                                 dfloat * restrict Qt)                                // const int * restrict isPartlyDry,
 {
 
 
@@ -82,8 +81,8 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
                             s_D[i][j]       =   D[id];
                         }
 
-                        if (isPartlyDry[eleID]==0)
-                        {
+//                        if (isPartlyDry[eleID]==0)
+//                        {
                             const int xid       =   eleID*ngl2   +i*ngl+j;
                             const int Fid       =   eleID*ngl2*Neq   +i*ngl+j;
 
@@ -107,7 +106,7 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
 
 
 
-                        }
+//                        }
                     }
                 }
             }
@@ -124,8 +123,8 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
                     const int eleID     =   iEo + ieLoc;
                     if (eleID<Nelem)
                     {
-                        if (isPartlyDry[eleID]==0)
-                        {
+//                        if (isPartlyDry[eleID]==0)
+//                        {
 
                             // read memory earlier to not stall later
                             const int id  = eleID*ngl2*Neq   +i*ngl+j;
@@ -187,10 +186,10 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
 
                             Qt[id]              = -  r_Jac *FluxDeriv1;
                             Qt[id+ngl2]         = -  r_Jac *FluxDeriv2 - g_const*H_ij*r_Bx ;
-                            Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3 - g_const*H_ij*r_By;
+                            Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3  - g_const*H_ij*r_By;
 
                         }
-                    }
+//                    }
                 }
             }
         }

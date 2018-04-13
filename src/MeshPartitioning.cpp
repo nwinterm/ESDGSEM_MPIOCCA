@@ -94,7 +94,7 @@ void MeshPartitioning::DivideMesh(const Mesh GlobalMesh,const MPI_setup MPI)
             }
             else
             {
-                MyEdgeInfo[id1+8]= -0;
+                MyEdgeInfo[id1+8]= 0;
             }
 
             MyEdgeInfo[id1+9] = is 	;	//!global side id
@@ -359,10 +359,12 @@ void MeshPartitioning::DivideMesh(const Mesh GlobalMesh,const MPI_setup MPI)
                     globalEdgeInfo[id2+0] = GlobalMesh.EdgeInfo[glbEdgeInfoID+0]	;	//		!these are not even used after the inital mesh generation
                     globalEdgeInfo[id2+1]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+1];			//	! ""
                     globalEdgeInfo[id2+2]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+2],	//!this is changed to be the GLOBAL ELEMENT ID on left processor
-                                             globalEdgeInfo[id2+3]  = ElementGlobalToLocal[GlobalMesh.EdgeInfo[glbEdgeInfoID+3]]-1;//(1,GlobalMesh.EdgeInfo[glbEdgeInfoID+3]+1)-1;//	!this is changed to be the local element on right processor
+                    globalEdgeInfo[id2+3]  = ElementGlobalToLocal[GlobalMesh.EdgeInfo[glbEdgeInfoID+3]]-1;//	!this is changed to be the local element on right processor
                     globalEdgeInfo[id2+4]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+4];	//!local side left element <- fine as is
                     globalEdgeInfo[id2+5]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+5];//!local side right element <- fine as is
-                    globalEdgeInfo[id2+6]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+6];
+                    // if orientation flip is on MPI edge, take special care!!
+		    globalEdgeInfo[id2+6]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+6];
+                    //globalEdgeInfo[id2+6]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+6];
                     globalEdgeInfo[id2+7]  = proc_LEFT -1;
                     globalEdgeInfo[id2+8]  = proc_RIGHT -1;
                     globalEdgeInfo[id2+9]  = is -1	;	//!global side id
@@ -472,8 +474,6 @@ void MeshPartitioning::DivideMesh(const Mesh GlobalMesh,const MPI_setup MPI)
 
         int * SplitElementToEdge = (int*) calloc(4*ElementsPerProc[0]*NumProcessors,sizeof(int));
         int * SplitElemEdgeMasterSlave = (int*) calloc(4*ElementsPerProc[0]*NumProcessors,sizeof(int));
-//int SplitElementToEdge[4][ElementsPerProc[0]][NumProcessors];
-//int SplitElemEdgeMasterSlave[4][ElementsPerProc[0]][NumProcessors];
 
         for (int ie=1; ie<=global_NumElements; ie++)
         {
@@ -513,14 +513,9 @@ void MeshPartitioning::DivideMesh(const Mesh GlobalMesh,const MPI_setup MPI)
             {
                 int id =  4*ie + is;
                 MyElementToEdge[id] = SplitElementToEdge[id];
-//        ElementToEdge(is,ie) = SplitElementToEdge[is-1][ie-1][0];
                 MyElemEdgeMasterSlave[id] = SplitElemEdgeMasterSlave[id];
             }
         }
-//    for (int i=0;i<NumElements;i++){
-//        cout << "rank: " << MPI.rank << " Local Ele ID: " << i << "   edge 1: " << MyElementToEdge[i*4] << "   edge 2: " << MyElementToEdge[i*4+1] << "   edge 3: " << MyElementToEdge[i*4+2] << "   edge 2: " << MyElementToEdge[i*4+3] << "\n" ;
-//
-//    }
 
 
 
@@ -540,13 +535,9 @@ void MeshPartitioning::DivideMesh(const Mesh GlobalMesh,const MPI_setup MPI)
                 }
             }
 
-//     MPI_Isend (&EleToEdge_TMP[0],4*ElementsPerProc[iproc-1],MPI_INT,iproc-1,iproc-1,MPI_COMM_WORLD,&MPI.reqs[iproc-1]);
-//    MPI_Wait(&MPI.reqs[iproc-1], MPI.stats);
             MPI_Send (&EleToEdge_TMP[0],4*ElementsPerProc[iproc-1],MPI_INT,iproc-1,iproc-1,MPI_COMM_WORLD);
             free(EleToEdge_TMP);
 
-//     MPI_Isend (&EleToEdgeMS_TMP[0],4*ElementsPerProc[iproc-1],MPI_INT,iproc-1,iproc-1,MPI_COMM_WORLD,&MPI.reqs[iproc-1]);
-//     MPI_Wait(&MPI.reqs[iproc-1], MPI.stats);
             MPI_Send (&EleToEdgeMS_TMP[0],4*ElementsPerProc[iproc-1],MPI_INT,iproc-1,iproc-1,MPI_COMM_WORLD);
             free(EleToEdgeMS_TMP);
         }
@@ -718,31 +709,16 @@ void MeshPartitioning::ReceiveMesh(const MPI_setup MPI)
 
     MPI_Recv(&MyElementLocalToGlobal[0],NumElements,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 
-//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
-
-
-//    MPI_Recv(&NumEdges,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 
     MPI_Scatter (&EdgesPerProc[0],1,MPI_INT,&NumEdges,1,MPI_INT,0,MPI_COMM_WORLD);
-//     cout << "MPI rank: " << MPI.rank << " my NumEdges: " << NumEdges << "\n";
-//    MPI_Wait(&reqs[MPI.rank], stats);
-//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
-
-//    MPI_Recv(&global_NumEdges,1,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
-//    MPI_Wait(&reqs[MPI.rank], stats);
-//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
-
-//    cout << " IAM RANK: " << MPI.rank << " AND THER ARE " << global_NumEdges << " EDGES GLOBALLY!\n";
 
 
     MyEdgeInfo = (int*) calloc(10*NumEdges,sizeof(int));
     MyEdgesLocalToGlobal = (int*) calloc(NumEdges,sizeof(int));
     MPI_Recv(&MyEdgesLocalToGlobal[0],NumEdges,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
-//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
     MPI_Recv(&MyEdgeInfo[0],10*NumEdges,MPI_INT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
-//    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);
 
 
 

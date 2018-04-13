@@ -53,8 +53,8 @@ kernel void VolumeKernelFD(const int Nelem,
                             s_DupwindFD[i][j]=DupwindFD[id];
                             s_DdownwindFD[i][j]=DdownwindFD[id];
                         }
-                        if (isPartlyDry[eleID]==1)
-                        {
+//                        if (isPartlyDry[eleID]==1)
+//                        {
                             const int xid=eleID*ngl2   +i*ngl+j;
                             const int Fid  = eleID*ngl2*Neq   +i*ngl+j;
 
@@ -108,7 +108,7 @@ kernel void VolumeKernelFD(const int Nelem,
                             s_G3_BD[ieLoc][i][j]=G3_BD;
 
 
-                        }// is  partly dry?
+//                        }// is  partly dry?
                     }
 
                 }
@@ -127,8 +127,8 @@ kernel void VolumeKernelFD(const int Nelem,
                     const int eleID     =   iEo + ieLoc;
                     if (eleID<Nelem)
                     {
-                        if (isPartlyDry[eleID]==1)
-                        {
+//                        if (isPartlyDry[eleID]==1)
+//                        {
                             dfloat FxiDeriv1=zero;
                             dfloat FxiDeriv2=zero;
                             dfloat FxiDeriv2_2=zero;
@@ -389,7 +389,7 @@ kernel void VolumeKernelFD(const int Nelem,
 
 
 
-                        } // is  partly dry?
+//                        } // is  partly dry?
 
 
 

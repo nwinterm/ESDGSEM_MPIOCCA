@@ -378,6 +378,15 @@ void Mesh::InitMesh(const string meshFile, const bool Cartesian, const int Testc
             NormalsX[id]	=   nx_global[idLoc];
             NormalsY[id]	=   ny_global[idLoc];
             Scal[id] 	    =   scal_global[idLoc];
+	    if (EdgeInfo[is*7+3] != -1) {
+		if (EdgeInfo[is*7+6] != 1){
+	    	int idright = EdgeInfo[is*7+3]*4*ngl + EdgeInfo[is*7+5]*ngl  +ngl-1 -i;
+//		cout << " ID " << is  << " NODE : " << i << " Normals left: ( " << nx_global[idLoc] << ", " << ny_global[idLoc] << ", " << scal_global[idLoc]  <<" )       " ;
+//		cout << "Normals right: ( " << nx_global[idright] << ", " << ny_global[idright] << ", " << scal_global[idright]  <<"   " ;
+//		cout << "Difference : ( " << nx_global[idright]+nx_global[idLoc] << ", " << ny_global[idLoc]+ny_global[idright] << ", " << scal_global[idLoc]-scal_global[idright]   <<" )  \n " ;
+
+		}
+		}
         }
 
     }
@@ -834,14 +843,14 @@ void Mesh::ReadMesh(const string meshFile)
     //calculate barycentric weights for chebyshev nodes
     BarycentricWeights();
 //cout << "m_order_of_bd_edges " <<m_order_of_boundary_edges <<"\n";
-//    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k){
-//        cout << "Bary Weights ("<<k<<") : "<<w_bary[k] <<"\n";
-//
-//   }
-//    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k){
-//        cout << "x_cheby ("<<k<<") : "<<x_cheby[k] <<"\n";
-//
-//   }
+    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k){
+        cout << "Bary Weights ("<<k<<") : "<<w_bary[k] <<"\n";
+
+   }
+    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k){
+        cout << "x_cheby ("<<k<<") : "<<x_cheby[k] <<"\n";
+
+   }
 //cout << "Continuing \n";
 
 
@@ -967,9 +976,6 @@ void Mesh::ReadMesh(const string meshFile)
 //    int ElementData[eleInfoNo*m_num_elements];
 
     string ElementBoundaryNames[4*m_num_elements];
-//    Gamma1.resize(m_order_of_boundary_edges+1,2);
-//    Gamma2.resize(m_order_of_boundary_edges+1,2);
-//    Gamma3.resize(m_order_of_boundary_edges+1,2);
 
 
 
@@ -986,29 +992,12 @@ void Mesh::ReadMesh(const string meshFile)
 
 
 
-//    double GammaCurvesX[m_num_elements*4*(m_order_of_boundary_edges+1)];
-//    double GammaCurvesY[m_num_elements*4*(m_order_of_boundary_edges+1)];
-//    for (unsigned i=0;i<m_num_elements*4*(m_order_of_boundary_edges+1);i++){
-//        GammaCurvesX[i]=0.0;
-//        GammaCurvesY[i]=0.0;
-
-
 
 
 
     for (unsigned ie = 0; ie < m_num_elements; ++ie)
     {
 
-//            x_xi.resize(ngl,ngl);
-//    x_eta.resize(ngl,ngl);
-//    y_xi.resize(ngl,ngl);
-//    y_eta.resize(ngl,ngl);
-//    J.resize(ngl,ngl);
-//    x_bndy.resize(ngl,4);
-//    y_bndy.resize(ngl,4);
-//    scal.resize(ngl,4);
-//    nx.resize(ngl,4);
-//    ny.resize(ngl,4);
 
         //    Gamma4.resize(m_order_of_boundary_edges+1,2);
         dfloat * Gamma1X = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
@@ -1061,7 +1050,6 @@ void Mesh::ReadMesh(const string meshFile)
         for (unsigned j = 0; j < 4; ++j)
         {
             CornerIDs[j ]-=1;
-//        ElementData[eleInfoNo*ie + j ] -= 1;
         }
 
         // Get the information about whether the boundary curves are given.
@@ -1095,8 +1083,6 @@ void Mesh::ReadMesh(const string meshFile)
             //initialise the corners arrays or set it to the current corner nodes
             cornersX[j] = x_nodes[CornerIDs[j]];
             cornersY[j] = y_nodes[CornerIDs[j]];
-//            corners(j+1,1)=    x_nodes[CornerIDs[j]];
-//            corners(j+1,2)=    y_nodes[CornerIDs[j]];
 
 
             //if we dont have a given Gamma curve, we get one by interpolation (chebychev)
@@ -1170,13 +1156,13 @@ void Mesh::ReadMesh(const string meshFile)
             }
             else // is_gamma_given is true
             {
+//		cout << "ACTUALLY READING IN GAMMA CURVE!\n";
+		curved =true;
                 for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k)
                 {
                     std::getline(InputStream, current_string);
                     current_line.clear();
                     current_line.str(current_string);
-//              if (!(current_line >> GammaCurvesX[i*4*(m_order_of_boundary_edges+1)+j*(m_order_of_boundary_edges+1)+k]
-//                                 >> GammaCurvesY[i*4*(m_order_of_boundary_edges+1)+j*(m_order_of_boundary_edges+1)+k]))
                     switch(j)
                     {
                     case 0:
@@ -1237,18 +1223,7 @@ void Mesh::ReadMesh(const string meshFile)
                 throw std::invalid_argument(error_message);
             }
         }
-
-//    cout << "\n Printing Gamma Curves \n";
-//                cout << " Gamma1X: ";
-//    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k){
-//
-//            cout << " "<<Gamma1X[k] <<" " ;
-//    }
-//                    cout << "\n Gamma1Y: ";
-//    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k){
-//
-//            cout << " "<<Gamma1Y[k] <<" " ;
-//    }
+//	curved =true;
         ConstructMappedGeometry(cornersX,cornersY,Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,curved);
 
 
@@ -1261,8 +1236,6 @@ void Mesh::ReadMesh(const string meshFile)
 
                 x_global[id] = x_phy[locID];
                 y_global[id] = y_phy[locID];
-//            x_global(id) = x_phy(i,j);
-//            y_global(id) = y_phy(i,j);
                 xXi_global[id] = x_xi[locID];
                 xEta_global[id] = x_eta[locID];
                 yXi_global[id] = y_xi[locID];
@@ -1323,9 +1296,52 @@ void Mesh::ReadMesh(const string meshFile)
 
 
 
+void Mesh :: TransfiniteQuadMap(const dfloat * Gamma1X,const dfloat * Gamma1Y,const dfloat * Gamma2X,const dfloat * Gamma2Y,const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,const dfloat psi,const dfloat eta,dfloat *x_out,dfloat *y_out)
+{
+    dfloat x1_ref, y1_ref,x1_cp, y1_cp;
+    dfloat x2_ref, y2_ref,x2_cp, y2_cp;
+    dfloat x3_ref, y3_ref,x3_cp, y3_cp;
+    dfloat x4_ref, y4_ref,x4_cp, y4_cp;
+
+    EvaluateAt(Gamma1X,Gamma1Y,-1.0,&x1_ref, &y1_ref);
+    EvaluateAt(Gamma1X,Gamma1Y, 1.0,&x2_ref, &y2_ref);
+    EvaluateAt(Gamma3X,Gamma3Y, 1.0,&x3_ref, &y3_ref);
+    EvaluateAt(Gamma3X,Gamma3Y,-1.0,&x4_ref, &y4_ref);
+
+    EvaluateAt(Gamma1X,Gamma1Y,psi,&x1_cp, &y1_cp);
+    EvaluateAt(Gamma2X,Gamma2Y,eta,&x2_cp, &y2_cp);
+    EvaluateAt(Gamma3X,Gamma3Y,psi,&x3_cp, &y3_cp);
+    EvaluateAt(Gamma4X,Gamma4Y,eta,&x4_cp, &y4_cp);
+
+    *x_out = 0.5*((1.0-psi)*x4_cp+(1.0+psi)*x2_cp+(1.0-eta)*x1_cp+(1.0+eta)*x3_cp) - 0.25*((1.0-psi)*((1.0-eta)*x1_ref+(1.0+eta)*x4_ref)+(1.0+psi)*((1.0-eta)*x2_ref+(1.0+eta)*x3_ref));
+
+    *y_out = 0.5*((1.0-psi)*y4_cp+(1.0+psi)*y2_cp+(1.0-eta)*y1_cp+(1.0+eta)*y3_cp) - 0.25*((1.0-psi)*((1.0-eta)*y1_ref+(1.0+eta)*y4_ref)  +(1.0+psi)*((1.0-eta)*y2_ref+(1.0+eta)*y3_ref));
+
+//dfloat DIFFERENCE1 = fabs(*x_out - 0.25*((1.0-psi)*((1.0-eta)*x1_ref+(1.0+eta)*x4_ref)+(1.0+psi)*((1.0-eta)*x2_ref+(1.0+eta)*x3_ref)) );
+//dfloat DIFFERENCE2 = fabs(*y_out - 0.25*((1.0-psi)*((1.0-eta)*y1_ref+(1.0+eta)*y4_ref)  +(1.0+psi)*((1.0-eta)*y2_ref+(1.0+eta)*y3_ref)) );
 
 
-void Mesh :: TransfiniteQuadMetrics(const dfloat * Gamma1X,const dfloat * Gamma1Y,const dfloat * Gamma2X,const dfloat * Gamma2Y,const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,const dfloat psi,const dfloat eta,dfloat *X_psi,dfloat *X_eta,dfloat *Y_psi,dfloat *Y_eta)
+//if (max(DIFFERENCE1, DIFFERENCE2) > pow(10.0,-12)){
+//	cout << "DIFF1: " << DIFFERENCE1  << " DIFF2: " << DIFFERENCE2  << "\n"; 
+//}
+
+
+
+}
+
+void Mesh :: QuadMap(const dfloat * cornersX,const dfloat * cornersY,const dfloat psi,const dfloat eta,dfloat *x_out,dfloat *y_out)
+{
+// Mapping of the reference square to a straight sided quadrilateral
+    *x_out = 0.25*(cornersX[0]*(1.0-psi)*(1.0-eta)+cornersX[1]*(1.0+psi)*(1.0-eta)+ cornersX[2]*(1.0+psi)*(1.0+eta)+cornersX[3]*(1.0-psi)*(1.0+eta));
+    *y_out = 0.25*(cornersY[0]*(1.0-psi)*(1.0-eta)+cornersY[1]*(1.0+psi)*(1.0-eta)+ cornersY[2]*(1.0+psi)*(1.0+eta)+cornersY[3]*(1.0-psi)*(1.0+eta));
+
+
+
+}
+
+void Mesh :: TransfiniteQuadMetrics(const dfloat * Gamma1X,const dfloat * Gamma1Y,const dfloat * Gamma2X,const dfloat * Gamma2Y,
+					const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,
+					const dfloat psi,const dfloat eta,dfloat *X_psi,dfloat *X_eta,dfloat *Y_psi,dfloat *Y_eta)
 {
 // Computation of the metric terms on a curve-bounded quadrilateral
 
@@ -1361,6 +1377,20 @@ void Mesh :: TransfiniteQuadMetrics(const dfloat * Gamma1X,const dfloat * Gamma1
 
     *Y_eta = 0.5*((1.0-psi)*Xpcomp2[3]+(1.0+psi)*Xpcomp2[1]+Xcomp2[2]-Xcomp2[0]) - 0.25*((1.0-psi)*(Xref2[3]-Xref2[0])+(1.0+psi)*(Xref2[2]-Xref2[1]));
 
+//dfloat DIFFERENCE1 = fabs(*X_psi - 0.25*((1.0-eta)*(Xref1[1]-Xref1[0])+(1.0+eta)*(Xref1[2]-Xref1[3])) );
+//dfloat DIFFERENCE2 = fabs(*Y_psi - 0.25*((1.0-eta)*(Xref2[1]-Xref2[0])+(1.0+eta)*(Xref2[2]-Xref2[3])) );
+//dfloat DIFFERENCE3 =  fabs(*X_eta -  0.25*((1.0-psi)*(Xref1[3]-Xref1[0])+(1.0+psi)*(Xref1[2]-Xref1[1])) );
+//dfloat DIFFERENCE4 = fabs(*Y_eta -  0.25*((1.0-psi)*(Xref2[3]-Xref2[0])+(1.0+psi)*(Xref2[2]-Xref2[1])) );
+
+//if (max(max(DIFFERENCE1, DIFFERENCE2), max(DIFFERENCE3, DIFFERENCE4)) > pow(10.0,-12)){
+//	cout << "DIFF1: " << DIFFERENCE1  << " DIFF2: " << DIFFERENCE2  << " DIFF3: " << DIFFERENCE3  << " DIFF4: " << DIFFERENCE4  << "\n"; 
+//}
+//    *X_psi =   0.25*((1.0-eta)*(Xref1[1]-Xref1[0])+(1.0+eta)*(Xref1[2]-Xref1[3]));
+//    *Y_psi = 0.25*((1.0-eta)*(Xref2[1]-Xref2[0])+(1.0+eta)*(Xref2[2]-Xref2[3]));
+//    *X_eta =  0.25*((1.0-psi)*(Xref1[3]-Xref1[0])+(1.0+psi)*(Xref1[2]-Xref1[1]));
+//    *Y_eta =  0.25*((1.0-psi)*(Xref2[3]-Xref2[0])+(1.0+psi)*(Xref2[2]-Xref2[1]));
+
+
     free(Xref1);
     free(Xcomp1);
     free(Xpcomp1);
@@ -1368,53 +1398,6 @@ void Mesh :: TransfiniteQuadMetrics(const dfloat * Gamma1X,const dfloat * Gamma1
     free(Xcomp2);
     free(Xpcomp2);
 }
-
-
-
-void Mesh :: TransfiniteQuadMap(const dfloat * Gamma1X,const dfloat * Gamma1Y,const dfloat * Gamma2X,const dfloat * Gamma2Y,const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,const dfloat psi,const dfloat eta,dfloat *x_out,dfloat *y_out)
-{
-// Mapping of the reference square to a curve-bounded quadrilateral
-//      IMPLICIT NONE
-//      TYPE(CurveInterpolant),DIMENSION(4),INTENT(IN)  :: GammaCurves
-//      REAL(KIND=RP)                      ,INTENT(IN)  :: psi,eta
-//      REAL(KIND=RP)                      ,INTENT(OUT) :: x_out,y_out
-
-//      REAL(KIND=RP)         ,DIMENSION(4,2)           :: Xref,Xcomp
-    dfloat x1_ref, y1_ref,x1_cp, y1_cp;
-    dfloat x2_ref, y2_ref,x2_cp, y2_cp;
-    dfloat x3_ref, y3_ref,x3_cp, y3_cp;
-    dfloat x4_ref, y4_ref,x4_cp, y4_cp;
-
-    EvaluateAt(Gamma1X,Gamma1Y,-1.0,&x1_ref, &y1_ref);
-    EvaluateAt(Gamma1X,Gamma1Y, 1.0,&x2_ref, &y2_ref);
-    EvaluateAt(Gamma3X,Gamma3Y, 1.0,&x3_ref, &y3_ref);
-    EvaluateAt(Gamma3X,Gamma3Y,-1.0,&x4_ref, &y4_ref);
-
-    EvaluateAt(Gamma1X,Gamma1Y,psi,&x1_cp, &y1_cp);
-    EvaluateAt(Gamma2X,Gamma2Y,eta,&x2_cp, &y2_cp);
-    EvaluateAt(Gamma3X,Gamma3Y,psi,&x3_cp, &y3_cp);
-    EvaluateAt(Gamma4X,Gamma4Y,eta,&x4_cp, &y4_cp);
-
-    *x_out = 1.0/2.0*((1.0-psi)*x4_cp+(1.0+psi)*x2_cp+(1.0-eta)*x1_cp+(1.0+eta)*x3_cp) - 1.0/4.0*((1.0-psi)*((1.0-eta)*x1_ref+(1.0+eta)*x4_ref)+(1.0+psi)*((1.0-eta)*x2_ref+(1.0+eta)*x3_ref));
-
-    *y_out = 1.0/2.0*((1.0-psi)*y4_cp+(1.0+psi)*y2_cp+(1.0-eta)*y1_cp+(1.0+eta)*y3_cp) - 1.0/4.0*((1.0-psi)*((1.0-eta)*y1_ref+(1.0+eta)*y4_ref)  +(1.0+psi)*((1.0-eta)*y2_ref+(1.0+eta)*y3_ref));
-
-}
-
-void Mesh :: QuadMap(const dfloat * cornersX,const dfloat * cornersY,const dfloat psi,const dfloat eta,dfloat *x_out,dfloat *y_out)
-{
-// Mapping of the reference square to a straight sided quadrilateral
-    *x_out = 0.25*(cornersX[0]*(1.0-psi)*(1.0-eta)+cornersX[1]*(1.0+psi)*(1.0-eta)+ cornersX[2]*(1.0+psi)*(1.0+eta)+cornersX[3]*(1.0-psi)*(1.0+eta));
-    *y_out = 0.25*(cornersY[0]*(1.0-psi)*(1.0-eta)+cornersY[1]*(1.0+psi)*(1.0-eta)+ cornersY[2]*(1.0+psi)*(1.0+eta)+cornersY[3]*(1.0-psi)*(1.0+eta));
-
-
-
-}
-
-
-
-
-
 
 
 void Mesh :: QuadMapMetrics(const dfloat * cornersX,const dfloat * cornersY,const dfloat xi,const dfloat eta,dfloat *X_psi,dfloat *X_eta,dfloat *Y_psi,dfloat *Y_eta)
@@ -1431,9 +1414,8 @@ void Mesh :: QuadMapMetrics(const dfloat * cornersX,const dfloat * cornersY,cons
 
 
 
-//const double GammaX1[],const double GammaX2[],const double GammaX3[],const double GammaX4[],
-//                                     const double GammaY1[],const double GammaY2[],const double GammaY3[],const double GammaY4[],
-void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * cornersY,const dfloat * Gamma1X,const dfloat * Gamma1Y,const dfloat * Gamma2X,const dfloat * Gamma2Y,const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,const bool Curved)
+void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * cornersY,const dfloat * Gamma1X,const dfloat * Gamma1Y,const dfloat * Gamma2X,const dfloat * Gamma2Y,
+					const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,const bool Curved)
 {
 // Constructor of geometry and metric terms for quadrilateral domains
 
@@ -1441,6 +1423,8 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
 
 
     dfloat xXi,xEta,yXi,yEta,Jtemp;
+
+    dfloat xXi_2[ngl2],xEta_2[ngl2],yXi_2[ngl2],yEta_2[ngl2];
     dfloat x_tmp, y_tmp;
 
     for (int j = 0; j<ngl; j++)
@@ -1451,7 +1435,21 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
             if (Curved)
             {
                 TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],x_GL[j],&x_phy[ij],&y_phy[ij]);
+
+
                 TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],x_GL[j],&x_xi[ij],&x_eta[ij],&y_xi[ij],&y_eta[ij]);
+                //QuadMapMetrics(cornersX,cornersY,x_GL[i],x_GL[j],&xXi_2[ij],&xEta_2[ij],&yXi_2[ij],&yEta_2[ij]);
+               // QuadMapMetrics(cornersX,cornersY,x_GL[i],x_GL[j],&x_xi[ij],&x_eta[ij],&y_xi[ij],&y_eta[ij]);
+
+//dfloat DIFFERENCE1 = fabs(x_xi[ij] -xXi_2[ij]);
+//dfloat DIFFERENCE2 = fabs(x_eta[ij] -xEta_2[ij]);
+//dfloat DIFFERENCE3 =  fabs(y_xi[ij] -yXi_2[ij]);
+//dfloat DIFFERENCE4 = fabs(y_eta[ij] -yEta_2[ij]);
+
+//if (max(max(DIFFERENCE1, DIFFERENCE2), max(DIFFERENCE3, DIFFERENCE4)) > pow(10.0,-12)){
+//	cout << "DIFF1: " << DIFFERENCE1  << " DIFF2: " << DIFFERENCE2  << " DIFF3: " << DIFFERENCE3  << " DIFF4: " << DIFFERENCE4  << "\n"; 
+//}
+		
             }
             else
             {
@@ -1472,12 +1470,13 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
         int idSide4 = 3*ngl+j;
         if (Curved)
         {
-            TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,1.0,x_GL[j],&x_bndy[idSide2],&y_bndy[idSide2]);
+//            TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,1.0,x_GL[j],&x_bndy[idSide2],&y_bndy[idSide2]);
+//            QuadMapMetrics(cornersX,cornersY,1.0,x_GL[j],&xXi,&xEta,&yXi,&yEta);
             TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,1.0,x_GL[j],&xXi,&xEta,&yXi,&yEta);
         }
         else
         {
-            QuadMap(cornersX,cornersY,1.0,x_GL[j],&x_bndy[idSide2],&y_bndy[idSide2]);
+//            QuadMap(cornersX,cornersY,1.0,x_GL[j],&x_bndy[idSide2],&y_bndy[idSide2]);
             QuadMapMetrics(cornersX,cornersY,1.0,x_GL[j],&xXi,&xEta,&yXi,&yEta);
         }
         Jtemp = xXi*yEta-xEta*yXi;
@@ -1486,12 +1485,13 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
         ny[idSide2] = copysign(1.0,Jtemp)*(-xEta/scal[idSide2]);
         if (Curved)
         {
-            TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,-1.0,x_GL[j],&x_bndy[idSide4],&y_bndy[idSide4]);
+//           TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,-1.0,x_GL[j],&x_bndy[idSide4],&y_bndy[idSide4]);
+//            QuadMapMetrics(cornersX,cornersY,-1.0,x_GL[j],&xXi,&xEta,&yXi,&yEta);
             TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,-1.0,x_GL[j],&xXi,&xEta,&yXi,&yEta);
         }
         else
         {
-            QuadMap(cornersX,cornersY,-1.0,x_GL[j],&x_bndy[idSide4],&y_bndy[idSide4]);
+//            QuadMap(cornersX,cornersY,-1.0,x_GL[j],&x_bndy[idSide4],&y_bndy[idSide4]);
             QuadMapMetrics(cornersX,cornersY,-1.0,x_GL[j],&xXi,&xEta,&yXi,&yEta);
         }
         Jtemp = xXi*yEta-xEta*yXi;
@@ -1505,26 +1505,28 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
         int idSide3 = 2*ngl+i;
         if (Curved)
         {
-            TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],-1.0,&x_bndy[idSide1],&y_bndy[idSide1]);
+//            TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],-1.0,&x_bndy[idSide1],&y_bndy[idSide1]);
+//            QuadMapMetrics(cornersX,cornersY,x_GL[i],-1.0,&xXi,&xEta,&yXi,&yEta);
             TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],-1.0,&xXi,&xEta,&yXi,&yEta);
         }
         else
         {
-            QuadMap(cornersX,cornersY,x_GL[i],-1.0,&x_bndy[idSide1],&y_bndy[idSide1]);
+//            QuadMap(cornersX,cornersY,x_GL[i],-1.0,&x_bndy[idSide1],&y_bndy[idSide1]);
             QuadMapMetrics(cornersX,cornersY,x_GL[i],-1.0,&xXi,&xEta,&yXi,&yEta);
         }
         Jtemp = xXi*yEta-xEta*yXi;
         scal[idSide1]      =  sqrt(yXi*yXi + xXi*xXi);
         nx[idSide1]= -copysign(1.0,Jtemp)*(-yXi/scal[idSide1]);
         ny[idSide1] = -copysign(1.0,Jtemp)*(xXi/scal[idSide1]);
-        if (Curved)
+       if (Curved)
         {
-            TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],1.0,&x_bndy[idSide3],&y_bndy[idSide3]);
+//            TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],1.0,&x_bndy[idSide3],&y_bndy[idSide3]);
+//            QuadMapMetrics(cornersX,cornersY,x_GL[i],1.0,&xXi,&xEta,&yXi,&yEta);
             TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],1.0,&xXi,&xEta,&yXi,&yEta);
         }
         else
         {
-            QuadMap(cornersX,cornersY,x_GL[i],1.0,&x_bndy[idSide3],&y_bndy[idSide3]);
+//            QuadMap(cornersX,cornersY,x_GL[i],1.0,&x_bndy[idSide3],&y_bndy[idSide3]);
             QuadMapMetrics(cornersX,cornersY,x_GL[i],1.0,&xXi,&xEta,&yXi,&yEta);
         }
         Jtemp = xXi*yEta-xEta*yXi;
@@ -1621,7 +1623,7 @@ void Mesh :: LagrangeInterpolantDerivative(const dfloat xpt,const dfloat* functi
         {
             atNode = true;
             p = functionvals[j];
-            denominator = -1.0*w_bary[j];
+            denominator = -w_bary[j];
             k = j;
 
         }
@@ -1640,6 +1642,7 @@ void Mesh :: LagrangeInterpolantDerivative(const dfloat xpt,const dfloat* functi
     {
         denominator = 0.0;
         LagrangeInterpolation(xpt,functionvals,&p);
+//	cout << "Interpolated Gamma Curve at " << p << "\n";  
         for (int j = 0; j<=m_order_of_boundary_edges; j++)
         {
             t = w_bary[j]/(xpt-x_cheby[j]);
@@ -1670,17 +1673,17 @@ void Mesh :: LagrangeInterpolation(const dfloat xpt,const dfloat* functionvals,d
         {
             var1=true;
             *output = functionvals[j];
-            break;
-        }
-        else
-        {
-            t = w_bary[j]/(xpt-x_cheby[j]);
-            numerator +=  t*functionvals[j];
-            denominator +=  t;
         }
     }
     if (!var1)
     {
+    	for (int j = 0; j<=m_order_of_boundary_edges; j++)
+    	{
+            	t = w_bary[j]/(xpt-x_cheby[j]);
+            	numerator +=  t*functionvals[j];
+            	denominator +=  t;
+    	}
+
         *output = numerator/denominator;
     }
 

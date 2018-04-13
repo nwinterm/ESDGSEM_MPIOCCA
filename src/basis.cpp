@@ -64,11 +64,11 @@ basis::basis(const int Ninput, const int FluxDifferencing)
 //}
 //cout << " \n";
 //
-//cout << "LGL Weights: ";
-//for(int i = 0; i < ngl; ++i){
-//cout << " " << w_GL[i] << " " ;
-//}
-//cout << " \n";
+cout << "LGL Weights: ";
+for(int i = 0; i < ngl; ++i){
+cout << " " << w_GL[i] << " " ;
+}
+cout << " \n";
 //
 //cout << "LG Nodes: ";
 //for(int i = 0; i < ngl; ++i){
@@ -805,6 +805,7 @@ void basis :: L2Norm(const dfloat Q[],const dfloat Q_exakt[],const dfloat J[],df
     L2Error[0]=0.0;
     L2Error[1]=0.0;
     L2Error[2]=0.0;
+//cout << "Calculating L2 norm! Nelem:" << Nelem_global <<" J[xid] " << J[2000] << " Q_exakt[id] " << Q_exakt[2000] << " ngl " << ngl <<  " Neq" << Neq <<"\n";
     for (int ie=0; ie<Nelem_global; ie++)
     {
         for(int j=0; j<ngl; ++j)
@@ -815,6 +816,9 @@ void basis :: L2Norm(const dfloat Q[],const dfloat Q_exakt[],const dfloat J[],df
                 int xid = ie*ngl2   +j*ngl+i;
 
                 L2Error[0]  +=  pow(Q[id] - Q_exakt[id],2) /J[xid]* w_GL[i]* w_GL[j];
+//		if (L2Error[0]<0){
+//			cout << "L2Error[0] " << L2Error[0] << " Q[id] " << Q[id] <<" Q_exakt[id] " << Q[id] << " J[xid] " << J[xid] <<"\n";
+//		}
                 id+=ngl2;
                 L2Error[1]  +=  pow(Q[id] - Q_exakt[id],2) /J[xid]* w_GL[i]* w_GL[j];
                 id+=ngl2;
@@ -832,6 +836,7 @@ void basis :: LinfNorm(const dfloat Q[],const dfloat Q_exakt[],dfloat LinfError[
     LinfError[0]=0.0;
     LinfError[1]=0.0;
     LinfError[2]=0.0;
+    int maxErrorElement=-1;
     for (int ie=0; ie<Nelem_global; ie++)
     {
         for(int j=0; j<ngl; ++j)
@@ -839,17 +844,21 @@ void basis :: LinfNorm(const dfloat Q[],const dfloat Q_exakt[],dfloat LinfError[
             for(int i=0; i<ngl; ++i)
             {
                 int id = ie*ngl2*Neq   +j*ngl+i;
-
+		
+		if (fabs(Q[id] - Q_exakt[id])>LinfError[0]){
+			maxErrorElement=ie;
+		}
                 LinfError[0]  =  max(LinfError[0],fabs(Q[id] - Q_exakt[id]));
                 id+=ngl2;
                 LinfError[1]  =  max(LinfError[1],fabs(Q[id] - Q_exakt[id]));
                 id+=ngl2;
                 LinfError[2]  =  max(LinfError[2],fabs(Q[id] - Q_exakt[id]));
+		
             }
         }
     }
 
-
+	cout << "maximum h error was found in element : " << maxErrorElement << "\n";
 
 };
 
@@ -1030,153 +1039,3 @@ void basis :: calcTotalMass(const dfloat Q[],const dfloat J[],dfloat *TotalMass)
 
 
 
-//
-//
-//
-//
-//void basis :: CheckWhereItNaNed(const dfloat Q[],bool *isnaned,int *NaNid){
-//
-//
-//for (int ie=0; ie<Nelem;ie++){
-//
-//    for(int i=0;i<ngl;++i){
-//       for(int j=0;j<ngl;++j){
-//            int id = ie*ngl2*Neq   +j*ngl+i;
-//            if (!(Q[id] ==Q[id])){
-//                cout << "NaN at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 1 \n";
-//                *isnaned=true;
-//                *NaNid = ie;
-//            }
-//
-//            if (!(Q[id+ngl2] ==Q[id+ngl2])){
-//                cout << "NaN at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 2 \n";
-//                *isnaned=true;
-//                *NaNid = ie;
-//            }
-//            if (!(Q[id+ngl2+ngl2] ==Q[id+ngl2+ngl2])){
-//                cout << "NaN at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 3 \n";
-//                *isnaned=true;
-//                *NaNid = ie;
-//            }
-//
-//
-//            if (Q[id] > pow(10.0,2)){
-////                cout << "To high value at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 1 \n";
-//                *isnaned=true;
-//                *NaNid = ie;
-//            }
-//            if (Q[id+ngl2] > pow(10.0,8)){
-////                cout << "To high value at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 2 \n";
-//                *isnaned=true;
-//                *NaNid = ie;
-//            }
-//            if (Q[id+ngl2+ngl2] > pow(10.0,8)){
-////                cout << "To high value at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 3 \n";
-//                *isnaned=true;
-//                *NaNid = ie;
-//            }
-//        }
-//    }
-//
-//
-//
-//    }
-//}
-//
-//
-//void basis :: CheckWhereItNaNedTimeDeriv(const dfloat Q[],bool *isnaned,int *NaNid){
-//
-//
-//for (int ie=0; ie<Nelem;ie++){
-//
-//    for(int i=0;i<ngl;++i){
-//       for(int j=0;j<ngl;++j){
-//            int id = ie*ngl2*Neq   +j*ngl+i;
-//            if (!(Q[id] ==Q[id])){
-//                cout << "NaN at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 1 \n";
-//                *isnaned=true;
-//                *NaNid = ie;
-//            }
-//
-//            if (!(Q[id+ngl2] ==Q[id+ngl2])){
-//                cout << "NaN at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 2 \n";
-//                *isnaned=true;
-//                *NaNid = ie;
-//            }
-//            if (!(Q[id+ngl2+ngl2] ==Q[id+ngl2+ngl2])){
-//                cout << "NaN at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 3 \n";
-//                *isnaned=true;
-//                *NaNid = ie;
-//            }
-//
-//
-////            if (Q[id] > pow(10.0,4)){
-////                cout << "To high value at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 1 \n";
-////                *isnaned=true;
-////                *NaNid = ie;
-////            }
-////            if (Q[id+ngl2] > pow(10.0,8)){
-////                cout << "To high value at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 2 \n";
-////                *isnaned=true;
-////                *NaNid = ie;
-////            }
-////            if (Q[id+ngl2+ngl2] > pow(10.0,8)){
-////                cout << "To high value at ele: " <<ie << " (i,j) =  " <<i<<", "<<j << " Equation: 3 \n";
-////                *isnaned=true;
-////                *NaNid = ie;
-////            }
-//        }
-//    }
-//
-//
-//
-//    }
-//}
-//
-//
-//
-//
-//void basis :: EdgesCheckWhereItNaNed(const int Nfaces,const dfloat Q[],bool *isnaned,int *NaNid){
-//
-//
-//for (int ie=0; ie<Nfaces;ie++){
-//
-//    for(int i=0;i<ngl;++i){
-//            int id = ie*ngl*Neq   +i;
-//            if (!(Q[id] ==Q[id])){
-//                cout << "NaN at edge: " <<ie << " (i) =  " <<i<< " Equation: 1 \n";
-//                *isnaned=true;
-//                *NaNid = ie;
-//            }
-//            if (!(Q[id+ngl] ==Q[id+ngl])){
-//                cout << "NaN at edge: " <<ie << " (i) =  " <<i<<" Equation: 2 \n";
-//                *isnaned=true;
-//                *NaNid = ie;
-//            }
-//            if (!(Q[id+ngl+ngl] ==Q[id+ngl+ngl])){
-//                cout << "NaN at edge: " <<ie << " (i) =  " <<i<<" Equation: 3 \n";
-//                *isnaned=true;
-//                *NaNid = ie;
-//            }
-//
-////            if (Q[id] > pow(10.0,4)){
-////                cout << "To high value at ele: " <<ie << " (i) =  " <<i<<" Equation: 1 \n";
-////                *isnaned=true;
-////                *NaNid = ie;
-////            }
-////            if (Q[id+ngl] > pow(10.0,8)){
-////                cout << "To high value at ele: " <<ie << " (i) =  " <<i<<" Equation: 2 \n";
-////                *isnaned=true;
-////                *NaNid = ie;
-////            }
-////            if (Q[id+ngl+ngl] > pow(10.0,8)){
-////                cout << "To high value at ele: " <<ie << " (i) =  " <<i<<" Equation: 3 \n";
-////                *isnaned=true;
-////                *NaNid = ie;
-////            }
-//    }
-//
-//
-//
-//    }
-//}
