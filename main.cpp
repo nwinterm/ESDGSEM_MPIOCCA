@@ -394,6 +394,7 @@ int main(int argc, char *argv[])
     dfloat * Bx = (dfloat*) calloc(NoSpaceDofs,sizeof(dfloat));
     dfloat * By = (dfloat*) calloc(NoSpaceDofs,sizeof(dfloat));
     int * EdgeData = (int*) calloc(8*(Nfaces),sizeof(int));
+    int * EdgeReversed = (int*) calloc(Nfaces,sizeof(int));
     int * ElemToEdge = (int*) calloc(4*Nelem,sizeof(int));
     int * ElemEdgeMasterSlave = (int*) calloc(4*Nelem,sizeof(int));
     int * ElemEdgeOrientation = (int*) calloc(4*Nelem,sizeof(int));
@@ -431,7 +432,7 @@ int main(int argc, char *argv[])
             EdgeData[id] = DGMeshPartition.MyEdgeInfo[id2+2];  //left element
 
         }
-
+	EdgeReversed[is] = EdgeData[is*8+4]; 		// save just the orientation
     }
     for(int ie=1; ie<=Nelem; ++ie)
     {
@@ -441,17 +442,15 @@ int main(int argc, char *argv[])
         {
             int ifa  = DGMeshPartition.MyElementToEdge[id+is];
             idFace = (ifa-1)*8;
-            if ((EdgeData[idFace+5] == MPI.rank) && (EdgeData[idFace]==ie-1))	//if left element is on this processor and this is the left element
-            {
-                //this is the left element to this edge!
-                ElemEdgeMasterSlave[id+is]=1;
-                ElemEdgeOrientation[id+is]=1;   //order is never reversed for left element! as it is master
-            }
-            else
-            {
-                ElemEdgeMasterSlave[id+is]=-1;
-                ElemEdgeOrientation[id+is]=EdgeData[idFace+4];
-            }
+	
+
+	    ElemEdgeMasterSlave[id+is]=DGMeshPartition.MyElemEdgeMasterSlave[id+is];
+	    if (EdgeData[idFace]==ie-1){
+	    	ElemEdgeOrientation[id+is]=1;
+	    }else{
+		ElemEdgeOrientation[id+is]=EdgeData[idFace+4]; 
+	     }	
+
             ElemToEdge[id+is]   = ifa;
         }
     }
@@ -629,26 +628,7 @@ int main(int argc, char *argv[])
 					
 				}
 			}
-			cout << "Metric IDs 1 \n"; 
-			for (int ie=255;ie<256;ie++){
-				for(int j=0;j<ngl;++j){
-					for(int i=0;i<ngl;++i){
-						int id = ie*ngl2+  j*ngl+i;
-					   cout <<MetricIdentities1[id] << "  ,  ";	//*J[id]
-				  }
-					cout << "\n";
-				}
-			}
-			cout << "Metric IDs 2 \n"; 
-			for (int ie=255;ie<256;ie++){
-				for(int j=0;j<ngl;++j){
-					for(int i=0;i<ngl;++i){
-						int id = ie*ngl2+  j*ngl+i;
-					   cout <<MetricIdentities2[id] << " , ";	//*J[id]
-				  }
-					cout << "\n";
-				}
-			}
+
 
 
 free(MetricIdentities1);
@@ -704,7 +684,7 @@ free(MetricIdentities2);
     occa_device.copyDeviceVariables(  PositivityPreserving, Nelem,GLw,
                                       normalsX,   normalsY,  Scal,  y_xi, y_eta, x_xi, x_eta, b,  Bx, By,
                                       Dmat, DGBasis.Dstrong, Dhat,  J,  x_phy,  y_phy,  q,  ElementSizes,  gRK,  Qt,
-                                      VdmInv,  DCentralFD,  DforwardFD,  DbackwardFD, ElemEdgeMasterSlave, ElemEdgeOrientation, ElemToEdge, EdgeData);
+                                      VdmInv,  DCentralFD,  DforwardFD,  DbackwardFD, ElemEdgeMasterSlave, ElemEdgeOrientation, ElemToEdge, EdgeData,EdgeReversed );
 
 
     if(MPI.rank==0)
@@ -729,6 +709,7 @@ free(MetricIdentities2);
     free(Bx);
     free(By);
     free(EdgeData);
+    free(EdgeReversed );
     free(ElemToEdge);
     free(ElemEdgeMasterSlave);
     free(ElemEdgeOrientation);

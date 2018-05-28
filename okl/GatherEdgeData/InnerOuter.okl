@@ -29,7 +29,6 @@ kernel void CollectEdgeData(const int Nfaces,
                     const int ier           =EdgeData[8*ifa+1];       //right element
                     const int isl           =EdgeData[8*ifa+2];       //side within left element
                     const int isr           =EdgeData[8*ifa+3];      //side within right element
-                    const int ireversed     =EdgeData[8*ifa+4];           //is order reversed? 0=yes, 1=no
                     const int cpuL          =EdgeData[8*ifa+5];     // rank of cpuL
                     const int cpuR          =EdgeData[8*ifa+6];     // rank of cpuR
                     const int increment = (1-ireversed)*(ngl-1-i) + ireversed*i;
@@ -92,16 +91,16 @@ kernel void CollectEdgeData(const int Nfaces,
                         switch(isr)
                         {
                         case (0): //bottom side
-                            idR = ier*ngl2*Neq+increment ;
+                            idR = ier*ngl2*Neq+i ;
                             break;
                         case (2): //top side
-                            idR = ier*ngl2*Neq+ngl2-ngl+increment ;
+                            idR = ier*ngl2*Neq+ngl2-ngl+i ;
                             break;
                         case (3): //left side
-                            idR = ier*ngl2*Neq+increment *ngl;
+                            idR = ier*ngl2*Neq+i *ngl;
                             break;
                         case (1): //right side
-                            idR = ier*ngl2*Neq+(increment +1)*ngl-1;
+                            idR = ier*ngl2*Neq+(i +1)*ngl-1;
                             break;
 
                         }

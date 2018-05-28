@@ -1,4 +1,5 @@
 kernel void calcDiscBottomSurf(const int Nfaces,
+                          	const int  * restrict  edgeReversed,
                                const dfloat * restrict  qL,
                                const dfloat * restrict  qR,
                                const dfloat * restrict  bL,
@@ -23,16 +24,18 @@ kernel void calcDiscBottomSurf(const int Nfaces,
 
                 if (ifa<Nfaces)
                 {
-
+		     const int ireversed = edgeReversed[ifa];
                     const int edgeID=ifa*ngl*Neq + i;   //for edge wise solution
                     const int edgeIDX=ifa*ngl + i;      //for edge wise spatial values (BOTTOM)
+		    const int edgeIDR = ifa*ngl*Neq + (1-ireversed)*(ngl-1-i) + ireversed*i;
+		    const int edgeIDXR = ifa*ngl + (1-ireversed)*(ngl-1-i) + ireversed*i;
 
 
                     const dfloat scaling=Scal[edgeIDX];
                     const dfloat nx=normalx[edgeIDX];
                     const dfloat ny=normaly[edgeIDX];
 
-                    const dfloat rJumpTerm =  scaling*geomFace*  fourth* g_const*(bR[edgeIDX]-bL[edgeIDX]) *  (qL[edgeID] + qR[edgeID]);
+                    const dfloat rJumpTerm =  scaling*geomFace*  fourth* g_const*(bR[edgeIDXR ]-bL[edgeIDX]) *  (qL[edgeID] + qR[edgeIDR ]);
 
                     discBottomSurf1[edgeIDX]  = -nx*rJumpTerm;
                     discBottomSurf2[edgeIDX]  = -ny*rJumpTerm;

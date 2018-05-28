@@ -1065,16 +1065,36 @@ void MeshPartitioning::SortMPIEdges(const MPI_setup MPI)
                 int id = is*10+info;
                 MyEdgeInfo[id]=EdgeInfoTMP[id];
             }
+		// TESTING BUGFIX FOR REVERSED ORIENTATION ON MPI EDGES!!!!!!!!!!!!!
+//		int id = is*10+6;
+//		if (MyEdgeInfo[id+2]!=MyEdgeInfo[id+1]){	// check if this is a MPI edge
+//			if (MyEdgeInfo[is*10+6]==0 ){		// check if orientation is flipped
+//                		if (SwitchLeftRight[is] ==1){	// check if left and right state where changed for this rank
+//               				MyEdgeInfo[id]=-1;	// if this edge was Left/Right changed here and is an orientation flipped edge, note that now the left side is to be flipped!
+//				}else{
+//					MyEdgeInfo[id]=1;	// left/right state was not changed, but this is orientation flipped edge and MPI edge -> edge values will be flipped on OTHER rank and come to this rank correctly
+//				}
+//			}
+//                }
         }
 
         for (int is = 0; is<NumEdges; is++)
         {
             for (int i = 0; i<ngl; i++)
             {
-                int id= is*ngl+i;
-                nx_global[id]=nx_globalTMP[id];
-                ny_global[id]=ny_globalTMP[id];
-                scal_global[id]=scal_globalTMP[id];
+		int id= is*ngl+i;
+		int id_new = id;
+
+                if (SwitchLeftRight[is] ==1){	// check if left and right state where changed for this rank
+			if (MyEdgeInfo[is*10+6]==0 ){
+		               	id_new = is*ngl+ngl-1-i;}
+		}
+
+                
+		nx_global[id_new]=nx_globalTMP[id];
+                ny_global[id_new]=ny_globalTMP[id];
+                scal_global[id_new]=scal_globalTMP[id];
+		
             }
         }
 

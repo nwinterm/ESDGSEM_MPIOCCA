@@ -58,11 +58,11 @@ basis::basis(const int Ninput, const int FluxDifferencing)
     LGLNodesAndWeights();
     GaussNodesAndWeights();
 
-//cout << "LGL Nodes: ";
-//for(int i = 0; i < ngl; ++i){
-//cout << " " << x_GL[i] << " " ;
-//}
-//cout << " \n";
+cout << "LGL Nodes: ";
+for(int i = 0; i < ngl; ++i){
+cout << " " << x_GL[i] << " " ;
+}
+cout << " \n";
 //
 cout << "LGL Weights: ";
 for(int i = 0; i < ngl; ++i){

@@ -212,7 +212,7 @@ void deviceclass:: initDeviceVariables(const int N,
     o_ny = device.malloc(ngl*Nfaces*sizeof(dfloat));
     o_scal = device.malloc(ngl*Nfaces*sizeof(dfloat));
     o_EdgeData = device.malloc(8*Nfaces*sizeof(int));
-
+    o_EdgeReversed = device.malloc(Nfaces*sizeof(int));
 
     o_DBSurf1 = device.malloc(Nfaces*ngl*sizeof(dfloat));
     o_DBSurf2 = device.malloc(Nfaces*ngl*sizeof(dfloat));
@@ -412,7 +412,7 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
 void deviceclass:: copyDeviceVariables( const int PositivityPreserving, const int Nelem,const dfloat* GLw,
                                         const dfloat * normalsX, const dfloat * normalsY, const dfloat* Scal, const dfloat* y_xi, const dfloat*y_eta, const dfloat*x_xi, const dfloat*x_eta, const dfloat*b, const dfloat* Bx, const dfloat*By,
                                         const dfloat* Dmat, const dfloat*Dstrong, const dfloat*Dhat, const dfloat* J, const dfloat* x_phy, const dfloat* y_phy, const dfloat* q, const dfloat* ElementSizes, const dfloat* gRK, const dfloat* Qt,
-                                        const dfloat* VdmInv, const dfloat* DCentralFD, const dfloat* DforwardFD, const dfloat* DbackwardFD, const int*ElemEdgeMasterSlave, const int*ElemEdgeOrientation, const int*ElemToEdge, const int*EdgeData)
+                                        const dfloat* VdmInv, const dfloat* DCentralFD, const dfloat* DforwardFD, const dfloat* DbackwardFD, const int*ElemEdgeMasterSlave, const int*ElemEdgeOrientation, const int*ElemToEdge, const int*EdgeData, const int*EdgeReversed)
 {
 
     o_nx.copyFrom(normalsX);
@@ -457,6 +457,7 @@ void deviceclass:: copyDeviceVariables( const int PositivityPreserving, const in
     o_ElemEdgeOrientation.copyFrom(ElemEdgeOrientation);
     o_ElemToEdge.copyFrom(ElemToEdge);
     o_EdgeData.copyFrom(EdgeData);
+    o_EdgeReversed.copyFrom(EdgeReversed);
 
 }
 
@@ -805,8 +806,8 @@ if (rkstage ==3){
             o_qL.copyFrom(qL);
             o_qR.copyFrom(qR);
 
-            calcNumFluxes(Nfaces,o_nx,o_ny,o_scal,o_qL,o_qR,o_bL,o_bR,o_SurfaceParts);
-            calcDiscBottomSurf(Nfaces,o_qL,o_qR, o_bL,o_bR,o_nx,o_ny,o_scal,o_DBSurf1,o_DBSurf2);
+            calcNumFluxes(Nfaces,o_EdgeReversed,o_nx,o_ny,o_scal,o_qL,o_qR,o_bL,o_bR,o_SurfaceParts);
+            calcDiscBottomSurf(Nfaces,o_EdgeReversed,o_qL,o_qR, o_bL,o_bR,o_nx,o_ny,o_scal,o_DBSurf1,o_DBSurf2);
 
 if (rkstage ==3){
 o_SurfaceParts.copyTo(SurfParts);
@@ -1131,6 +1132,7 @@ void deviceclass:: freeOccaVars(const int rkSSP, const int PositivityPreserving,
     o_ny.free();
     o_scal.free();
     o_EdgeData.free();
+o_EdgeReversed.free();
 
 
     o_DBSurf1.free();

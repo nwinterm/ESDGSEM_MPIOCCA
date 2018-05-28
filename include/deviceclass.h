@@ -70,7 +70,8 @@ public:
                               const int*ElemEdgeMasterSlave,
                               const int*ElemEdgeOrientation,
                               const int*ElemToEdge,
-                              const int*EdgeData);
+                              const int*EdgeData,
+			      const int*EdgeReversed);
     void freeOccaVars(const int rkSSP,
                       const int PositivityPreserving,
                       const int ArtificialViscosity );
@@ -144,6 +145,8 @@ public:
     occa::memory o_x,o_y;
     occa::memory o_qL,o_qR,o_bL,o_bR;
     occa::memory o_EdgeData;
+    occa::memory o_EdgeReversed;
+
     occa::memory o_qGradientX, o_qGradientY,o_SurfGradientX,o_SurfGradientY ;
     occa::memory o_qGradientXL,o_qGradientXR,o_qGradientYL,o_qGradientYR;
     occa::memory o_SurfacePartsVisc;

@@ -798,7 +798,7 @@ void   SW2D::InitB(const int IsMeshSplit,const MeshPartitioning MeshSplit,const 
                 }
                 case 8:      // convergence test
                 {
-                      b[xid] =  2.0+sin(y[xid])+cos(x[xid]);
+                      b[xid] = 2.0+sin(y[xid])+cos(x[xid]);
                     break;
                 }
                 case 30:     // Steeper Dam Break To Test Shock Capturing

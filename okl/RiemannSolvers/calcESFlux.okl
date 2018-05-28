@@ -1,4 +1,5 @@
 kernel void calcNumFluxes(const int Nfaces,
+                          const int  * restrict  edgeReversed,
                           const dfloat * restrict  normalx,
                           const dfloat * restrict  normaly,
                           const dfloat * restrict Scal,
@@ -25,6 +26,9 @@ kernel void calcNumFluxes(const int Nfaces,
 
                     const int edgeIDX=ifa*ngl + i;              //for normals!!
                     const int edgeID=ifa*ngl*Neq + i;           //for values!!
+ 		    const int ireversed = edgeReversed[ifa];
+		    const int edgeIDR = ifa*ngl*Neq + (1-ireversed)*(ngl-1-i) + ireversed*i;
+		    const int edgeIDXR = ifa*ngl + (1-ireversed)*(ngl-1-i) + ireversed*i;
 
 
                     const dfloat nx=normalx[edgeIDX];
@@ -53,14 +57,14 @@ kernel void calcNumFluxes(const int Nfaces,
 
 
 
-                    dfloat hR=qR[edgeID];
+                    dfloat hR=qR[edgeIDR ];
                     dfloat uR;
                     dfloat vR;
 
                     if(hR>=PosPresTOL)
                     {
-                        uR=qR[edgeID+ngl]/hR;
-                        vR=qR[edgeID+ngl+ngl]/hR;
+                        uR=qR[edgeIDR +ngl]/hR;
+                        vR=qR[edgeIDR +ngl+ngl]/hR;
 
                     }
                     else
@@ -92,7 +96,7 @@ kernel void calcNumFluxes(const int Nfaces,
 
 
                         const dfloat bL=BL[edgeIDX];
-                        const dfloat bR=BR[edgeIDX];
+                        const dfloat bR=BR[edgeIDXR ];
 
 
                         const dfloat cL=g_const*hL;
