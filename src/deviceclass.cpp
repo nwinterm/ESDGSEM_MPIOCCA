@@ -112,7 +112,7 @@ void deviceclass:: initDeviceVariables(const int N,
         nglPad=1;
     }
     dfloat TOL_PosPres = PosPresTOL;//pow(10.0,-4);
-    dfloat ZeroTOL = pow(10.0,-10);
+    dfloat ZeroTOL = pow(10.0,-12);
 
     dfloat zero = 0.0;
     dfloat half = 0.5;
@@ -172,6 +172,7 @@ void deviceclass:: initDeviceVariables(const int N,
     }
 
     o_DcentralFD  = device.malloc(ngl2*sizeof(dfloat));
+    o_D_SBP  = device.malloc(ngl2*sizeof(dfloat));
     o_DforwardFD  = device.malloc(ngl2*sizeof(dfloat));
     o_DbackwardFD  = device.malloc(ngl2*sizeof(dfloat));
 
@@ -264,7 +265,8 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
                                       const int NumFlux,
                                       const int rkSSP,
                                       const int ArtificialViscosity,
-                                      const int PositivityPreserving )
+                                      const int PositivityPreserving,
+					const int HalfDryOperator )
 {
 
 
@@ -288,11 +290,11 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
         addS = device.buildKernelFromSource("okl/ManufacturedSolutions/S_ConvTest3.okl","addS",info);
         break;
     }
-    case 6:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
-    {
-        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/InnerOuter.okl","CollectEdgeData",info);
-        break;
-    }
+//    case 6:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
+//    {
+//        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/InnerOuter.okl","CollectEdgeData",info);
+//        break;
+//    }
     case 32:  // Inflow Boundaries for 3 Mound PP test case
     {
         CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/3MoundInflow.okl","CollectEdgeData",info);
@@ -327,7 +329,11 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
     }
 
     // FD = FINITE DIFFERENCE HERE
-    VolumeKernelFD=device.buildKernelFromSource("okl/NEW_OPERATOR/VolumeKernelFD.okl","VolumeKernelFD",info);
+
+
+	if(HalfDryOperator==1){
+	    VolumeKernelFD=device.buildKernelFromSource("okl/NEW_OPERATOR/VolumeKernelFD.okl","VolumeKernelFD",info);
+	}
 
     switch(NumFlux)
     {
@@ -364,7 +370,6 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
     SurfaceKernel=device.buildKernelFromSource("okl/DG/SurfaceKernel.okl","SurfaceKernel",info);
     //kernel to compute eigenvalues
     FindLambdaMax           =   device.buildKernelFromSource("okl/DG/FindLambdaMax.okl","FindLambdaMax",info);
-    FindDryElements=   device.buildKernelFromSource("okl/DG/FindDryElements.okl","FindDryElements",info);
 
     if (rkSSP)
     {
@@ -396,6 +401,7 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
     if (PositivityPreserving)
     {
         //calcAvg      =   device.buildKernelFromSource("okl/Positivity/calcAvg.okl","calcAvg",info);
+	    FindDryElements=   device.buildKernelFromSource("okl/DG/FindDryElements.okl","FindDryElements",info);
         preservePosivitity      =   device.buildKernelFromSource("okl/Positivity/PosPres.okl","PosPres",info);
     }
 
@@ -412,7 +418,7 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
 void deviceclass:: copyDeviceVariables( const int PositivityPreserving, const int Nelem,const dfloat* GLw,
                                         const dfloat * normalsX, const dfloat * normalsY, const dfloat* Scal, const dfloat* y_xi, const dfloat*y_eta, const dfloat*x_xi, const dfloat*x_eta, const dfloat*b, const dfloat* Bx, const dfloat*By,
                                         const dfloat* Dmat, const dfloat*Dstrong, const dfloat*Dhat, const dfloat* J, const dfloat* x_phy, const dfloat* y_phy, const dfloat* q, const dfloat* ElementSizes, const dfloat* gRK, const dfloat* Qt,
-                                        const dfloat* VdmInv, const dfloat* DCentralFD, const dfloat* DforwardFD, const dfloat* DbackwardFD, const int*ElemEdgeMasterSlave, const int*ElemEdgeOrientation, const int*ElemToEdge, const int*EdgeData, const int*EdgeReversed)
+                                        const dfloat* VdmInv, const dfloat* D_SBP, const dfloat* DCentralFD, const dfloat* DforwardFD, const dfloat* DbackwardFD, const int*ElemEdgeMasterSlave, const int*ElemEdgeOrientation, const int*ElemToEdge, const int*EdgeData, const int*EdgeReversed)
 {
 
     o_nx.copyFrom(normalsX);
@@ -440,9 +446,14 @@ void deviceclass:: copyDeviceVariables( const int PositivityPreserving, const in
     o_VdmInv.copyFrom(VdmInv);
     //o_SubCellMat.copyFrom(SubCellMat);
     o_DcentralFD.copyFrom(DCentralFD);
+    o_D_SBP.copyFrom(D_SBP);
     o_DforwardFD.copyFrom(DforwardFD);
     o_DbackwardFD.copyFrom(DbackwardFD);
 
+	int * isPartlyDry= (int*) calloc(Nelem,sizeof(int));
+
+	o_isPartlyDry.copyFrom(isPartlyDry);
+free(isPartlyDry);
 
     dfloat * qavgtmp = (dfloat*) calloc(Nelem*4,sizeof(dfloat));
     if(PositivityPreserving == 1)
@@ -453,6 +464,7 @@ void deviceclass:: copyDeviceVariables( const int PositivityPreserving, const in
 
     }
     free(qavgtmp);
+
     o_ElemEdgeMasterSlave.copyFrom(ElemEdgeMasterSlave);
     o_ElemEdgeOrientation.copyFrom(ElemEdgeOrientation);
     o_ElemToEdge.copyFrom(ElemToEdge);
@@ -482,7 +494,8 @@ void deviceclass:: DGtimeloop(const int Nelem,
                               const dfloat g_const,
                               const int PlotVar,
                               const int EntropyPlot,
-                              const int PositivityPreserving
+                              const int PositivityPreserving,
+				const int HalfDryOperator
                              )
 {
 
@@ -674,10 +687,16 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
 
     cout << "about to enter time loop";
 
+	// Find dry Elements in initial solution - Later o_isPartlyDry is updated by the PosPres kernel!
+	if(PositivityPreserving==1){
+            FindDryElements(Nelem, o_q, o_isPartlyDry);
+	}
+
 
     while (t<T)
     {
         FindLambdaMax(Nelem, o_q, o_LambdaMax);
+
 
         globalLambdaMax=0.0;
         o_LambdaMax.copyTo(LocalLambdas);
@@ -692,7 +711,7 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
         }
         if ( ArtificialViscosity==1)
         {
-            ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara,o_ViscForPlot);
+            ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_isPartlyDry,o_ViscPara,o_ViscForPlot);
             o_ViscPara.copyTo(ViscPara);
             GetGlobalViscParaMax(MPI,  MeshSplit,ViscPara, &maxViscPara);
 //	   cout << "Visc para max: " << maxViscPara <<"\n";
@@ -734,6 +753,9 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
                 intermediatetime += rkB*dt;
             }
 
+
+
+
             CollectEdgeData(Nfaces,o_EdgeData,o_q,o_x,o_y,o_nx,o_ny, o_bL,o_bR, o_qL, o_qR, intermediatetime);
             o_qL.copyTo(qL);
             o_qR.copyTo(qR);
@@ -741,7 +763,6 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
 
 
 
-//            FindDryElements(Nelem, o_q, o_isPartlyDry);
 //device.finish();
 //	o_isPartlyDry.copyTo(isDryElement);
 //	for (int ie=0;ie<Nelem;ie++){
@@ -752,10 +773,17 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
 //	}
 
 // CORRECT VOLUME KERNEL
+//            VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_Qt); //o_isPartlyDry,
+            VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_isPartlyDry,o_Qt); //o_isPartlyDry,
 
-            VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_Qt); //o_isPartlyDry,
+	if(HalfDryOperator==1){
+//		cout << "Actually using the FD kernel!\n";
 
-if (rkstage ==3){
+            VolumeKernelFD(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_isPartlyDry,o_D_SBP,o_DcentralFD,o_DforwardFD,o_DbackwardFD,o_B,o_Qt);
+	}
+
+
+if (rkstage ==-1){
 			o_Qt.copyTo(Qt);
 	device.finish();
 
@@ -780,7 +808,6 @@ if (rkstage ==3){
 // NEW ONE FOR PARTIALLY WET ELEMENTS
 
 
-//            VolumeKernelFD(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_isPartlyDry,o_DcentralFD,o_DforwardFD,o_DbackwardFD,o_B,o_Qt);
 
 
 //			o_Qt.copyTo(Qt);
@@ -809,7 +836,7 @@ if (rkstage ==3){
             calcNumFluxes(Nfaces,o_EdgeReversed,o_nx,o_ny,o_scal,o_qL,o_qR,o_bL,o_bR,o_SurfaceParts);
             calcDiscBottomSurf(Nfaces,o_EdgeReversed,o_qL,o_qR, o_bL,o_bR,o_nx,o_ny,o_scal,o_DBSurf1,o_DBSurf2);
 
-if (rkstage ==3){
+if (rkstage ==-3){
 o_SurfaceParts.copyTo(SurfParts);
 o_scal.copyTo(scal);
 o_nx.copyTo(nx);
@@ -826,7 +853,7 @@ for(int ie=0;ie<Nfaces;++ie){
 }
 
             SurfaceKernel(Nelem,o_Jac,o_ElemEdgeMasterSlave,o_ElemEdgeOrientation,o_ElemToEdge, o_SurfaceParts,o_DBSurf1,o_DBSurf2,o_Qt);
-if (rkstage==4){
+if (rkstage==-1){
 			o_Qt.copyTo(Qt);
 	device.finish();
 
@@ -853,7 +880,7 @@ if (rkstage==4){
                 // at first RK step we already now o_ViscPara from time step computation!
                 if (rkstage>0)
                 {
-                    ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara,o_ViscForPlot,o_isPartlyDry);
+                    ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_isPartlyDry,o_ViscPara,o_ViscForPlot);
                 }
 
                 calcNumFluxesGradient(Nfaces,o_EdgeData,o_nx,o_ny,o_scal, o_qL, o_qR, o_bL,o_bR, o_SurfGradientX,o_SurfGradientY);
@@ -919,48 +946,12 @@ if (rkstage==4){
                 UpdateKernel(Nelem,rkC,dt,o_gRK,o_q);
             }
 
+
             if(PositivityPreserving==1)
             {
-//                calcAvg(Nelem,o_EleSizes,o_GLw, o_Jac,o_q,o_Qavg);
+                preservePosivitity(Nelem,o_EleSizes,o_GLw, o_Jac, o_isPartlyDry,o_q);
 
-//                dfloat * qavgtmp = (dfloat*) calloc(Nelem*4,sizeof(dfloat));
-////                o_Qavg.copyTo(qavgtmp);
-////                for (int i=0; i<1;i++){
-////
-////                    cout << "Ele: " << i << " ";
-////                    cout << "Avg H: " << qavgtmp[i*4] << " ";
-////                    cout << "Avg Hu: " << qavgtmp[i*4+1] << " ";
-////                    cout << "Avg Hv: " << qavgtmp[i*4+2] << " ";
-////                    cout << "Min H: " << qavgtmp[i*4+3] << " \n";
-////                }
-////                free(qavgtmp);
-
-
-
-
-//                preservePosivitity(Nelem,o_Qavg,o_q);
-
-//                // old kernel header
-
-
-//			o_q.copyTo(q);
-//			for (int ie=0;ie<Nelem;ie++){
-//				for(int j=0;j<ngl;++j){
-//					for(int i=0;i<ngl;++i){
-//						int id = ie*ngl2*Neq +  j*ngl+i;
-//						if (q[id]<0){
-//							cout << "Less than zero at Element: " << ie << " node: (" <<i <<", " <<j <<"\n";
-//							cout << "Water height: " <<q[id] <<" \n";
-//						}
-//				  	}
-//				}
-//			}
-
-
-                preservePosivitity(Nelem,o_EleSizes,o_GLw, o_Jac,o_q);
-//
             }
-
 
 
 

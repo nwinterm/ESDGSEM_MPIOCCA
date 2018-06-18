@@ -69,6 +69,7 @@ int main(int argc, char *argv[])
     int EntropyPlot;
     int ArtificialViscosity;
     int PositivityPreserving;
+    int HalfDryOperator;
     int rkorder;
     int rkSSP;
     int ES,Cartesian,Fluxdifferencing;
@@ -155,7 +156,8 @@ int main(int argc, char *argv[])
                       &NEsurfpad,
                       &Nedgepad,
                       &KernelVersion,
-                      &KernelVersionSTD);
+                      &KernelVersionSTD,
+			&HalfDryOperator);
     }
 
     ShareInputData(MPI,
@@ -184,7 +186,8 @@ int main(int argc, char *argv[])
                    &NEsurfpad,
                    &Nedgepad,
                    &KernelVersion,
-                   &KernelVersionSTD);
+                   &KernelVersionSTD,
+			&HalfDryOperator);
 
     if (Testcase == 31)
     {
@@ -208,6 +211,7 @@ int main(int argc, char *argv[])
         cout <<"ArtificialViscosity: " <<ArtificialViscosity <<"\n";
         cout <<"PositivityPreserving: " <<PositivityPreserving <<"\n";
         cout <<"PosPresTOL: " <<PosPresTOL <<"\n";
+        cout <<"HalfDryOperator: " <<HalfDryOperator <<"\n";
         cout <<"epsilon_0: " <<epsilon_0 <<"\n";
         cout <<"sigma_min: " <<sigma_min <<"\n";
         cout <<"sigma_max: " <<sigma_max <<"\n";
@@ -528,6 +532,7 @@ int main(int argc, char *argv[])
     dfloat Dhat[ngl2];
     dfloat VdmInv[ngl2];
     dfloat DCentralFD[ngl2];
+    dfloat D_SBP[ngl2];
     dfloat DforwardFD[ngl2];
     dfloat DbackwardFD[ngl2];
 
@@ -545,6 +550,7 @@ int main(int argc, char *argv[])
             DCentralFD[Did] = DGBasis.DCentralFD[Did];
             DforwardFD[Did] = DGBasis.DforwardFD[Did];
             DbackwardFD[Did] = DGBasis.DbackwardFD[Did];
+            D_SBP[Did] =DGBasis.D_SBP[Did];
 
             //            SubCellMat[Did] = DGBasis.SubCellMat(i+1,l+1);
         }
@@ -684,7 +690,7 @@ free(MetricIdentities2);
     occa_device.copyDeviceVariables(  PositivityPreserving, Nelem,GLw,
                                       normalsX,   normalsY,  Scal,  y_xi, y_eta, x_xi, x_eta, b,  Bx, By,
                                       Dmat, DGBasis.Dstrong, Dhat,  J,  x_phy,  y_phy,  q,  ElementSizes,  gRK,  Qt,
-                                      VdmInv,  DCentralFD,  DforwardFD,  DbackwardFD, ElemEdgeMasterSlave, ElemEdgeOrientation, ElemToEdge, EdgeData,EdgeReversed );
+                                      VdmInv,D_SBP,  DCentralFD,  DforwardFD,  DbackwardFD, ElemEdgeMasterSlave, ElemEdgeOrientation, ElemToEdge, EdgeData,EdgeReversed );
 
 
     if(MPI.rank==0)
@@ -728,7 +734,7 @@ free(MetricIdentities2);
     {
         cout <<"Build Kernels...\n";
     }
-    occa_device.buildDeviceKernels(  KernelVersion,   KernelVersionSTD,   Testcase,   Fluxdifferencing,   NumFlux,  rkSSP,   ArtificialViscosity,   PositivityPreserving );
+    occa_device.buildDeviceKernels(  KernelVersion,   KernelVersionSTD,   Testcase,   Fluxdifferencing,   NumFlux,  rkSSP,   ArtificialViscosity,   PositivityPreserving, HalfDryOperator );
 
     cout <<"rank: " << MPI.rank << " GB allocated on device: " << occa_device.device.bytesAllocated()/(1024.f*1024*1024) << "\n";
 
@@ -788,7 +794,8 @@ free(MetricIdentities2);
                            g_const,
                            PlotVar,
                            EntropyPlot,
-                           PositivityPreserving
+                           PositivityPreserving,
+				HalfDryOperator
                           );
 
 

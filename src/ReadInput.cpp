@@ -108,7 +108,8 @@ void ReadInputFile(int *N,
                    int *NEsurfpad,
                    int *Nedgepad,
                    int *KernelVersion,
-                   int * KernelVersionSTD)
+                   int * KernelVersionSTD,
+			int * HalfDryOperator)
 {
 
 //,dfloat T, dfloat g_const
@@ -201,6 +202,8 @@ void ReadInputFile(int *N,
     {
         *KernelVersionSTD= getIntValue(current_string);
     }
+    std::getline(InputStream, current_string);
+    *HalfDryOperator= getIntValue(current_string);
 
 }
 

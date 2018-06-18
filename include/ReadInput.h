@@ -33,7 +33,8 @@ void ReadInputFile(int *N,
                    int * NEsurfpad,
                    int * Nedgepad,
                    int * KernelVersion,
-                   int * KernelVersionSTD);
+                   int * KernelVersionSTD,
+			int * HalfDryoperator);
 
 void ReadCartesianData(const int, const int, dfloat *xL,dfloat *xR,dfloat *yL,dfloat *yR, int *NelemX, int *NelemY,bool *PeriodicBD_X,bool *PeriodicBD_Y);
 

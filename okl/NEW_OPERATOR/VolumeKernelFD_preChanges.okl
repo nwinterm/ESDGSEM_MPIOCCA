@@ -20,16 +20,21 @@ kernel void VolumeKernelFD(const int Nelem,
     {
         shared dfloat s_Q1[NEpad][ngl][ngl+nglPad];
         shared dfloat s_B[NEpad][ngl][ngl+nglPad];
-
+        shared dfloat s_F1[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_F2_1[NEpad][ngl][ngl+nglPad];
         shared dfloat s_F2_2[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_F3[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_G1[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_G2[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_G3_1[NEpad][ngl][ngl+nglPad];
         shared dfloat s_G3_2[NEpad][ngl][ngl+nglPad];
+        shared dfloat s_DcentralFD[ngl][ngl+nglPad];
 
         shared dfloat s_F2_BD[NEpad][ngl][ngl+nglPad];
         shared dfloat s_G3_BD[NEpad][ngl][ngl+nglPad];
 
         shared dfloat s_DupwindFD[ngl][ngl+nglPad];
         shared dfloat s_DdownwindFD[ngl][ngl+nglPad];
-        shared dfloat s_DcentralFD[ngl][ngl+nglPad];
 
 
         for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
@@ -62,16 +67,43 @@ kernel void VolumeKernelFD(const int Nelem,
                             dfloat r_invQ1=zero;
                             dfloat r_h=s_Q1[ieLoc][i][j];
                             dfloat r_H= r_h+r_b;
+                            dfloat r_hu=zero;
+                            dfloat r_hv=zero;
+
+                            if (r_h>PosPresTOL)
+                            {
+                                r_hu      =   Q[Fid+ngl2];
+                                r_hv      =   Q[Fid+ngl2+ngl2];
+                                r_invQ1   =   one/r_h;
+                            }
+                            else
+                            {
+                                r_h		  =	  zero;
+                            }
 
 
-
-                            const dfloat F2_BD =  half_g*r_h*r_h;
+                            const dfloat F1 = r_hu;
+                            const dfloat F2_BD = r_hu*r_hu*r_invQ1 + half_g*r_h*r_h;
+                            //const dfloat F2 = r_hu*r_hu*r_invQ1 + half_g*r_H*r_H - g_const * r_H*r_b;
+                            const dfloat F2_1 = r_hu*r_hu*r_invQ1 ;
                             const dfloat F2_2 =  g_const*r_h;
-                            const dfloat G3_BD =  half_g*r_h*r_h;
+                            const dfloat F3 = r_hv*r_hu*r_invQ1;
+                            const dfloat G1 = r_hv;
+                            const dfloat G2 = r_hu*r_hv*r_invQ1;
+                            const dfloat G3_BD = r_hv*r_hv*r_invQ1 + half_g*r_h*r_h;
+                            //const dfloat G3 = r_hv*r_hv*r_invQ1 + half_g*r_H*r_H- g_const * r_H*r_b;
+                            const dfloat G3_1 = r_hv*r_hv*r_invQ1 ;
                             const dfloat G3_2 =  g_const*r_h;
 
+                            s_F1[ieLoc][i][j]= F1;
+                            s_G1[ieLoc][i][j]= G1;
 
+                            s_F2_1[ieLoc][i][j]=F2_1;
                             s_F2_2[ieLoc][i][j]=F2_2;
+                            s_G2[ieLoc][i][j]=G2;
+
+                            s_F3[ieLoc][i][j]=  F3;
+                            s_G3_1[ieLoc][i][j]=  G3_1;
                             s_G3_2[ieLoc][i][j]=  G3_2;
                             s_F2_BD[ieLoc][i][j]=F2_BD;
                             s_G3_BD[ieLoc][i][j]=G3_BD;
@@ -98,14 +130,22 @@ kernel void VolumeKernelFD(const int Nelem,
                     {
                         if (isPartlyDry[eleID]==1)
                         {
-                            dfloat FxiDeriv2_2=zero;
-                            dfloat FetaDeriv2_2=zero;
-                            dfloat GxiDeriv3_2=zero;
-                            dfloat GetaDeriv3_2=zero;
+                            dfloat FxiDeriv1=zero;
                             dfloat FxiDeriv2=zero;
+                            dfloat FxiDeriv2_2=zero;
+                            dfloat FxiDeriv3=zero;
+                            dfloat FetaDeriv1=zero;
                             dfloat FetaDeriv2=zero;
+                            dfloat FetaDeriv2_2=zero;
+                            dfloat FetaDeriv3=zero;
+                            dfloat GxiDeriv1=zero;
+                            dfloat GxiDeriv2=zero;
                             dfloat GxiDeriv3=zero;
+                            dfloat GxiDeriv3_2=zero;
+                            dfloat GetaDeriv1=zero;
+                            dfloat GetaDeriv2=zero;
                             dfloat GetaDeriv3=zero;
+                            dfloat GetaDeriv3_2=zero;
 
                             dfloat BxiDeriv=zero;
                             dfloat BetaDeriv=zero;
@@ -139,7 +179,7 @@ kernel void VolumeKernelFD(const int Nelem,
 
 
 
-                            if(r_h > PosPresTOL){
+                            //if(r_h > PosPresTOL){
 
                             if (j==0)
                             {
@@ -148,7 +188,13 @@ kernel void VolumeKernelFD(const int Nelem,
                                     const dfloat r_Dp1 = s_DupwindFD[j][1];
                                     const dfloat r_D = s_DupwindFD[j][0];
 
+                                    FxiDeriv1 = r_D* s_F1[ieLoc][i][j] + r_Dp1* s_F1[ieLoc][i][j+1]  ;
+                                    FxiDeriv2 = r_D* s_F2_1[ieLoc][i][j] + r_Dp1* s_F2_1[ieLoc][i][j+1]  ;
                                     FxiDeriv2_2 = r_D* s_F2_2[ieLoc][i][j] + r_Dp1* s_F2_2[ieLoc][i][j+1]  ;
+                                    FxiDeriv3 = r_D* s_F3[ieLoc][i][j] + r_Dp1* s_F3[ieLoc][i][j+1]  ;
+                                    GxiDeriv1 = r_D* s_G1[ieLoc][i][j] + r_Dp1* s_G1[ieLoc][i][j+1]  ;
+                                    GxiDeriv2 = r_D* s_G2[ieLoc][i][j] + r_Dp1* s_G2[ieLoc][i][j+1]  ;
+                                    GxiDeriv3 = r_D* s_G3_1[ieLoc][i][j] + r_Dp1* s_G3_1[ieLoc][i][j+1]  ;
                                     GxiDeriv3_2 = r_D* s_G3_2[ieLoc][i][j] + r_Dp1* s_G3_2[ieLoc][i][j+1]  ;
                                     BxiDeriv = r_D* r_b + r_Dp1* s_B[ieLoc][i][j+1]  ;
 
@@ -161,7 +207,13 @@ kernel void VolumeKernelFD(const int Nelem,
                                     const dfloat r_D = s_DdownwindFD[j][ngl-1];
                                     const dfloat r_Dm1 = s_DdownwindFD[j][ngl-2];
 
+                                    FxiDeriv1 = r_Dm1* s_F1[ieLoc][i][j-1] + r_D* s_F1[ieLoc][i][j]  ;
+                                    FxiDeriv2 = r_Dm1* s_F2_1[ieLoc][i][j-1] + r_D* s_F2_1[ieLoc][i][j]  ;
                                     FxiDeriv2_2 = r_Dm1* s_F2_2[ieLoc][i][j-1] + r_D* s_F2_2[ieLoc][i][j]  ;
+                                    FxiDeriv3 = r_Dm1* s_F3[ieLoc][i][j-1] + r_D* s_F3[ieLoc][i][j]  ;
+                                    GxiDeriv1 = r_Dm1* s_G1[ieLoc][i][j-1] + r_D* s_G1[ieLoc][i][j]  ;
+                                    GxiDeriv2 = r_Dm1* s_G2[ieLoc][i][j-1] + r_D* s_G2[ieLoc][i][j]  ;
+                                    GxiDeriv3 = r_Dm1* s_G3_1[ieLoc][i][j-1] + r_D* s_G3_1[ieLoc][i][j]  ;
                                     GxiDeriv3_2 = r_Dm1* s_G3_2[ieLoc][i][j-1] + r_D* s_G3_2[ieLoc][i][j]  ;
                                     BxiDeriv = r_Dm1* s_B[ieLoc][i][j-1] + r_D* r_b  ;
 
@@ -175,7 +227,13 @@ kernel void VolumeKernelFD(const int Nelem,
                                     {
                                         const dfloat r_Dp1 = s_DcentralFD[j][j+1];
                                         const dfloat r_Dm1 = s_DcentralFD[j][j-1];
+                                        FxiDeriv1 = r_Dm1* s_F1[ieLoc][i][j-1] + r_Dp1* s_F1[ieLoc][i][j+1]  ;
+                                        FxiDeriv2 = r_Dm1* s_F2_1[ieLoc][i][j-1] + r_Dp1* s_F2_1[ieLoc][i][j+1]  ;
                                         FxiDeriv2_2 = r_Dm1* s_F2_2[ieLoc][i][j-1] + r_Dp1* s_F2_2[ieLoc][i][j+1]  ;
+                                        FxiDeriv3 = r_Dm1* s_F3[ieLoc][i][j-1] + r_Dp1* s_F3[ieLoc][i][j+1]  ;
+                                        GxiDeriv1 = r_Dm1* s_G1[ieLoc][i][j-1] + r_Dp1* s_G1[ieLoc][i][j+1]  ;
+                                        GxiDeriv2 = r_Dm1* s_G2[ieLoc][i][j-1] + r_Dp1* s_G2[ieLoc][i][j+1]  ;
+                                        GxiDeriv3 = r_Dm1* s_G3_1[ieLoc][i][j-1] + r_Dp1* s_G3_1[ieLoc][i][j+1]  ;
                                         GxiDeriv3_2 = r_Dm1* s_G3_2[ieLoc][i][j-1] + r_Dp1* s_G3_2[ieLoc][i][j+1]  ;
                                         BxiDeriv = r_Dm1* s_B[ieLoc][i][j-1] + r_Dp1* s_B[ieLoc][i][j+1]  ;
 
@@ -186,7 +244,13 @@ kernel void VolumeKernelFD(const int Nelem,
                                     {
                                         const dfloat r_Dp1 = s_DupwindFD[j][j+1];
                                         const dfloat r_D = s_DupwindFD[j][j];
+                                        FxiDeriv1 = r_D* s_F1[ieLoc][i][j] + r_Dp1* s_F1[ieLoc][i][j+1]  ;
+                                        FxiDeriv2 = r_D* s_F2_1[ieLoc][i][j] + r_Dp1* s_F2_1[ieLoc][i][j+1] ;
                                         FxiDeriv2_2 = r_D* s_F2_2[ieLoc][i][j] + r_Dp1* s_F2_2[ieLoc][i][j+1] ;
+                                        FxiDeriv3 = r_D* s_F3[ieLoc][i][j] + r_Dp1* s_F3[ieLoc][i][j+1] ;
+                                        GxiDeriv1 = r_D* s_G1[ieLoc][i][j] + r_Dp1* s_G1[ieLoc][i][j+1]  ;
+                                        GxiDeriv2 = r_D* s_G2[ieLoc][i][j] + r_Dp1* s_G2[ieLoc][i][j+1]  ;
+                                        GxiDeriv3 = r_D* s_G3_1[ieLoc][i][j] + r_Dp1* s_G3_1[ieLoc][i][j+1]  ;
                                         GxiDeriv3_2 = r_D* s_G3_2[ieLoc][i][j] + r_Dp1* s_G3_2[ieLoc][i][j+1]  ;
                                         BxiDeriv = r_D* r_b + r_Dp1* s_B[ieLoc][i][j+1]  ;
                                     }
@@ -198,7 +262,13 @@ kernel void VolumeKernelFD(const int Nelem,
                                     {
                                         const dfloat r_D = s_DdownwindFD[j][j];
                                         const dfloat r_Dm1 = s_DdownwindFD[j][j-1];
+                                        FxiDeriv1 = r_Dm1* s_F1[ieLoc][i][j-1] + r_D* s_F1[ieLoc][i][j]  ;
+                                        FxiDeriv2 = r_Dm1* s_F2_1[ieLoc][i][j-1] + r_D* s_F2_1[ieLoc][i][j]  ;
                                         FxiDeriv2_2 = r_Dm1* s_F2_2[ieLoc][i][j-1] + r_D* s_F2_2[ieLoc][i][j]  ;
+                                        FxiDeriv3 = r_Dm1* s_F3[ieLoc][i][j-1] + r_D* s_F3[ieLoc][i][j]  ;
+                                        GxiDeriv1 = r_Dm1* s_G1[ieLoc][i][j-1] + r_D* s_G1[ieLoc][i][j]  ;
+                                        GxiDeriv2 = r_Dm1* s_G2[ieLoc][i][j-1] + r_D* s_G2[ieLoc][i][j]  ;
+                                        GxiDeriv3 = r_Dm1* s_G3_1[ieLoc][i][j-1] + r_D* s_G3_1[ieLoc][i][j]  ;
                                         GxiDeriv3_2 = r_Dm1* s_G3_2[ieLoc][i][j-1] + r_D* s_G3_2[ieLoc][i][j]  ;
 
                                         BxiDeriv = r_Dm1* s_B[ieLoc][i][j-1] + r_D* r_b  ;
@@ -215,7 +285,13 @@ kernel void VolumeKernelFD(const int Nelem,
                                     const dfloat r_D = s_DupwindFD[i][0];
 
 
+                                    FetaDeriv1 = r_D* s_F1[ieLoc][i][j] + r_Dp1* s_F1[ieLoc][i+1][j]  ;
+                                    FetaDeriv2 = r_D* s_F2_1[ieLoc][i][j] + r_Dp1* s_F2_1[ieLoc][i+1][j]  ;
                                     FetaDeriv2_2 = r_D* s_F2_2[ieLoc][i][j] + r_Dp1* s_F2_2[ieLoc][i+1][j]  ;
+                                    FetaDeriv3 = r_D* s_F3[ieLoc][i][j] + r_Dp1* s_F3[ieLoc][i+1][j]  ;
+                                    GetaDeriv1 = r_D* s_G1[ieLoc][i][j] + r_Dp1* s_G1[ieLoc][i+1][j]  ;
+                                    GetaDeriv2 = r_D* s_G2[ieLoc][i][j] + r_Dp1* s_G2[ieLoc][i+1][j]  ;
+                                    GetaDeriv3 = r_D* s_G3_1[ieLoc][i][j] + r_Dp1* s_G3_1[ieLoc][i+1][j]  ;
                                     GetaDeriv3_2 = r_D* s_G3_2[ieLoc][i][j] + r_Dp1* s_G3_2[ieLoc][i+1][j]  ;
 
                                     BetaDeriv = r_D* r_b + r_Dp1* s_B[ieLoc][i+1][j]  ;
@@ -229,7 +305,13 @@ kernel void VolumeKernelFD(const int Nelem,
                                     const dfloat r_D = s_DdownwindFD[i][ngl-1];
                                     const dfloat r_Dm1 = s_DdownwindFD[i][ngl-2];
 
+                                    FetaDeriv1 = r_Dm1* s_F1[ieLoc][i-1][j] + r_D* s_F1[ieLoc][i][j]  ;
+                                    FetaDeriv2 = r_Dm1* s_F2_1[ieLoc][i-1][j] + r_D* s_F2_1[ieLoc][i][j]  ;
                                     FetaDeriv2_2 = r_Dm1* s_F2_2[ieLoc][i-1][j] + r_D* s_F2_2[ieLoc][i][j]  ;
+                                    FetaDeriv3 = r_Dm1* s_F3[ieLoc][i-1][j] + r_D* s_F3[ieLoc][i][j]  ;
+                                    GetaDeriv1 = r_Dm1* s_G1[ieLoc][i-1][j] + r_D* s_G1[ieLoc][i][j]  ;
+                                    GetaDeriv2 = r_Dm1* s_G2[ieLoc][i-1][j] + r_D* s_G2[ieLoc][i][j]  ;
+                                    GetaDeriv3 = r_Dm1* s_G3_1[ieLoc][i-1][j] + r_D* s_G3_1[ieLoc][i][j]  ;
                                     GetaDeriv3_2 = r_Dm1* s_G3_2[ieLoc][i-1][j] + r_D* s_G3_2[ieLoc][i][j]  ;
                                     BetaDeriv = r_Dm1* s_B[ieLoc][i-1][j] + r_D* r_b  ;
 
@@ -244,7 +326,13 @@ kernel void VolumeKernelFD(const int Nelem,
                                         const dfloat r_Dp1 = s_DcentralFD[i][i+1];
                                         const dfloat r_Dm1 = s_DcentralFD[i][i-1];
 
+                                        FetaDeriv1 = r_Dm1* s_F1[ieLoc][i-1][j] + r_Dp1* s_F1[ieLoc][i+1][j]  ;
+                                        FetaDeriv2 = r_Dm1* s_F2_1[ieLoc][i-1][j] + r_Dp1* s_F2_1[ieLoc][i+1][j]  ;
                                         FetaDeriv2_2 = r_Dm1* s_F2_2[ieLoc][i-1][j] + r_Dp1* s_F2_2[ieLoc][i+1][j]  ;
+                                        FetaDeriv3 = r_Dm1* s_F3[ieLoc][i-1][j] + r_Dp1* s_F3[ieLoc][i+1][j]  ;
+                                        GetaDeriv1 = r_Dm1* s_G1[ieLoc][i-1][j] + r_Dp1* s_G1[ieLoc][i+1][j]  ;
+                                        GetaDeriv2 = r_Dm1* s_G2[ieLoc][i-1][j] + r_Dp1* s_G2[ieLoc][i+1][j]  ;
+                                        GetaDeriv3 = r_Dm1* s_G3_1[ieLoc][i-1][j] + r_Dp1* s_G3_1[ieLoc][i+1][j]  ;
                                         GetaDeriv3_2 = r_Dm1* s_G3_2[ieLoc][i-1][j] + r_Dp1* s_G3_2[ieLoc][i+1][j]  ;
                                         BetaDeriv = r_Dm1* s_B[ieLoc][i-1][j] + r_Dp1* s_B[ieLoc][i+1][j]  ;
 
@@ -254,7 +342,13 @@ kernel void VolumeKernelFD(const int Nelem,
                                         const dfloat r_Dp1 = s_DupwindFD[i][i+1];
                                         const dfloat r_D = s_DupwindFD[i][i];
 
+                                        FetaDeriv1 = r_D* s_F1[ieLoc][i][j] + r_Dp1* s_F1[ieLoc][i+1][j]  ;
+                                        FetaDeriv2 = r_D* s_F2_1[ieLoc][i][j] + r_Dp1* s_F2_1[ieLoc][i+1][j]  ;
                                         FetaDeriv2_2 = r_D* s_F2_2[ieLoc][i][j] + r_Dp1* s_F2_2[ieLoc][i+1][j]  ;
+                                        FetaDeriv3 = r_D* s_F3[ieLoc][i][j] + r_Dp1* s_F3[ieLoc][i+1][j]  ;
+                                        GetaDeriv1 = r_D* s_G1[ieLoc][i][j] + r_Dp1* s_G1[ieLoc][i+1][j]  ;
+                                        GetaDeriv2 = r_D* s_G2[ieLoc][i][j] + r_Dp1* s_G2[ieLoc][i+1][j]  ;
+                                        GetaDeriv3 = r_D* s_G3_1[ieLoc][i][j] + r_Dp1* s_G3_1[ieLoc][i+1][j]  ;
                                         GetaDeriv3_2 = r_D* s_G3_2[ieLoc][i][j] + r_Dp1* s_G3_2[ieLoc][i+1][j]  ;
                                         BetaDeriv = r_D* r_b + r_Dp1* s_B[ieLoc][i+1][j]  ;
                                     }
@@ -267,7 +361,13 @@ kernel void VolumeKernelFD(const int Nelem,
                                         const dfloat r_D = s_DdownwindFD[i][i];
                                         const dfloat r_Dm1 = s_DdownwindFD[i][i-1];
 
+                                        FetaDeriv1 = r_Dm1* s_F1[ieLoc][i-1][j] + r_D* s_F1[ieLoc][i][j]  ;
+                                        FetaDeriv2 = r_Dm1* s_F2_1[ieLoc][i-1][j] + r_D* s_F2_1[ieLoc][i][j]  ;
                                         FetaDeriv2_2 = r_Dm1* s_F2_2[ieLoc][i-1][j] + r_D* s_F2_2[ieLoc][i][j]  ;
+                                        FetaDeriv3 = r_Dm1* s_F3[ieLoc][i-1][j] + r_D* s_F3[ieLoc][i][j]  ;
+                                        GetaDeriv1 = r_Dm1* s_G1[ieLoc][i-1][j] + r_D* s_G1[ieLoc][i][j]  ;
+                                        GetaDeriv2 = r_Dm1* s_G2[ieLoc][i-1][j] + r_D* s_G2[ieLoc][i][j]  ;
+                                        GetaDeriv3 = r_Dm1* s_G3_1[ieLoc][i-1][j] + r_D* s_G3_1[ieLoc][i][j]  ;
                                         GetaDeriv3_2 = r_Dm1* s_G3_2[ieLoc][i-1][j] + r_D* s_G3_2[ieLoc][i][j]  ;
                                         BetaDeriv = r_Dm1* s_B[ieLoc][i-1][j] + r_D* r_b  ;
 
@@ -277,26 +377,42 @@ kernel void VolumeKernelFD(const int Nelem,
 
                             }
 
-                            } // end of r_h> PosPresTOL
+                            //} // end of r_h> PosPresTOL
                             if (j==0)
                             {
+                                FxiDeriv1 += geomFace *  s_F1[ieLoc][i][j];
+                                GxiDeriv1 += geomFace *  s_G1[ieLoc][i][j];
                                 FxiDeriv2 += geomFace *  s_F2_BD[ieLoc][i][j];
+                                GxiDeriv2 += geomFace *  s_G2[ieLoc][i][j];
+                                FxiDeriv3 += geomFace *  s_F3[ieLoc][i][j];
                                 GxiDeriv3 += geomFace *  s_G3_BD[ieLoc][i][j];
                             }
                             if (j==ngl-1)
                             {
+                                FxiDeriv1 += -geomFace *  s_F1[ieLoc][i][j];
+                                GxiDeriv1 += -geomFace *  s_G1[ieLoc][i][j];
                                 FxiDeriv2 += -geomFace *  s_F2_BD[ieLoc][i][j];
+                                GxiDeriv2 += -geomFace *  s_G2[ieLoc][i][j];
+                                FxiDeriv3 += -geomFace *  s_F3[ieLoc][i][j];
                                 GxiDeriv3 += -geomFace *  s_G3_BD[ieLoc][i][j];
 
                             }
                             if (i==0)
                             {
+                                FetaDeriv1 += geomFace *  s_F1[ieLoc][i][j];
+                                GetaDeriv1 += geomFace *  s_G1[ieLoc][i][j];
                                 FetaDeriv2 += geomFace *  s_F2_BD[ieLoc][i][j];
+                                GetaDeriv2 += geomFace *  s_G2[ieLoc][i][j];
+                                FetaDeriv3 += geomFace *  s_F3[ieLoc][i][j];
                                 GetaDeriv3 += geomFace *  s_G3_BD[ieLoc][i][j];
                             }
                             if (i==ngl-1)
                             {
+                                FetaDeriv1 += -geomFace *  s_F1[ieLoc][i][j];
+                                GetaDeriv1 += -geomFace *  s_G1[ieLoc][i][j];
                                 FetaDeriv2 += -geomFace *  s_F2_BD[ieLoc][i][j];
+                                GetaDeriv2 += -geomFace *  s_G2[ieLoc][i][j];
+                                FetaDeriv3 += -geomFace *  s_F3[ieLoc][i][j];
                                 GetaDeriv3 += -geomFace *  s_G3_BD[ieLoc][i][j];
                             }
 
@@ -307,17 +423,22 @@ kernel void VolumeKernelFD(const int Nelem,
                             const dfloat r_Xeta=X_eta[xid];
                             const dfloat r_Xxi=X_xi[xid];
 
-                            const dfloat FxDeriv2= r_Yeta * FxiDeriv2 - r_Yxi* FetaDeriv2_2 ;
+                            const dfloat FxDeriv1= r_Yeta * FxiDeriv1 - r_Yxi* FetaDeriv1;
+                            const dfloat FxDeriv2= r_Yeta * FxiDeriv2 - r_Yxi* FetaDeriv2;
                             const dfloat FxDeriv2_2= r_h * ( r_Yeta * FxiDeriv2_2 - r_Yxi* FetaDeriv2_2 );
+                            const dfloat FxDeriv3= r_Yeta * FxiDeriv3 - r_Yxi* FetaDeriv3;
 
-                            const dfloat GyDeriv3=  -r_Xeta * GxiDeriv3 + r_Xxi* GetaDeriv3 ;
+                            const dfloat GyDeriv1= -r_Xeta * GxiDeriv1 + r_Xxi* GetaDeriv1;
+                            const dfloat GyDeriv2= -r_Xeta * GxiDeriv2 + r_Xxi* GetaDeriv2;
+                            const dfloat GyDeriv3= -r_Xeta * GxiDeriv3 + r_Xxi* GetaDeriv3;
                             const dfloat GyDeriv3_2= r_h* ( -r_Xeta * GxiDeriv3_2 + r_Xxi* GetaDeriv3_2 );
 
                             const dfloat BxDeriv = r_Yeta*BxiDeriv - r_Yxi * BetaDeriv;
                             const dfloat ByDeriv = -r_Xeta*BxiDeriv + r_Xxi * BetaDeriv;
 
-                            const dfloat FluxDeriv2=  FxDeriv2_2 + FxDeriv2;
-                            const dfloat FluxDeriv3=  GyDeriv3_2 + GyDeriv3;
+                            const dfloat FluxDeriv1=  FxDeriv1+ GyDeriv1;
+                            const dfloat FluxDeriv2=  FxDeriv2+FxDeriv2_2+ GyDeriv2;
+                            const dfloat FluxDeriv3=  FxDeriv3+ GyDeriv3+GyDeriv3_2;
 
 
 
@@ -325,8 +446,9 @@ kernel void VolumeKernelFD(const int Nelem,
 
                             const dfloat r_Jac=Jac[xid];
 
-                            Qt[id+ngl2]        +=  - r_Jac *FluxDeriv2 - g_const*r_Jac *r_h*BxDeriv ;
-                            Qt[id+ngl2+ngl2]   +=  - r_Jac *FluxDeriv3 - g_const*r_Jac *r_h*ByDeriv;
+                            Qt[id]              =  - r_Jac *FluxDeriv1;
+                            Qt[id+ngl2]         =  - r_Jac *FluxDeriv2 - g_const*r_Jac *r_h*BxDeriv ;
+                            Qt[id+ngl2+ngl2]    =  - r_Jac *FluxDeriv3 - g_const*r_Jac *r_h*ByDeriv;
 
 
 

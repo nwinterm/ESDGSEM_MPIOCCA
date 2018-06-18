@@ -39,7 +39,8 @@ public:
                             const int NumFlux,
                             const int rkSSP,
                             const int ArtificialViscosity,
-                            const int PositivityPreserving );
+                            const int PositivityPreserving,
+				const int HalfDryOperator );
     void copyDeviceVariables( const int PositivityPreserving,
                               const int Nelem,
                               const dfloat* GLw,
@@ -64,6 +65,7 @@ public:
                               const dfloat* gRK,
                               const dfloat* Qt,
                               const dfloat* VdmInv,
+                              const dfloat* D_SBP,
                               const dfloat* DCentralFD,
                               const dfloat* DforwardFD,
                               const dfloat* DbackwardFD,
@@ -100,7 +102,8 @@ public:
                      const dfloat g_const,
                      const int PlotVar,
                      const int EntropyPlot,
-                     const int PositivityPreserving);
+                     const int PositivityPreserving,
+			const int HalfDryOperator);
     virtual ~deviceclass();
 
     occa::device device;
@@ -163,7 +166,7 @@ public:
 
     occa::memory o_ViscForPlot;
 
-    occa::memory o_DcentralFD, o_DforwardFD, o_DbackwardFD;
+    occa::memory o_D_SBP,o_DcentralFD, o_DforwardFD, o_DbackwardFD;
 
     occa::memory o_isPartlyDry;
 

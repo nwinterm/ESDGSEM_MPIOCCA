@@ -26,3 +26,4 @@ running it with free terminal:
 
 
 nohup mpirun -n 4 main Serial  > Results.txt 2>&1 </dev/null &
+nohup mpirun -n 2 main CUDA  > Results.txt 2>&1 </dev/null &

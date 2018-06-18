@@ -62,13 +62,11 @@ kernel void calcNumFluxesViscose(const int Nfaces,
             {
 
 
-               // NumFlux[0]=half*(ViscParaL[ifa]*fVisc1_L+ViscParaR[ifa]*fVisc1_R);
-               // NumFlux[1]=half*(ViscParaL[ifa]*fVisc2_L+ViscParaR[ifa]*fVisc2_R);
-               // NumFlux[2]=half*(ViscParaL[ifa]*fVisc3_L+ViscParaR[ifa]*fVisc3_R);
+                NumFlux[0]=half*(ViscParaL[ifa]*fVisc1_L+ViscParaR[ifa]*fVisc1_R);
+                NumFlux[1]=half*(ViscParaL[ifa]*fVisc2_L+ViscParaR[ifa]*fVisc2_R);
+                NumFlux[2]=half*(ViscParaL[ifa]*fVisc3_L+ViscParaR[ifa]*fVisc3_R);
 
-                NumFlux[0]=half*max(ViscParaL[ifa],ViscParaR[ifa])*(fVisc1_L+fVisc1_R);
-                NumFlux[1]=half*max(ViscParaL[ifa],ViscParaR[ifa])*(fVisc2_L+fVisc2_R);
-                NumFlux[2]=half*max(ViscParaL[ifa],ViscParaR[ifa])*(fVisc3_L+fVisc3_R);
+
 
 
             }

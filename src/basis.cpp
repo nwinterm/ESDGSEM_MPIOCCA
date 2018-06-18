@@ -33,6 +33,7 @@ basis::basis(const int Ninput, const int FluxDifferencing)
     Dstrong = (dfloat*) calloc(ngl2,sizeof(dfloat));
 
     DCentralFD = (dfloat*) calloc(ngl2,sizeof(dfloat));
+    D_SBP = (dfloat*) calloc(ngl2,sizeof(dfloat));
     DforwardFD= (dfloat*) calloc(ngl2,sizeof(dfloat));
     DbackwardFD= (dfloat*) calloc(ngl2,sizeof(dfloat));
 
@@ -120,14 +121,27 @@ cout << " \n";
     Dstrong[ngl2-1] = D0[ngl2-1] - 1.0/w_GL[ngl-1];
 
 
+for(int i = 0; i < ngl; ++i){
+dfloat Check1=0.0;
+dfloat Check2=0.0;
 
-//cout << "D: ";
-//for(int i = 0; i < ngl; ++i){
-//        for(int j = 0; j < ngl; ++j){
-//cout << " " << D[i*ngl+j] << " " ;
-//}
-//cout << " \n";
-//}
+        for(int j = 0; j < ngl; ++j){
+		Check1 += D_SBP[i*ngl+j] * 1.0;
+		Check2 += D_SBP[i*ngl+j] * x_GL[j];
+	}
+		cout << "i " << i <<  " Check1: " << Check1 << "\n " ;
+		cout << "i " << i <<  " Check2: " << Check2 << "\n " ;
+}
+
+
+
+cout << "D_SBP: ";
+for(int i = 0; i < ngl; ++i){
+        for(int j = 0; j < ngl; ++j){
+cout << " " << D_SBP[i*ngl+j] << " " ;
+}
+cout << " \n";
+}
 
     ModalTrafoMatrix();
 //SubCellAverageMatrix();
@@ -187,6 +201,39 @@ void basis :: FiniteDifferenceOperators()
         DbackwardFD[id] = (1.0/(x_GL[i]-x_GL[i-1]));
         DbackwardFD[idm1] = (-1.0/(x_GL[i]-x_GL[i-1]));
     };
+    dfloat wFD[ngl];
+    switch(N) {
+    case 1 : {
+		wFD[0] = w_GL[0];
+		wFD[1] = w_GL[1];
+	} 
+    case 2 : {
+		wFD[0] = 0.5;
+		wFD[1] = 1.0;
+		wFD[2] = 0.5;
+	} 
+    case 3 : {
+		wFD[0] = 0.5 - 0.1*sqrt(5.0);
+		wFD[1] = 0.5 + 0.1*sqrt(5.0);
+		wFD[2] = 0.5 + 0.1*sqrt(5.0);
+		wFD[3] = 0.5- 0.1*sqrt(5.0);
+	} 	
+}
+
+    D_SBP[0] = -0.5/wFD[0];
+cout << " N: " << N << "DSBP " << D_SBP[0] << "\n";
+    D_SBP[1] = 0.5/wFD[0];
+    D_SBP[ngl2-1] = 0.5/wFD[N];		//last entry		DOWNWIND
+    D_SBP[ngl2-2] = -0.5/wFD[N];		//second last entry		DOWNWIND
+
+    for (int i=1; i<ngl-1; i++)
+    {
+        const int id = i*ngl+i;
+        const int idp1 = id+1;
+        const int idm1 = id-1;
+        D_SBP[idp1]=0.5/wFD[i];
+        D_SBP[idm1]=-0.5/wFD[i];
+    };    
 
 };
 

@@ -13,10 +13,9 @@ void Fvol(const dfloat q1L,const dfloat q2L,const dfloat q3L,const dfloat qInvL,
     const dfloat v_A = half* (q3L*qInvL+q3R*qInvR) ;
     const dfloat Yeta_A = half*(YetaL+YetaR) ;
     const dfloat Xeta_A= half*(XetaL+XetaR) ;
-    const dfloat pressureTerm = h_A - half_g*h2_A;
     *F1 = Yeta_A * hu_A - Xeta_A * hv_A;
-    *F2 = Yeta_A *(hu_A * u_A   + pressureTerm ) - Xeta_A*hv_A * u_A;
-    *F3 = Yeta_A *(hu_A * v_A) - Xeta_A*(hv_A*v_A+ pressureTerm );
+    *F2 = Yeta_A *(hu_A * u_A   + h_A - half_g*h2_A) - Xeta_A*hv_A * u_A;
+    *F3 = Yeta_A *(hu_A * v_A) - Xeta_A*(hv_A*v_A+ h_A - half_g * h2_A);
 }
 void Gvol(const dfloat q1L,const dfloat q2L,const dfloat q3L,const dfloat qInvL,
           const dfloat q1R,const dfloat q2R,const dfloat q3R,const dfloat qInvR,
@@ -33,11 +32,9 @@ void Gvol(const dfloat q1L,const dfloat q2L,const dfloat q3L,const dfloat qInvL,
     const dfloat v_A = half* (q3L*qInvL+q3R*qInvR) ;
     const dfloat Yxi_A = half*(YxiL+YxiR) ;
     const dfloat Xxi_A = half*( XxiL+ XxiR) ;
-	const dfloat pressureTerm = h_A - half_g*h2_A;
-
     *G1 =-Yxi_A * hu_A   + Xxi_A*hv_A;
-    *G2 =-Yxi_A * (hu_A * u_A   + pressureTerm ) + Xxi_A* hv_A * u_A;
-    *G3 =-Yxi_A *(hu_A * v_A) + Xxi_A*(hv_A*v_A +pressureTerm );
+    *G2 =-Yxi_A * (hu_A * u_A   + h_A - half_g*h2_A) + Xxi_A* hv_A * u_A;
+    *G3 =-Yxi_A *(hu_A * v_A) + Xxi_A*(hv_A*v_A +h_A - half_g * h2_A);
 }
 
 
@@ -51,7 +48,7 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
                                  const dfloat * restrict D,
                                  const dfloat * restrict Bx,
                                  const dfloat * restrict By,
-				 const int * restrict isPartlyDry,	
+				 const int * restrict isPartlyDry,
                                  dfloat * restrict Qt)                                // const int * restrict isPartlyDry,
 {
 
@@ -190,7 +187,7 @@ kernel void VolumeKernelFluxDiff(const int Nelem,
 
                             Qt[id]              = -  r_Jac *FluxDeriv1;
                             Qt[id+ngl2]         = -  r_Jac *FluxDeriv2 - g_const*H_ij*r_Bx ;
-                            Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3  -g_const*H_ij*r_By;
+                            Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3  - g_const*H_ij*r_By;
 
                         }
 //                    }

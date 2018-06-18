@@ -22,6 +22,7 @@ public:
 
 
     dfloat * D;
+    dfloat * D_SBP;
     dfloat * DCentralFD;
     dfloat * DbackwardFD;
     dfloat * DforwardFD;

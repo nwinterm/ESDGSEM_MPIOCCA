@@ -29,7 +29,7 @@ kernel void FindDryElements(const int Nelem,
                     s_Minh[i][j] =zero;
                 }
 
-                isPartlyDry[ie] = 0;
+                isPartlyDry[ie] = 1;
 
             }
         }
@@ -55,7 +55,7 @@ kernel void FindDryElements(const int Nelem,
                             {
                                 if (s_Minh[l][k] == zero)
                                 {
-                                    isPartlyDry[ie] = 0;
+                                    isPartlyDry[ie] = 1;
                                 }
                             }
                         }
