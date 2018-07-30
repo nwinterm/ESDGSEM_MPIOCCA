@@ -2,7 +2,6 @@ kernel void ShockCapturing(const int Nelem,
                            const dfloat * restrict  Q,
                            const dfloat * restrict VdmInv,
                            const dfloat * restrict EleSizes,
-                    	   const int  * restrict  isPartlyDry,
                            dfloat * restrict  ViscPara,
                            dfloat * restrict  ViscParaForPlot)
 {
@@ -195,15 +194,9 @@ kernel void ShockCapturing(const int Nelem,
 
 
             
-//	    if (isPartlyDry[ie]==1){
-//	 	ViscPara[ie] = eps0;
-//		ViscParaForPlot[ie] = eps0;
-//	    }else{
 		ViscPara[ie] = viscStar;
 		ViscParaForPlot[ie] = viscStar;
-//	    }
-		
-	    //ViscParaForPlot[ie] = viscStar;
+
 		
 
         }

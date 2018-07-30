@@ -2,7 +2,6 @@ kernel void PosPres(const int Nelem,
                     const dfloat * restrict EleSizes,
                     const dfloat * restrict GLw,
                     const dfloat * restrict  Jac,
-                    int  * restrict  isPartlyDry,
                     dfloat * restrict  Q)
 {
 
@@ -83,10 +82,6 @@ kernel void PosPres(const int Nelem,
                             }
 
                         }
-			// marking element as dry/partly dry!
-			if (s_Hmin < ZeroTOL){
-				isPartlyDry[ie] = 1;
-			}
                         s_Havg =   s_Havg/ EleSizes[ie];
                         s_HUavg =   s_HUavg/ EleSizes[ie];
                         s_HVavg =   s_HVavg/ EleSizes[ie];

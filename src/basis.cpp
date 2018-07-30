@@ -32,10 +32,6 @@ basis::basis(const int Ninput, const int FluxDifferencing)
     D0 = (dfloat*) calloc(ngl2,sizeof(dfloat));
     Dstrong = (dfloat*) calloc(ngl2,sizeof(dfloat));
 
-    DCentralFD = (dfloat*) calloc(ngl2,sizeof(dfloat));
-    D_SBP = (dfloat*) calloc(ngl2,sizeof(dfloat));
-    DforwardFD= (dfloat*) calloc(ngl2,sizeof(dfloat));
-    DbackwardFD= (dfloat*) calloc(ngl2,sizeof(dfloat));
 
 
 
@@ -59,17 +55,17 @@ basis::basis(const int Ninput, const int FluxDifferencing)
     LGLNodesAndWeights();
     GaussNodesAndWeights();
 
-cout << "LGL Nodes: ";
-for(int i = 0; i < ngl; ++i){
-cout << " " << x_GL[i] << " " ;
-}
-cout << " \n";
+//cout << "LGL Nodes: ";
+//for(int i = 0; i < ngl; ++i){
+//cout << " " << x_GL[i] << " " ;
+//}
+//cout << " \n";
 //
-cout << "LGL Weights: ";
-for(int i = 0; i < ngl; ++i){
-cout << " " << w_GL[i] << " " ;
-}
-cout << " \n";
+//cout << "LGL Weights: ";
+//for(int i = 0; i < ngl; ++i){
+//cout << " " << w_GL[i] << " " ;
+//}
+//cout << " \n";
 //
 //cout << "LG Nodes: ";
 //for(int i = 0; i < ngl; ++i){
@@ -90,7 +86,7 @@ cout << " \n";
 
     PolynomialDerivativeMatrix();
 
-    FiniteDifferenceOperators();
+
 
 //include surface terms for strong form DG
     for (int i=0; i<ngl; ++i)
@@ -120,30 +116,41 @@ cout << " \n";
     Dstrong[0] = D0[0] + 1.0/w_GL[0];
     Dstrong[ngl2-1] = D0[ngl2-1] - 1.0/w_GL[ngl-1];
 
-
-for(int i = 0; i < ngl; ++i){
-dfloat Check1=0.0;
-dfloat Check2=0.0;
-
-        for(int j = 0; j < ngl; ++j){
-		Check1 += D_SBP[i*ngl+j] * 1.0;
-		Check2 += D_SBP[i*ngl+j] * x_GL[j];
-	}
-		cout << "i " << i <<  " Check1: " << Check1 << "\n " ;
-		cout << "i " << i <<  " Check2: " << Check2 << "\n " ;
-}
-
-
-
-cout << "D_SBP: ";
-for(int i = 0; i < ngl; ++i){
-        for(int j = 0; j < ngl; ++j){
-cout << " " << D_SBP[i*ngl+j] << " " ;
-}
-cout << " \n";
-}
-
     ModalTrafoMatrix();
+
+
+
+
+
+
+//    DCentralFD = (dfloat*) calloc(ngl2,sizeof(dfloat));
+//    D_SBP = (dfloat*) calloc(ngl2,sizeof(dfloat));
+//    DforwardFD= (dfloat*) calloc(ngl2,sizeof(dfloat));
+//    DbackwardFD= (dfloat*) calloc(ngl2,sizeof(dfloat));
+//    FiniteDifferenceOperators();
+//SBP CHECK from david
+//for(int i = 0; i < ngl; ++i){
+//dfloat Check1=0.0;
+//dfloat Check2=0.0;
+//        for(int j = 0; j < ngl; ++j){
+//		Check1 += D_SBP[i*ngl+j] * 1.0;
+//		Check2 += D_SBP[i*ngl+j] * x_GL[j];
+//	}
+//		cout << "i " << i <<  " Check1: " << Check1 << "\n " ;
+//		cout << "i " << i <<  " Check2: " << Check2 << "\n " ;
+//}
+
+
+
+//cout << "D_SBP: ";
+//for(int i = 0; i < ngl; ++i){
+//        for(int j = 0; j < ngl; ++j){
+//cout << " " << D_SBP[i*ngl+j] << " " ;
+//}
+//cout << " \n";
+//}
+
+
 //SubCellAverageMatrix();
 
 //dfloat InterpolLagrange[N+1];

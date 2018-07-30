@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     int ngl, ngl2;;
     int NoDofs,NoSpaceDofs;
     int Nfaces, Nelem;
-    int Nfaces_global, Nelem_global,NoDofs_global,NoSpaceDofs_global;
+    int Nfaces_global, Nelem_global,NoDofs_global, NoGradDofs_global,NoSpaceDofs_global;
     int PlotVar;
     int EntropyPlot;
     int ArtificialViscosity;
@@ -264,6 +264,7 @@ int main(int argc, char *argv[])
         Nelem_global=DGMesh.m_num_elements;
         Nfaces_global=DGMesh.m_num_edges;
         NoDofs_global=ngl2*Nelem_global*Neq;
+	NoGradDofs_global=ngl2*Nelem_global*(Neq-1);
         NoSpaceDofs_global=ngl2*Nelem_global;
 
 
@@ -332,9 +333,9 @@ int main(int argc, char *argv[])
         Q_global = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
         if (ArtificialViscosity==1)
         {
-            Qx_global = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
-            Qy_global = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
-            QtVisc_global = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
+            Qx_global = (dfloat*) calloc(NoGradDofs_global,sizeof(dfloat));
+            Qy_global = (dfloat*) calloc(NoGradDofs_global,sizeof(dfloat));
+            QtVisc_global = (dfloat*) calloc(NoGradDofs_global,sizeof(dfloat));
         }
 
         J_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
@@ -531,10 +532,6 @@ int main(int argc, char *argv[])
     dfloat Dmat0[ngl2];
     dfloat Dhat[ngl2];
     dfloat VdmInv[ngl2];
-    dfloat DCentralFD[ngl2];
-    dfloat D_SBP[ngl2];
-    dfloat DforwardFD[ngl2];
-    dfloat DbackwardFD[ngl2];
 
     //dfloat SubCellMat[ngl2];
     dfloat GLw[ngl];
@@ -547,10 +544,6 @@ int main(int argc, char *argv[])
             Dmat0[Did] =DGBasis.D0[Did];;
             Dhat[Did] = DGBasis.Dhat[Did];
             VdmInv[Did] = DGBasis.VdmInv[Did];
-            DCentralFD[Did] = DGBasis.DCentralFD[Did];
-            DforwardFD[Did] = DGBasis.DforwardFD[Did];
-            DbackwardFD[Did] = DGBasis.DbackwardFD[Did];
-            D_SBP[Did] =DGBasis.D_SBP[Did];
 
             //            SubCellMat[Did] = DGBasis.SubCellMat(i+1,l+1);
         }
@@ -602,43 +595,40 @@ int main(int argc, char *argv[])
 //    }
 
 //MetricIdentities 
-    dfloat * MetricIdentities1 = (dfloat*) calloc(Nelem*ngl2,sizeof(dfloat));
-    dfloat * MetricIdentities2 = (dfloat*) calloc(Nelem*ngl2,sizeof(dfloat));
-			for (int ie=0;ie<Nelem;ie++){
-				for(int j=0;j<ngl;++j){
-					for(int i=0;i<ngl;++i){
-						int ele_ij = ie*ngl2 +  j*ngl+i;
-						int loc_ij = j*ngl+i;
-						for (int l=0;l<ngl;l++){
-							
-							int loc_il = i*ngl+l;
-							int loc_jl = j*ngl+l;
-							int ele_il = ie*ngl2 + i*ngl+l;
-							int ele_lj = ie*ngl2 + l*ngl+j;
-							MetricIdentities1[ele_ij] += Dmat0[loc_jl] *y_eta[ele_il]- Dmat0[loc_il] *y_xi[ele_lj];
-							MetricIdentities2[ele_ij] += -Dmat0[loc_jl] *x_eta[ele_il]+ Dmat0[loc_il] *x_xi[ele_lj];
-						}
-					}
-				  }
-			}
-
-			for (int ie=0;ie<Nelem;ie++){
-				for(int j=0;j<ngl;++j){
-					for(int i=0;i<ngl;++i){
-						int id = ie*ngl2+  j*ngl+i;
-					if(abs(MetricIdentities1[id]) >0.000000000001)
-					   cout <<"Metric Identities1 for Ele: " << ie <<" "<<MetricIdentities1[id]<<"\n ";
-					if(abs(MetricIdentities2[id]) >0.000000000001)
-					   cout <<"Metric Identities2 for Ele: " << ie <<" "<<MetricIdentities2[id]<<"\n  ";
-				  }
-					
-				}
-			}
-
-
-
-free(MetricIdentities1);
-free(MetricIdentities2);
+//    dfloat * MetricIdentities1 = (dfloat*) calloc(Nelem*ngl2,sizeof(dfloat));
+//    dfloat * MetricIdentities2 = (dfloat*) calloc(Nelem*ngl2,sizeof(dfloat));
+//			for (int ie=0;ie<Nelem;ie++){
+//				for(int j=0;j<ngl;++j){
+//					for(int i=0;i<ngl;++i){
+//						int ele_ij = ie*ngl2 +  j*ngl+i;
+//						int loc_ij = j*ngl+i;
+//						for (int l=0;l<ngl;l++){
+//							
+//							int loc_il = i*ngl+l;
+//							int loc_jl = j*ngl+l;
+//							int ele_il = ie*ngl2 + i*ngl+l;
+//							int ele_lj = ie*ngl2 + l*ngl+j;
+//							MetricIdentities1[ele_ij] += Dmat0[loc_jl] *y_eta[ele_il]- Dmat0[loc_il] *y_xi[ele_lj];
+//							MetricIdentities2[ele_ij] += -Dmat0[loc_jl] *x_eta[ele_il]+ Dmat0[loc_il] *x_xi[ele_lj];
+//						}
+//					}
+//				  }
+//			}
+//
+//			for (int ie=0;ie<Nelem;ie++){
+//				for(int j=0;j<ngl;++j){
+//					for(int i=0;i<ngl;++i){
+//						int id = ie*ngl2+  j*ngl+i;
+//					if(abs(MetricIdentities1[id]) >0.000000000001)
+//					   cout <<"Metric Identities1 for Ele: " << ie <<" "<<MetricIdentities1[id]<<"\n ";
+//					if(abs(MetricIdentities2[id]) >0.000000000001)
+//					   cout <<"Metric Identities2 for Ele: " << ie <<" "<<MetricIdentities2[id]<<"\n  ";
+//				  }
+//					
+//				}
+//			}
+//free(MetricIdentities1);
+//free(MetricIdentities2);
 
 
 
@@ -690,7 +680,7 @@ free(MetricIdentities2);
     occa_device.copyDeviceVariables(  PositivityPreserving, Nelem,GLw,
                                       normalsX,   normalsY,  Scal,  y_xi, y_eta, x_xi, x_eta, b,  Bx, By,
                                       Dmat, DGBasis.Dstrong, Dhat,  J,  x_phy,  y_phy,  q,  ElementSizes,  gRK,  Qt,
-                                      VdmInv,D_SBP,  DCentralFD,  DforwardFD,  DbackwardFD, ElemEdgeMasterSlave, ElemEdgeOrientation, ElemToEdge, EdgeData,EdgeReversed );
+                                      VdmInv, ElemEdgeMasterSlave, ElemEdgeOrientation, ElemToEdge, EdgeData,EdgeReversed );
 
 
     if(MPI.rank==0)
@@ -734,7 +724,7 @@ free(MetricIdentities2);
     {
         cout <<"Build Kernels...\n";
     }
-    occa_device.buildDeviceKernels(  KernelVersion,   KernelVersionSTD,   Testcase,   Fluxdifferencing,   NumFlux,  rkSSP,   ArtificialViscosity,   PositivityPreserving, HalfDryOperator );
+    occa_device.buildDeviceKernels(  KernelVersion,   KernelVersionSTD,   Testcase,   Fluxdifferencing,   NumFlux,  rkSSP,   ArtificialViscosity,   PositivityPreserving);
 
     cout <<"rank: " << MPI.rank << " GB allocated on device: " << occa_device.device.bytesAllocated()/(1024.f*1024*1024) << "\n";
 
@@ -794,9 +784,7 @@ free(MetricIdentities2);
                            g_const,
                            PlotVar,
                            EntropyPlot,
-                           PositivityPreserving,
-				HalfDryOperator
-                          );
+                           PositivityPreserving);
 
 
 

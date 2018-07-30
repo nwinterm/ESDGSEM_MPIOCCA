@@ -39,8 +39,8 @@ public:
                             const int NumFlux,
                             const int rkSSP,
                             const int ArtificialViscosity,
-                            const int PositivityPreserving,
-				const int HalfDryOperator );
+                            const int PositivityPreserving);
+
     void copyDeviceVariables( const int PositivityPreserving,
                               const int Nelem,
                               const dfloat* GLw,
@@ -65,10 +65,6 @@ public:
                               const dfloat* gRK,
                               const dfloat* Qt,
                               const dfloat* VdmInv,
-                              const dfloat* D_SBP,
-                              const dfloat* DCentralFD,
-                              const dfloat* DforwardFD,
-                              const dfloat* DbackwardFD,
                               const int*ElemEdgeMasterSlave,
                               const int*ElemEdgeOrientation,
                               const int*ElemToEdge,
@@ -102,8 +98,7 @@ public:
                      const dfloat g_const,
                      const int PlotVar,
                      const int EntropyPlot,
-                     const int PositivityPreserving,
-			const int HalfDryOperator);
+                     const int PositivityPreserving);
     virtual ~deviceclass();
 
     occa::device device;
@@ -130,7 +125,7 @@ public:
     occa::kernel preservePosivitity;
     occa::kernel calcAvg;
     occa::kernel FindLambdaMax;
-    occa::kernel FindDryElements;
+
     occa::kernel scaleGradient;
     occa::kernel SurfaceKernelVisc;
     occa::kernel UpdateQt;
@@ -165,10 +160,6 @@ public:
     occa::memory o_GLw;
 
     occa::memory o_ViscForPlot;
-
-    occa::memory o_D_SBP,o_DcentralFD, o_DforwardFD, o_DbackwardFD;
-
-    occa::memory o_isPartlyDry;
 
 
     dfloat * EntropyOverTime;

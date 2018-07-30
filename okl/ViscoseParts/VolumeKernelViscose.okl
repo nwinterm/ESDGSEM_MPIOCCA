@@ -18,19 +18,20 @@ kernel void VolumeKernelViscose(const int Nelem,
 
 
 
-        shared dfloat s_F1[ngl][ngl];
+
         shared dfloat s_F2[ngl][ngl];
         shared dfloat s_F3[ngl][ngl];
-        shared dfloat s_G1[ngl][ngl];
+
         shared dfloat s_G2[ngl][ngl];
         shared dfloat s_G3[ngl][ngl];
+
         shared dfloat s_D[ngl][ngl];
+
         shared dfloat s_qX1[ngl][ngl];
         shared dfloat s_qX2[ngl][ngl];
-        shared dfloat s_qX3[ngl][ngl];
         shared dfloat s_qY1[ngl][ngl];
         shared dfloat s_qY2[ngl][ngl];
-        shared dfloat s_qY3[ngl][ngl];
+
 
         const dfloat ViscParam = ViscPara[ie];
 
@@ -41,15 +42,15 @@ kernel void VolumeKernelViscose(const int Nelem,
             for (int j=0; j<ngl; ++j; inner0)
             {
                 const int id=j*ngl+i;
-                const int Fid = ie*ngl2*Neq   +j*ngl+i;
+                const int Fid = ie*ngl2*(Neq-1)   +j*ngl+i;
 
                 s_D[i][j]=D[id];
                 s_qX1[i][j]=qX[Fid];
                 s_qX2[i][j]=qX[Fid+ngl2];
-                s_qX3[i][j]=qX[Fid+ngl2+ngl2];
+ 
                 s_qY1[i][j]=qY[Fid];
                 s_qY2[i][j]=qY[Fid+ngl2];
-                s_qY3[i][j]=qY[Fid+ngl2+ngl2];
+
 
             }
         }
@@ -66,21 +67,18 @@ kernel void VolumeKernelViscose(const int Nelem,
                 const int xid=ie*ngl2   +j*ngl+i;
 
 
-                const dfloat F1 = ViscParam* s_qX1[i][j];
-                const dfloat F2 = ViscParam* s_qX2[i][j];
-                const dfloat F3 = ViscParam* s_qX3[i][j];
-                const dfloat G1 = ViscParam* s_qY1[i][j];
-                const dfloat G2 = ViscParam* s_qY2[i][j];
-                const dfloat G3 = ViscParam* s_qY3[i][j];
+
+                const dfloat F2 = ViscParam* s_qX1[i][j];
+                const dfloat F3 = ViscParam* s_qX2[i][j];
+
+                const dfloat G2 = ViscParam* s_qY1[i][j];
+                const dfloat G3 = ViscParam* s_qY2[i][j];
 
                 const dfloat r_Yeta=Y_eta[xid];
                 const dfloat r_Yxi=Y_xi[xid];
                 const dfloat r_Xeta=X_eta[xid];
                 const dfloat r_Xxi=X_xi[xid];
 
-
-                s_F1[i][j]=r_Yeta * F1 - r_Xeta* G1;
-                s_G1[i][j]=-r_Yxi * F1 + r_Xxi* G1;
 
                 s_F2[i][j]=r_Yeta * F2 - r_Xeta* G2;
                 s_G2[i][j]=-r_Yxi * F2 + r_Xxi* G2;
@@ -99,7 +97,6 @@ kernel void VolumeKernelViscose(const int Nelem,
         {
             for (int i=0; i<ngl; ++i; inner0)
             {
-                dfloat FluxDeriv1=zero;
                 dfloat FluxDeriv2=zero;
                 dfloat FluxDeriv3=zero;
 
@@ -107,9 +104,6 @@ kernel void VolumeKernelViscose(const int Nelem,
                 occaUnroll(ngl)
                 for (int l=0; l<ngl; ++l)
                 {
-
-                    FluxDeriv1+= s_D[l][i] * s_F1[l][j];
-                    FluxDeriv1+= s_D[l][j] * s_G1[i][l];
 
 
                     FluxDeriv2+=s_D[l][i] * s_F2[l][j];
@@ -124,15 +118,14 @@ kernel void VolumeKernelViscose(const int Nelem,
                 }
 
 
-                const int id  = ie*ngl2*Neq   +j*ngl+i;
+                const int id  = ie*ngl2*(Neq-1)   +j*ngl+i;
                 const int xid=ie*ngl2   +j*ngl+i;
 
                 const dfloat r_Jac=Jac[xid];
 
 
-                Qt[id]              =   r_Jac *FluxDeriv1;
-                Qt[id+ngl2]         =   r_Jac *FluxDeriv2  ;
-                Qt[id+ngl2+ngl2]    =   r_Jac *FluxDeriv3 ;
+                Qt[id]         =   r_Jac *FluxDeriv2  ;
+                Qt[id+ngl2]    =   r_Jac *FluxDeriv3 ;
 
 
 

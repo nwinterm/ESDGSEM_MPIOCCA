@@ -5,8 +5,6 @@ kernel void calcNumFluxesGradient(const int Nfaces,
                                   const dfloat * restrict Scal,
                                   const dfloat * restrict  qL,
                                   const dfloat * restrict  qR,
-                                  const dfloat * restrict  BL,
-                                  const dfloat * restrict  BR,
                                   dfloat * restrict  SurfGradientsX,
                                   dfloat * restrict  SurfGradientsY)
 {
@@ -24,16 +22,15 @@ kernel void calcNumFluxesGradient(const int Nfaces,
 
 
             const int edgeID=ifa*ngl*Neq + i;           //for values!!
+	    const int edgeIDgrad=ifa*ngl*(Neq-1) + i;           //for values!!
 
             const int edgeIDX=ifa*ngl + i;              //for normals!!
             const dfloat nx=normalx[edgeIDX];
             const dfloat ny=normaly[edgeIDX];
             const dfloat scaling=Scal[edgeIDX];
 
-            dfloat NumFlux[Neq];
+            dfloat NumFlux[Neq-1];
 
-            const dfloat bL=BL[edgeIDX];
-            const dfloat bR=BR[edgeIDX];
 
             dfloat hL;
             dfloat huL;
@@ -69,10 +66,6 @@ kernel void calcNumFluxesGradient(const int Nfaces,
             }
 
 
-            dfloat HL;
-            dfloat HR;
-
-
 
             dfloat hLinv;
             if (hL>PosPresTOL)
@@ -101,19 +94,12 @@ kernel void calcNumFluxesGradient(const int Nfaces,
             const dfloat vR =  hvR*hRinv ;
 
 
+            SurfGradientsX[edgeIDgrad]          =  nx * scaling*geomFace*  half*(uL+uR );
+            SurfGradientsX[edgeIDgrad+ngl]      =  nx * scaling*geomFace*  half*(vL+vR );
 
+            SurfGradientsY[edgeIDgrad]          =  ny * scaling*geomFace*  half*(uL+uR );
+            SurfGradientsY[edgeIDgrad+ngl]      =  ny * scaling*geomFace*  half*(vL+vR );
 
-            NumFlux[0]=zero;
-            NumFlux[1]=half*(uL+uR );
-            NumFlux[2]=half*(vL+vR );
-
-            SurfGradientsX[edgeID]          =  nx * scaling*geomFace*  NumFlux[0];
-            SurfGradientsX[edgeID+ngl]      =  nx * scaling*geomFace*  NumFlux[1];
-            SurfGradientsX[edgeID+ngl+ngl]  =  nx * scaling*geomFace*  NumFlux[2];
-
-            SurfGradientsY[edgeID]          =  ny * scaling*geomFace*  NumFlux[0];
-            SurfGradientsY[edgeID+ngl]      =  ny * scaling*geomFace*  NumFlux[1];
-            SurfGradientsY[edgeID+ngl+ngl]  =  ny * scaling*geomFace*  NumFlux[2];
 
 
         }

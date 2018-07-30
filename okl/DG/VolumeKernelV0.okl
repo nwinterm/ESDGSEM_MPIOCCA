@@ -34,16 +34,16 @@ kernel void VolumeKernel(int Nelem,
 
                 int id=j*ngl+i;
                 int xid=ie*ngl2   +j*ngl+i;
-                int Fid = ie*ngl2*Neq   +j*ngl+i;
+				int Fid = ie*ngl2*Neq   +j*ngl+i;
 
 
 
                 dfloat F1 = Q[Fid+ngl2];
-                dfloat F2 = Q[Fid+ngl2]*Q[Fid+ngl2]/Q[Fid] + 0.5*g_const*Q[Fid]*Q[Fid];
+                dfloat F2 = Q[Fid+ngl2]*Q[Fid+ngl2]/Q[Fid] + half*g_const*Q[Fid]*Q[Fid];
                 dfloat F3 = Q[Fid+ngl2+ngl2]*Q[Fid+ngl2]/Q[Fid];
                 dfloat G1 = Q[Fid+ngl2+ngl2];
                 dfloat G2 = Q[Fid+ngl2]*Q[Fid+ngl2+ngl2]/Q[Fid];
-                dfloat G3 = Q[Fid+ngl2+ngl2]*Q[Fid+ngl2+ngl2]/Q[Fid] + 0.5*g_const*Q[Fid]*Q[Fid];
+                dfloat G3 = Q[Fid+ngl2+ngl2]*Q[Fid+ngl2+ngl2]/Q[Fid] + half*g_const*Q[Fid]*Q[Fid];
 
 
                 s_F1[i][j]=Y_eta[xid] * F1 - X_eta[xid]* G1;
@@ -70,8 +70,7 @@ kernel void VolumeKernel(int Nelem,
                 dfloat FluxDeriv2=zero;
                 dfloat FluxDeriv3=zero;
 
-                // unroll loop
-                occaUnroll(ngl)
+
                 for (int l=0; l<ngl; ++l)
                 {
 

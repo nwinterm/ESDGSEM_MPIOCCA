@@ -155,10 +155,7 @@ void CollectViscoseEdgeDataMPI(MPI_setup MPI, const MeshPartitioning MeshSplit, 
 
     int ngl = MeshSplit.ngl;
     int ngl2 = ngl*ngl;
-
-//
-//    cout << "Num Elements: " << MeshSplit.ElementsPerProc(1,1) << "\n";
-
+    int gradNeq = Neq-1;
 
 
     for (int i=1; i<=MeshSplit.NumProcessors; i++)
@@ -174,24 +171,19 @@ void CollectViscoseEdgeDataMPI(MPI_setup MPI, const MeshPartitioning MeshSplit, 
 
             if (EdgesToSend > 0)
             {
-                int id = (startIndex) * ngl*Neq;
+                int id = (startIndex) * ngl*gradNeq ;
                 int idx = (startIndex) * ngl;
-                int tagSend = MeshSplit.CommTags[MPI.rank*MeshSplit.NumProcessors + cpuR];//(MPI.rank+1,cpuR+1);
-                int tagRecv = MeshSplit.CommTags[cpuR*MeshSplit.NumProcessors + MPI.rank];//(cpuR+1,MPI.rank+1);
-//            int tagSend = MeshSplit.CommTags(MPI.rank+1,cpuR+1);
-//            int tagRecv = MeshSplit.CommTags(cpuR+1,MPI.rank+1);
+                int tagSend = MeshSplit.CommTags[MPI.rank*MeshSplit.NumProcessors + cpuR];
+                int tagRecv = MeshSplit.CommTags[cpuR*MeshSplit.NumProcessors + MPI.rank];
 
 
-                MPI_Isend(&qGradXL[id],EdgesToSend*ngl*Neq,MPI_DFLOAT,cpuR,  tagSend,MPI_COMM_WORLD,&MPI.Send_qX_reqs[cpuR]);
-                MPI_Isend(&qGradYL[id],EdgesToSend*ngl*Neq,MPI_DFLOAT,cpuR,MeshSplit.NumProcessors*MeshSplit.NumProcessors  +tagSend,MPI_COMM_WORLD,&MPI.Send_qY_reqs[cpuR]);
+                MPI_Isend(&qGradXL[id],EdgesToSend*ngl*gradNeq ,MPI_DFLOAT,cpuR,  tagSend,MPI_COMM_WORLD,&MPI.Send_qX_reqs[cpuR]);
+                MPI_Isend(&qGradYL[id],EdgesToSend*ngl*gradNeq ,MPI_DFLOAT,cpuR,MeshSplit.NumProcessors*MeshSplit.NumProcessors  +tagSend,MPI_COMM_WORLD,&MPI.Send_qY_reqs[cpuR]);
                 MPI_Isend(&ViscParaL[startIndex],EdgesToSend,MPI_DFLOAT,cpuR,2*MeshSplit.NumProcessors*MeshSplit.NumProcessors  +tagSend,MPI_COMM_WORLD,&MPI.Send_ViscPar_reqs[cpuR]);
 
-                MPI_Irecv(&qGradXR[id],EdgesToSend*ngl*Neq,MPI_DFLOAT,cpuR,tagRecv,MPI_COMM_WORLD,&MPI.Recv_qX_reqs[cpuR]);
-                MPI_Irecv(&qGradYR[id],EdgesToSend*ngl*Neq,MPI_DFLOAT,cpuR,MeshSplit.NumProcessors*MeshSplit.NumProcessors+tagRecv,MPI_COMM_WORLD,&MPI.Recv_qY_reqs[cpuR]);
+                MPI_Irecv(&qGradXR[id],EdgesToSend*ngl*gradNeq ,MPI_DFLOAT,cpuR,tagRecv,MPI_COMM_WORLD,&MPI.Recv_qX_reqs[cpuR]);
+                MPI_Irecv(&qGradYR[id],EdgesToSend*ngl*gradNeq ,MPI_DFLOAT,cpuR,MeshSplit.NumProcessors*MeshSplit.NumProcessors+tagRecv,MPI_COMM_WORLD,&MPI.Recv_qY_reqs[cpuR]);
                 MPI_Irecv(&ViscParaR[startIndex],EdgesToSend,MPI_DFLOAT,cpuR,2*MeshSplit.NumProcessors*MeshSplit.NumProcessors  +tagRecv,MPI_COMM_WORLD,&MPI.Recv_ViscPar_reqs[cpuR]);
-
-
-
 
 
             }
@@ -309,12 +301,10 @@ void SendSolution(MPI_setup MPI, const MeshPartitioning MeshSplit, const dfloat 
 void CollectViscPara(MPI_setup MPI, const MeshPartitioning MeshSplit, const dfloat ViscPara[], dfloat ViscPara_global[])
 {
 
-//
-//    cout << "Num Elements: " << MeshSplit.ElementsPerProc(1,1) << "\n";
 
     for (int ie = 0; ie<MeshSplit.ElementsPerProc[0]; ie++)
     {
-//    cout << "Ele Local: "<< ie+1 << " Ele Global: "  << MeshSplit.ElementLocalToGlobal(ie+1,1) << "\n";
+
         int eleID = MeshSplit.ElementLocalToGlobal[ie]-1;
         ViscPara_global[eleID] = ViscPara[ie];
     }
@@ -327,11 +317,8 @@ void CollectViscPara(MPI_setup MPI, const MeshPartitioning MeshSplit, const dflo
         int varDim = MeshSplit.ElementsPerProc[iproc];
 
         dfloat * q_tmp = (dfloat*) calloc(varDim,sizeof(dfloat));
-//    dfloat q_tmp[varDim];
 
         MPI_Recv(&q_tmp[0],varDim,MPI_DFLOAT,iproc,iproc,MPI_COMM_WORLD, MPI.stats);
-
-
 
 
         for (int ie = 0; ie<MeshSplit.ElementsPerProc[iproc]; ie++)
@@ -377,24 +364,18 @@ void CollectViscosity(MPI_setup MPI, const MeshPartitioning MeshSplit, const dfl
 
     int ngl = MeshSplit.ngl;
     int ngl2 = ngl*ngl;
+    int gradNeq = Neq-1;
 
-//
-//    cout << "Num Elements: " << MeshSplit.ElementsPerProc(1,1) << "\n";
 
     for (int ie = 0; ie<MeshSplit.ElementsPerProc[0]; ie++)
     {
-//    cout << "Ele Local: "<< ie+1 << " Ele Global: "  << MeshSplit.ElementLocalToGlobal(ie+1,1) << "\n";
         int eleID = MeshSplit.ElementLocalToGlobal[ie]-1;
         for (int i = 0; i<ngl; i++)
         {
             for (int j=0; j<ngl; j++)
             {
-                int Gid = eleID*ngl2*Neq   +j*ngl+i;
-                int Lid = ie*ngl2*Neq + j*ngl+i;
-                Qx_global[Gid] = Qx[Lid];
-                Qy_global[Gid] = Qy[Lid];
-                Gid+=ngl2;
-                Lid+=ngl2;
+                int Gid = eleID*ngl2*gradNeq    +j*ngl+i;
+                int Lid = ie*ngl2*gradNeq + j*ngl+i;
                 Qx_global[Gid] = Qx[Lid];
                 Qy_global[Gid] = Qy[Lid];
                 Gid+=ngl2;
@@ -411,16 +392,16 @@ void CollectViscosity(MPI_setup MPI, const MeshPartitioning MeshSplit, const dfl
     for (int iproc = 1; iproc <MeshSplit.NumProcessors; iproc++)
     {
 
-        int varDim = ngl2*Neq * MeshSplit.ElementsPerProc[iproc];
+        int varDim = ngl2*gradNeq * MeshSplit.ElementsPerProc[iproc];
 
         dfloat * qx_tmp = (dfloat*) calloc(varDim,sizeof(dfloat));
         dfloat * qy_tmp = (dfloat*) calloc(varDim,sizeof(dfloat));
-//    dfloat q_tmp[varDim];
+
 
         MPI_Recv(&qx_tmp[0],varDim,MPI_DFLOAT,iproc,iproc,MPI_COMM_WORLD, MPI.stats);
-//    MPI_Wait(&MPI.reqs[iproc], MPI.stats);
+
         MPI_Recv(&qy_tmp[0],varDim,MPI_DFLOAT,iproc,iproc,MPI_COMM_WORLD, MPI.stats);
-//    MPI_Wait(&MPI.reqs[iproc], MPI.stats);
+
 
 
         for (int ie = 0; ie<MeshSplit.ElementsPerProc[iproc]; ie++)
@@ -431,12 +412,8 @@ void CollectViscosity(MPI_setup MPI, const MeshPartitioning MeshSplit, const dfl
             {
                 for (int j=0; j<ngl; j++)
                 {
-                    int Gid = eleID*ngl2*Neq   +j*ngl+i;
-                    int Lid = ie*ngl2*Neq + j*ngl+i;
-                    Qx_global[Gid] = qx_tmp[Lid];
-                    Qy_global[Gid] = qy_tmp[Lid];
-                    Gid+=ngl2;
-                    Lid+=ngl2;
+                    int Gid = eleID*ngl2*gradNeq +j*ngl+i;
+                    int Lid = ie*ngl2*gradNeq + j*ngl+i;
                     Qx_global[Gid] = qx_tmp[Lid];
                     Qy_global[Gid] = qy_tmp[Lid];
                     Gid+=ngl2;
@@ -462,9 +439,10 @@ void SendViscosity(MPI_setup MPI, const MeshPartitioning MeshSplit, const dfloat
 
     int ngl = MeshSplit.ngl;
     int ngl2 = ngl*ngl;
+    int gradNeq  = Neq-1;
 
 
-    int varDim = ngl2*Neq * MeshSplit.NumElements;
+    int varDim = ngl2*gradNeq * MeshSplit.NumElements;
 
     MPI_Send(&Qx[0],varDim,MPI_DFLOAT,0,MPI.rank,MPI_COMM_WORLD);
 //    MPI_Wait(&MPI.reqs[MPI.rank], MPI.stats);

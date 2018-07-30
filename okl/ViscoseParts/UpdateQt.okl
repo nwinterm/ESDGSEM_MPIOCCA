@@ -1,6 +1,5 @@
 kernel void UpdateQt(const int Nelem,
                      const dfloat * restrict QtVisc,
-                     const int * restrict isPartlyDry,
                      dfloat * restrict Qt)
 {
 
@@ -15,13 +14,13 @@ kernel void UpdateQt(const int Nelem,
         {
             for (int j=0; j<ngl; ++j; inner0)
             {
-                const int Fid = ie*ngl2*Neq   +j*ngl+i;
+                const int id = ie*ngl2*Neq   +j*ngl+i;
+		const int idGrad = ie*ngl2*(Neq-1)   +j*ngl+i;
 
-                //if (isPartlyDry[ie]==0){
-                Qt[Fid] +=  QtVisc[Fid];
-                Qt[Fid+ngl2] +=  QtVisc[Fid+ngl2];
-                Qt[Fid+ngl2+ngl2] +=  QtVisc[Fid+ngl2+ngl2];
-                //}
+                Qt[id +ngl2] +=  QtVisc[idGrad ];
+                Qt[id +ngl2+ngl2] +=  QtVisc[idGrad +ngl2];
+                
+		}
 
 
 

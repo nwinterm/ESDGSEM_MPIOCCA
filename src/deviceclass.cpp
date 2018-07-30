@@ -104,6 +104,7 @@ void deviceclass:: initDeviceVariables(const int N,
                                        const int ArtificialViscosity )
 {
     const int Neq=3;
+    const int GradNeq = Neq-1;
     ngl =N+1;
     ngl2=ngl*ngl;
     int nglPad=0;
@@ -129,8 +130,8 @@ void deviceclass:: initDeviceVariables(const int N,
     info.addDefine("NEsurfpad",NEsurfpad);
     info.addDefine("ngl",ngl);
     info.addDefine("ngl2",ngl*ngl);
-    info.addDefine("Neq",3);
-
+    info.addDefine("Neq",Neq);
+    info.addDefine("GradNeq",GradNeq);
     info.addDefine("PI",Constants::PI);
     //info.addDefine("Nelem",Nelem);
     info.addDefine("dfloat", dfloatString);
@@ -164,17 +165,14 @@ void deviceclass:: initDeviceVariables(const int N,
 
     const int NoDofs=ngl2*Nelem*Neq;
     const int NoSpaceDofs=ngl2*Nelem;
-
+    const int NoDofsGradient=ngl2*Nelem*(Neq-1);
+    const int NoDofsGradientSurf = Nfaces*ngl*(Neq-1);
 
     if (rkSSP)
     {
         o_Qtmp = device.malloc(NoDofs*sizeof(dfloat));
     }
 
-    o_DcentralFD  = device.malloc(ngl2*sizeof(dfloat));
-    o_D_SBP  = device.malloc(ngl2*sizeof(dfloat));
-    o_DforwardFD  = device.malloc(ngl2*sizeof(dfloat));
-    o_DbackwardFD  = device.malloc(ngl2*sizeof(dfloat));
 
 
 
@@ -182,7 +180,7 @@ void deviceclass:: initDeviceVariables(const int N,
     o_Dstrong  = device.malloc(ngl2*sizeof(dfloat));
     o_Dhat  = device.malloc(ngl2*sizeof(dfloat));
     o_VdmInv  = device.malloc(ngl2*sizeof(dfloat));
-    //o_SubCellMat = device.malloc(ngl2*sizeof(dfloat));
+
     o_x  = device.malloc(NoSpaceDofs*sizeof(dfloat));
     o_y  = device.malloc(NoSpaceDofs*sizeof(dfloat));
     o_Bx  = device.malloc(NoSpaceDofs*sizeof(dfloat));
@@ -223,7 +221,7 @@ void deviceclass:: initDeviceVariables(const int N,
     //pospres
     o_EleSizes = device.malloc(Nelem*sizeof(dfloat));
 
-    o_isPartlyDry= device.malloc(Nelem*sizeof(int));
+
 
 
     if (PositivityPreserving == 1)
@@ -235,16 +233,17 @@ void deviceclass:: initDeviceVariables(const int N,
     if (ArtificialViscosity == 1)
     {
 
-        o_qGradientX = device.malloc(NoDofs*sizeof(dfloat));
-        o_qGradientY = device.malloc(NoDofs*sizeof(dfloat));
-        o_qGradientXL = device.malloc(Neq*ngl*Nfaces*sizeof(dfloat));
-        o_qGradientXR = device.malloc(Neq*ngl*Nfaces*sizeof(dfloat));
-        o_qGradientYL = device.malloc(Neq*ngl*Nfaces*sizeof(dfloat));
-        o_qGradientYR = device.malloc(Neq*ngl*Nfaces*sizeof(dfloat));
-        o_SurfGradientX = device.malloc(Neq*ngl*Nfaces*sizeof(dfloat));
-        o_SurfGradientY = device.malloc(Neq*ngl*Nfaces*sizeof(dfloat));
-        o_SurfacePartsVisc = device.malloc(Neq*ngl*Nfaces*sizeof(dfloat));
-        o_QtVisc = device.malloc(NoDofs*sizeof(dfloat));
+        o_qGradientX = device.malloc(NoDofsGradient*sizeof(dfloat));
+        o_qGradientY = device.malloc(NoDofsGradient*sizeof(dfloat));
+
+        o_qGradientXL = device.malloc(NoDofsGradientSurf *sizeof(dfloat));
+        o_qGradientXR = device.malloc(NoDofsGradientSurf *sizeof(dfloat));
+        o_qGradientYL = device.malloc(NoDofsGradientSurf *sizeof(dfloat));
+        o_qGradientYR = device.malloc(NoDofsGradientSurf *sizeof(dfloat));
+        o_SurfGradientX = device.malloc(NoDofsGradientSurf *sizeof(dfloat));
+        o_SurfGradientY = device.malloc(NoDofsGradientSurf *sizeof(dfloat));
+        o_SurfacePartsVisc = device.malloc(NoDofsGradientSurf *sizeof(dfloat));
+        o_QtVisc = device.malloc(NoDofsGradient*sizeof(dfloat));
 
 
         o_ViscPara = device.malloc(Nelem*sizeof(dfloat));
@@ -265,8 +264,7 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
                                       const int NumFlux,
                                       const int rkSSP,
                                       const int ArtificialViscosity,
-                                      const int PositivityPreserving,
-					const int HalfDryOperator )
+                                      const int PositivityPreserving)
 {
 
 
@@ -328,12 +326,6 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
         VolumeKernel=device.buildKernelFromSource(var,"VolumeKernel",info);
     }
 
-    // FD = FINITE DIFFERENCE HERE
-
-
-	if(HalfDryOperator==1){
-	    VolumeKernelFD=device.buildKernelFromSource("okl/NEW_OPERATOR/VolumeKernelFD.okl","VolumeKernelFD",info);
-	}
 
     switch(NumFlux)
     {
@@ -401,7 +393,7 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
     if (PositivityPreserving)
     {
         //calcAvg      =   device.buildKernelFromSource("okl/Positivity/calcAvg.okl","calcAvg",info);
-	    FindDryElements=   device.buildKernelFromSource("okl/DG/FindDryElements.okl","FindDryElements",info);
+	//    FindDryElements=   device.buildKernelFromSource("okl/DG/FindDryElements.okl","FindDryElements",info);
         preservePosivitity      =   device.buildKernelFromSource("okl/Positivity/PosPres.okl","PosPres",info);
     }
 
@@ -418,7 +410,7 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
 void deviceclass:: copyDeviceVariables( const int PositivityPreserving, const int Nelem,const dfloat* GLw,
                                         const dfloat * normalsX, const dfloat * normalsY, const dfloat* Scal, const dfloat* y_xi, const dfloat*y_eta, const dfloat*x_xi, const dfloat*x_eta, const dfloat*b, const dfloat* Bx, const dfloat*By,
                                         const dfloat* Dmat, const dfloat*Dstrong, const dfloat*Dhat, const dfloat* J, const dfloat* x_phy, const dfloat* y_phy, const dfloat* q, const dfloat* ElementSizes, const dfloat* gRK, const dfloat* Qt,
-                                        const dfloat* VdmInv, const dfloat* D_SBP, const dfloat* DCentralFD, const dfloat* DforwardFD, const dfloat* DbackwardFD, const int*ElemEdgeMasterSlave, const int*ElemEdgeOrientation, const int*ElemToEdge, const int*EdgeData, const int*EdgeReversed)
+                                        const dfloat* VdmInv, const int*ElemEdgeMasterSlave, const int*ElemEdgeOrientation, const int*ElemToEdge, const int*EdgeData, const int*EdgeReversed)
 {
 
     o_nx.copyFrom(normalsX);
@@ -444,16 +436,7 @@ void deviceclass:: copyDeviceVariables( const int PositivityPreserving, const in
     o_gRK.copyFrom(gRK);
     o_Qt.copyFrom(Qt);
     o_VdmInv.copyFrom(VdmInv);
-    //o_SubCellMat.copyFrom(SubCellMat);
-    o_DcentralFD.copyFrom(DCentralFD);
-    o_D_SBP.copyFrom(D_SBP);
-    o_DforwardFD.copyFrom(DforwardFD);
-    o_DbackwardFD.copyFrom(DbackwardFD);
 
-	int * isPartlyDry= (int*) calloc(Nelem,sizeof(int));
-
-	o_isPartlyDry.copyFrom(isPartlyDry);
-free(isPartlyDry);
 
     dfloat * qavgtmp = (dfloat*) calloc(Nelem*4,sizeof(dfloat));
     if(PositivityPreserving == 1)
@@ -494,9 +477,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
                               const dfloat g_const,
                               const int PlotVar,
                               const int EntropyPlot,
-                              const int PositivityPreserving,
-				const int HalfDryOperator
-                             )
+                              const int PositivityPreserving)
 {
 
 
@@ -504,14 +485,16 @@ void deviceclass:: DGtimeloop(const int Nelem,
     dfloat * q = (dfloat*) calloc(ngl2*Nelem*Neq,sizeof(dfloat));
     dfloat * qL = (dfloat*) calloc(Nfaces*ngl*Neq,sizeof(dfloat));
     dfloat * qR = (dfloat*) calloc(Nfaces*ngl*Neq,sizeof(dfloat));
-    dfloat * bL = (dfloat*) calloc(Nfaces*ngl*Neq,sizeof(dfloat));
-    dfloat * bR = (dfloat*) calloc(Nfaces*ngl*Neq,sizeof(dfloat));
+    dfloat * bL = (dfloat*) calloc(Nfaces*ngl,sizeof(dfloat));
+    dfloat * bR = (dfloat*) calloc(Nfaces*ngl,sizeof(dfloat));
     dfloat * ViscParaL = (dfloat*) calloc(Nfaces,sizeof(dfloat));
     dfloat * ViscParaR = (dfloat*) calloc(Nfaces,sizeof(dfloat));
-    dfloat * qGradientXL = (dfloat*) calloc(Nfaces*ngl*Neq,sizeof(dfloat));
-    dfloat * qGradientXR = (dfloat*) calloc(Nfaces*ngl*Neq,sizeof(dfloat));
-    dfloat * qGradientYL = (dfloat*) calloc(Nfaces*ngl*Neq,sizeof(dfloat));
-    dfloat * qGradientYR = (dfloat*) calloc(Nfaces*ngl*Neq,sizeof(dfloat));
+
+    const int gradientSurfaceDimension = Nfaces*ngl*(Neq-1);
+    dfloat * qGradientXL = (dfloat*) calloc(gradientSurfaceDimension ,sizeof(dfloat));
+    dfloat * qGradientXR = (dfloat*) calloc(gradientSurfaceDimension ,sizeof(dfloat));
+    dfloat * qGradientYL = (dfloat*) calloc(gradientSurfaceDimension ,sizeof(dfloat));
+    dfloat * qGradientYR = (dfloat*) calloc(gradientSurfaceDimension ,sizeof(dfloat));
 
 //DEBUG VARIABLES
 dfloat * Qt = (dfloat*) calloc(ngl2*Nelem*Neq,sizeof(dfloat));
@@ -673,24 +656,20 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
 
     // Exchange information about the bottom topography only ONCE!
     CollectEdgeData_Bottom(Nfaces,o_EdgeData,o_B,o_bL,o_bR);
-    o_bL.copyTo(bL);
-    o_bR.copyTo(bR);
-    CollectEdgeDataMPI_Bonly(MPI, MeshSplit, bL,  bR);
-    MPI_Waitall(MeshSplit.NumProcessors,MPI.Recv_b_reqs, MPI.stats);
-    MPI_Waitall(MeshSplit.NumProcessors,MPI.Send_b_reqs, MPI.stats);
-
-    o_bL.copyFrom(bL);
-    o_bR.copyFrom(bR);
-
+    if (MeshSplit.NumProcessors>1){
+    		o_bL.copyTo(bL);
+    		o_bR.copyTo(bR);
+    		CollectEdgeDataMPI_Bonly(MPI, MeshSplit, bL,  bR);
+    		MPI_Waitall(MeshSplit.NumProcessors,MPI.Recv_b_reqs, MPI.stats);
+    		MPI_Waitall(MeshSplit.NumProcessors,MPI.Send_b_reqs, MPI.stats);
+    		o_bL.copyFrom(bL);
+    		o_bR.copyFrom(bR);
+	}
 
 
 
     cout << "about to enter time loop";
 
-	// Find dry Elements in initial solution - Later o_isPartlyDry is updated by the PosPres kernel!
-	if(PositivityPreserving==1){
-            FindDryElements(Nelem, o_q, o_isPartlyDry);
-	}
 
 
     while (t<T)
@@ -711,24 +690,18 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
         }
         if ( ArtificialViscosity==1)
         {
-            ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_isPartlyDry,o_ViscPara,o_ViscForPlot);
+            ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara,o_ViscForPlot);
             o_ViscPara.copyTo(ViscPara);
             GetGlobalViscParaMax(MPI,  MeshSplit,ViscPara, &maxViscPara);
-//	   cout << "Visc para max: " << maxViscPara <<"\n";
+
             dt_v = DFL/(pow(ngl,2)) * pow(globalMinEleSize,2) / maxViscPara;
             dt=fmin(T-t,fmin(dt_i,dt_v));
-	//	if (!(std::isfinite(dt_v))){
-	//		dt= T-t;
-	//	}
         }
         else
         {
             dt=fmin(T-t,dt_i);
         }
-
-	//if (!(std::isfinite(dt_i))){
-	//	dt= T-t;
-	//}	 
+ 
 
 
 //cout << "timestep " << dt << "\n" ;
@@ -757,122 +730,34 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
 
 
             CollectEdgeData(Nfaces,o_EdgeData,o_q,o_x,o_y,o_nx,o_ny, o_bL,o_bR, o_qL, o_qR, intermediatetime);
-            o_qL.copyTo(qL);
-            o_qR.copyTo(qR);
-            CollectEdgeDataMPI(MPI, MeshSplit, qL, qR);
+	    if (MeshSplit.NumProcessors>1){
+            	o_qL.copyTo(qL);
+            	o_qR.copyTo(qR);
+            	CollectEdgeDataMPI(MPI, MeshSplit, qL, qR);
+  	    }	
 
 
-
-//device.finish();
-//	o_isPartlyDry.copyTo(isDryElement);
-//	for (int ie=0;ie<Nelem;ie++){
-//		if (isDryElement[ie]==1){
-//		}else{
-//			cout << "Element "<< ie << " is not marked dry! "<< isDryElement[ie] << " \n" ;
-//		}
-//	}
 
 // CORRECT VOLUME KERNEL
-//            VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_Qt); //o_isPartlyDry,
-            VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_isPartlyDry,o_Qt); //o_isPartlyDry,
-
-	if(HalfDryOperator==1){
-//		cout << "Actually using the FD kernel!\n";
-
-            VolumeKernelFD(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_isPartlyDry,o_D_SBP,o_DcentralFD,o_DforwardFD,o_DbackwardFD,o_B,o_Qt);
-	}
-
-
-if (rkstage ==-1){
-			o_Qt.copyTo(Qt);
-	device.finish();
-
-		        cout <<"\n q_t NEW : \n";
-//			for (int ie=2098;ie<2099;ie++){
-//			for (int ie=0;ie<16;ie++){
-			for (int ie=0;ie<Nelem;ie++){
-					cout <<"Ele: " << ie <<"\n";
-				for(int j=0;j<ngl;++j){
-					for(int i=0;i<ngl;++i){
-						int id = ie*ngl2*Neq +  j*ngl+i;
-//					   cout <<"( " << Qt[id]<<",  ";
-					   cout <<Qt[id+ngl2]<<",  ";
-//					   cout <<Qt[id+ngl2+ngl2]<<"  ) ";
-				  }
-					cout <<"\n";
-				}
-			}
-}
-
-
-// NEW ONE FOR PARTIALLY WET ELEMENTS
+            VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_Qt);
 
 
 
 
-//			o_Qt.copyTo(Qt);
-//	device.finish();
-//
-//		        cout <<"\n q_t NEW : \n";
-//			for (int ie=0;ie<Nelem;ie++){
-//					cout <<"Ele: " << ie <<"\n";
-//				for(int j=0;j<ngl;++j){
-//					for(int i=0;i<ngl;++i){
-//						int id = ie*ngl2*Neq +  j*ngl+i;
-//					   cout <<"( " << Qt[id]<<",  ";
-//					   cout <<Qt[id+ngl2]<<",  ";
-//					   cout <<Qt[id+ngl2+ngl2]<<"  ) ";
-//				  }
-//					cout <<"\n";
-//				}
-//			}
-
-
-            MPI_Waitall(MeshSplit.NumProcessors,MPI.Recv_q_reqs, MPI.stats);
-            MPI_Waitall(MeshSplit.NumProcessors,MPI.Send_q_reqs, MPI.stats);
-            o_qL.copyFrom(qL);
-            o_qR.copyFrom(qR);
+	    if (MeshSplit.NumProcessors>1){
+            	MPI_Waitall(MeshSplit.NumProcessors,MPI.Recv_q_reqs, MPI.stats);
+            	MPI_Waitall(MeshSplit.NumProcessors,MPI.Send_q_reqs, MPI.stats);
+            	o_qL.copyFrom(qL);
+            	o_qR.copyFrom(qR);
+	    }
 
             calcNumFluxes(Nfaces,o_EdgeReversed,o_nx,o_ny,o_scal,o_qL,o_qR,o_bL,o_bR,o_SurfaceParts);
             calcDiscBottomSurf(Nfaces,o_EdgeReversed,o_qL,o_qR, o_bL,o_bR,o_nx,o_ny,o_scal,o_DBSurf1,o_DBSurf2);
 
-if (rkstage ==-3){
-o_SurfaceParts.copyTo(SurfParts);
-o_scal.copyTo(scal);
-o_nx.copyTo(nx);
-o_ny.copyTo(ny);
-for(int ie=0;ie<Nfaces;++ie){
-	cout << "Printing SurfaceParts for face " << ie << " : " ;
-	for(int i=0;i<ngl;++i){
-		int id = ie*ngl*Neq  +i ;
-		int idx = ie*ngl+i;
-		cout << SurfParts[id+ngl+ngl]/scal[idx]*0.16666666666666666/ny[idx] << " ";
-	}
-           cout << "\n";
-}
-}
 
             SurfaceKernel(Nelem,o_Jac,o_ElemEdgeMasterSlave,o_ElemEdgeOrientation,o_ElemToEdge, o_SurfaceParts,o_DBSurf1,o_DBSurf2,o_Qt);
-if (rkstage==-1){
-			o_Qt.copyTo(Qt);
-	device.finish();
 
-		        cout <<"\n q_t NEW : \n";
-//			for (int ie=2098;ie<2099;ie++){
-//			for (int ie=0;ie<16;ie++){
-			for (int ie=0;ie<Nelem;ie++){
-					cout <<"Ele: " << ie <<"\n";
-				for(int j=0;j<ngl;++j){
-					for(int i=0;i<ngl;++i){
-						int id = ie*ngl2*Neq +  j*ngl+i;
-//					   cout <<"( " << Qt[id]<<",  ";
-					   cout <<Qt[id+ngl2]<<",  ";
-//					   cout <<Qt[id+ngl2+ngl2]<<"  ) ";
-				  }
-					cout <<"\n";
-				}
-			}
-}
+
             if ( ArtificialViscosity==1)
             {
 
@@ -880,10 +765,10 @@ if (rkstage==-1){
                 // at first RK step we already now o_ViscPara from time step computation!
                 if (rkstage>0)
                 {
-                    ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_isPartlyDry,o_ViscPara,o_ViscForPlot);
+                    ShockCapturing(Nelem, o_q,o_VdmInv,o_EleSizes,o_ViscPara,o_ViscForPlot);
                 }
 
-                calcNumFluxesGradient(Nfaces,o_EdgeData,o_nx,o_ny,o_scal, o_qL, o_qR, o_bL,o_bR, o_SurfGradientX,o_SurfGradientY);
+                calcNumFluxesGradient(Nfaces,o_EdgeData,o_nx,o_ny,o_scal, o_qL, o_qR, o_SurfGradientX,o_SurfGradientY);
 
                 calcGradient(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_B,o_Dhat,o_qGradientX,o_qGradientY);
 
@@ -894,31 +779,36 @@ if (rkstage==-1){
 
                 CollectEdgeDataGradient(Nfaces,o_EdgeData,o_qGradientX,o_qGradientY,o_ViscPara,o_ViscParaL,o_ViscParaR, o_qGradientXL, o_qGradientXR,o_qGradientYL, o_qGradientYR);
 
-                o_ViscParaL.copyTo(ViscParaL);
-                o_ViscParaR.copyTo(ViscParaR);
-                o_qGradientXL.copyTo(qGradientXL);
-                o_qGradientXR.copyTo(qGradientXR);
-                o_qGradientYL.copyTo(qGradientYL);
-                o_qGradientYR.copyTo(qGradientYR);
+		if (MeshSplit.NumProcessors>1){
+                	o_ViscParaL.copyTo(ViscParaL);
+                	o_ViscParaR.copyTo(ViscParaR);
+                	o_qGradientXL.copyTo(qGradientXL);
+                	o_qGradientXR.copyTo(qGradientXR);
+                	o_qGradientYL.copyTo(qGradientYL);
+                	o_qGradientYR.copyTo(qGradientYR);
 
-                // not an OCCA kernel, this is MPI communication for exchanging gradient data
-                CollectViscoseEdgeDataMPI(MPI, MeshSplit, ViscParaL, ViscParaL, qGradientXL,  qGradientXR,qGradientYL,qGradientYR);
+                	// not an OCCA kernel, this is MPI communication for exchanging gradient data
+                	CollectViscoseEdgeDataMPI(MPI, MeshSplit, ViscParaL, ViscParaR, qGradientXL,  qGradientXR,qGradientYL,qGradientYR);
+
+		}
+
                 VolumeKernelViscose(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_qGradientX,o_qGradientY,o_Dstrong,o_ViscPara,o_QtVisc);
 
 
-
-                MPI_Waitall(MeshSplit.NumProcessors,MPI.Recv_qX_reqs, MPI.stats);
-                MPI_Waitall(MeshSplit.NumProcessors,MPI.Recv_qY_reqs, MPI.stats);
-                MPI_Waitall(MeshSplit.NumProcessors,MPI.Recv_ViscPar_reqs, MPI.stats);
-                MPI_Waitall(MeshSplit.NumProcessors,MPI.Send_qX_reqs, MPI.stats);
-                MPI_Waitall(MeshSplit.NumProcessors,MPI.Send_qY_reqs, MPI.stats);
-                MPI_Waitall(MeshSplit.NumProcessors,MPI.Send_ViscPar_reqs, MPI.stats);
-                o_ViscParaL.copyFrom(ViscParaL);
-                o_ViscParaR.copyFrom(ViscParaR);
-                o_qGradientXL.copyFrom(qGradientXL);
-                o_qGradientXR.copyFrom(qGradientXR);
-                o_qGradientYL.copyFrom(qGradientYL);
-                o_qGradientYR.copyFrom(qGradientYR);
+		if (MeshSplit.NumProcessors>1){
+                	MPI_Waitall(MeshSplit.NumProcessors,MPI.Recv_qX_reqs, MPI.stats);
+                	MPI_Waitall(MeshSplit.NumProcessors,MPI.Recv_qY_reqs, MPI.stats);
+                	MPI_Waitall(MeshSplit.NumProcessors,MPI.Recv_ViscPar_reqs, MPI.stats);
+                	MPI_Waitall(MeshSplit.NumProcessors,MPI.Send_qX_reqs, MPI.stats);
+                	MPI_Waitall(MeshSplit.NumProcessors,MPI.Send_qY_reqs, MPI.stats);
+                	MPI_Waitall(MeshSplit.NumProcessors,MPI.Send_ViscPar_reqs, MPI.stats);
+                	o_ViscParaL.copyFrom(ViscParaL);
+                	o_ViscParaR.copyFrom(ViscParaR);
+                	o_qGradientXL.copyFrom(qGradientXL);
+                	o_qGradientXR.copyFrom(qGradientXR);
+                	o_qGradientYL.copyFrom(qGradientYL);
+                	o_qGradientYR.copyFrom(qGradientYR);
+		}
 
                 calcNumFluxesViscose(Nfaces,o_EdgeData,o_nx,o_ny,o_scal,o_ViscParaL,o_ViscParaR,o_qGradientXL,o_qGradientXR,o_qGradientYL,o_qGradientYR,o_SurfacePartsVisc);
 
@@ -926,7 +816,7 @@ if (rkstage==-1){
 
 
 
-                UpdateQt(Nelem,o_QtVisc,o_isPartlyDry,o_Qt);
+                UpdateQt(Nelem,o_QtVisc,o_Qt);
 
             }
 
@@ -949,7 +839,7 @@ if (rkstage==-1){
 
             if(PositivityPreserving==1)
             {
-                preservePosivitity(Nelem,o_EleSizes,o_GLw, o_Jac, o_isPartlyDry,o_q);
+                preservePosivitity(Nelem,o_EleSizes,o_GLw, o_Jac,o_q);
 
             }
 
@@ -1129,11 +1019,6 @@ o_EdgeReversed.free();
     o_DBSurf1.free();
     o_DBSurf2.free();
 
-
-    o_isPartlyDry.free();
-    o_DcentralFD.free();
-    o_DforwardFD.free();
-    o_DbackwardFD.free();
 
 //viscose term
 

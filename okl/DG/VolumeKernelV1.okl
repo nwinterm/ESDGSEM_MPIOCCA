@@ -1,14 +1,14 @@
-kernel void VolumeKernel(const int Nelem,
-                         const dfloat * restrict  Jac,
-                         const dfloat * restrict  Y_xi,
-                         const dfloat * restrict  Y_eta,
-                         const dfloat * restrict  X_xi,
-                         const dfloat * restrict  X_eta,
-                         const dfloat * restrict  Q,
-                         const dfloat * restrict D,
-                         const dfloat * restrict  Bx,
-                         const dfloat * restrict  By,
-                         dfloat * restrict  Qt)
+kernel void VolumeKernel(int Nelem,
+                         dfloat * Jac,
+                         dfloat * Y_xi,
+                         dfloat * Y_eta,
+                         dfloat * X_xi,
+                         dfloat * X_eta,
+                         dfloat * Q,
+                         dfloat * D,
+                         dfloat * Bx,
+                         dfloat * By,
+                         dfloat * Qt)
 {
 
 
@@ -25,10 +25,6 @@ kernel void VolumeKernel(const int Nelem,
         shared dfloat s_G2[ngl][ngl];
         shared dfloat s_G3[ngl][ngl];
         shared dfloat s_D[ngl][ngl];
-        shared dfloat s_Q1[ngl][ngl];
-        shared dfloat s_Q2[ngl][ngl];
-        shared dfloat s_Q3[ngl][ngl];
-
 
 
 
@@ -36,13 +32,9 @@ kernel void VolumeKernel(const int Nelem,
         {
             for (int j=0; j<ngl; ++j; inner0)
             {
-                const int id=j*ngl+i;
-                const int Fid = ie*ngl2*Neq   +j*ngl+i;
+                int id=j*ngl+i;
 
                 s_D[i][j]=D[id];
-                s_Q1[i][j]=Q[Fid];
-                s_Q2[i][j]=Q[Fid+ngl2];
-                s_Q3[i][j]=Q[Fid+ngl2+ngl2];
 
             }
         }
@@ -55,34 +47,28 @@ kernel void VolumeKernel(const int Nelem,
             for (int j=0; j<ngl; ++j; inner0)
             {
 
-                const int id=j*ngl+i;
-                const int xid=ie*ngl2   +j*ngl+i;
+                int id=j*ngl+i;
+				int Fid = ie*ngl2*Neq   +j*ngl+i;
+                int xid=ie*ngl2   +j*ngl+i;
+				
 
-                dfloat invQ1;
-
-                if (s_Q1[i][j]>PosPresTOL)
-                {
-                    invQ1 = one/s_Q1[i][j];
-                }
-                else
-                {
-                    invQ1=zero;
-                    s_Q2[i][j]=zero;
-                    s_Q3[i][j]=zero;
-                };
+				dfloat r_h = Q[Fid];
+				dfloat r_hu = Q[Fid+ngl2];
+				dfloat r_hv = Q[Fid+ngl2+ngl2];
 
 
-                const dfloat F1 = s_Q2[i][j];
-                const dfloat F2 = s_Q2[i][j]*s_Q2[i][j]*invQ1 + 0.5*g_const*s_Q1[i][j]*s_Q1[i][j];
-                const dfloat F3 = s_Q3[i][j]*s_Q2[i][j]*invQ1;
-                const dfloat G1 = s_Q3[i][j];
-                const dfloat G2 = s_Q2[i][j]*s_Q3[i][j]*invQ1;
-                const dfloat G3 = s_Q3[i][j]*s_Q3[i][j]*invQ1 + 0.5*g_const*s_Q1[i][j]*s_Q1[i][j];
 
-                const dfloat r_Yeta=Y_eta[xid];
-                const dfloat r_Yxi=Y_xi[xid];
-                const dfloat r_Xeta=X_eta[xid];
-                const dfloat r_Xxi=X_xi[xid];
+                dfloat F1 = r_hu;
+                dfloat F2 = r_hu*r_hu*one/r_h + half*g_const*r_h*r_h;
+                dfloat F3 = r_hu*r_hv*one/r_h;
+                dfloat G1 = r_hv;
+                dfloat G2 = r_hu*r_hv*one/r_h;
+                dfloat G3 = r_hv*r_hv*one/r_h + half*g_const*r_h*r_h;
+
+                dfloat r_Yeta=Y_eta[xid];
+                dfloat r_Yxi=Y_xi[xid];
+                dfloat r_Xeta=X_eta[xid];
+                dfloat r_Xxi=X_xi[xid];
 
 
                 s_F1[i][j]=r_Yeta * F1 - r_Xeta* G1;
@@ -109,8 +95,7 @@ kernel void VolumeKernel(const int Nelem,
                 dfloat FluxDeriv2=zero;
                 dfloat FluxDeriv3=zero;
 
-                // unroll loop
-                occaUnroll(ngl)
+
                 for (int l=0; l<ngl; ++l)
                 {
 
@@ -130,16 +115,18 @@ kernel void VolumeKernel(const int Nelem,
                 }
 
 
-                const int id  = ie*ngl2*Neq   +j*ngl+i;
-                const int xid=ie*ngl2   +j*ngl+i;
+                int id  = ie*ngl2*Neq   +j*ngl+i;
+				int Fid = ie*ngl2*Neq   +j*ngl+i;
+                int xid=ie*ngl2   +j*ngl+i;
 
-                const dfloat r_Jac=Jac[xid];
-                const dfloat r_Bx=Bx[xid];
-                const dfloat r_By=By[xid];
+                dfloat r_Jac=Jac[xid];
+                dfloat r_Bx=Bx[xid];
+                dfloat r_By=By[xid];
+				dfloat r_h = Q[Fid];
 
                 Qt[id]              = -  r_Jac *FluxDeriv1;
-                Qt[id+ngl2]         = -  r_Jac *FluxDeriv2 - g_const *s_Q1[i][j]*r_Bx ;
-                Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3 - g_const *s_Q1[i][j]*r_By;
+                Qt[id+ngl2]         = -  r_Jac *FluxDeriv2 - g_const *r_h*r_Bx ;
+                Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3 - g_const *r_h*r_By;
 
 
 

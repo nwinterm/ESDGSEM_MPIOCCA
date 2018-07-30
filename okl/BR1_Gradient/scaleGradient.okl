@@ -21,16 +21,16 @@ kernel void scaleGradient(const int Nelem,
             {
 
                 const int id  = ie*ngl2*Neq   +j*ngl+i;
-
+		const int idGrad  = ie*ngl2*(Neq-1)   +j*ngl+i;
                 const dfloat h= Q[id];
 
 
                 // scale gradient of 2nd and 3rd equation by water height h
 
-                qGradientX[id+ngl2]         =   h*qGradientX[id+ngl2];
-                qGradientX[id+ngl2+ngl2]    =   h*qGradientX[id+ngl2+ngl2] ;
-                qGradientY[id+ngl2]         =   h*qGradientY[id+ngl2]   ;
-                qGradientY[id+ngl2+ngl2]    =   h*qGradientY[id+ngl2+ngl2] ;
+                qGradientX[idGrad  ]         =   h*qGradientX[idGrad  ];
+                qGradientX[idGrad  +ngl2]    =   h*qGradientX[idGrad  +ngl2] ;
+                qGradientY[idGrad  ]         =   h*qGradientY[idGrad  ]   ;
+                qGradientY[idGrad  +ngl2]    =   h*qGradientY[idGrad  +ngl2] ;
 
 
 

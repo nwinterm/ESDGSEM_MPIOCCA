@@ -8,7 +8,6 @@ kernel void VolumeKernel(const int Nelem,
                          const dfloat * restrict D,
                          const dfloat * restrict  Bx,
                          const dfloat * restrict  By,
-                         const int * restrict isPartlyDry,
                          dfloat * restrict  Qt)
 {
 
