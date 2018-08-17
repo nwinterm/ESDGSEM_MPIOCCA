@@ -1,0 +1,166 @@
+void Fvol(const dfloat q1L,const dfloat q2L,const dfloat q3L,
+          const dfloat q1R,const dfloat q2R,const dfloat q3R,
+          const dfloat YetaL,const dfloat YetaR,
+          const dfloat XetaL,const dfloat XetaR,
+          dfloat * F1,dfloat * F2,dfloat * F3
+         )
+{
+    const dfloat h_A = half*(q1L+q1R) ;
+    const dfloat h2_A = half*(q1L * q1L+q1R * q1R) ;
+    const dfloat hu_A = half* (q2L+q2R) ;
+    const dfloat hv_A = half* (q3L+q3R) ;
+    const dfloat u_A = half* (q2L/q1L+q2R/q1R) ;
+    const dfloat v_A = half* (q3L/q1L+q3R/q1R) ;
+    const dfloat Yeta_A = half*(YetaL+YetaR) ;
+    const dfloat Xeta_A= half*(XetaL+XetaR) ;
+    *F1 = Yeta_A * hu_A - Xeta_A * hv_A;
+    *F2 = Yeta_A *(hu_A * u_A   + g_const * h_A*h_A - half*g_const*h2_A) - Xeta_A*hv_A * u_A;
+    *F3 = Yeta_A *(hu_A * v_A) - Xeta_A*(hv_A*v_A+ g_const * h_A*h_A - half*g_const * h2_A);
+}
+void Gvol(const dfloat q1L,const dfloat q2L,const dfloat q3L,
+          const dfloat q1R,const dfloat q2R,const dfloat q3R,
+          const dfloat YxiL,const dfloat YxiR,
+          const dfloat XxiL,const dfloat XxiR,
+          dfloat * G1,dfloat * G2,dfloat * G3
+         )
+{
+    const dfloat h_A = half*(q1L+q1R) ;
+    const dfloat h2_A = half*(q1L * q1L+q1R * q1R) ;
+    const dfloat hu_A = half* (q2L+q2R) ;
+    const dfloat hv_A = half* (q3L+q3R) ;
+    const dfloat u_A = half* (q2L/q1L+q2R/q1R) ;
+    const dfloat v_A = half* (q3L/q1L+q3R/q1R) ;
+    const dfloat Yxi_A = half*(YxiL+YxiR) ;
+    const dfloat Xxi_A = half*( XxiL+ XxiR) ;
+    *G1 =-Yxi_A * hu_A   + Xxi_A*hv_A;
+    *G2 =-Yxi_A * (hu_A * u_A   + g_const * h_A*h_A - half*g_const*h2_A) + Xxi_A* hv_A * u_A;
+    *G3 =-Yxi_A *(hu_A * v_A) + Xxi_A*(hv_A*v_A + g_const * h_A*h_A - half*g_const * h2_A);
+}
+
+kernel void VolumeKernelFluxDiff(const int Nelem,
+                                 const dfloat * restrict Jac,
+                                 const dfloat * restrict Y_xi,
+                                 const dfloat * restrict Y_eta,
+                                 const dfloat * restrict X_xi,
+                                 const dfloat * restrict X_eta,
+                                 const dfloat * restrict Q,
+                                 const dfloat * restrict D,
+                                 const dfloat * restrict Bx,
+                                 const dfloat * restrict By,
+                                 dfloat * restrict Qt)
+{
+
+
+
+    for(int iEo = 0; iEo < Nelem; iEo+=NEpad; outer0)
+    {
+
+        shared dfloat s_D[ngl][ngl];
+        shared dfloat s_Q1[NEpad][ngl][ngl];
+        shared dfloat s_Q2[NEpad][ngl][ngl];
+        shared dfloat s_Q3[NEpad][ngl][ngl];
+        shared dfloat s_Yeta[NEpad][ngl][ngl];
+        shared dfloat s_Yxi[NEpad][ngl][ngl];
+        shared dfloat s_Xeta[NEpad][ngl][ngl];
+        shared dfloat s_Xxi[NEpad][ngl][ngl];
+
+        for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
+        {
+            for (int i=0; i<ngl; ++i; inner1)
+            {
+                for (int j=0; j<ngl; ++j; inner0)
+                {
+                    const int eleID     =   iEo + ieLoc;
+                    if (eleID<Nelem)
+                    {
+                        const int id=j*ngl+i;
+                        const int xid=eleID*ngl2   +j*ngl+i;
+                        const int Fid = eleID*ngl2*Neq   +j*ngl+i;
+
+                        if (ieLoc==0)
+                        {
+                            s_D[i][j]       =   D[id];
+                        }
+
+                        s_Yeta[ieLoc][i][j]    =   Y_eta[xid];
+                        s_Yxi[ieLoc][i][j]     =   Y_xi[xid];
+                        s_Xeta[ieLoc][i][j]    =   X_eta[xid];
+                        s_Xxi[ieLoc][i][j]     =   X_xi[xid];
+                        s_Q1[ieLoc][i][j]      =   Q[Fid];
+                        s_Q2[ieLoc][i][j]      =   Q[Fid+ngl2];
+                        s_Q3[ieLoc][i][j]      =   Q[Fid+ngl2+ngl2];
+
+                    }
+                }
+            }
+        }
+
+        barrier(localMemFence);
+
+        for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
+        {
+            for (int i=0; i<ngl; ++i; inner1)
+            {
+                for (int j=0; j<ngl; ++j; inner0)
+                {
+                    const int eleID     =   iEo + ieLoc;
+                    if (eleID<Nelem)
+                    {
+
+                        dfloat FluxDeriv1   =   zero;
+                        dfloat FluxDeriv2   =   zero;
+                        dfloat FluxDeriv3   =   zero;
+                        const dfloat H_ij         =   s_Q1[ieLoc][i][j];
+                        const dfloat HU_ij        =   s_Q2[ieLoc][i][j];
+                        const dfloat HV_ij        =   s_Q3[ieLoc][i][j];
+
+
+                        for (int l=0; l<ngl; ++l)
+                        {
+
+                            const dfloat H_lj=s_Q1[ieLoc][l][j];
+                            const dfloat HU_lj=s_Q2[ieLoc][l][j];
+                            const dfloat HV_lj=s_Q3[ieLoc][l][j];
+
+                            dfloat F1vol=zero,F2vol=zero,F3vol=zero;
+                            Fvol(H_ij,HU_ij,HV_ij,H_lj,HU_lj,HV_lj,s_Yeta[ieLoc][i][j],s_Yeta[ieLoc][l][j],s_Xeta[ieLoc][i][j],s_Xeta[ieLoc][l][j],&F1vol,&F2vol,&F3vol);
+
+                            const dfloat H_il=s_Q1[ieLoc][i][l];
+                            const dfloat HU_il=s_Q2[ieLoc][i][l];
+                            const dfloat HV_il=s_Q3[ieLoc][i][l];
+
+                            dfloat G1vol=zero,G2vol=zero,G3vol=zero;
+                            Gvol(H_ij,HU_ij,HV_ij,H_il,HU_il,HV_il,s_Yxi[ieLoc][i][j],s_Yxi[ieLoc][i][l],s_Xxi[ieLoc][i][j],s_Xxi[ieLoc][i][l],&G1vol,&G2vol,&G3vol);
+
+
+                            const dfloat dli = s_D[l][i];
+                            const dfloat dlj = s_D[l][j];
+                            FluxDeriv1+= dli * F1vol + dlj * G1vol ;
+                            FluxDeriv2+= dli * F2vol + dlj * G2vol ;
+                            FluxDeriv3+= dli * F3vol + dlj * G3vol ;
+
+
+                        }
+
+                        const int id  = eleID*ngl2*Neq   +j*ngl+i;
+                        const int xid=eleID*ngl2   +j*ngl+i;
+                        const dfloat r_Jac=Jac[xid];
+                        const dfloat r_Bx=Bx[xid];
+                        const dfloat r_By=By[xid];
+
+                        Qt[id]              = -  r_Jac *FluxDeriv1;
+                        Qt[id+ngl2]         = -  r_Jac *FluxDeriv2 - g_const*H_ij*r_Bx ;
+                        Qt[id+ngl2+ngl2]    = -  r_Jac *FluxDeriv3 - g_const*H_ij*r_By;
+
+                    }
+                }
+            }
+        }
+
+
+
+    }
+
+
+
+}

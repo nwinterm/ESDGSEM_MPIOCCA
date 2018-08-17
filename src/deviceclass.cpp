@@ -1,4 +1,6 @@
 #include "deviceclass.h"
+//#include <limits>
+//using std::numeric_limits;
 
 deviceclass::deviceclass(const int rank, const int argc, char *argv[])
 {
@@ -92,6 +94,7 @@ void deviceclass:: initDeviceVariables(const int N,
                                        const int NEpad,
                                        const int NEsurfpad,
                                        const int Nedgepad,
+                                       const int NAvgPad,
                                        const int ES,
                                        const int Testcase,
                                        const dfloat epsilon_0,
@@ -101,7 +104,8 @@ void deviceclass:: initDeviceVariables(const int N,
                                        const dfloat geomface,
                                        const dfloat g_const,
                                        const int PositivityPreserving,
-                                       const int ArtificialViscosity )
+                                       const int ArtificialViscosity,
+					const int DiscBottom )
 {
     const int Neq=3;
     const int GradNeq = Neq-1;
@@ -113,7 +117,13 @@ void deviceclass:: initDeviceVariables(const int N,
         nglPad=1;
     }
     dfloat TOL_PosPres = PosPresTOL;//pow(10.0,-4);
-    dfloat ZeroTOL = pow(10.0,-12);
+//    dfloat ZeroTOL = pow(10.0,-12);	// double precision
+    dfloat ZeroTOL = pow(10.0,-5);
+//  	cout << "The range for type float is from "
+//       << numeric_limits<dfloat>::min()
+//       << " to "
+//       << numeric_limits<dfloat>::denorm_min()
+//	<< " \n" ;
 
     dfloat zero = 0.0;
     dfloat half = 0.5;
@@ -126,6 +136,7 @@ void deviceclass:: initDeviceVariables(const int N,
     dfloat fourthg = fourth*g_const;
     info.addDefine("procID",rank);
     info.addDefine("NEpad",NEpad);
+    info.addDefine("NAvgPad",NAvgPad);
     info.addDefine("Nedgepad",Nedgepad);
     info.addDefine("NEsurfpad",NEsurfpad);
     info.addDefine("ngl",ngl);
@@ -227,7 +238,7 @@ void deviceclass:: initDeviceVariables(const int N,
     if (PositivityPreserving == 1)
     {
         o_GLw  = device.malloc(ngl*sizeof(dfloat));
-        o_Qavg = device.malloc(Nelem*4*sizeof(dfloat));
+        //o_qAvg = device.malloc(Nelem*5*sizeof(dfloat));
 
     }
     if (ArtificialViscosity == 1)
@@ -264,7 +275,8 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
                                       const int NumFlux,
                                       const int rkSSP,
                                       const int ArtificialViscosity,
-                                      const int PositivityPreserving)
+                                      const int PositivityPreserving,
+					const int DiscBottom )
 {
 
 
@@ -356,8 +368,12 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
 
     // calc specific value on edges like jump in b and average h
 //    calcEdgeValues          =   device.buildKernelFromSource("okl/DiscontinuousBathimetry/calcEdgeValues.okl","calcEdgeValues",info);
-    // adds additional surface terms due to a possibly discontinuous bottom topography
-    calcDiscBottomSurf      =   device.buildKernelFromSource("okl/DiscontinuousBathimetry/calcDiscBottomSurf.okl","calcDiscBottomSurf",info);
+
+    if (DiscBottom==1){
+    	// adds additional surface terms due to a possibly discontinuous bottom topography
+    	calcDiscBottomSurf      =   device.buildKernelFromSource("okl/DiscontinuousBathimetry/calcDiscBottomSurf.okl","calcDiscBottomSurf",info);
+	SurfaceKernelDiscBottom       =   device.buildKernelFromSource("okl/DiscontinuousBathimetry/SurfaceKernelDiscBottom.okl","SurfaceKernelDiscBottom",info);
+    }
     // standard dg kernel for the surface parts
     SurfaceKernel=device.buildKernelFromSource("okl/DG/SurfaceKernel.okl","SurfaceKernel",info);
     //kernel to compute eigenvalues
@@ -379,7 +395,7 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
 
     if (ArtificialViscosity)
     {
-        UpdateQt                =   device.buildKernelFromSource("okl/ViscoseParts/UpdateQt.okl","UpdateQt",info);
+
         CollectEdgeDataGradient =   device.buildKernelFromSource("okl/BR1_Gradient/CollectEdgeDataGradient.okl","CollectEdgeDataGradient",info);
         SurfaceKernelGradient   =   device.buildKernelFromSource("okl/BR1_Gradient/SurfaceKernelGradient.okl","SurfaceKernelGradient",info);
         calcGradient            =   device.buildKernelFromSource("okl/BR1_Gradient/calcGradient.okl","calcGradient",info);
@@ -388,12 +404,11 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
         VolumeKernelViscose     =   device.buildKernelFromSource("okl/ViscoseParts/VolumeKernelViscose.okl","VolumeKernelViscose",info);
         calcNumFluxesViscose    =   device.buildKernelFromSource("okl/ViscoseParts/calcNumFluxesViscose.okl","calcNumFluxesViscose",info);
         SurfaceKernelVisc       =   device.buildKernelFromSource("okl/ViscoseParts/SurfaceKernelVisc.okl","SurfaceKernelVisc",info);
-        ShockCapturing          =   device.buildKernelFromSource("okl/ViscoseParts/ShockCapturing.okl","ShockCapturing",info);
+        ShockCapturing          =   device.buildKernelFromSource("okl/ShockCapturing/ShockCapturing.okl","ShockCapturing",info);
     }
     if (PositivityPreserving)
     {
-        //calcAvg      =   device.buildKernelFromSource("okl/Positivity/calcAvg.okl","calcAvg",info);
-	//    FindDryElements=   device.buildKernelFromSource("okl/DG/FindDryElements.okl","FindDryElements",info);
+       // calcAvg      		=   device.buildKernelFromSource("okl/Positivity/CalcAvgAndMin.okl","calcAvg",info);			// THIS KERNEL IS JUST TOO SLOW. DONT KNOW HOW TO SPEED IT UP
         preservePosivitity      =   device.buildKernelFromSource("okl/Positivity/PosPres.okl","PosPres",info);
     }
 
@@ -438,12 +453,12 @@ void deviceclass:: copyDeviceVariables( const int PositivityPreserving, const in
     o_VdmInv.copyFrom(VdmInv);
 
 
-    dfloat * qavgtmp = (dfloat*) calloc(Nelem*4,sizeof(dfloat));
+    dfloat * qavgtmp = (dfloat*) calloc(Nelem*5,sizeof(dfloat));
     if(PositivityPreserving == 1)
     {
         o_GLw.copyFrom(GLw);
 
-        o_Qavg.copyFrom(qavgtmp);
+        //o_qAvg.copyFrom(qavgtmp);
 
     }
     free(qavgtmp);
@@ -477,7 +492,8 @@ void deviceclass:: DGtimeloop(const int Nelem,
                               const dfloat g_const,
                               const int PlotVar,
                               const int EntropyPlot,
-                              const int PositivityPreserving)
+                              const int PositivityPreserving,
+					const int DiscBottom )
 {
 
 
@@ -752,10 +768,13 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
 	    }
 
             calcNumFluxes(Nfaces,o_EdgeReversed,o_nx,o_ny,o_scal,o_qL,o_qR,o_bL,o_bR,o_SurfaceParts);
-            calcDiscBottomSurf(Nfaces,o_EdgeReversed,o_qL,o_qR, o_bL,o_bR,o_nx,o_ny,o_scal,o_DBSurf1,o_DBSurf2);
-
 
             SurfaceKernel(Nelem,o_Jac,o_ElemEdgeMasterSlave,o_ElemEdgeOrientation,o_ElemToEdge, o_SurfaceParts,o_DBSurf1,o_DBSurf2,o_Qt);
+
+	    if (DiscBottom==1){
+            	calcDiscBottomSurf(Nfaces,o_EdgeReversed,o_qL,o_qR, o_bL,o_bR,o_nx,o_ny,o_scal,o_DBSurf1,o_DBSurf2);
+		SurfaceKernelDiscBottom(Nelem,o_Jac,o_ElemEdgeMasterSlave,o_ElemEdgeOrientation,o_ElemToEdge, o_DBSurf1,o_DBSurf2,o_Qt);
+	    }
 
 
             if ( ArtificialViscosity==1)
@@ -792,7 +811,7 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
 
 		}
 
-                VolumeKernelViscose(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_qGradientX,o_qGradientY,o_Dstrong,o_ViscPara,o_QtVisc);
+                VolumeKernelViscose(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_qGradientX,o_qGradientY,o_Dstrong,o_ViscPara,o_Qt);
 
 
 		if (MeshSplit.NumProcessors>1){
@@ -812,11 +831,8 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
 
                 calcNumFluxesViscose(Nfaces,o_EdgeData,o_nx,o_ny,o_scal,o_ViscParaL,o_ViscParaR,o_qGradientXL,o_qGradientXR,o_qGradientYL,o_qGradientYR,o_SurfacePartsVisc);
 
-                SurfaceKernelVisc(Nelem,o_Jac,o_ElemEdgeMasterSlave,o_ElemEdgeOrientation,o_ElemToEdge, o_SurfacePartsVisc,o_QtVisc);
+                SurfaceKernelVisc(Nelem,o_Jac,o_ElemEdgeMasterSlave,o_ElemEdgeOrientation,o_ElemToEdge, o_SurfacePartsVisc,o_Qt);
 
-
-
-                UpdateQt(Nelem,o_QtVisc,o_Qt);
 
             }
 
@@ -839,7 +855,9 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
 
             if(PositivityPreserving==1)
             {
-                preservePosivitity(Nelem,o_EleSizes,o_GLw, o_Jac,o_q);
+		//calcAvg(Nelem,o_EleSizes,o_GLw, o_Jac,o_q,o_qAvg);
+                //preservePosivitity(Nelem,o_qAvg,o_q);
+		preservePosivitity(Nelem,o_EleSizes,o_GLw, o_Jac,o_q);
 
             }
 
@@ -1030,6 +1048,7 @@ o_EdgeReversed.free();
     if (PositivityPreserving == 1)
     {
         o_GLw.free();
+       // o_qAvg.free();
 
     }
     if (ArtificialViscosity == 1)
@@ -1049,11 +1068,6 @@ o_EdgeReversed.free();
         o_ViscForPlot.free();
         o_ViscParaL.free();
         o_ViscParaR.free();
-        if (PositivityPreserving == 1)
-        {
-            o_Qavg.free();
-
-        }
     }
 
 }

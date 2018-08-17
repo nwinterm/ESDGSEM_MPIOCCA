@@ -1,0 +1,65 @@
+for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
+{
+    for (int i=0; i<ngl; ++i; inner1)
+    {
+        for (int j=0; j<ngl; ++j; inner0)
+        {
+            const int eleID     =   iEo + ieLoc;
+            if (eleID<Nelem)
+            {
+                const int id  = eleID*ngl2*Neq   +i*ngl+j;
+                const int xid=eleID*ngl2   +i*ngl+j;
+                const dfloat r_Jac=Jac[xid];
+                const dfloat r_Bx=Bx[xid];
+                const dfloat r_By=By[xid];
+                dfloat FluxDerivF1   =   zero,FluxDerivF2   =   zero;
+                dfloat FluxDerivF3   =   zero;
+                dfloat FluxDerivG1   =   zero,FluxDerivG2   =   zero;
+                dfloat FluxDerivG3   =   zero;
+                const dfloat invQ1ij      =   s_invQ[ieLoc][i][j];
+                const dfloat H_ij         =   s_Q1[ieLoc][i][j];
+                const dfloat HU_ij        =   s_Q2[ieLoc][i][j];
+                const dfloat HV_ij        =   s_Q3[ieLoc][i][j];
+                const dfloat r_Yeta_ij    =   s_Yeta[ieLoc][i][j];
+                const dfloat r_Xeta_ij    =   s_Xeta[ieLoc][i][j];
+                const dfloat r_Yxi_ij     =   s_Yxi[ieLoc][i][j];
+                const dfloat r_Xxi_ij     =   s_Xxi[ieLoc][i][j];
+                occaUnroll(ngl)
+                for (int l=0; l<ngl; ++l)
+                {
+                    const dfloat H_lj=s_Q1[ieLoc][i][l];
+                    const dfloat invQ1lj=s_invQ[ieLoc][i][l];
+                    const dfloat HU_lj=s_Q2[ieLoc][i][l];
+                    const dfloat HV_lj=s_Q3[ieLoc][i][l];
+                    const dfloat djl = s_D[j][l];
+                    dfloat F1vol=zero,F2vol=zero,F3vol=zero;
+                    Fvol(H_ij,HU_ij,HV_ij,invQ1ij,H_lj,HU_lj,HV_lj,invQ1lj,r_Yeta_ij,
+                         s_Yeta[ieLoc][i][l],r_Xeta_ij,s_Xeta[ieLoc][i][l],&F1vol,&F2vol,&F3vol);
+                    FluxDerivF1+= djl * F1vol ;
+                    FluxDerivF2+= djl * F2vol ;
+                    FluxDerivF3+= djl * F3vol  ;
+                }
+                occaUnroll(ngl)
+                for (int l=0; l<ngl; ++l)
+                {
+                    const dfloat H_il=s_Q1[ieLoc][l][j];
+                    const dfloat invQ1il=s_invQ[ieLoc][l][j];
+                    const dfloat HU_il=s_Q2[ieLoc][l][j];
+                    const dfloat HV_il=s_Q3[ieLoc][l][j];
+                    const dfloat dil = s_D[i][l];
+                    dfloat G1vol=zero,G2vol=zero,G3vol=zero;
+                    Gvol(H_ij,HU_ij,HV_ij,invQ1ij,H_il,HU_il,HV_il,invQ1il,r_Yxi_ij,
+                         s_Yxi[ieLoc][l][j],r_Xxi_ij,s_Xxi[ieLoc][l][j],&G1vol,&G2vol,&G3vol);
+                    FluxDerivG1+=  dil * G1vol ;
+                    FluxDerivG2+=  dil * G2vol ;
+                    FluxDerivG3+=  dil * G3vol ;
+                }
+                Qt[id]              = -  r_Jac *(FluxDerivF1+FluxDerivG1);
+                Qt[id+ngl2]         = -  r_Jac *(FluxDerivF2+FluxDerivG2) - g_const*H_ij*r_Bx ;
+                Qt[id+ngl2+ngl2]    = -  r_Jac *(FluxDerivF3+FluxDerivG3) - g_const*H_ij*r_By;
+            }
+        }
+    }
+}
+}
+}

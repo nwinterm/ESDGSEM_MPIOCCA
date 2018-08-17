@@ -1,0 +1,77 @@
+kernel void calcAvg(const int Nelem,
+                    const dfloat * restrict EleSizes,
+                    const dfloat * restrict GLw,
+                    const dfloat * restrict  Jac,
+                    const dfloat * restrict  Q,
+                    dfloat * restrict  QAvg
+)
+{
+
+	for(int iEo = 0; iEo < Nelem; iEo+=NAvgPad; outer0)
+	{
+
+        	shared dfloat s_GLw[ngl];
+
+		for (int ieLoc=0; ieLoc<NAvgPad; ++ieLoc; inner0)
+		{
+			if (ieLoc<ngl){
+				s_GLw[ieLoc] = GLw[ieLoc];
+			}
+		}
+
+        	barrier(localMemFence);
+		for (int ieLoc=0; ieLoc<NAvgPad; ++ieLoc; inner0)
+		{
+			const int eleID     =   iEo + ieLoc;
+			if (eleID<Nelem)
+			{
+				dfloat r_hAvg=zero;
+				dfloat r_huAvg=zero;
+				dfloat r_hvAvg=zero;
+				dfloat r_hMin=zero;
+				dfloat r_theta=zero;
+				const dfloat r_EleSize = EleSizes[eleID];
+				occaUnroll(ngl) // <- #pragma unroll ngl
+				for (int l=0; l<ngl; ++l)
+				{
+					occaUnroll(ngl)
+					for (int k=0; k<ngl; ++k)
+					{
+						const int xid=eleID*ngl2   +k*ngl+l;
+						const int id = eleID*ngl2*Neq   +k*ngl+l;
+						const dfloat r_Weights = s_GLw[l] * s_GLw[k] /Jac[xid];
+						const dfloat r_h = Q[id];
+						r_hAvg += r_h * r_Weights;
+						r_huAvg += Q[id+ngl2] * r_Weights;
+						r_huAvg += Q[id+ngl2+ngl2] * r_Weights;
+						r_hMin = min(r_hMin ,  r_h);
+
+
+
+					}
+				}
+				if (fabs(r_hAvg) < ZeroTOL)	// Just Check if the average is negative due to round offs
+				{
+					r_hAvg=zero;
+				}
+				QAvg[eleID*5 + 0] = r_hAvg/r_EleSize;
+				QAvg[eleID*5 + 1] = r_huAvg/r_EleSize;
+				QAvg[eleID*5 + 2] = r_hvAvg/r_EleSize;
+				QAvg[eleID*5 + 3] = r_hMin;
+
+				if (r_hAvg == r_hMin)	// Just Check if the average is negative due to round offs
+				{
+					r_theta=one;
+				}else
+				{
+					r_theta = min(one,r_hAvg/(r_hAvg -r_hMin));
+				}
+
+				QAvg[eleID*5 + 4] = r_theta;
+
+                        }
+
+
+		}
+	}
+}

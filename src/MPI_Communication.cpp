@@ -26,6 +26,7 @@ void ShareInputData(MPI_setup MPI,
                     int *NEpad,
                     int *NEsurfpad,
                     int *Nedgepad,
+                   int *NAvgPad,
                     int* KernelVersion,
                     int *KernelVersionSTD,
 			int * HalfDryOperator)
@@ -57,6 +58,7 @@ void ShareInputData(MPI_setup MPI,
     MPI_Bcast (&*NEpad,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast (&*NEsurfpad,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast (&*Nedgepad,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast (&*NAvgPad,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast (&*KernelVersion,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast (&*KernelVersionSTD,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast (&*HalfDryOperator,1,MPI_DFLOAT,0,MPI_COMM_WORLD);

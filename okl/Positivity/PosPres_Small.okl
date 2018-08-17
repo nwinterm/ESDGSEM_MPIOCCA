@@ -1,0 +1,78 @@
+kernel void PosPres(const int Nelem,
+                    const dfloat * restrict  QAvg,
+                    dfloat * restrict  Q)
+{
+
+
+
+	for(int iEo = 0; iEo < Nelem; iEo+=NEpad; outer0)
+	{
+
+
+        	for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
+		{
+			for (int i=0; i<ngl; ++i; inner1)
+			{
+				for (int j=0; j<ngl; ++j; inner0)
+				{
+					const int eleID     =   iEo + ieLoc;
+					if (eleID<Nelem)
+					{
+
+						
+						const int id = eleID*ngl2*Neq   +j*ngl+i;
+						const dfloat r_hAvg = QAvg[eleID*5 + 0];
+						const dfloat r_huAvg = QAvg[eleID*5 + 1];
+						const dfloat r_hvAvg = QAvg[eleID*5 + 2];
+						const dfloat r_hMin = QAvg[eleID*5 + 3];
+						const dfloat r_theta = QAvg[eleID*5 + 4];
+						
+
+						dfloat r_hNew=zero;
+						dfloat r_huNew=zero;
+						dfloat r_hvNew=zero;
+
+						
+
+
+						if (r_hMin < zero){
+							if(r_hAvg>zero){
+								const dfloat r_hOld  = Q[id];
+								r_hNew =  fabs(r_theta * ( r_hOld - r_hAvg ) + r_hAvg);
+								if(r_hNew>PosPresTOL){
+									const dfloat r_huOld = Q[id+ngl2];
+									const dfloat r_hvOld = Q[id+ngl2+ngl2];
+
+									r_huNew = r_theta * (r_huOld -  r_huAvg) +  r_huAvg;
+									r_hvNew = r_theta * (r_hvOld -  r_hvAvg) +  r_hvAvg;									
+								}
+							}
+							if (r_hAvg<zero){
+								r_hNew = - one/zero;
+							}
+							Q[id]		=	r_hNew;
+							Q[id+ngl2]	=	r_huNew;
+							Q[id+ngl2+ngl2]	=	r_hvNew;
+						}
+						else{
+							if(Q[id] < PosPresTOL){
+								Q[id+ngl2]	= zero;
+								Q[id+ngl2+ngl2]	= zero;
+							}
+
+						}
+					}
+				}
+			}
+
+
+		}
+        }
+
+
+
+
+
+
+}
+

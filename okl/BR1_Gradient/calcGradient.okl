@@ -41,15 +41,16 @@ kernel void calcGradient(const int Nelem,
 
 
                 dfloat Qinv;
-                if (Q[Fid]>PosPresTOL)
+		const dfloat r_h = Q[Fid];
+		
+                if (r_h>PosPresTOL)
                 {
-                    Qinv =  one/Q[Fid];
+                    Qinv =  one/r_h;
                 }
                 else
                 {
                     Qinv = zero;
                 }
-
 
 
                 s_u[i][j]= Q[Fid+ngl2]*Qinv;

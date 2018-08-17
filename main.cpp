@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     int EntropyPlot;
     int ArtificialViscosity;
     int PositivityPreserving;
-    int HalfDryOperator;
+    int DiscBottom;
     int rkorder;
     int rkSSP;
     int ES,Cartesian,Fluxdifferencing;
@@ -83,6 +83,7 @@ int main(int argc, char *argv[])
     int NumPlots,NumTimeChecks,Testcase;
     int Nedgepad;
     int NEsurfpad;
+    int NavgPad;
     int KernelVersion=-1;
     int KernelVersionSTD=-1;
 
@@ -155,9 +156,10 @@ int main(int argc, char *argv[])
                       &NEpad,
                       &NEsurfpad,
                       &Nedgepad,
+			&NavgPad,
                       &KernelVersion,
                       &KernelVersionSTD,
-			&HalfDryOperator);
+			&DiscBottom);
     }
 
     ShareInputData(MPI,
@@ -185,9 +187,10 @@ int main(int argc, char *argv[])
                    &NEpad,
                    &NEsurfpad,
                    &Nedgepad,
+		   &NavgPad,
                    &KernelVersion,
                    &KernelVersionSTD,
-			&HalfDryOperator);
+			&DiscBottom);
 
     if (Testcase == 31)
     {
@@ -211,7 +214,7 @@ int main(int argc, char *argv[])
         cout <<"ArtificialViscosity: " <<ArtificialViscosity <<"\n";
         cout <<"PositivityPreserving: " <<PositivityPreserving <<"\n";
         cout <<"PosPresTOL: " <<PosPresTOL <<"\n";
-        cout <<"HalfDryOperator: " <<HalfDryOperator <<"\n";
+        cout <<"DiscBottom: " <<DiscBottom<<"\n";
         cout <<"epsilon_0: " <<epsilon_0 <<"\n";
         cout <<"sigma_min: " <<sigma_min <<"\n";
         cout <<"sigma_max: " <<sigma_max <<"\n";
@@ -668,9 +671,9 @@ int main(int argc, char *argv[])
 
 
 
-    occa_device.initDeviceVariables(N, Nelem,Nfaces,MPI.rank, rkSSP, NEpad,NEsurfpad, Nedgepad, ES, Testcase, epsilon_0, sigma_max, sigma_min, PosPresTOL, geomface, g_const,
+    occa_device.initDeviceVariables(N, Nelem,Nfaces,MPI.rank, rkSSP, NEpad,NEsurfpad, Nedgepad,NavgPad, ES, Testcase, epsilon_0, sigma_max, sigma_min, PosPresTOL, geomface, g_const,
                                     PositivityPreserving,
-                                    ArtificialViscosity );
+                                    ArtificialViscosity, DiscBottom );
     //copy all permanent data onto the device
     if(MPI.rank==0)
     {
@@ -724,7 +727,7 @@ int main(int argc, char *argv[])
     {
         cout <<"Build Kernels...\n";
     }
-    occa_device.buildDeviceKernels(  KernelVersion,   KernelVersionSTD,   Testcase,   Fluxdifferencing,   NumFlux,  rkSSP,   ArtificialViscosity,   PositivityPreserving);
+    occa_device.buildDeviceKernels(  KernelVersion,   KernelVersionSTD,   Testcase,   Fluxdifferencing,   NumFlux,  rkSSP,   ArtificialViscosity,   PositivityPreserving, DiscBottom);
 
     cout <<"rank: " << MPI.rank << " GB allocated on device: " << occa_device.device.bytesAllocated()/(1024.f*1024*1024) << "\n";
 
@@ -784,7 +787,8 @@ int main(int argc, char *argv[])
                            g_const,
                            PlotVar,
                            EntropyPlot,
-                           PositivityPreserving);
+                           PositivityPreserving, 
+			   DiscBottom);
 
 
 

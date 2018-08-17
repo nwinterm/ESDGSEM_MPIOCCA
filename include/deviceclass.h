@@ -22,6 +22,7 @@ public:
                              const int NEpad,
                              const int NEsurfpad,
                              const int Nedgepad,
+                             const int NAvgPad,
                              const int ES,
                              const int Testcase,
                              const dfloat epsilon_0,
@@ -31,7 +32,8 @@ public:
                              const dfloat geomface,
                              const dfloat g_const,
                              const int PositivityPreserving,
-                             const int ArtificialViscosity);
+                             const int ArtificialViscosity,
+			     const int DiscBottom);
     void buildDeviceKernels(const int KernelVersion,
                             const int KernelVersionSTD,
                             const int Testcase,
@@ -39,7 +41,8 @@ public:
                             const int NumFlux,
                             const int rkSSP,
                             const int ArtificialViscosity,
-                            const int PositivityPreserving);
+                            const int PositivityPreserving,
+			    const int DiscBottom);
 
     void copyDeviceVariables( const int PositivityPreserving,
                               const int Nelem,
@@ -98,7 +101,8 @@ public:
                      const dfloat g_const,
                      const int PlotVar,
                      const int EntropyPlot,
-                     const int PositivityPreserving);
+                     const int PositivityPreserving,
+		     const int DiscBottom);
     virtual ~deviceclass();
 
     occa::device device;
@@ -121,14 +125,16 @@ public:
     occa::kernel calcNumFluxesViscose;
     occa::kernel ShockCapturing;
     occa::kernel calcDiscBottomSurf;
-//    occa::kernel calcEdgeValues;
+    occa::kernel SurfaceKernelDiscBottom;       
+
+
     occa::kernel preservePosivitity;
     occa::kernel calcAvg;
     occa::kernel FindLambdaMax;
 
     occa::kernel scaleGradient;
     occa::kernel SurfaceKernelVisc;
-    occa::kernel UpdateQt;
+
 
     occa::kernel VolumeKernelFD;
 
@@ -155,7 +161,7 @@ public:
     occa::memory o_LambdaMax;
 
     occa::memory o_QtVisc;
-    occa::memory o_Qavg;
+    occa::memory o_qAvg;
 
     occa::memory o_GLw;
 

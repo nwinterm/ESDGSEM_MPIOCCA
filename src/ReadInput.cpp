@@ -107,9 +107,10 @@ void ReadInputFile(int *N,
                    int *NEpad,
                    int *NEsurfpad,
                    int *Nedgepad,
+                   int *NAvgPad,
                    int *KernelVersion,
                    int * KernelVersionSTD,
-			int * HalfDryOperator)
+			int * DiscBottom)
 {
 
 //,dfloat T, dfloat g_const
@@ -193,6 +194,10 @@ void ReadInputFile(int *N,
     std::getline(InputStream, current_string);
     *Nedgepad= getIntValue(current_string);
     std::getline(InputStream, current_string);
+    *NAvgPad= getIntValue(current_string);
+    std::getline(InputStream, current_string);
+
+
     if (*KernelVersion==-1)
     {
         *KernelVersion= getIntValue(current_string);
@@ -203,7 +208,7 @@ void ReadInputFile(int *N,
         *KernelVersionSTD= getIntValue(current_string);
     }
     std::getline(InputStream, current_string);
-    *HalfDryOperator= getIntValue(current_string);
+    *DiscBottom= getIntValue(current_string);
 
 }
 

@@ -1,13 +1,12 @@
-kernel void SurfaceKernelVisc(const int Nelem,
-                              const dfloat *Jac,
-                              const int * restrict ElemEdgeMasterSlave,
-                              const int * restrict ElemEdgeOrientation,
-                              const int * restrict ElemToEdge,
-                              const dfloat * restrict  FStar,
-                              dfloat * restrict  Qt)
+kernel void SurfaceKernelDiscBottom(const int Nelem,
+                          const dfloat * restrict Jac,
+                          const int * restrict  ElemEdgeMasterSlave,
+                          const int * restrict  ElemEdgeOrientation,
+                          const int * restrict  ElemToEdge,
+                          const dfloat * restrict  DBSurf1,
+                          const dfloat * restrict  DBSurf2,
+                          dfloat * restrict  Qt)
 {
-
-
 
     for(int iEo = 0; iEo < Nelem; iEo+=NEsurfpad; outer0)
     {
@@ -33,9 +32,6 @@ kernel void SurfaceKernelVisc(const int Nelem,
                         //increment = j if order is correct, else increment = ngl-1-j
                         const int increment  = reversedOrder*j + (1-reversedOrder)*(ngl-1 -j);
 
-                        //THIS WAY THE STORAGE IN THE SHARED VARIABLES SHOULD ALWAYS BE IN THE CORRECT ORDER FOR THE LOCAL COORDINATES
-
-                        const int idFaceLoc = ifa*ngl*(Neq-1)+ increment;        //get local id on the side storage SurfaceParts
                         const int edgeIDx = ifa*ngl+increment;
 
 
@@ -43,18 +39,14 @@ kernel void SurfaceKernelVisc(const int Nelem,
 
 
 
-                        const int id    = ie*ngl2*(Neq)+ is*(ngl2-ngl) +j;
+                        const int id    = ie*ngl2*Neq+ is*(ngl2-ngl) +j;
 
-
-                        const int r_Masterslave = ElemEdgeMasterSlave[ie*4+iside];
                         const dfloat r_Jac = Jac[xid];
 			
 
 
-            		Qt[id+ngl2]         +=    - r_Masterslave* r_Jac * FStar[idFaceLoc ]       ;
-            		Qt[id+ngl2+ngl2]    +=    - r_Masterslave* r_Jac * FStar[idFaceLoc +ngl]    ;
-
-
+                        Qt[id+ngl2]         +=     r_Jac*       DBSurf1[edgeIDx];
+                        Qt[id+ngl2+ngl2]    +=     r_Jac* DBSurf2[edgeIDx];
 
 
                     }
@@ -93,24 +85,19 @@ kernel void SurfaceKernelVisc(const int Nelem,
                         //increment = j if order is correct, else increment = ngl-1-j
                         const int increment  = reversedOrder*j + (1-reversedOrder)*(ngl-1 -j);
 
-                        //THIS WAY THE STORAGE IN THE SHARED VARIABLES SHOULD ALWAYS BE IN THE CORRECT ORDER FOR THE LOCAL COORDINATES
-
-                        const int idFaceLoc = ifa*ngl*(Neq-1)+ increment;        //get local id on the side storage SurfaceParts
                         const int edgeIDx = ifa*ngl+increment;
 
 
 
                         const int xid = ie*ngl2+j*ngl + (1-is)*(ngl-1);
-                        const int id= ie*ngl2*(Neq)+(1-is)*(ngl-1) +j*ngl;
+                        const int id= ie*ngl2*Neq+(1-is)*(ngl-1) +j*ngl;
 
-
-
-
-                        const int r_Masterslave = ElemEdgeMasterSlave[ie*4+iside];
                         const dfloat r_Jac = Jac[xid];
 
-            		Qt[id+ngl2]         +=    - r_Masterslave* r_Jac * FStar[idFaceLoc ] ;
-            		Qt[id+ngl2+ngl2]    +=    - r_Masterslave* r_Jac * FStar[idFaceLoc +ngl]   ;
+
+
+                        Qt[id+ngl2]         +=   r_Jac* DBSurf1[edgeIDx];
+                        Qt[id+ngl2+ngl2]    +=   r_Jac* DBSurf2[edgeIDx];
 
 
                     }
@@ -122,35 +109,4 @@ kernel void SurfaceKernelVisc(const int Nelem,
 
 
     }
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

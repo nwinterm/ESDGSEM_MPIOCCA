@@ -7,61 +7,80 @@ kernel void PosPres(const int Nelem,
 
 
 
-    for(int ie = 0; ie < Nelem; ie++; outer0)
-    {
+	
+	for(int iEo = 0; iEo < Nelem; iEo+=NEpad; outer0)
+	{
 
-        shared dfloat s_Havg;
-        shared dfloat s_HUavg;
-        shared dfloat s_HVavg;
-        shared dfloat s_Hmin;
-        shared dfloat s_theta;
+        	shared dfloat s_Havg[NEpad];
+        	shared dfloat s_HUavg[NEpad];
+        	shared dfloat s_HVavg[NEpad];
+        	shared dfloat s_Hmin[NEpad];
+        	shared dfloat s_theta[NEpad];
 
-        shared dfloat s_GLw[ngl];
-        shared dfloat s_H[ngl][ngl];
-        shared dfloat s_Hu[ngl][ngl];
-        shared dfloat s_Hv[ngl][ngl];
-
-
-
-        for (int i=0; i<ngl; ++i; inner1)
-        {
-            for (int j=0; j<ngl; ++j; inner0)
-            {
-                int Fid = ie*ngl2*Neq   +j*ngl+i;
-                s_H[i][j]=Q[Fid];
-                Fid+=ngl2;
-                s_Hu[i][j]=Q[Fid];
-                Fid+=ngl2;
-                s_Hv[i][j]=Q[Fid];
-
-                if (j == 0)
-                {
-                    s_GLw[i] = GLw[i];
-                }
+        	shared dfloat s_GLw[ngl];
+        	shared dfloat s_H[NEpad][ngl][ngl];
+        	shared dfloat s_Hu[NEpad][ngl][ngl];
+        	shared dfloat s_Hv[NEpad][ngl][ngl];
+		shared dfloat s_EleSizes[NEpad];
 
 
-            }
+        for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
+	{
 
-        }
+        	for (int i=0; i<ngl; ++i; inner1)
+        	{
+            		for (int j=0; j<ngl; ++j; inner0)
+            		{
+
+				const int eleID     =   iEo + ieLoc;
+				if (eleID<Nelem)
+				{
+
+                			int Fid = eleID *ngl2*Neq   +j*ngl+i;
+                			s_H[ieLoc][i][j]=Q[Fid];
+                			s_Hu[ieLoc][i][j]=Q[Fid+ngl2];
+                			s_Hv[ieLoc][i][j]=Q[Fid+ngl2+ngl2];
+
+                			if ((j == 0)&&(ieLoc==0))
+                			{
+                    				s_GLw[i] = GLw[i];
+                			}
+                			if ((j == 0)&&(i==0))
+                			{
+                    				s_EleSizes[ieLoc] = EleSizes[eleID ];
+                			}
+
+				}
+            		}
+
+		}
+	}
 
         barrier(localMemFence);
 
 // Very naive way to integrate over an element
 
+        for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
+	{
+
         for (int i=0; i<ngl; ++i; inner1)
         {
             for (int j=0; j<ngl; ++j; inner0)
             {
+
+		const int eleID     =   iEo + ieLoc;
+		if (eleID<Nelem)
+		{
 
                 if (i==0)
                 {
                     if (j==0)
                     {
 
-                        s_Hmin = zero;
-                        s_Havg = zero;
-                        s_HUavg = zero;
-                        s_HVavg = zero;
+                        dfloat r_Hmin = zero;
+                        dfloat r_Havg = zero;
+                        dfloat r_HUavg = zero;
+                        dfloat r_HVavg = zero;
 
                         occaUnroll(ngl) // <- #pragma unroll ngl
                         for (int l=0; l<ngl; ++l)
@@ -70,120 +89,119 @@ kernel void PosPres(const int Nelem,
                             for (int k=0; k<ngl; ++k)
                             {
 
-                                const int xid=ie*ngl2   +k*ngl+l;
+                                const int xid=eleID     *ngl2   +k*ngl+l;
                                 const dfloat r_Weights = s_GLw[l] * s_GLw[k] /Jac[xid];
-                                s_Havg += s_H[l][k] * r_Weights;
-                                s_HUavg += s_Hu[l][k] * r_Weights;
-                                s_HVavg += s_Hv[l][k] * r_Weights;
-                                s_Hmin = min(s_Hmin, s_H[l][k]);
+                                r_Havg += s_H[ieLoc][l][k] * r_Weights;
+                                r_HUavg += s_Hu[ieLoc][l][k] * r_Weights;
+                                r_HVavg += s_Hv[ieLoc][l][k] * r_Weights;
+                                r_Hmin = min(r_Hmin, s_H[ieLoc][l][k]);
 
 
 
                             }
 
                         }
-                        s_Havg =   s_Havg/ EleSizes[ie];
-                        s_HUavg =   s_HUavg/ EleSizes[ie];
-                        s_HVavg =   s_HVavg/ EleSizes[ie];
-
-			if (fabs(s_Havg) < ZeroTOL)	// Just Check if the average is negative due to round offs
+			r_Havg =   r_Havg/ s_EleSizes[ieLoc];
+			if (fabs(r_Havg) < ZeroTOL)	// Just Check if the average is negative due to round offs
 			{
-				s_Havg=zero;
+				r_Havg=zero;
 			}
-                        if (s_Havg == s_Hmin)		// catch division by zero
+                        if (r_Havg == r_Hmin)		// catch division by zero
                         {
-                            s_theta = one;
+                            s_theta[ieLoc] = one;
                         }
                         else
                         {
-                            s_theta = min(one,s_Havg/(s_Havg-s_Hmin));
+                            s_theta[ieLoc] = min(one,r_Havg/(r_Havg-r_Hmin));
                         }
+
+                        s_Havg[ieLoc] =   r_Havg;
+                        s_HUavg[ieLoc] =   r_HUavg/ s_EleSizes[ieLoc];
+                        s_HVavg[ieLoc] =   r_HVavg/ s_EleSizes[ieLoc];
+			s_Hmin[ieLoc] = r_Hmin;
+
 
                     }
                 }
 
-            }
-        }
+				}
+            		}
 
-
-
-
+		}
+	}
 
         barrier(localMemFence);
 
 // now that theta is found, update all values
 
-        for (int i=0; i<ngl; ++i; inner1)
-        {
-            for (int j=0; j<ngl; ++j; inner0)
-            {
-                const int id = ie*ngl2*Neq   +j*ngl+i;
+        for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
+	{
+
+        	for (int i=0; i<ngl; ++i; inner1)
+        	{
+            		for (int j=0; j<ngl; ++j; inner0)
+            		{
+
+				const int eleID     =   iEo + ieLoc;
+				if (eleID<Nelem)
+				{
+                			const int id = eleID     *ngl2*Neq   +j*ngl+i;
 
 
-                dfloat h_new =zero;
-                dfloat hu_new=zero;
-                dfloat hv_new=zero;
+                			dfloat h_new =zero;
+                			dfloat hu_new=zero;
+                			dfloat hv_new=zero;
 
-                dfloat r_h = s_H[i][j];
-                dfloat r_hu = s_Hu[i][j];
-                dfloat r_hv = s_Hv[i][j];
-                dfloat r_hAvg = s_Havg;
-                dfloat r_huAvg = s_HUavg;
-                dfloat r_hvAvg = s_HVavg;
-                dfloat r_theta = s_theta;
+                			dfloat r_h = s_H[ieLoc][i][j];
+                			dfloat r_hu = s_Hu[ieLoc][i][j];
+                			dfloat r_hv = s_Hv[ieLoc][i][j];
+                			dfloat r_hAvg = s_Havg[ieLoc];
+                			dfloat r_huAvg = s_HUavg[ieLoc];
+                			dfloat r_hvAvg = s_HVavg[ieLoc];
+                			dfloat r_theta = s_theta[ieLoc];
 
-                if (s_Hmin<zero)
-                {
-                    if (r_hAvg>zero)
-                    {
-                        h_new =  fabs(r_theta * ( r_h - r_hAvg ) + r_hAvg);
-                        if (h_new > PosPresTOL)
-                        {
-                            hu_new = r_theta * (r_hu -  r_huAvg) +  r_huAvg;
-                            hv_new = r_theta * (r_hv -  r_hvAvg) + r_hvAvg;
+                			if (s_Hmin[ieLoc]<zero)
+                			{
+                    				if (r_hAvg>zero)
+                    				{
+                        				h_new =  fabs(r_theta * ( r_h - r_hAvg ) + r_hAvg);
+                        				if (h_new > PosPresTOL)
+                        				{
+                            					hu_new = r_theta * (r_hu -  r_huAvg) +  r_huAvg;
+                            					hv_new = r_theta * (r_hv -  r_hvAvg) + r_hvAvg;
 
-                        }
-                        else
-                        {
-                            hu_new = zero;
-                            hv_new = zero;
-                        }
-                    }
-                    if (r_hAvg<zero)
-                    {
-                        h_new=-one/zero;	// manufacture a NaN to stop scheme is not working correctly
-                        hu_new = zero;
-                        hv_new = zero;
-                    }
-
-                    Q[id]=h_new;
-                    Q[id+ngl2] =hu_new;
-                    Q[id+ngl2+ngl2] = hv_new;
-
-                }
-                else
-                {
-                    if (r_h<PosPresTOL)
-                    {
-                        Q[id+ngl2] =  zero;
-                        Q[id+ngl2+ngl2] = zero;
-                    }
-
-
-                }
+                        				}
+                        				else
+                        				{
+                            					hu_new = zero;
+                            					hv_new = zero;
+                        				}
+                    				}
+                    				if (r_hAvg<zero)
+                    				{
+                        				h_new=-one/zero;	// manufacture a NaN to stop scheme is not working correctly
+                        				hu_new = zero;
+                        				hv_new = zero;
+                    				}
+                    					Q[id]=h_new;
+                    					Q[id+ngl2] =hu_new;
+                    					Q[id+ngl2+ngl2] = hv_new;
+                				}
+                				else
+                				{
+                    					if (r_h<PosPresTOL)
+                    					{
+                        					Q[id+ngl2] =  zero;
+                        					Q[id+ngl2+ngl2] = zero;
+                    					}
+                				}
+					}
 
 
+				} //if eleid
+            		} // for inner0
+	           } // for inner1
+        }   // for inner2
 
-            }
-        }
-
-
-
-
-
-
-    }
-
-
-
-}
+}//outer
+}//kernel

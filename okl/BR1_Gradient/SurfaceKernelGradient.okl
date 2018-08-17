@@ -37,8 +37,7 @@ kernel void SurfaceKernelGradient(const int Nelem,
                         //THIS WAY THE STORAGE IN THE SHARED VARIABLES SHOULD ALWAYS BE IN THE CORRECT ORDER FOR THE LOCAL COORDINATES
 
                         const int idFaceLoc = ifa*ngl*(Neq-1)+ increment;        //get local id on the side storage SurfaceParts
-                        const int edgeIDx = ifa*ngl+increment;
-
+ 
 
                         const int xid = ie*ngl2 + is*(ngl2-ngl) + j;
 
@@ -99,9 +98,7 @@ kernel void SurfaceKernelGradient(const int Nelem,
                         //THIS WAY THE STORAGE IN THE SHARED VARIABLES SHOULD ALWAYS BE IN THE CORRECT ORDER FOR THE LOCAL COORDINATES
 
                         const int idFaceLoc = ifa*ngl*(Neq-1)+ increment;        //get local id on the side storage SurfaceParts
-                        const int edgeIDx = ifa*ngl+increment;
-
-
+     
 
                         const int xid = ie*ngl2+j*ngl + (1-is)*(ngl-1);
                         const int id= ie*ngl2*(Neq-1)+(1-is)*(ngl-1) +j*ngl;

@@ -18,10 +18,6 @@ kernel void ShockCapturing(const int Nelem,
         shared dfloat s_Q1[ngl][ngl];
 
 
-        shared dfloat s_MaxLambda[ngl][ngl];
-
-
-
 
         for (int i=0; i<ngl; ++i; inner1)
         {
@@ -36,27 +32,9 @@ kernel void ShockCapturing(const int Nelem,
 
                 const dfloat r_h = Q[Fid];
                 const dfloat r_h2 = r_h*r_h;
-                dfloat c;
 
-                dfloat Qinv;
-                //if ((r_h2>PosPresTOL)&&(r_h>PosPresTOL))
-		if (r_h>PosPresTOL)
-                {
-                    
-                    Qinv = one/r_h;
-                    c=sqrt(g_const*r_h);
-                    const dfloat u =Q[Fid+ngl2]*Qinv;
-                    const dfloat v =Q[Fid+ngl2+ngl2]*Qinv;
-                    s_MaxLambda[i][j] =  c + max(fabs(u),fabs(v));
-                }
-                else
-                {
-                    Qinv = zero;
-                    c=zero;
-		    s_MaxLambda[i][j] =  zero;
-                }
 
- 		s_Q1modal[i][j]=r_h;
+ 		s_Q1modal[i][j]=r_h2;
 
             }
         }
@@ -144,7 +122,6 @@ kernel void ShockCapturing(const int Nelem,
             dfloat term2=zero;
 
             dfloat viscStar=zero;
-            dfloat MaxLambdaTotal=zero;
 
             occaUnroll(ngl-1)
             for (int i=0; i<ngl-1; ++i)
@@ -182,7 +159,7 @@ kernel void ShockCapturing(const int Nelem,
                 }
             }
 
-		if (nenner1<ZeroTOL){
+		if (nenner1==zerooTOL){
             		term1=zero;
 		}else{
 			term1= zaehler1/nenner1 ;
@@ -215,22 +192,12 @@ kernel void ShockCapturing(const int Nelem,
             }
 
 
-            occaUnroll(ngl)
-            for (int i=0; i<ngl; ++i)
-            {
-                occaUnroll(ngl)
-                for (int j=0; i<ngl; ++i)
-                {
-                    MaxLambdaTotal = max(MaxLambdaTotal, s_MaxLambda[i][j]);
 
-                }
-            }
+            
+		ViscPara[ie] = viscStar;
+		ViscParaForPlot[ie] = viscStar;
 
-            ViscParaForPlot[ie] = viscStar;
-            //ViscPara[ie] = MaxLambdaTotal * sqrt(EleSizes[ie]) /ngl * viscStar;
-	    ViscPara[ie] = viscStar;
-	    //ViscPara[ie] = eps0;
-
+		
 
         }
 
