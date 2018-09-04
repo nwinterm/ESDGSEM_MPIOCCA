@@ -370,13 +370,17 @@ int main(int argc, char *argv[])
                     J_global[id] = 1.0/DGMesh.J_global[id];
                     x_phy_global[id] = DGMesh.x_global[id];
                     y_phy_global[id] = DGMesh.y_global[id];
+                    if (ReadInBottom){
+                        b_global[id]    = DGMesh.b_global[id];
+                    }
 
 
-                }
+
             }
         }
+        if (!ReadInBottom){
         SW_Problem.InitB(0,DGMeshPartition,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,b_global);
-
+        }
 
 
 
