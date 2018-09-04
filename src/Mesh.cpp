@@ -1525,7 +1525,7 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
             int ij = j*ngl+i;
             if (Curved)
             {
-                TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],x_GL[j],&x_phy[ij],&y_phy[ij],&b_phy[ij]);
+                TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],x_GL[j],&x_phy[ij],&y_phy[ij]);
 
                 if(ReadBottom){
                     TransfiniteQuadMapSingle(Gamma1b,Gamma2b,Gamma3b,Gamma4b,x_GL[i],x_GL[j],&b_phy[ij]);
