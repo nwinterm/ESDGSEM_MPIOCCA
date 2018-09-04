@@ -25,6 +25,19 @@ MeshPartitioning::~MeshPartitioning()
     //dtor
 }
 
+void MeshPartitioning::DivideBottom(const MPI_setup MPI, const dfloat b_global, dfloat * b)
+{
+    if (NumProcessors==1)
+    {
+        std::memcpy(&b, &b_global, sizeof b_global);
+    }
+    else
+    {
+        SplitRealValuesBetweenProcs( MPI,b_global, b);
+    }
+
+
+}
 
 
 void MeshPartitioning::DivideMesh(const Mesh GlobalMesh,const MPI_setup MPI)
@@ -359,11 +372,11 @@ void MeshPartitioning::DivideMesh(const Mesh GlobalMesh,const MPI_setup MPI)
                     globalEdgeInfo[id2+0] = GlobalMesh.EdgeInfo[glbEdgeInfoID+0]	;	//		!these are not even used after the inital mesh generation
                     globalEdgeInfo[id2+1]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+1];			//	! ""
                     globalEdgeInfo[id2+2]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+2],	//!this is changed to be the GLOBAL ELEMENT ID on left processor
-                    globalEdgeInfo[id2+3]  = ElementGlobalToLocal[GlobalMesh.EdgeInfo[glbEdgeInfoID+3]]-1;//	!this is changed to be the local element on right processor
+                                             globalEdgeInfo[id2+3]  = ElementGlobalToLocal[GlobalMesh.EdgeInfo[glbEdgeInfoID+3]]-1;//	!this is changed to be the local element on right processor
                     globalEdgeInfo[id2+4]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+4];	//!local side left element <- fine as is
                     globalEdgeInfo[id2+5]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+5];//!local side right element <- fine as is
                     // if orientation flip is on MPI edge, take special care!!
-		    globalEdgeInfo[id2+6]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+6];
+                    globalEdgeInfo[id2+6]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+6];
                     //globalEdgeInfo[id2+6]  = GlobalMesh.EdgeInfo[glbEdgeInfoID+6];
                     globalEdgeInfo[id2+7]  = proc_LEFT -1;
                     globalEdgeInfo[id2+8]  = proc_RIGHT -1;
@@ -678,11 +691,12 @@ void MeshPartitioning::SplitEdgeRealValuesBetweenProcs(const MPI_setup MPI,const
 
 
 
+void MeshPartitioning::ReceiveBottom(const MPI_setup MPI, dfloat *b)
+{
 
+MPI_Recv(&b[0],ngl2*NumElements,MPI_DFLOAT,0,MPI.rank,MPI_COMM_WORLD, MPI.stats);
 
-
-
-
+}
 
 
 
@@ -1065,7 +1079,7 @@ void MeshPartitioning::SortMPIEdges(const MPI_setup MPI)
                 int id = is*10+info;
                 MyEdgeInfo[id]=EdgeInfoTMP[id];
             }
-		// TESTING BUGFIX FOR REVERSED ORIENTATION ON MPI EDGES!!!!!!!!!!!!!
+            // TESTING BUGFIX FOR REVERSED ORIENTATION ON MPI EDGES!!!!!!!!!!!!!
 //		int id = is*10+6;
 //		if (MyEdgeInfo[id+2]!=MyEdgeInfo[id+1]){	// check if this is a MPI edge
 //			if (MyEdgeInfo[is*10+6]==0 ){		// check if orientation is flipped
@@ -1082,19 +1096,22 @@ void MeshPartitioning::SortMPIEdges(const MPI_setup MPI)
         {
             for (int i = 0; i<ngl; i++)
             {
-		int id= is*ngl+i;
-		int id_new = id;
+                int id= is*ngl+i;
+                int id_new = id;
 
-                if (SwitchLeftRight[is] ==1){	// check if left and right state where changed for this rank
-			if (MyEdgeInfo[is*10+6]==0 ){
-		               	id_new = is*ngl+ngl-1-i;}
-		}
+                if (SwitchLeftRight[is] ==1) 	// check if left and right state where changed for this rank
+                {
+                    if (MyEdgeInfo[is*10+6]==0 )
+                    {
+                        id_new = is*ngl+ngl-1-i;
+                    }
+                }
 
-                
-		nx_global[id_new]=nx_globalTMP[id];
+
+                nx_global[id_new]=nx_globalTMP[id];
                 ny_global[id_new]=ny_globalTMP[id];
                 scal_global[id_new]=scal_globalTMP[id];
-		
+
             }
         }
 

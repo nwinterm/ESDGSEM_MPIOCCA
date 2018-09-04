@@ -372,7 +372,7 @@ int main(int argc, char *argv[])
                     y_phy_global[id] = DGMesh.y_global[id];
                     if (ReadInBottom)
                     {
-                        b_global[id]    = DGMesh.b_global[id];
+                        b_global[id]    = DGMesh.b_global[id]+6000.0;
                     }
 
 
@@ -434,6 +434,24 @@ int main(int argc, char *argv[])
     {
         cout <<"... finished.\n";
     }
+
+
+
+    if(MPI.rank==0)
+    {
+        cout <<"Distributing bottom topography data to MPI-ranks \n";
+        DGMeshPartition.DivideBottom(MPI,b_global,b);
+
+    }
+    else
+    {
+
+        DGMeshPartition.ReceiveBottom(MPI,b);
+
+    }
+
+
+
 
 
 
@@ -653,7 +671,11 @@ int main(int argc, char *argv[])
     RungeKutta RK(rkorder,rkSSP);
 
     //INITIALIZE SOLUTION
-    SW_Problem.InitB(1,DGMeshPartition,Nelem,ngl,ngl2,x_phy,y_phy,b);
+    // THIS SHOULD NOW BE TAKEN CARE OF ALREADY!!!!!!!!
+   // SW_Problem.InitB(1,DGMeshPartition,Nelem,ngl,ngl2,x_phy,y_phy,b);
+// THIS SHOULD NOW BE TAKEN CARE OF ALREADY!!!!!!!!
+
+
 
     SW_Problem.CalcBDerivatives(Nelem,ngl,ngl2,g_const,x_phy,y_phy,b,Dmat0,y_eta,y_xi,x_eta,x_xi,Bx,By,J);
 //	cout << "i am rank: " << MPI.rank << " and my Nelem_global is " << DGMeshPartition.global_NumElements << "\n";
