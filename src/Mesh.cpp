@@ -1265,7 +1265,7 @@ void Mesh::ReadMesh(const string meshFile)
             }
         }
 //	curved =true;
-        ConstructMappedGeometry(cornersX,cornersY,
+        ConstructMappedGeometry(cornersX,cornersY,cornersb,
                                 Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,
                                 Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,
                                 Gamma1b,Gamma2b,Gamma3b,Gamma4b,
