@@ -30,7 +30,7 @@ Mesh::~Mesh()
 }
 
 
-void Mesh::InitMesh(const string meshFile, const bool Cartesian, const int Testcase,dfloat[] b_global)
+void Mesh::InitMesh(const string meshFile, const bool Cartesian, const int Testcase,dfloat b_global[])
 {
     // NelemX=0;
     // NelemY=0;
@@ -783,7 +783,7 @@ void Mesh::GenerateMesh(const dfloat xL,const dfloat xR,const dfloat yL,const df
 
 }
 
-void Mesh::ReadMesh(const string meshFile,dfloat[] b_global)
+void Mesh::ReadMesh(const string meshFile,dfloat b_global[])
 {
 
 //,dfloat T, dfloat g_const

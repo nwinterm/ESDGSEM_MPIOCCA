@@ -42,7 +42,7 @@ public:
 //        imatrix ElemEdgeMasterSlave;
 //        imatrix ElemEdgeOrientation;
 
-    void ReadMesh(const string,dfloat[] b_global);
+    void ReadMesh(const string,dfloat[]);
     void GenerateMesh(const dfloat,const dfloat,const dfloat,const dfloat,const bool,const bool );
     void InitDomain(const int, int*,int *, int *,int *, bool *, bool *, dfloat*, dfloat *, dfloat*, dfloat *);
     virtual ~Mesh();
