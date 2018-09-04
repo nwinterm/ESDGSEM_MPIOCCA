@@ -12,7 +12,7 @@ class Mesh
 {
 public:
     Mesh(const dfloat*,const int,const int, const int);
-    void InitMesh(const string,const bool, const int ,dfloat[]);
+    void InitMesh(const string,const bool, const int);
     int m_num_nodes;
     int m_num_edges;
     int m_num_elements;
@@ -32,7 +32,7 @@ public:
     dfloat * NormalsY;
     dfloat * Scal;
 
-
+    dfloat *  b_global;
 
     int * ElementToEdge;
     int * EdgeInfo;
@@ -42,7 +42,7 @@ public:
 //        imatrix ElemEdgeMasterSlave;
 //        imatrix ElemEdgeOrientation;
 
-    void ReadMesh(const string,dfloat[]);
+    void ReadMesh(const string);
     void GenerateMesh(const dfloat,const dfloat,const dfloat,const dfloat,const bool,const bool );
     void InitDomain(const int, int*,int *, int *,int *, bool *, bool *, dfloat*, dfloat *, dfloat*, dfloat *);
     virtual ~Mesh();
@@ -65,6 +65,7 @@ private:
     dfloat * x_phy;
     dfloat * y_phy;
 
+
     dfloat * x_xi;
     dfloat * x_eta;
     dfloat * y_xi;
@@ -76,6 +77,14 @@ private:
     dfloat * nx;
     dfloat *ny;
 
+    dfloat * b_phy;
+    dfloat * Gamma1b;
+    dfloat * Gamma2b;
+    dfloat * Gamma3b;
+    dfloat * Gamma4b;
+    dfloat * cornersb;
+    dfloat b_initial;
+    dfloat b_final;
 //        fmatrix x_phy,y_phy;
 //        fmatrix x_xi,x_eta,y_xi,y_eta,J;
 //        fmatrix x_bndy,y_bndy,scal;
@@ -96,6 +105,11 @@ private:
     void LagrangeInterpolantDerivative(const dfloat,const dfloat*,dfloat*);
     void DerivativeAt(const dfloat*,const dfloat*,const dfloat,dfloat*,dfloat*);
     void EvaluateAt(const dfloat*,const dfloat*,const dfloat,dfloat*,dfloat*);
+    void DerivativeAtSingle(const dfloat*,const dfloat,dfloat*);
+    void EvaluateAtSingle(const dfloat*,const dfloat,dfloat*);
+    void TransfiniteQuadMapSingle(const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat,const dfloat,dfloat*);
+    void QuadMapSingle(const dfloat *,const dfloat,const dfloat,dfloat*);
+
 
 };
 

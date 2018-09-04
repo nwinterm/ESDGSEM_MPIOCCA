@@ -30,7 +30,7 @@ Mesh::~Mesh()
 }
 
 
-void Mesh::InitMesh(const string meshFile, const bool Cartesian, const int Testcase,dfloat b_global[])
+void Mesh::InitMesh(const string meshFile, const bool Cartesian, const int Testcase)
 {
     // NelemX=0;
     // NelemY=0;
@@ -47,7 +47,7 @@ void Mesh::InitMesh(const string meshFile, const bool Cartesian, const int Testc
     }
     else
     {
-        ReadMesh(meshFile,b_global);
+        ReadMesh(meshFile);
         cout << "Mesh read in.\n";
     }
 
@@ -783,7 +783,7 @@ void Mesh::GenerateMesh(const dfloat xL,const dfloat xR,const dfloat yL,const df
 
 }
 
-void Mesh::ReadMesh(const string meshFile,dfloat b_global[])
+void Mesh::ReadMesh(const string meshFile,dfloat[] b_global)
 {
 
 //,dfloat T, dfloat g_const
@@ -834,6 +834,7 @@ void Mesh::ReadMesh(const string meshFile,dfloat b_global[])
 
     dfloat x_nodes[m_num_nodes];
     dfloat y_nodes[m_num_nodes];
+    dfloat b_nodes[m_num_nodes];
     //initialise chebyshev nodes immediately
     x_cheby= (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
     w_bary= (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
@@ -864,7 +865,7 @@ void Mesh::ReadMesh(const string meshFile,dfloat b_global[])
         std::getline(InputStream, current_string);
         current_line.clear();
         current_line.str(current_string);
-        if (!(current_line >> x_nodes[i] >> y_nodes[i]))
+        if (!(current_line >> x_nodes[i] >> y_nodes[i] >> b_nodes[i]))
         {
             std::string error_message("ERROR: Cant read in Nodes! ");
             error_message += filename;
@@ -996,9 +997,11 @@ void Mesh::ReadMesh(const string meshFile,dfloat b_global[])
     scal_global = (dfloat*) calloc(m_num_elements*4*ngl,sizeof(dfloat));
 
 
-
-
-
+    // new for read in of bottom data
+    if(ReadBottom)
+    {
+        b_global = (dfloat*) calloc(m_num_elements*ngl2,sizeof(dfloat));
+    }
 
     for (unsigned ie = 0; ie < m_num_elements; ++ie)
     {
@@ -1023,6 +1026,16 @@ void Mesh::ReadMesh(const string meshFile,dfloat b_global[])
         y_xi= (dfloat*) calloc(ngl2,sizeof(dfloat));
         y_eta= (dfloat*) calloc(ngl2,sizeof(dfloat));
         J= (dfloat*) calloc(ngl2,sizeof(dfloat));
+        if(ReadBottom)
+        {
+            b_phy= (dfloat*) calloc(ngl2,sizeof(dfloat));
+            Gamma1b = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
+            Gamma2b = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
+            Gamma3b = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
+            Gamma4b = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
+            cornersb = (dfloat*) calloc(4,sizeof(dfloat));
+        }
+
 
         x_bndy= (dfloat*) calloc(4*ngl,sizeof(dfloat));
         y_bndy= (dfloat*) calloc(4*ngl,sizeof(dfloat));
@@ -1088,8 +1101,10 @@ void Mesh::ReadMesh(const string meshFile,dfloat b_global[])
             //initialise the corners arrays or set it to the current corner nodes
             cornersX[j] = x_nodes[CornerIDs[j]];
             cornersY[j] = y_nodes[CornerIDs[j]];
-
-
+            if(ReadBottom)
+            {
+                cornersb[j] = b_nodes[CornerIDs[j]];
+            }
             //if we dont have a given Gamma curve, we get one by interpolation (chebychev)
             if (is_gamma_given[j] == false)
             {
@@ -1119,39 +1134,60 @@ void Mesh::ReadMesh(const string meshFile,dfloat b_global[])
                 }
 
 
-                double x_initial = x_nodes[corner_initial];
-                double x_final = x_nodes[corner_final];
+                dfloat x_initial = x_nodes[corner_initial];
+                dfloat x_final = x_nodes[corner_final];
 
-                double y_initial = y_nodes[corner_initial];
-                double y_final = y_nodes[corner_final];
-
-
-
+                dfloat y_initial = y_nodes[corner_initial];
+                dfloat y_final = y_nodes[corner_final];
+                if(ReadBottom)
+                {
+                    b_initial = b_nodes[corner_initial];
+                    b_final = b_nodes[corner_final];
+                }
                 for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k)
                 {
 
 
                     dfloat interpolated_x = ((x_final - x_initial) * x_cheby[k]+ x_initial + x_final)/2.0;
                     dfloat interpolated_y = ((y_final - y_initial) * x_cheby[k] + y_initial + y_final)/2.0;
-
+                    if(ReadBottom)
+                    {
+                        interpolated_b = ((b_final - b_initial) * x_cheby[k] + b_initial + b_final)/2.0;
+                    }
 
                     switch(j)
                     {
                     case 0:
                         Gamma1X[k]= interpolated_x;
                         Gamma1Y[k]= interpolated_y;
+                        if(ReadBottom)
+                        {
+                            Gamma1b[k] = interpolated_b;
+                        }
                         break;
                     case 1:
                         Gamma2X[k]= interpolated_x;
                         Gamma2Y[k]= interpolated_y;
+                        if(ReadBottom)
+                        {
+                            Gamma2b[k] = interpolated_b;
+                        }
                         break;
                     case 2:
                         Gamma3X[k]= interpolated_x;
                         Gamma3Y[k]= interpolated_y;
+                        if(ReadBottom)
+                        {
+                            Gamma3b[k] = interpolated_b;
+                        }
                         break;
                     case 3:
                         Gamma4X[k]= interpolated_x;
                         Gamma4Y[k]= interpolated_y;
+                        if(ReadBottom)
+                        {
+                            Gamma4b[k] = interpolated_b;
+                        }
                         break;
 
                     }
@@ -1171,7 +1207,7 @@ void Mesh::ReadMesh(const string meshFile,dfloat b_global[])
                     switch(j)
                     {
                     case 0:
-                        if (!(current_line >> Gamma1X[k]>> Gamma1Y[k]))
+                        if (!(current_line >> Gamma1X[k]>> Gamma1Y[k]>> Gamma1b[k]))
                         {
                             std::string error_message("ERROR: Cant read in given Gamma1 Curve! ");
                             error_message += filename;
@@ -1180,7 +1216,7 @@ void Mesh::ReadMesh(const string meshFile,dfloat b_global[])
                         }
                         break;
                     case 1:
-                        if (!(current_line >> Gamma2X[k]>> Gamma2Y[k]))
+                        if (!(current_line >> Gamma2X[k]>> Gamma2Y[k]>> Gamma2b[k]))
                         {
                             std::string error_message("ERROR: Cant read in given Gamma2 Curve! ");
                             error_message += filename;
@@ -1189,7 +1225,7 @@ void Mesh::ReadMesh(const string meshFile,dfloat b_global[])
                         }
                         break;
                     case 2:
-                        if (!(current_line >> Gamma3X[k]>> Gamma3Y[k]))
+                        if (!(current_line >> Gamma3X[k]>> Gamma3Y[k]>> Gamma3b[k]))
                         {
                             std::string error_message("ERROR: Cant read in given Gamma3 Curve! ");
                             error_message += filename;
@@ -1198,7 +1234,7 @@ void Mesh::ReadMesh(const string meshFile,dfloat b_global[])
                         }
                         break;
                     case 3:
-                        if (!(current_line >> Gamma4X[k]>> Gamma4Y[k]))
+                        if (!(current_line >> Gamma4X[k]>> Gamma4Y[k]>> Gamma4b[k]))
                         {
                             std::string error_message("ERROR: Cant read in given Gamma4 Curve! ");
                             error_message += filename;
@@ -1229,7 +1265,11 @@ void Mesh::ReadMesh(const string meshFile,dfloat b_global[])
             }
         }
 //	curved =true;
-        ConstructMappedGeometry(cornersX,cornersY,Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,curved);
+        ConstructMappedGeometry(cornersX,cornersY,
+                                Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,
+                                Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,
+                                Gamma1b,Gamma2b,Gamma3b,Gamma4b,
+                                curved);
 
 
         for(int j=0; j<ngl; ++j)
@@ -1246,6 +1286,7 @@ void Mesh::ReadMesh(const string meshFile,dfloat b_global[])
                 yXi_global[id] = y_xi[locID];
                 yEta_global[id] = y_eta[locID];
                 J_global[id] = J[locID];
+                b_global[id] = b_phy[locID];
             }
         }
 
@@ -1288,6 +1329,9 @@ void Mesh::ReadMesh(const string meshFile,dfloat b_global[])
         free(nx);
         free(ny);
 
+        if (ReadBottom){
+            free(b_phy);
+        }
 
 
     }//ele loop
@@ -1301,7 +1345,9 @@ void Mesh::ReadMesh(const string meshFile,dfloat b_global[])
 
 
 
-void Mesh :: TransfiniteQuadMap(const dfloat * Gamma1X,const dfloat * Gamma1Y,const dfloat * Gamma2X,const dfloat * Gamma2Y,const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,const dfloat psi,const dfloat eta,dfloat *x_out,dfloat *y_out)
+void Mesh :: TransfiniteQuadMap(const dfloat * Gamma1X,const dfloat * Gamma1Y,const dfloat * Gamma2X,const dfloat * Gamma2Y,
+                                const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,
+                                const dfloat psi,const dfloat eta,dfloat *x_out,dfloat *y_out,dfloat *b_out)
 {
     dfloat x1_ref, y1_ref,x1_cp, y1_cp;
     dfloat x2_ref, y2_ref,x2_cp, y2_cp;
@@ -1322,24 +1368,19 @@ void Mesh :: TransfiniteQuadMap(const dfloat * Gamma1X,const dfloat * Gamma1Y,co
 
     *y_out = 0.5*((1.0-psi)*y4_cp+(1.0+psi)*y2_cp+(1.0-eta)*y1_cp+(1.0+eta)*y3_cp) - 0.25*((1.0-psi)*((1.0-eta)*y1_ref+(1.0+eta)*y4_ref)  +(1.0+psi)*((1.0-eta)*y2_ref+(1.0+eta)*y3_ref));
 
-//dfloat DIFFERENCE1 = fabs(*x_out - 0.25*((1.0-psi)*((1.0-eta)*x1_ref+(1.0+eta)*x4_ref)+(1.0+psi)*((1.0-eta)*x2_ref+(1.0+eta)*x3_ref)) );
-//dfloat DIFFERENCE2 = fabs(*y_out - 0.25*((1.0-psi)*((1.0-eta)*y1_ref+(1.0+eta)*y4_ref)  +(1.0+psi)*((1.0-eta)*y2_ref+(1.0+eta)*y3_ref)) );
-
-
-//if (max(DIFFERENCE1, DIFFERENCE2) > pow(10.0,-12)){
-//	cout << "DIFF1: " << DIFFERENCE1  << " DIFF2: " << DIFFERENCE2  << "\n";
-//}
-
-
 
 }
 
-void Mesh :: QuadMap(const dfloat * cornersX,const dfloat * cornersY,const dfloat psi,const dfloat eta,dfloat *x_out,dfloat *y_out)
+
+
+
+
+void Mesh :: QuadMap(const dfloat * cornersX,const dfloat * cornersY,const dfloat psi,const dfloat eta,dfloat *x_out,dfloat *y_out, dfloat *b_out)
 {
 // Mapping of the reference square to a straight sided quadrilateral
     *x_out = 0.25*(cornersX[0]*(1.0-psi)*(1.0-eta)+cornersX[1]*(1.0+psi)*(1.0-eta)+ cornersX[2]*(1.0+psi)*(1.0+eta)+cornersX[3]*(1.0-psi)*(1.0+eta));
     *y_out = 0.25*(cornersY[0]*(1.0-psi)*(1.0-eta)+cornersY[1]*(1.0+psi)*(1.0-eta)+ cornersY[2]*(1.0+psi)*(1.0+eta)+cornersY[3]*(1.0-psi)*(1.0+eta));
-
+    *b_out = 0.25*(cornersb[0]*(1.0-psi)*(1.0-eta)+cornersb[1]*(1.0+psi)*(1.0-eta)+ cornersb[2]*(1.0+psi)*(1.0+eta)+cornersb[3]*(1.0-psi)*(1.0+eta));
 
 
 }
@@ -1359,20 +1400,28 @@ void Mesh :: TransfiniteQuadMetrics(const dfloat * Gamma1X,const dfloat * Gamma1
 
 
 
+
     EvaluateAt(Gamma1X,Gamma1Y,-1.0,&Xref1[0],&Xref2[0]);
     EvaluateAt(Gamma1X,Gamma1Y, 1.0,&Xref1[1],&Xref2[1]);
     EvaluateAt(Gamma3X,Gamma3Y, 1.0,&Xref1[2],&Xref2[2]);
     EvaluateAt(Gamma3X,Gamma3Y,-1.0,&Xref1[3],&Xref2[3]);
+
+
 
     EvaluateAt(Gamma1X,Gamma1Y,psi,&Xcomp1[0],&Xcomp2[0]);
     EvaluateAt(Gamma2X,Gamma2Y,eta,&Xcomp1[1],&Xcomp2[1]);
     EvaluateAt(Gamma3X,Gamma3Y,psi,&Xcomp1[2],&Xcomp2[2]);
     EvaluateAt(Gamma4X,Gamma4Y,eta,&Xcomp1[3],&Xcomp2[3]);
 
+
+
     DerivativeAt(Gamma1X,Gamma1Y,psi,&Xpcomp1[0],&Xpcomp2[0]);
     DerivativeAt(Gamma2X,Gamma2Y,eta,&Xpcomp1[1],&Xpcomp2[1]);
     DerivativeAt(Gamma3X,Gamma3Y,psi,&Xpcomp1[2],&Xpcomp2[2]);
     DerivativeAt(Gamma4X,Gamma4Y,eta,&Xpcomp1[3],&Xpcomp2[3]);
+
+
+
 
     *X_psi = 0.5*(Xcomp1[1]-Xcomp1[3]+(1.0-eta)*Xpcomp1[0]+(1.0+eta)*Xpcomp1[2]) -  0.25*((1.0-eta)*(Xref1[1]-Xref1[0])+(1.0+eta)*(Xref1[2]-Xref1[3]));
 
@@ -1405,6 +1454,40 @@ void Mesh :: TransfiniteQuadMetrics(const dfloat * Gamma1X,const dfloat * Gamma1
 }
 
 
+void Mesh :: TransfiniteQuadMapSingle(const dfloat * Gamma1X,const dfloat * Gamma2X,
+                                const dfloat * Gamma3X,const dfloat * Gamma4X,
+                                const dfloat psi,const dfloat eta,dfloat *x_out)
+{
+    dfloat x1_ref, y1_ref,x1_cp, y1_cp;
+    dfloat x2_ref, y2_ref,x2_cp, y2_cp;
+    dfloat x3_ref, y3_ref,x3_cp, y3_cp;
+    dfloat x4_ref, y4_ref,x4_cp, y4_cp;
+
+    EvaluateAtSingle(Gamma1X,-1.0,&x1_ref);
+    EvaluateAt(Gamma1X, 1.0,&x2_ref);
+    EvaluateAt(Gamma3X, 1.0,&x3_ref);
+    EvaluateAt(Gamma3X,-1.0,&x4_ref);
+
+    EvaluateAt(Gamma1X,psi,&x1_cp);
+    EvaluateAt(Gamma2X,eta,&x2_cp);
+    EvaluateAt(Gamma3X,psi,&x3_cp);
+    EvaluateAt(Gamma4X,eta,&x4_cp);
+
+    *x_out = 0.5*((1.0-psi)*x4_cp+(1.0+psi)*x2_cp+(1.0-eta)*x1_cp+(1.0+eta)*x3_cp) - 0.25*((1.0-psi)*((1.0-eta)*x1_ref+(1.0+eta)*x4_ref)+(1.0+psi)*((1.0-eta)*x2_ref+(1.0+eta)*x3_ref));
+
+
+}
+void Mesh :: QuadMapSingle(const dfloat * cornersX,const dfloat psi,const dfloat eta,dfloat *x_out)
+{
+// Mapping of the reference square to a straight sided quadrilateral
+    *x_out = 0.25*(cornersX[0]*(1.0-psi)*(1.0-eta)+cornersX[1]*(1.0+psi)*(1.0-eta)+ cornersX[2]*(1.0+psi)*(1.0+eta)+cornersX[3]*(1.0-psi)*(1.0+eta));
+
+
+}
+
+
+
+
 void Mesh :: QuadMapMetrics(const dfloat * cornersX,const dfloat * cornersY,const dfloat xi,const dfloat eta,dfloat *X_psi,dfloat *X_eta,dfloat *Y_psi,dfloat *Y_eta)
 {
 // Metric terms on a straight sided quadrilateral
@@ -1419,8 +1502,11 @@ void Mesh :: QuadMapMetrics(const dfloat * cornersX,const dfloat * cornersY,cons
 
 
 
-void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * cornersY,const dfloat * Gamma1X,const dfloat * Gamma1Y,const dfloat * Gamma2X,const dfloat * Gamma2Y,
-                                     const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,const bool Curved)
+void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * cornersY,
+                                     const dfloat * Gamma1X,const dfloat * Gamma1Y,const dfloat * Gamma2X,const dfloat * Gamma2Y,
+                                     const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,
+                                     const dfloat * Gamma1b,const dfloat * Gamma2b,const dfloat * Gamma3b,const dfloat * Gamma4b,
+                                     const bool Curved)
 {
 // Constructor of geometry and metric terms for quadrilateral domains
 
@@ -1439,9 +1525,11 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
             int ij = j*ngl+i;
             if (Curved)
             {
-                TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],x_GL[j],&x_phy[ij],&y_phy[ij]);
+                TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],x_GL[j],&x_phy[ij],&y_phy[ij],&b_phy[ij]);
 
-
+                if(ReadBottom){
+                    TransfiniteQuadMapSingle(Gamma1b,Gamma2b,Gamma3b,Gamma4b,x_GL[i],x_GL[j],&b_phy[ij]);
+                }
                 TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],x_GL[j],&x_xi[ij],&x_eta[ij],&y_xi[ij],&y_eta[ij]);
                 //QuadMapMetrics(cornersX,cornersY,x_GL[i],x_GL[j],&xXi_2[ij],&xEta_2[ij],&yXi_2[ij],&yEta_2[ij]);
                 // QuadMapMetrics(cornersX,cornersY,x_GL[i],x_GL[j],&x_xi[ij],&x_eta[ij],&y_xi[ij],&y_eta[ij]);
@@ -1459,6 +1547,9 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
             else
             {
                 QuadMap(cornersX,cornersY,x_GL[i],x_GL[j],&x_phy[ij],&y_phy[ij]);
+                if(ReadBottom){
+                    QuadMapSingle(cornersb,x_GL[i],x_GL[j],&b_phy[ij]);
+                }
                 QuadMapMetrics(cornersX,cornersY,x_GL[i],x_GL[j],&x_xi[ij],&x_eta[ij],&y_xi[ij],&y_eta[ij]);
             }
             J[ij]= x_xi[ij]*y_eta[ij]-x_eta[ij]*y_xi[ij];
@@ -1610,6 +1701,24 @@ void Mesh :: DerivativeAt(const dfloat * GammaX,const dfloat * GammaY,const dflo
     LagrangeInterpolantDerivative(s,GammaY,y_point_prime);
 
 }
+
+void Mesh :: EvaluateAtSingle(const dfloat * GammaX,const dfloat s,dfloat *x_point)
+{
+// Evaluates a member of the CurveInterpolant type at a point s
+
+    LagrangeInterpolation(s,GammaX,x_point);
+}
+
+void Mesh :: DerivativeAtSingle(const dfloat * GammaX,const dfloat s,dfloat *x_point_prime)
+{
+// Evaluates the derivative of a member of the CurveInterpolant type at a point s
+
+
+    LagrangeInterpolantDerivative(s,GammaX,x_point_prime);
+
+}
+
+
 
 
 
