@@ -85,6 +85,8 @@ private:
     dfloat * cornersb;
     dfloat b_initial;
     dfloat b_final;
+    dfloat interpolated_b;
+
 //        fmatrix x_phy,y_phy;
 //        fmatrix x_xi,x_eta,y_xi,y_eta,J;
 //        fmatrix x_bndy,y_bndy,scal;
