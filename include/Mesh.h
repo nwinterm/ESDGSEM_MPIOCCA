@@ -12,7 +12,7 @@ class Mesh
 {
 public:
     Mesh(const dfloat*,const int,const int, const int);
-    void InitMesh(const string,const bool, const int );
+    void InitMesh(const string,const bool, const int ,dfloat[]);
     int m_num_nodes;
     int m_num_edges;
     int m_num_elements;
@@ -42,7 +42,7 @@ public:
 //        imatrix ElemEdgeMasterSlave;
 //        imatrix ElemEdgeOrientation;
 
-    void ReadMesh(const string);
+    void ReadMesh(const string,dfloat[] b_global);
     void GenerateMesh(const dfloat,const dfloat,const dfloat,const dfloat,const bool,const bool );
     void InitDomain(const int, int*,int *, int *,int *, bool *, bool *, dfloat*, dfloat *, dfloat*, dfloat *);
     virtual ~Mesh();

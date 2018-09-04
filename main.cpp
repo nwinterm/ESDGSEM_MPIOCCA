@@ -265,7 +265,9 @@ int main(int argc, char *argv[])
         {
             cout <<"Reading Global Mesh from Inputfile.\n";
         }
-        DGMesh.InitMesh(meshFile,Cartesian,Testcase);
+        b_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
+
+        DGMesh.InitMesh(meshFile,Cartesian,Testcase,b_global);
         Nelem_global=DGMesh.m_num_elements;
         Nfaces_global=DGMesh.m_num_edges;
         NoDofs_global=ngl2*Nelem_global*Neq;
@@ -344,7 +346,7 @@ int main(int argc, char *argv[])
         }
 
         J_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
-        b_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
+
 
         x_phy_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
         y_phy_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
