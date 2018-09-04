@@ -847,16 +847,16 @@ void Mesh::ReadMesh(const string meshFile)
     //calculate barycentric weights for chebyshev nodes
     BarycentricWeights();
 //cout << "m_order_of_bd_edges " <<m_order_of_boundary_edges <<"\n";
-    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k)
-    {
-        cout << "Bary Weights ("<<k<<") : "<<w_bary[k] <<"\n";
-
-    }
-    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k)
-    {
-        cout << "x_cheby ("<<k<<") : "<<x_cheby[k] <<"\n";
-
-    }
+//    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k)
+//    {
+//        cout << "Bary Weights ("<<k<<") : "<<w_bary[k] <<"\n";
+//
+//    }
+//    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k)
+//    {
+//        cout << "x_cheby ("<<k<<") : "<<x_cheby[k] <<"\n";
+//
+//    }
 //cout << "Continuing \n";
 
 
@@ -1029,13 +1029,14 @@ void Mesh::ReadMesh(const string meshFile)
         if(ReadBottom)
         {
             b_phy= (dfloat*) calloc(ngl2,sizeof(dfloat));
-            Gamma1b = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
-            Gamma2b = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
-            Gamma3b = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
-            Gamma4b = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
+
             cornersb = (dfloat*) calloc(4,sizeof(dfloat));
         }
 
+        Gamma1b = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
+        Gamma2b = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
+        Gamma3b = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
+        Gamma4b = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
 
         x_bndy= (dfloat*) calloc(4*ngl,sizeof(dfloat));
         y_bndy= (dfloat*) calloc(4*ngl,sizeof(dfloat));
@@ -1329,7 +1330,8 @@ void Mesh::ReadMesh(const string meshFile)
         free(nx);
         free(ny);
 
-        if (ReadBottom){
+        if (ReadBottom)
+        {
             free(b_phy);
         }
 
@@ -1455,8 +1457,8 @@ void Mesh :: TransfiniteQuadMetrics(const dfloat * Gamma1X,const dfloat * Gamma1
 
 
 void Mesh :: TransfiniteQuadMapSingle(const dfloat * Gamma1X,const dfloat * Gamma2X,
-                                const dfloat * Gamma3X,const dfloat * Gamma4X,
-                                const dfloat psi,const dfloat eta,dfloat *x_out)
+                                      const dfloat * Gamma3X,const dfloat * Gamma4X,
+                                      const dfloat psi,const dfloat eta,dfloat *x_out)
 {
     dfloat x1_ref, y1_ref,x1_cp, y1_cp;
     dfloat x2_ref, y2_ref,x2_cp, y2_cp;
@@ -1527,7 +1529,8 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
             {
                 TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],x_GL[j],&x_phy[ij],&y_phy[ij]);
 
-                if(ReadBottom){
+                if(ReadBottom)
+                {
                     TransfiniteQuadMapSingle(Gamma1b,Gamma2b,Gamma3b,Gamma4b,x_GL[i],x_GL[j],&b_phy[ij]);
                 }
                 TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],x_GL[j],&x_xi[ij],&x_eta[ij],&y_xi[ij],&y_eta[ij]);
@@ -1547,7 +1550,8 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
             else
             {
                 QuadMap(cornersX,cornersY,x_GL[i],x_GL[j],&x_phy[ij],&y_phy[ij]);
-                if(ReadBottom){
+                if(ReadBottom)
+                {
                     QuadMapSingle(cornersb,x_GL[i],x_GL[j],&b_phy[ij]);
                 }
                 QuadMapMetrics(cornersX,cornersY,x_GL[i],x_GL[j],&x_xi[ij],&x_eta[ij],&y_xi[ij],&y_eta[ij]);
