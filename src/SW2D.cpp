@@ -721,7 +721,13 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
         w= 0.0;
         break;
     }
-
+    case 88:      // Conv Test for Ocean Mesh
+    {
+        h=max(6000,6000.0+8.0+cos(x)*sin(y)*cos(t)-b);
+        v= 0.5;
+        w= 1.5;
+        break;
+    }
 
     } //end switch
     //compare with cartesian code
