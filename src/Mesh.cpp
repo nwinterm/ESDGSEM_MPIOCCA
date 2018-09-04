@@ -1287,7 +1287,10 @@ void Mesh::ReadMesh(const string meshFile)
                 yXi_global[id] = y_xi[locID];
                 yEta_global[id] = y_eta[locID];
                 J_global[id] = J[locID];
-                b_global[id] = b_phy[locID];
+                if(ReadBottom)
+                {
+                    b_global[id] = b_phy[locID];
+                }
             }
         }
 
