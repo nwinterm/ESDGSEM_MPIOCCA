@@ -1,0 +1,94 @@
+kernel void addS(const int Nelem,
+                 const dfloat * restrict  Bx,
+                 const dfloat * restrict  By,
+                 const dfloat * restrict  B,
+                 const dfloat * restrict  x,
+                 const dfloat * restrict  y,
+                 const dfloat t,
+                 dfloat * restrict  gRK)
+{
+
+
+    for(int ie = 0; ie < Nelem; ie++; outer0)
+    {
+
+
+        shared dfloat s_Bx[ngl2];
+        shared dfloat s_By[ngl2];
+        shared dfloat s_B[ngl2];
+        shared dfloat s_x[ngl2];
+        shared dfloat s_y[ngl2];
+
+        for (int i=0; i<ngl; ++i; inner1)
+        {
+            for (int j=0; j<ngl; ++j; inner0)
+            {
+                int id=j*ngl+i;
+
+                int xid = ie*ngl2   +j*ngl+i;
+
+
+
+                s_x[id] = x[xid];
+                s_y[id] = y[xid];
+
+                s_Bx[id]= Bx[xid];
+                s_By[id]= By[xid];
+                s_B[id]= B[xid];
+
+
+            }
+        }
+
+        barrier(localMemFence);
+        // calc Source Term and update gRK
+
+        for(int j=0; j<ngl; ++j; inner1)
+        {
+            for(int i=0; i<ngl; ++i; inner0)
+            {
+                int id = ie*ngl2*Neq   +j*ngl+i;
+                int idLoc=j*ngl+i;
+
+
+                dfloat sinY=sin(s_y[idLoc]);
+                dfloat sinX=sin(s_x[idLoc]);
+                dfloat cosY=cos(s_y[idLoc]);
+                dfloat cosX=cos(s_x[idLoc]);
+
+                dfloat H= 8000.f+eight+cosX*sinY*cos(t);
+                dfloat H_t=-cosX*sinY*sin(t);
+                dfloat H_x=-sinX*sinY*cos(t);
+                dfloat H_y=cosX*cosY*cos(t);
+
+
+
+                dfloat u=half;
+                dfloat v=onepointfive;
+
+                dfloat u_t=zero;
+                dfloat u_x=zero;
+                dfloat u_y=zero;
+                dfloat v_t=zero;
+                dfloat v_x=zero;
+                dfloat v_y=zero;
+
+
+                gRK[id]             += H_t+u*(H_x-s_Bx[idLoc]) + v*(H_y-s_By[idLoc]);
+                gRK[id+ngl2]        += u*H_t+u*u*(H_x-s_Bx[idLoc])+u*v*(H_y-s_By[idLoc])+g_const*H_x*(H-s_B[idLoc]);
+                gRK[id+ngl2+ngl2]   +=  v*H_t+u*v*(H_x-s_Bx[idLoc])+v*v*(H_y-s_By[idLoc])+g_const*H_y*(H-s_B[idLoc]);
+            }
+        }
+
+
+
+
+
+
+
+
+    }
+
+
+
+}

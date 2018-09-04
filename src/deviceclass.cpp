@@ -300,6 +300,12 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
         addS = device.buildKernelFromSource("okl/ManufacturedSolutions/S_ConvTest3.okl","addS",info);
         break;
     }
+        case 88:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
+    {
+        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/Dirichlet_ConvTest4.okl","CollectEdgeData",info);
+        addS = device.buildKernelFromSource("okl/ManufacturedSolutions/S_ConvTest4.okl","addS",info);
+        break;
+    }
 //    case 6:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
 //    {
 //        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/InnerOuter.okl","CollectEdgeData",info);
@@ -717,7 +723,7 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
         {
             dt=fmin(T-t,dt_i);
         }
- 
+
 
 
 //cout << "timestep " << dt << "\n" ;
@@ -750,7 +756,7 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
             	o_qL.copyTo(qL);
             	o_qR.copyTo(qR);
             	CollectEdgeDataMPI(MPI, MeshSplit, qL, qR);
-  	    }	
+  	    }
 
 
 
