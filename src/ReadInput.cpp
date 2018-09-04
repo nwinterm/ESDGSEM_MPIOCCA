@@ -110,7 +110,8 @@ void ReadInputFile(int *N,
                    int *NAvgPad,
                    int *KernelVersion,
                    int * KernelVersionSTD,
-			int * DiscBottom)
+                   int * DiscBottom,
+                   int * ReadInBottom)
 {
 
 //,dfloat T, dfloat g_const
@@ -209,6 +210,8 @@ void ReadInputFile(int *N,
     }
     std::getline(InputStream, current_string);
     *DiscBottom= getIntValue(current_string);
+    std::getline(InputStream, current_string);
+    *ReadInBottom= getIntValue(current_string);
 
 }
 

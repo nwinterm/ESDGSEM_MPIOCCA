@@ -12,7 +12,7 @@ class Mesh
 {
 public:
     Mesh(const dfloat*,const int,const int);
-    void InitMesh(const string,const bool, const int );
+    void InitMesh(const string,const bool, const int, const int );
     int m_num_nodes;
     int m_num_edges;
     int m_num_elements;
@@ -56,6 +56,7 @@ private:
     int ngl,ngl2;
     int NelemX;
     int NelemY;
+    int ReadBottom; // This variable is needed to indicate that Ocean Bottom Data must be read in from the mesh file!
 //        fmatrix x_GL;
     dfloat *  x_GL;
     dfloat * x_cheby;

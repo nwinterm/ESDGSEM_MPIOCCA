@@ -28,3 +28,4 @@ NavgPad=10
 KernelVersionFD=99
 KernelVersionSTD=99
 DiscBottom=0
+ReadInBottom=1

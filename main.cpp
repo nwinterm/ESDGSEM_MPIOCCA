@@ -86,6 +86,7 @@ int main(int argc, char *argv[])
     int NavgPad;
     int KernelVersion=-1;
     int KernelVersionSTD=-1;
+    int ReadInBottom;
 
 
     int N=0;
@@ -156,10 +157,11 @@ int main(int argc, char *argv[])
                       &NEpad,
                       &NEsurfpad,
                       &Nedgepad,
-			&NavgPad,
+                      &NavgPad,
                       &KernelVersion,
                       &KernelVersionSTD,
-			&DiscBottom);
+                      &DiscBottom,
+                      &ReadInBottom);
     }
 
     ShareInputData(MPI,
@@ -187,10 +189,10 @@ int main(int argc, char *argv[])
                    &NEpad,
                    &NEsurfpad,
                    &Nedgepad,
-		   &NavgPad,
+                   &NavgPad,
                    &KernelVersion,
                    &KernelVersionSTD,
-			&DiscBottom);
+                   &DiscBottom);
 
     if (Testcase == 31)
     {
@@ -251,7 +253,7 @@ int main(int argc, char *argv[])
     cout <<"Creating Mesh Partitioning .\n";
     MeshPartitioning DGMeshPartition(MPI.numtasks, ngl);
 
-    Mesh DGMesh(DGBasis.x_GL,ngl,NelemX);
+    Mesh DGMesh(DGBasis.x_GL,ngl,NelemX,ReadInBottom);
 
     if(MPI.rank==0)
     {
@@ -267,7 +269,7 @@ int main(int argc, char *argv[])
         Nelem_global=DGMesh.m_num_elements;
         Nfaces_global=DGMesh.m_num_edges;
         NoDofs_global=ngl2*Nelem_global*Neq;
-	NoGradDofs_global=ngl2*Nelem_global*(Neq-1);
+        NoGradDofs_global=ngl2*Nelem_global*(Neq-1);
         NoSpaceDofs_global=ngl2*Nelem_global;
 
 
@@ -440,7 +442,7 @@ int main(int argc, char *argv[])
             EdgeData[id] = DGMeshPartition.MyEdgeInfo[id2+2];  //left element
 
         }
-	EdgeReversed[is] = EdgeData[is*8+4]; 		// save just the orientation
+        EdgeReversed[is] = EdgeData[is*8+4]; 		// save just the orientation
     }
     for(int ie=1; ie<=Nelem; ++ie)
     {
@@ -450,14 +452,17 @@ int main(int argc, char *argv[])
         {
             int ifa  = DGMeshPartition.MyElementToEdge[id+is];
             idFace = (ifa-1)*8;
-	
 
-	    ElemEdgeMasterSlave[id+is]=DGMeshPartition.MyElemEdgeMasterSlave[id+is];
-	    if (EdgeData[idFace]==ie-1){
-	    	ElemEdgeOrientation[id+is]=1;
-	    }else{
-		ElemEdgeOrientation[id+is]=EdgeData[idFace+4]; 
-	     }	
+
+            ElemEdgeMasterSlave[id+is]=DGMeshPartition.MyElemEdgeMasterSlave[id+is];
+            if (EdgeData[idFace]==ie-1)
+            {
+                ElemEdgeOrientation[id+is]=1;
+            }
+            else
+            {
+                ElemEdgeOrientation[id+is]=EdgeData[idFace+4];
+            }
 
             ElemToEdge[id+is]   = ifa;
         }
@@ -504,7 +509,7 @@ int main(int argc, char *argv[])
 //			cout << normalsY[id] << " ";
 //			dfloat  normalNorm = pow(normalsX[id],2) + pow(normalsY[id],2);
 //			cout  << " NORMALNORM: " << sqrt(normalNorm) <<" ";
-//		}         
+//		}
 //	}
 //}
 
@@ -597,7 +602,7 @@ int main(int argc, char *argv[])
 //        cout <<"\n";
 //    }
 
-//MetricIdentities 
+//MetricIdentities
 //    dfloat * MetricIdentities1 = (dfloat*) calloc(Nelem*ngl2,sizeof(dfloat));
 //    dfloat * MetricIdentities2 = (dfloat*) calloc(Nelem*ngl2,sizeof(dfloat));
 //			for (int ie=0;ie<Nelem;ie++){
@@ -606,7 +611,7 @@ int main(int argc, char *argv[])
 //						int ele_ij = ie*ngl2 +  j*ngl+i;
 //						int loc_ij = j*ngl+i;
 //						for (int l=0;l<ngl;l++){
-//							
+//
 //							int loc_il = i*ngl+l;
 //							int loc_jl = j*ngl+l;
 //							int ele_il = ie*ngl2 + i*ngl+l;
@@ -627,7 +632,7 @@ int main(int argc, char *argv[])
 //					if(abs(MetricIdentities2[id]) >0.000000000001)
 //					   cout <<"Metric Identities2 for Ele: " << ie <<" "<<MetricIdentities2[id]<<"\n  ";
 //				  }
-//					
+//
 //				}
 //			}
 //free(MetricIdentities1);
@@ -787,8 +792,8 @@ int main(int argc, char *argv[])
                            g_const,
                            PlotVar,
                            EntropyPlot,
-                           PositivityPreserving, 
-			   DiscBottom);
+                           PositivityPreserving,
+                           DiscBottom);
 
 
 

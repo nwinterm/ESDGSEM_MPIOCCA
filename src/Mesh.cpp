@@ -1,7 +1,7 @@
 #include "Mesh.h"
 
 
-Mesh::Mesh(const dfloat * fm_x_GL,const int int_ngl, const int intNele)
+Mesh::Mesh(const dfloat * fm_x_GL,const int int_ngl, const int intNele, const int ReadInBottom)
 {
 //    x_GL=fm_x_GL;
     ngl=int_ngl;
@@ -10,6 +10,7 @@ Mesh::Mesh(const dfloat * fm_x_GL,const int int_ngl, const int intNele)
     x_GL= (dfloat*) calloc(ngl,sizeof(dfloat));
     NelemX=intNele;
     NelemY=intNele;
+    ReadBottom = ReadInBottom;
 
     for (int i=0; i<ngl; i++)
     {
@@ -378,15 +379,17 @@ void Mesh::InitMesh(const string meshFile, const bool Cartesian, const int Testc
             NormalsX[id]	=   nx_global[idLoc];
             NormalsY[id]	=   ny_global[idLoc];
             Scal[id] 	    =   scal_global[idLoc];
-	    if (EdgeInfo[is*7+3] != -1) {
-		if (EdgeInfo[is*7+6] != 1){
-	    	int idright = EdgeInfo[is*7+3]*4*ngl + EdgeInfo[is*7+5]*ngl  +ngl-1 -i;
+            if (EdgeInfo[is*7+3] != -1)
+            {
+                if (EdgeInfo[is*7+6] != 1)
+                {
+                    int idright = EdgeInfo[is*7+3]*4*ngl + EdgeInfo[is*7+5]*ngl  +ngl-1 -i;
 //		cout << " ID " << is  << " NODE : " << i << " Normals left: ( " << nx_global[idLoc] << ", " << ny_global[idLoc] << ", " << scal_global[idLoc]  <<" )       " ;
 //		cout << "Normals right: ( " << nx_global[idright] << ", " << ny_global[idright] << ", " << scal_global[idright]  <<"   " ;
 //		cout << "Difference : ( " << nx_global[idright]+nx_global[idLoc] << ", " << ny_global[idLoc]+ny_global[idright] << ", " << scal_global[idLoc]-scal_global[idright]   <<" )  \n " ;
 
-		}
-		}
+                }
+            }
         }
 
     }
@@ -843,14 +846,16 @@ void Mesh::ReadMesh(const string meshFile)
     //calculate barycentric weights for chebyshev nodes
     BarycentricWeights();
 //cout << "m_order_of_bd_edges " <<m_order_of_boundary_edges <<"\n";
-    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k){
+    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k)
+    {
         cout << "Bary Weights ("<<k<<") : "<<w_bary[k] <<"\n";
 
-   }
-    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k){
+    }
+    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k)
+    {
         cout << "x_cheby ("<<k<<") : "<<x_cheby[k] <<"\n";
 
-   }
+    }
 //cout << "Continuing \n";
 
 
@@ -1157,7 +1162,7 @@ void Mesh::ReadMesh(const string meshFile)
             else // is_gamma_given is true
             {
 //		cout << "ACTUALLY READING IN GAMMA CURVE!\n";
-		curved =true;
+                curved =true;
                 for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k)
                 {
                     std::getline(InputStream, current_string);
@@ -1322,7 +1327,7 @@ void Mesh :: TransfiniteQuadMap(const dfloat * Gamma1X,const dfloat * Gamma1Y,co
 
 
 //if (max(DIFFERENCE1, DIFFERENCE2) > pow(10.0,-12)){
-//	cout << "DIFF1: " << DIFFERENCE1  << " DIFF2: " << DIFFERENCE2  << "\n"; 
+//	cout << "DIFF1: " << DIFFERENCE1  << " DIFF2: " << DIFFERENCE2  << "\n";
 //}
 
 
@@ -1340,8 +1345,8 @@ void Mesh :: QuadMap(const dfloat * cornersX,const dfloat * cornersY,const dfloa
 }
 
 void Mesh :: TransfiniteQuadMetrics(const dfloat * Gamma1X,const dfloat * Gamma1Y,const dfloat * Gamma2X,const dfloat * Gamma2Y,
-					const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,
-					const dfloat psi,const dfloat eta,dfloat *X_psi,dfloat *X_eta,dfloat *Y_psi,dfloat *Y_eta)
+                                    const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,
+                                    const dfloat psi,const dfloat eta,dfloat *X_psi,dfloat *X_eta,dfloat *Y_psi,dfloat *Y_eta)
 {
 // Computation of the metric terms on a curve-bounded quadrilateral
 
@@ -1383,7 +1388,7 @@ void Mesh :: TransfiniteQuadMetrics(const dfloat * Gamma1X,const dfloat * Gamma1
 //dfloat DIFFERENCE4 = fabs(*Y_eta -  0.25*((1.0-psi)*(Xref2[3]-Xref2[0])+(1.0+psi)*(Xref2[2]-Xref2[1])) );
 
 //if (max(max(DIFFERENCE1, DIFFERENCE2), max(DIFFERENCE3, DIFFERENCE4)) > pow(10.0,-12)){
-//	cout << "DIFF1: " << DIFFERENCE1  << " DIFF2: " << DIFFERENCE2  << " DIFF3: " << DIFFERENCE3  << " DIFF4: " << DIFFERENCE4  << "\n"; 
+//	cout << "DIFF1: " << DIFFERENCE1  << " DIFF2: " << DIFFERENCE2  << " DIFF3: " << DIFFERENCE3  << " DIFF4: " << DIFFERENCE4  << "\n";
 //}
 //    *X_psi =   0.25*((1.0-eta)*(Xref1[1]-Xref1[0])+(1.0+eta)*(Xref1[2]-Xref1[3]));
 //    *Y_psi = 0.25*((1.0-eta)*(Xref2[1]-Xref2[0])+(1.0+eta)*(Xref2[2]-Xref2[3]));
@@ -1415,7 +1420,7 @@ void Mesh :: QuadMapMetrics(const dfloat * cornersX,const dfloat * cornersY,cons
 
 
 void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * cornersY,const dfloat * Gamma1X,const dfloat * Gamma1Y,const dfloat * Gamma2X,const dfloat * Gamma2Y,
-					const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,const bool Curved)
+                                     const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,const bool Curved)
 {
 // Constructor of geometry and metric terms for quadrilateral domains
 
@@ -1439,7 +1444,7 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
 
                 TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],x_GL[j],&x_xi[ij],&x_eta[ij],&y_xi[ij],&y_eta[ij]);
                 //QuadMapMetrics(cornersX,cornersY,x_GL[i],x_GL[j],&xXi_2[ij],&xEta_2[ij],&yXi_2[ij],&yEta_2[ij]);
-               // QuadMapMetrics(cornersX,cornersY,x_GL[i],x_GL[j],&x_xi[ij],&x_eta[ij],&y_xi[ij],&y_eta[ij]);
+                // QuadMapMetrics(cornersX,cornersY,x_GL[i],x_GL[j],&x_xi[ij],&x_eta[ij],&y_xi[ij],&y_eta[ij]);
 
 //dfloat DIFFERENCE1 = fabs(x_xi[ij] -xXi_2[ij]);
 //dfloat DIFFERENCE2 = fabs(x_eta[ij] -xEta_2[ij]);
@@ -1447,9 +1452,9 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
 //dfloat DIFFERENCE4 = fabs(y_eta[ij] -yEta_2[ij]);
 
 //if (max(max(DIFFERENCE1, DIFFERENCE2), max(DIFFERENCE3, DIFFERENCE4)) > pow(10.0,-12)){
-//	cout << "DIFF1: " << DIFFERENCE1  << " DIFF2: " << DIFFERENCE2  << " DIFF3: " << DIFFERENCE3  << " DIFF4: " << DIFFERENCE4  << "\n"; 
+//	cout << "DIFF1: " << DIFFERENCE1  << " DIFF2: " << DIFFERENCE2  << " DIFF3: " << DIFFERENCE3  << " DIFF4: " << DIFFERENCE4  << "\n";
 //}
-		
+
             }
             else
             {
@@ -1518,7 +1523,7 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
         scal[idSide1]      =  sqrt(yXi*yXi + xXi*xXi);
         nx[idSide1]= -copysign(1.0,Jtemp)*(-yXi/scal[idSide1]);
         ny[idSide1] = -copysign(1.0,Jtemp)*(xXi/scal[idSide1]);
-       if (Curved)
+        if (Curved)
         {
 //            TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],1.0,&x_bndy[idSide3],&y_bndy[idSide3]);
 //            QuadMapMetrics(cornersX,cornersY,x_GL[i],1.0,&xXi,&xEta,&yXi,&yEta);
@@ -1642,7 +1647,7 @@ void Mesh :: LagrangeInterpolantDerivative(const dfloat xpt,const dfloat* functi
     {
         denominator = 0.0;
         LagrangeInterpolation(xpt,functionvals,&p);
-//	cout << "Interpolated Gamma Curve at " << p << "\n";  
+//	cout << "Interpolated Gamma Curve at " << p << "\n";
         for (int j = 0; j<=m_order_of_boundary_edges; j++)
         {
             t = w_bary[j]/(xpt-x_cheby[j]);
@@ -1677,12 +1682,12 @@ void Mesh :: LagrangeInterpolation(const dfloat xpt,const dfloat* functionvals,d
     }
     if (!var1)
     {
-    	for (int j = 0; j<=m_order_of_boundary_edges; j++)
-    	{
-            	t = w_bary[j]/(xpt-x_cheby[j]);
-            	numerator +=  t*functionvals[j];
-            	denominator +=  t;
-    	}
+        for (int j = 0; j<=m_order_of_boundary_edges; j++)
+        {
+            t = w_bary[j]/(xpt-x_cheby[j]);
+            numerator +=  t*functionvals[j];
+            denominator +=  t;
+        }
 
         *output = numerator/denominator;
     }

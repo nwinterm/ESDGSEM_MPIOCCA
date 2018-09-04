@@ -51,6 +51,7 @@
 		<Unit filename="include/RungeKutta.h" />
 		<Unit filename="include/SW2D.h" />
 		<Unit filename="include/basis.h" />
+		<Unit filename="include/deviceclass.h" />
 		<Unit filename="include/plots.h" />
 		<Unit filename="input.dat" />
 		<Unit filename="main.cpp" />
@@ -184,6 +185,7 @@
 		<Unit filename="src/RungeKutta.cpp" />
 		<Unit filename="src/SW2D.cpp" />
 		<Unit filename="src/basis.cpp" />
+		<Unit filename="src/deviceclass.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />
