@@ -1464,14 +1464,14 @@ void Mesh :: TransfiniteQuadMapSingle(const dfloat * Gamma1X,const dfloat * Gamm
     dfloat x4_ref, y4_ref,x4_cp, y4_cp;
 
     EvaluateAtSingle(Gamma1X,-1.0,&x1_ref);
-    EvaluateAt(Gamma1X, 1.0,&x2_ref);
-    EvaluateAt(Gamma3X, 1.0,&x3_ref);
-    EvaluateAt(Gamma3X,-1.0,&x4_ref);
+    EvaluateAtSingle(Gamma1X, 1.0,&x2_ref);
+    EvaluateAtSingle(Gamma3X, 1.0,&x3_ref);
+    EvaluateAtSingle(Gamma3X,-1.0,&x4_ref);
 
-    EvaluateAt(Gamma1X,psi,&x1_cp);
-    EvaluateAt(Gamma2X,eta,&x2_cp);
-    EvaluateAt(Gamma3X,psi,&x3_cp);
-    EvaluateAt(Gamma4X,eta,&x4_cp);
+    EvaluateAtSingle(Gamma1X,psi,&x1_cp);
+    EvaluateAtSingle(Gamma2X,eta,&x2_cp);
+    EvaluateAtSingle(Gamma3X,psi,&x3_cp);
+    EvaluateAtSingle(Gamma4X,eta,&x4_cp);
 
     *x_out = 0.5*((1.0-psi)*x4_cp+(1.0+psi)*x2_cp+(1.0-eta)*x1_cp+(1.0+eta)*x3_cp) - 0.25*((1.0-psi)*((1.0-eta)*x1_ref+(1.0+eta)*x4_ref)+(1.0+psi)*((1.0-eta)*x2_ref+(1.0+eta)*x3_ref));
 
