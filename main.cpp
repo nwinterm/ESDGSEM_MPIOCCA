@@ -382,6 +382,7 @@ int main(int argc, char *argv[])
         }
         if (!ReadInBottom)
         {
+            cout << "Not reading bottom from file, taking initial data as prescribed for test case!\n";
             SW_Problem.InitB(0,DGMeshPartition,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,b_global);
         }
 

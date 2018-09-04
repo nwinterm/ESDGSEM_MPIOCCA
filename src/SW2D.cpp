@@ -13,7 +13,9 @@ PosPresTOL = postol;
 }
 //  void InitQ(const int Nelem,const int ngl,const int ngl2,const dfloat x[NoSpaceDofs],const dfloat y[NoSpaceDofs], dfloat q[NoDofs],const dfloat t,const dfloat b[NoSpaceDofs]){
 
-void SW2D :: InitQ(const int IsMeshSplit,const MeshPartitioning MeshSplit,const int Nelem,const int ngl,const int ngl2,const dfloat x[],const dfloat y[], dfloat q[],const dfloat t,const dfloat b[],const dfloat g_const)
+void SW2D :: InitQ(const int IsMeshSplit,const MeshPartitioning MeshSplit,const int Nelem,const int ngl,const int ngl2,
+                   const dfloat x[],const dfloat y[], dfloat q[],const dfloat t,
+                   const dfloat b[],const dfloat g_const)
 {
 
     int globalEleID;
@@ -723,7 +725,7 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
     }
     case 88:      // Conv Test for Ocean Mesh
     {
-        h=8000.0+8.0+cos(x)*sin(y)*cos(t)-b;
+        h=8000.0 + 8.0 + cos(x)*sin(y)*cos(t)-b;
         v= 0.5;
         w= 1.5;
         break;
