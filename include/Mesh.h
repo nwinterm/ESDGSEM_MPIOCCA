@@ -96,6 +96,7 @@ private:
     void ConstructMappedGeometry(const dfloat*,const dfloat*,const dfloat*,
                                  const dfloat*,const dfloat*,const dfloat*,const dfloat*,
                                  const dfloat*,const dfloat*,const dfloat*,const dfloat*,
+                                 const dfloat*,const dfloat*,const dfloat*,const dfloat*,
                                  const bool);
 
     void TransfiniteQuadMetrics(const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat,const dfloat,dfloat*,dfloat*,dfloat*,dfloat*);
