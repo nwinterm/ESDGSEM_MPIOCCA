@@ -91,7 +91,10 @@ private:
 //        fmatrix nx,ny;
 
 
-    void ConstructMappedGeometry(const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat*,const bool);
+    void ConstructMappedGeometry(const dfloat*,const dfloat*,const dfloat*,
+                                 const dfloat*,const dfloat*,const dfloat*,const dfloat*,
+                                 const dfloat*,const dfloat*,const dfloat*,const dfloat*,
+                                 const dfloat*,const dfloat*,const dfloat*,const bool);
 
     void TransfiniteQuadMetrics(const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat,const dfloat,dfloat*,dfloat*,dfloat*,dfloat*);
     void TransfiniteQuadMap(const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat,const dfloat,dfloat*,dfloat*);

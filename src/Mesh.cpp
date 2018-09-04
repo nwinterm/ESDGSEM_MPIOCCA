@@ -1502,7 +1502,7 @@ void Mesh :: QuadMapMetrics(const dfloat * cornersX,const dfloat * cornersY,cons
 
 
 
-void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * cornersY,
+void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * cornersY,const dfloat * cornersb,
                                      const dfloat * Gamma1X,const dfloat * Gamma1Y,const dfloat * Gamma2X,const dfloat * Gamma2Y,
                                      const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,
                                      const dfloat * Gamma1b,const dfloat * Gamma2b,const dfloat * Gamma3b,const dfloat * Gamma4b,
