@@ -783,7 +783,7 @@ void Mesh::GenerateMesh(const dfloat xL,const dfloat xR,const dfloat yL,const df
 
 }
 
-void Mesh::ReadMesh(const string meshFile,dfloat[] b_global)
+void Mesh::ReadMesh(const string meshFile)
 {
 
 //,dfloat T, dfloat g_const
@@ -1347,7 +1347,7 @@ void Mesh::ReadMesh(const string meshFile,dfloat[] b_global)
 
 void Mesh :: TransfiniteQuadMap(const dfloat * Gamma1X,const dfloat * Gamma1Y,const dfloat * Gamma2X,const dfloat * Gamma2Y,
                                 const dfloat * Gamma3X,const dfloat * Gamma3Y,const dfloat * Gamma4X,const dfloat * Gamma4Y,
-                                const dfloat psi,const dfloat eta,dfloat *x_out,dfloat *y_out,dfloat *b_out)
+                                const dfloat psi,const dfloat eta,dfloat *x_out,dfloat *y_out)
 {
     dfloat x1_ref, y1_ref,x1_cp, y1_cp;
     dfloat x2_ref, y2_ref,x2_cp, y2_cp;
@@ -1375,12 +1375,12 @@ void Mesh :: TransfiniteQuadMap(const dfloat * Gamma1X,const dfloat * Gamma1Y,co
 
 
 
-void Mesh :: QuadMap(const dfloat * cornersX,const dfloat * cornersY,const dfloat psi,const dfloat eta,dfloat *x_out,dfloat *y_out, dfloat *b_out)
+void Mesh :: QuadMap(const dfloat * cornersX,const dfloat * cornersY,const dfloat psi,const dfloat eta,dfloat *x_out,dfloat *y_out)
 {
 // Mapping of the reference square to a straight sided quadrilateral
     *x_out = 0.25*(cornersX[0]*(1.0-psi)*(1.0-eta)+cornersX[1]*(1.0+psi)*(1.0-eta)+ cornersX[2]*(1.0+psi)*(1.0+eta)+cornersX[3]*(1.0-psi)*(1.0+eta));
     *y_out = 0.25*(cornersY[0]*(1.0-psi)*(1.0-eta)+cornersY[1]*(1.0+psi)*(1.0-eta)+ cornersY[2]*(1.0+psi)*(1.0+eta)+cornersY[3]*(1.0-psi)*(1.0+eta));
-    *b_out = 0.25*(cornersb[0]*(1.0-psi)*(1.0-eta)+cornersb[1]*(1.0+psi)*(1.0-eta)+ cornersb[2]*(1.0+psi)*(1.0+eta)+cornersb[3]*(1.0-psi)*(1.0+eta));
+
 
 
 }
