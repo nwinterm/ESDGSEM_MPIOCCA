@@ -25,7 +25,7 @@ MeshPartitioning::~MeshPartitioning()
     //dtor
 }
 
-void MeshPartitioning::DivideBottom(const MPI_setup MPI, const dfloat b_global, dfloat * b)
+void MeshPartitioning::DivideBottom(const MPI_setup MPI, const dfloat * b_global, dfloat * b)
 {
     if (NumProcessors==1)
     {
