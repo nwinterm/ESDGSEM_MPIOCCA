@@ -358,7 +358,6 @@ int main(int argc, char *argv[])
 
 
 
-
         for(int ie=0; ie<Nelem_global; ++ie)
         {
 
@@ -373,17 +372,24 @@ int main(int argc, char *argv[])
                     J_global[id] = 1.0/DGMesh.J_global[id];
                     x_phy_global[id] = DGMesh.x_global[id];
                     y_phy_global[id] = DGMesh.y_global[id];
-                    if (ReadInBottom)
-                    {
-                        b_global[id]    = DGMesh.b_global[id]+6000.0;
-                    }
+//                    if (ReadInBottom)
+//                    {
+//                        ReadFullMesh(NoSpaceDofs_global, b_global);
+//                        b_global[id]    = DGMesh.b_global[id]+6000.0;
+//                    }
 
 
 
                 }
             }
         }
-        if (!ReadInBottom)
+
+
+        if (ReadInBottom)
+        {
+            ReadFullMesh(NoSpaceDofs_global, b_global);
+        }
+        else
         {
             cout << "Not reading bottom from file, taking initial data as prescribed for test case!\n";
             SW_Problem.InitB(0,DGMeshPartition,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,b_global);

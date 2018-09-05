@@ -295,3 +295,39 @@ void WriteFullMesh(const int NumNodes, const dfloat *x,const dfloat *y)
     }
     OutputStream.close();
 }
+
+
+void ReadFullMesh(const int NumNodes, const dfloat *b)
+{
+
+//,dfloat T, dfloat g_const
+    std::ifstream InputStream;
+    string filename="FullBottom.txt";
+    InputStream.open(filename.c_str());
+
+    if (!InputStream)
+    {
+        std::string error_message("ERROR: Bottom Topography file not found: ");
+        error_message += filename;
+        throw std::invalid_argument(error_message);
+    }
+
+    std::string current_string;
+    std::stringstream current_line(current_string);
+
+    for (unsigned i = 0; i < NumNodes; ++i)
+    {
+        std::getline(InputStream, current_string);
+        current_line.clear();
+        current_line.str(current_string);
+        dfloat dummyA;
+        dfloat dummyB;
+        if (!(current_line >> dummyA >> dummyB >> b[i]))
+        {
+            std::string error_message("ERROR: Cant read in Nodes! ");
+            error_message += filename;
+            throw std::invalid_argument(error_message);
+        }
+    }
+    InputStream.close();
+}
