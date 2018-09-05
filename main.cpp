@@ -255,6 +255,8 @@ int main(int argc, char *argv[])
 
     Mesh DGMesh(DGBasis.x_GL,ngl,NelemX,ReadInBottom);
 
+
+
     if(MPI.rank==0)
     {
         if (Cartesian)
@@ -274,9 +276,10 @@ int main(int argc, char *argv[])
         NoGradDofs_global=ngl2*Nelem_global*(Neq-1);
         NoSpaceDofs_global=ngl2*Nelem_global;
 
-
-
-
+        if (ReadInBottom)
+        {
+            WriteFullMesh(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global);
+        }
 
         //cout << " We solve " << DGMesh.m_num_edges << " Faces with "<< ngl << " nodes each, so we should have " << DGMesh.m_num_edges*ngl << " IDs! \n" ;
         cout <<"Global Mesh created.\n";
@@ -673,7 +676,7 @@ int main(int argc, char *argv[])
 
     //INITIALIZE SOLUTION
     // THIS SHOULD NOW BE TAKEN CARE OF ALREADY!!!!!!!!
-   // SW_Problem.InitB(1,DGMeshPartition,Nelem,ngl,ngl2,x_phy,y_phy,b);
+    // SW_Problem.InitB(1,DGMeshPartition,Nelem,ngl,ngl2,x_phy,y_phy,b);
 // THIS SHOULD NOW BE TAKEN CARE OF ALREADY!!!!!!!!
 
 

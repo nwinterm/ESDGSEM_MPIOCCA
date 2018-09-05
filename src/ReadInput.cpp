@@ -274,3 +274,24 @@ void ReadCartesianData(const int fixedDomain,const int fixedDisc, dfloat *xL,dfl
         *PeriodicBD_Y= getBoolValue(current_string);
     }
 }
+
+
+
+
+void WriteFullMesh(const int NumNodes, const dfloat *x,const dfloat *y)
+{
+
+//,dfloat T, dfloat g_const
+
+
+    std::ofstream OutputStream;
+    string filename="FullMesh.txt";
+    OutputStream.open(filename.c_str());
+    for(int inode=0; inode<NumNodes; ++inode)
+    {
+
+        OutputStream << x[inode] << " " << y[inode] << "\n";
+
+    }
+    OutputStream.close();
+}
