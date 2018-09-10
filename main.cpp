@@ -276,10 +276,10 @@ int main(int argc, char *argv[])
         NoGradDofs_global=ngl2*Nelem_global*(Neq-1);
         NoSpaceDofs_global=ngl2*Nelem_global;
 
-        if (ReadInBottom)
-        {
-            WriteFullMesh(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global);
-        }
+//        if (ReadInBottom)
+//        {
+//            WriteFullMesh(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global);
+//        }
 
         //cout << " We solve " << DGMesh.m_num_edges << " Faces with "<< ngl << " nodes each, so we should have " << DGMesh.m_num_edges*ngl << " IDs! \n" ;
         cout <<"Global Mesh created.\n";
@@ -334,6 +334,8 @@ int main(int argc, char *argv[])
 
     dfloat * x_phy_global;
     dfloat * y_phy_global;
+    dfloat h_0;
+
 
     if (MPI.rank ==0 )
     {
@@ -372,11 +374,12 @@ int main(int argc, char *argv[])
                     J_global[id] = 1.0/DGMesh.J_global[id];
                     x_phy_global[id] = DGMesh.x_global[id];
                     y_phy_global[id] = DGMesh.y_global[id];
-//                    if (ReadInBottom)
-//                    {
-//                        ReadFullMesh(NoSpaceDofs_global, b_global);
-//                        b_global[id]    = DGMesh.b_global[id]+6000.0;
-//                    }
+                    if (ReadInBottom)
+                   {
+			dfloat b_min = -6.701;
+			h_0 = -b_min;
+                       b_global[id]    = DGMesh.b_global[id]-b_min;
+                    }
 
 
 
@@ -384,10 +387,10 @@ int main(int argc, char *argv[])
             }
         }
 
-
         if (ReadInBottom)
         {
-            ReadFullMesh(NoSpaceDofs_global, b_global);
+            //ReadFullMesh(NoSpaceDofs_global, b_global, &h_0);
+		cout << " Water displacement: " << h_0 << "\n";
         }
         else
         {
@@ -450,8 +453,14 @@ int main(int argc, char *argv[])
     if(MPI.rank==0)
     {
         cout <<"Distributing bottom topography data to MPI-ranks \n";
-        DGMeshPartition.DivideBottom(MPI,b_global,b);
+        DGMeshPartition.DivideBottom(MPI,NoSpaceDofs,b_global,b);
+        //std::memcpy(&b, &b_global, sizeof b_global);
+	//std::memcpy(b, b_global, NoSpaceDofs*sizeof(dfloat));
+    
 
+	//cout <<" b at random node " << b[50] << " b_global: " << b_global[50]  << "\n";
+	//cout <<" b at random node " << b[550]<< " b_global: " << b_global[550]  <<"\n";
+	//cout <<" b at random node " << b[1230]<< " b_global: " << b_global[1230]  <<"\n";
     }
     else
     {
@@ -690,7 +699,7 @@ int main(int argc, char *argv[])
     SW_Problem.CalcBDerivatives(Nelem,ngl,ngl2,g_const,x_phy,y_phy,b,Dmat0,y_eta,y_xi,x_eta,x_xi,Bx,By,J);
 //	cout << "i am rank: " << MPI.rank << " and my Nelem_global is " << DGMeshPartition.global_NumElements << "\n";
 
-    SW_Problem.InitQ(1,DGMeshPartition,Nelem,ngl,ngl2,x_phy,y_phy,q,0.0,b, g_const);
+    SW_Problem.InitQ(1,DGMeshPartition,Nelem,ngl,ngl2,x_phy,y_phy,q,0.0,b, g_const,h_0);
 
 
 
@@ -719,7 +728,7 @@ int main(int argc, char *argv[])
 
     occa_device.initDeviceVariables(N, Nelem,Nfaces,MPI.rank, rkSSP, NEpad,NEsurfpad, Nedgepad,NavgPad, ES, Testcase, epsilon_0, sigma_max, sigma_min, PosPresTOL, geomface, g_const,
                                     PositivityPreserving,
-                                    ArtificialViscosity, DiscBottom );
+                                    ArtificialViscosity, DiscBottom,h_0 );
     //copy all permanent data onto the device
     if(MPI.rank==0)
     {
@@ -885,7 +894,7 @@ int main(int argc, char *argv[])
         dfloat * q_exakt = (dfloat*) calloc(NoDofs_global,sizeof(dfloat));
 
 
-        SW_Problem.InitQ(0,DGMeshPartition,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,0,b_global,g_const);
+        SW_Problem.InitQ(0,DGMeshPartition,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,0,b_global,g_const,h_0);
 
 
         dfloat EntropyDelta=0.0;
@@ -900,7 +909,7 @@ int main(int argc, char *argv[])
         cout <<"Mass difference is: " <<  MassDelta <<"\n";
         cout <<"relative mass difference is: " <<  relMassError <<"\n";
 
-        SW_Problem.InitQ(0,DGMeshPartition,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,T,b_global,g_const);
+        SW_Problem.InitQ(0,DGMeshPartition,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,T,b_global,g_const,h_0);
 
 
 

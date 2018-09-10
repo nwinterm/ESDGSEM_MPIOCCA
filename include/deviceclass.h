@@ -33,7 +33,8 @@ public:
                              const dfloat g_const,
                              const int PositivityPreserving,
                              const int ArtificialViscosity,
-			     const int DiscBottom);
+			     const int DiscBottom,
+				const dfloat h_0);
     void buildDeviceKernels(const int KernelVersion,
                             const int KernelVersionSTD,
                             const int Testcase,

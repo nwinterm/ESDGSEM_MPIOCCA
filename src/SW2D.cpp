@@ -15,7 +15,7 @@ PosPresTOL = postol;
 
 void SW2D :: InitQ(const int IsMeshSplit,const MeshPartitioning MeshSplit,const int Nelem,const int ngl,const int ngl2,
                    const dfloat x[],const dfloat y[], dfloat q[],const dfloat t,
-                   const dfloat b[],const dfloat g_const)
+                   const dfloat * b, const dfloat g_const, dfloat h_0)
 {
 
     int globalEleID;
@@ -41,7 +41,7 @@ void SW2D :: InitQ(const int IsMeshSplit,const MeshPartitioning MeshSplit,const 
 
                 dfloat qNodal[Neq];
 
-                InitQNodal(x[xid],y[xid],qNodal,t,b[xid],g_const);
+                InitQNodal(x[xid],y[xid],qNodal,t,b[xid],g_const,h_0);
 
 
 
@@ -286,7 +286,7 @@ void SW2D :: InitQ(const int IsMeshSplit,const MeshPartitioning MeshSplit,const 
 
 
 
-void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,const dfloat b,const dfloat g_const)
+void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,const dfloat b,const dfloat g_const, dfloat h_0)
 {
 
     dfloat h,v,w;
@@ -368,7 +368,7 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
     }
     case 8:      // periodic conv test  _ NO BOTTOM
     {
-        h=8.0+cos(x)*sin(y)*cos(t)-b;
+        h=20.0+cos(x)*sin(y)*cos(t)-b;
         v= 0.5;
         w= 1.5;
         break;
@@ -725,23 +725,23 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
     }
     case 88:      // Conv Test for Ocean Mesh
     {
-        h=8000.0 + 8.0 + cos(x)*sin(y)*cos(t)-b;
+	//h=8.0+cos(2.0*PI*x)*sin(2.0*PI*y)*cos(t)-b;
+        h= 20.0 + cos(0.001*x)*sin(0.001*y)*cos(t) - b;
         v= 0.5;
         w= 1.5;
         break;
     }
+    case 89:      // WB Test for Ocean Mesh
+    {
+        h=20.0- b;
+        v= 0.0;
+        w= 0.0;
+        break;
+    }
+
+
 
     } //end switch
-    //compare with cartesian code
-
-//            dfloat h=8.0+cos(2.0*PI*x)*sin(2.0*PI*y)*cos(t)-b;
-//            dfloat v= 0.5;
-//            dfloat w= 1.5;
-
-
-//            dfloat h=1.0;
-//            dfloat v= 0.0;
-//            dfloat w= 0.0;
 
 
     q[0] = h;   //first eq
@@ -752,7 +752,7 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
 
 //    void InitB(const int Nelem,const int ngl,const int ngl2,const dfloat x[NoSpaceDofs],const dfloat y[NoSpaceDofs],dfloat b[NoSpaceDofs],const dfloat t){
 
-void   SW2D::InitB(const int IsMeshSplit,const MeshPartitioning MeshSplit,const int Nelem,const int ngl,const int ngl2,const dfloat x[],const dfloat y[],dfloat b[])
+void   SW2D::InitB(const int IsMeshSplit,const MeshPartitioning MeshSplit,const int Nelem,const int ngl,const int ngl2,const dfloat x[],const dfloat y[],dfloat * b)
 {
 
     int globalEleID;
@@ -994,7 +994,7 @@ void   SW2D::InitB(const int IsMeshSplit,const MeshPartitioning MeshSplit,const 
 
 }
 
-void  SW2D::CalcBDerivatives(const int Nelem,const int ngl,const int ngl2,const dfloat g_const,const dfloat x[],const dfloat y[],const dfloat b[],const dfloat D[],const dfloat y_eta[],const dfloat y_xi[],const dfloat x_eta[],const dfloat x_xi[],dfloat Bx[],dfloat By[],const dfloat J[])
+void  SW2D::CalcBDerivatives(const int Nelem,const int ngl,const int ngl2,const dfloat g_const,const dfloat x[],const dfloat y[],const dfloat * b,const dfloat D[],const dfloat y_eta[],const dfloat y_xi[],const dfloat x_eta[],const dfloat x_xi[],dfloat Bx[],dfloat By[],const dfloat J[])
 {
 
 

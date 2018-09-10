@@ -25,16 +25,19 @@ MeshPartitioning::~MeshPartitioning()
     //dtor
 }
 
-void MeshPartitioning::DivideBottom(const MPI_setup MPI, const dfloat * b_global, dfloat * b)
+void MeshPartitioning::DivideBottom(const MPI_setup MPI, const int NoDofs, const dfloat * b_global, dfloat * b)
 {
     if (NumProcessors==1)
     {
-        std::memcpy(&b, &b_global, sizeof b_global);
+        std::memcpy(b, b_global, NoDofs*sizeof(dfloat));
     }
     else
     {
         SplitRealValuesBetweenProcs( MPI,b_global, b);
     }
+//	cout <<" b at random node " << b[50] << " b_global: " << b_global[50]  << "\n";
+//	cout <<" b at random node " << b[550]<< " b_global: " << b_global[550]  <<"\n";
+//	cout <<" b at random node " << b[1230]<< " b_global: " << b_global[1230]  <<"\n";
 
 
 }
@@ -116,7 +119,6 @@ void MeshPartitioning::DivideMesh(const Mesh GlobalMesh,const MPI_setup MPI)
 
 
 
-//        std::memcpy(&MyEdgeInfo, &GlobalMesh.EdgeInfo, sizeof GlobalMesh.EdgeInfo);
 
 
 

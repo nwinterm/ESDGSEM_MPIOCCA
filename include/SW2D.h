@@ -10,16 +10,16 @@ class SW2D
 {
 public:
     SW2D(const int, const dfloat);
-    void InitQ(const int, const MeshPartitioning,const int,const int,const int,const dfloat[],const dfloat[], dfloat[],const dfloat,const dfloat[],const dfloat);
+    void InitQ(const int, const MeshPartitioning,const int,const int,const int,const dfloat[],const dfloat[], dfloat[],const dfloat,const dfloat*,const dfloat,const dfloat);
 
-    void InitB(const int, const MeshPartitioning,const int,const int,const int,const dfloat[],const dfloat[],dfloat[]);
-    void CalcBDerivatives(const int,const int,const int,const dfloat,const dfloat[],const dfloat[],const dfloat[],const dfloat[], const dfloat[], const dfloat[], const dfloat[], const dfloat[], dfloat[],dfloat[], const dfloat[]);
+    void InitB(const int, const MeshPartitioning,const int,const int,const int,const dfloat[],const dfloat[],dfloat*);
+    void CalcBDerivatives(const int,const int,const int,const dfloat,const dfloat[],const dfloat[],const dfloat*,const dfloat[], const dfloat[], const dfloat[], const dfloat[], const dfloat[], dfloat[],dfloat[], const dfloat[]);
 
 
 private:
     int Testcase;
     dfloat PosPresTOL;
-    void InitQNodal(const dfloat,const dfloat, dfloat [],const dfloat,const dfloat,const dfloat);
+    void InitQNodal(const dfloat,const dfloat, dfloat [],const dfloat,const dfloat,const dfloat,const dfloat);
 };
 
 

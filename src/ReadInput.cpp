@@ -297,12 +297,12 @@ void WriteFullMesh(const int NumNodes, const dfloat *x,const dfloat *y)
 }
 
 
-void ReadFullMesh(const int NumNodes, dfloat *b)
+void ReadFullMesh(const int NumNodes, dfloat *b, dfloat * h_0)
 {
 
 //,dfloat T, dfloat g_const
     std::ifstream InputStream;
-    string filename="FullBottom.txt";
+    string filename="bottomfiles/FullBottomV2.txt";
     InputStream.open(filename.c_str());
 
     if (!InputStream)
@@ -315,6 +315,20 @@ void ReadFullMesh(const int NumNodes, dfloat *b)
     std::string current_string;
     std::stringstream current_line(current_string);
 
+	dfloat b_min;
+        std::getline(InputStream, current_string);
+        current_line.clear();
+        current_line.str(current_string);
+        if (!(current_line >>  b_min))
+        {
+            std::string error_message("ERROR: Cant read in h_0! ");
+            error_message += filename;
+            throw std::invalid_argument(error_message);
+        }
+
+	*h_0 = -b_min;	//b_min is negative and denotes bottom level below sea level. we shift this so b is always >=0
+
+
     for (unsigned i = 0; i < NumNodes; ++i)
     {
         std::getline(InputStream, current_string);
@@ -322,12 +336,14 @@ void ReadFullMesh(const int NumNodes, dfloat *b)
         current_line.str(current_string);
         dfloat dummyA;
         dfloat dummyB;
-        if (!(current_line >> dummyA >> dummyB >> b[i]))
+	dfloat b_input;
+        if (!(current_line >> dummyA >> dummyB >> b_input))
         {
             std::string error_message("ERROR: Cant read in Nodes! ");
             error_message += filename;
             throw std::invalid_argument(error_message);
         }
+	b[i] = *h_0 + b_input;
     }
     InputStream.close();
 }

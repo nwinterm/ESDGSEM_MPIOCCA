@@ -1289,6 +1289,7 @@ void Mesh::ReadMesh(const string meshFile)
                 J_global[id] = J[locID];
                 if(ReadBottom)
                 {
+		    
                     b_global[id] = b_phy[locID];
                 }
             }
@@ -1336,6 +1337,10 @@ void Mesh::ReadMesh(const string meshFile)
         if (ReadBottom)
         {
             free(b_phy);
+	    free(Gamma1b);
+		free(Gamma2b);
+		free(Gamma3b);
+		free(Gamma4b);
         }
 
 

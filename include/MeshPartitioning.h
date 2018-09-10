@@ -53,7 +53,7 @@ public:
 
 
     virtual ~MeshPartitioning();
-    void DivideBottom(const MPI_setup, const dfloat *,dfloat*);
+    void DivideBottom(const MPI_setup, const int, const dfloat *,dfloat*);
     void DivideMesh(const Mesh,const MPI_setup );
 
     void ReceiveBottom(const MPI_setup, dfloat *);

@@ -138,13 +138,13 @@ kernel void CollectEdgeData(const int Nfaces,
 
             if (cpuL==-1)
             {
-                Qnodal(x[idxR],y[idxR],&qNodalL[0],&qNodalL[1],&qNodalL[2],t,bL[edgeIDX]);
+                Qnodal(x[idxR],y[idxR],&qNodalL[0],&qNodalL[1],&qNodalL[2],t,bR[edgeIDX]);
 
             }
             if (cpuR==-1)
             {
 
-                Qnodal(x[idxL],y[idxL],&qNodalR[0],&qNodalR[1],&qNodalR[2],t,bR[edgeIDX]);
+                Qnodal(x[idxL],y[idxL],&qNodalR[0],&qNodalR[1],&qNodalR[2],t,bL[edgeIDX]);
 
             }
 

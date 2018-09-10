@@ -105,7 +105,8 @@ void deviceclass:: initDeviceVariables(const int N,
                                        const dfloat g_const,
                                        const int PositivityPreserving,
                                        const int ArtificialViscosity,
-					const int DiscBottom )
+					const int DiscBottom,
+					const dfloat h_0 )
 {
     const int Neq=3;
     const int GradNeq = Neq-1;
@@ -170,6 +171,7 @@ void deviceclass:: initDeviceVariables(const int N,
     info.addDefine("geomFace",geomface );
     info.addDefine("PosPresTOL",TOL_PosPres);
     info.addDefine("ZeroTOL",ZeroTOL);
+	info.addDefine("h_zero",h_0);
 
 	cout << "eps0, sigmaMax, sigmaMin, PosPresTOL "  << epsilon_0 << " " <<  sigma_max << "  "<< sigma_min <<  " " <<TOL_PosPres << "\n";
 
@@ -300,7 +302,7 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
         addS = device.buildKernelFromSource("okl/ManufacturedSolutions/S_ConvTest3.okl","addS",info);
         break;
     }
-        case 88:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
+    case 88:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
     {
         CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/Dirichlet_ConvTest4.okl","CollectEdgeData",info);
         addS = device.buildKernelFromSource("okl/ManufacturedSolutions/S_ConvTest4.okl","addS",info);
@@ -645,7 +647,7 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
                 if (Testcase == 31)
                 {
                     dfloat * q_exakt = (dfloat*) calloc(ngl2*Nelem_global*Neq,sizeof(dfloat));
-                    SW_Problem.InitQ(0,MeshSplit,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,t,b_global,g_const);
+                    SW_Problem.InitQ(0,MeshSplit,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,t,b_global,g_const,0.0);
                     PlotSolutionWithExact(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,q_global,b_global,plotCount,q_exakt);
                     free(q_exakt);
                 }
@@ -843,7 +845,7 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
             }
 
             // add manufactured source term for convergence test
-            if ((Testcase==1)||(Testcase==7)||(Testcase==8))
+            if ((Testcase==1)||(Testcase==7)||(Testcase==8)||(Testcase==88))
             {
                 addS(Nelem,o_Bx,o_By,o_B,o_x,o_y,intermediatetime,o_Qt);
             }
@@ -898,7 +900,7 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
                     if (Testcase == 31)
                     {
                         dfloat * q_exakt = (dfloat*) calloc(ngl2*Nelem_global*Neq,sizeof(dfloat));
-                        SW_Problem.InitQ(0,MeshSplit,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,t,b_global,g_const);
+                        SW_Problem.InitQ(0,MeshSplit,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,q_exakt,t,b_global,g_const,0.0);
                         PlotSolutionWithExact(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,q_global,b_global,plotCount,q_exakt);
 
                         free(q_exakt);
