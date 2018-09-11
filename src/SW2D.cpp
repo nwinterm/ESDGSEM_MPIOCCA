@@ -7,8 +7,8 @@
 
 SW2D::SW2D(const int tcase, const dfloat postol)
 {
-Testcase = tcase;
-PosPresTOL = postol;
+    Testcase = tcase;
+    PosPresTOL = postol;
 
 }
 //  void InitQ(const int Nelem,const int ngl,const int ngl2,const dfloat x[NoSpaceDofs],const dfloat y[NoSpaceDofs], dfloat q[NoDofs],const dfloat t,const dfloat b[NoSpaceDofs]){
@@ -723,21 +723,29 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
         w= 0.0;
         break;
     }
-    case 88:      // Conv Test for Ocean Mesh
-    {
-	//h=8.0+cos(2.0*PI*x)*sin(2.0*PI*y)*cos(t)-b;
-        h= 20.0 + cos(0.001*x)*sin(0.001*y)*cos(t) - b;
-        v= 0.5;
-        w= 1.5;
-        break;
-    }
-    case 89:      // WB Test for Ocean Mesh
+    case 86:      // WB Test for Ocean Mesh
     {
         h=20.0- b;
         v= 0.0;
         w= 0.0;
         break;
     }
+    case 87:      // WB Test for Ocean Mesh
+    {
+        h=max(0.0,h_0-b;
+              v= 0.0;
+              w= 0.0;
+              break;
+    }
+      case 88:      // Conv Test for Ocean Mesh
+    {
+        //h=8.0+cos(2.0*PI*x)*sin(2.0*PI*y)*cos(t)-b;
+        h= 20.0 + cos(0.001*x)*sin(0.001*y)*cos(t) - b;
+        v= 0.5;
+        w= 1.5;
+        break;
+    }
+
 
 
 
@@ -806,7 +814,7 @@ void   SW2D::InitB(const int IsMeshSplit,const MeshPartitioning MeshSplit,const 
                 }
                 case 8:      // convergence test
                 {
-                      b[xid] = 2.0+sin(y[xid])+cos(x[xid]);
+                    b[xid] = 2.0+sin(y[xid])+cos(x[xid]);
                     break;
                 }
                 case 30:     // Steeper Dam Break To Test Shock Capturing
