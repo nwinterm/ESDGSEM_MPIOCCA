@@ -378,7 +378,7 @@ int main(int argc, char *argv[])
                    {
 			dfloat b_min = -6.701;
 			h_0 = -b_min;
-                       b_global[id]    = max(h_0,DGMesh.b_global[id]+h_0);
+                       b_global[id]    =h_0 + min(0,DGMesh.b_global[id]);
                     }
 
 
