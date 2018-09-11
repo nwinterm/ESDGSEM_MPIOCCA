@@ -732,7 +732,7 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
     }
     case 87:      // WB Test for Ocean Mesh
     {
-        h=max(0.0,h_0-b;
+        h=max(0.0,h_0-b);
               v= 0.0;
               w= 0.0;
               break;
