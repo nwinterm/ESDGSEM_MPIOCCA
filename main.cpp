@@ -378,7 +378,7 @@ int main(int argc, char *argv[])
                    {
 			dfloat b_min = -6.701;
 			h_0 = -b_min;
-                       b_global[id]    = DGMesh.b_global[id]-b_min;
+                       b_global[id]    = max(h_0,DGMesh.b_global[id]+h_0);
                     }
 
 
@@ -456,7 +456,7 @@ int main(int argc, char *argv[])
         DGMeshPartition.DivideBottom(MPI,NoSpaceDofs,b_global,b);
         //std::memcpy(&b, &b_global, sizeof b_global);
 	//std::memcpy(b, b_global, NoSpaceDofs*sizeof(dfloat));
-    
+
 
 	//cout <<" b at random node " << b[50] << " b_global: " << b_global[50]  << "\n";
 	//cout <<" b at random node " << b[550]<< " b_global: " << b_global[550]  <<"\n";
