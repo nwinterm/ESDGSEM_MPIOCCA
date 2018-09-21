@@ -378,7 +378,8 @@ int main(int argc, char *argv[])
                    {
 			dfloat b_min = -6.701;
 			h_0 = -b_min;
-                       b_global[id]    =h_0 + min(0.0,DGMesh.b_global[id]);
+			dfloat zero = 0.0;
+                       b_global[id]    =h_0 + min(zero,DGMesh.b_global[id]);
                     }
 
 
@@ -869,7 +870,7 @@ int main(int argc, char *argv[])
 
         //endTV.tv_sec  - startTV.tv_sec +  (endTV.tv_usec - startTV.tv_usec) / 1000000 ;
 
-        cout <<"time taken in seconds = "<< TimeDifferenceMeasured<< "\n";
+        cout <<" MPI Ranks: " << MPI.numtasks<<" time taken in seconds = "<< TimeDifferenceMeasured<< "\n";
     }
 
 

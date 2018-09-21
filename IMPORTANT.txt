@@ -17,7 +17,7 @@ mpirun -n 4 main Serial
 mpirun -n 2 main CUDA
 
 
-
+for large problems: ulimit -s unlimited
 
 
 

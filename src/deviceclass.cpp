@@ -692,7 +692,7 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
 
 
 
-    cout << "about to enter time loop";
+    cout << "about to enter time loop\n";
 
 
 
@@ -771,7 +771,7 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
 	    if (MeshSplit.NumProcessors>1){
             	MPI_Waitall(MeshSplit.NumProcessors,MPI.Recv_q_reqs, MPI.stats);
             	MPI_Waitall(MeshSplit.NumProcessors,MPI.Send_q_reqs, MPI.stats);
-            	o_qL.copyFrom(qL);
+            	//o_qL.copyFrom(qL);			// qL is never received, this should be unnecessary!
             	o_qR.copyFrom(qR);
 	    }
 
