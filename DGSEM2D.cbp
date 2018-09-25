@@ -52,6 +52,7 @@
 		<Unit filename="include/SW2D.h" />
 		<Unit filename="include/basis.h" />
 		<Unit filename="include/deviceclass.h" />
+		<Unit filename="include/okada.h" />
 		<Unit filename="include/plots.h" />
 		<Unit filename="input.dat" />
 		<Unit filename="main.cpp" />
@@ -199,6 +200,8 @@
 		<Unit filename="src/SW2D.cpp" />
 		<Unit filename="src/basis.cpp" />
 		<Unit filename="src/deviceclass.cpp" />
+		<Unit filename="src/okada" />
+		<Unit filename="src/okada.cpp" />
 		<Extensions>
 			<code_completion />
 			<debugger />
