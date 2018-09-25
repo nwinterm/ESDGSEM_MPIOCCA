@@ -773,6 +773,7 @@ dfloat * ny = (dfloat*) calloc(ngl*Nfaces,sizeof(dfloat));
             	MPI_Waitall(MeshSplit.NumProcessors,MPI.Send_q_reqs, MPI.stats);
             	//o_qL.copyFrom(qL);			// qL is never received, this should be unnecessary!
             	o_qR.copyFrom(qR);
+		//o_qR.copyFrom(qR,1);
 	    }
 
             calcNumFluxes(Nfaces,o_EdgeReversed,o_nx,o_ny,o_scal,o_qL,o_qR,o_bL,o_bR,o_SurfaceParts);
