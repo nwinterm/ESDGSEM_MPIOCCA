@@ -75,36 +75,25 @@ void okada::okadamapFull(int &xsize, int &ysize,
         dfloat w, l, rd, dl, th, d, y0, x0, hh;
 
         std::ifstream usgsfile(dummy);
-
-        usgsfile >> dummy;
-        usgsfile >> w; // fault_width
-        usgsfile >> dummy;
-        usgsfile >> l; // fault_length
-        usgsfile >> dummy;
-        usgsfile >> rd; // slip angle
-        usgsfile >> dummy;
-        usgsfile >> dl; // dip angle
-        usgsfile >> dummy;
-        usgsfile >> th; // strike direction
-        usgsfile >> dummy;
-        usgsfile >> d; // dislocation
-        usgsfile >> dummy;
-        usgsfile >> y0; // epicenter latitude
-        usgsfile >> dummy;
         usgsfile >> x0; // epicenter longitude
-        usgsfile >> dummy;
-        usgsfile >> hh; // focal depth
-        usgsfile >> dummy;
+        usgsfile >> y0; // epicenter latitude
+        usgsfile >> hh; // depth
+        usgsfile >> l; // fault_length
+        usgsfile >> w; // fault_width
+
+        usgsfile >> th; // strike angle
+        usgsfile >> rd; // slip angle
+        usgsfile >> dl; // dip angle
+
+        usgsfile >> d; // dislocation
+
+
+
         usgsfile >> xsize; // grid points in x-dir
-        usgsfile >> dummy;
         usgsfile >> ysize; // grid points in y-dir
-        usgsfile >> dummy;
         usgsfile >> ylower;
-        usgsfile >> dummy;
         usgsfile >> yupper;
-        usgsfile >> dummy;
         usgsfile >> xlower;
-        usgsfile >> dummy;
         usgsfile >> xupper;
 
         usgsfile.close();
@@ -184,56 +173,57 @@ void okada::okadamapFull(int &xsize, int &ysize,
         }
     }
 
-    dfloat hmax = -1e9;
-    dfloat hmin = 1e9;
 
-    for(int k=1; k<=K; ++k)
-    {
-        for(int n=1; n<=Np; ++n)
-        {
-
-            dfloat pe = Q(n,k);
-            dfloat pp = pe - B(n,k);
+}
 
 
-            if(pp < h_thresh)
-                pp = h_thresh;
+dfloat strike_slip (const dfloat x1,
+		       const dfloat x2,
+		       const dfloat x3,
+		       const dfloat y1,
+		       const dfloat y2,
+		       const dfloat dp,
+		       const dfloat dd){
+  /*!
+   * Used for Okada's model
+   * Code borrowed from gandham who borrowed from okada.py in geoclaw
+   */
+  const dfloat sn = sin(dp);
+  const dfloat cs = cos(dp);
+  const dfloat p = x2*cs + dd*sn;
+  const dfloat q = x2*sn - dd*cs;
+  const dfloat d_bar = y2*sn - q*cs;
+  const dfloat r = sqrt(y1*y1 + y2*y2 + q*q);
+  const dfloat xx = sqrt(y1*y1 + q*q);
+  const dfloat a4 = 0.5*1./cs*(log(r+d_bar) - sn*log(r+y2));
+  const dfloat f =
+    -(d_bar*q/r/(r+y2) + q*sn/(r+y2) + a4*sn)/(2.0*M_PI);
+
+  return f;
+}
 
 
-            Q(n,k) = pp + B(n,k);
-            Q(n+Npad, k) = 0.;
-            Q(n+2*Npad, k) = 0.;
+dfloat dip_slip (const dfloat x1,
+		    const dfloat x2,
+		    const dfloat x3,
+		    const dfloat y1,
+		    const dfloat y2,
+		    const dfloat dp,
+		    const dfloat dd){
+  /*!
+   * Based on Okada's paper (1985)
+   * Code borrowed from gandham who  borrowed from okada.py in geoclaw
+   */
+  const dfloat sn = sin(dp);
+  const dfloat cs = cos(dp);
 
-            //      assert(Q(n,k) > 0);
+  const dfloat p = x2*cs + dd*sn;
+  const dfloat q = x2*sn - dd*cs;
+  const dfloat d_bar = y2*sn - q*cs;
+  const dfloat r = sqrt(y1*y1 + y2*y2 + q*q);
+  const dfloat xx = sqrt(y1*y1 + q*q);
+  const dfloat a5 = 0.5*2/cs*atan((y2*(xx+q*cs)+xx*(r+xx)*sn)/y1/(r+xx)/cs);
+  const dfloat f = -(d_bar*q/r/(r+y1) + sn*atan(y1*y2/q/r) - a5*sn*cs)/(2.0*M_PI);
 
-            if(hmax < Q(n,k))
-                hmax = Q(n,k);
-
-            if(hmin > Q(n,k))
-                hmin = Q(n,k);
-        }
-
-        for(int fld=1; fld<=Nfields; ++fld)
-        {
-            for(int n=1; n<=Ngauss*Nfaces; ++n)
-            {
-
-                dfloat gQn = 0.;
-
-                for(int m=1; m<=Np; ++m)
-                {
-
-                    gQn += gInterp(n,m)*Q(m + (fld-1)*Npad, k);
-                }
-
-                gQ(n + (fld-1)*Ngauss_NfacesPad, k) = gQn;
-
-                assert(gQn == gQn);
-
-            }
-        }
-    }
-
-    std::cout << " hmax = " << hmax << std::endl;
-    std::cout << " hmin = " << hmin << std::endl;
+  return f;
 }
