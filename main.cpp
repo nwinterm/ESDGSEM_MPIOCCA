@@ -704,9 +704,9 @@ int main(int argc, char *argv[])
     SW_Problem.InitQ(1,DGMeshPartition,Nelem,ngl,ngl2,x_phy,y_phy,q,0.0,b, g_const,h_0);
 
 
-    okada okadamap();
+    okada okadamap(Nelem);
 
-    okadamap.okadamapFull(Nelem,ngl, x_phy,y_phy, q);
+    okadamap.okadamapFull(ngl, x_phy,y_phy, q);
 
 
     if(MPI.rank==0)

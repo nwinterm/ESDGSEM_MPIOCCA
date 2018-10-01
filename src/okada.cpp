@@ -6,16 +6,16 @@
 
 
 
-okada::okada()
+okada::okada(const int Nelem)
 {
-
+NumElements = Nelem;
 
 }
 
 
 
 
-void okada::okadamapFull(const int Nelem,const int ngl, const dfloat x[],const dfloat y[], dfloat q[])
+void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloat q[])
 {
     /*!
      * return displacement dZ for a surface displacement at (xloc, yloc)
@@ -88,7 +88,7 @@ void okada::okadamapFull(const int Nelem,const int ngl, const dfloat x[],const d
         //const dfloat xl = rr*cos(rad*yo)*(x0-xo)*rad + del_x;   ///original source from geoclaw, okada.py
         const dfloat yl = earth_radius*(y0-yo)*rad - del_y; ///from gandham, dont know why
 
-        for(int ie=0; ie<Nelem; ++ie) /// loop through all elements
+        for(int ie=0; ie<NumElements; ++ie) /// loop through all elements
         {
             for(int i=0; i<ngl; ++i)  /// loop through all nodes of element
             {

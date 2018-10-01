@@ -10,10 +10,11 @@ using namespace Constants;
 class okada
 {
 public:
-    okada();
+    okada(const int);
     void okadamapFull(const int,const int,const dfloat[],const dfloat[], dfloat[]);
 
 private:
+    int NumElements;
 dfloat strike_slip (const dfloat x1,
                     const dfloat x2,
                     const dfloat x3,
