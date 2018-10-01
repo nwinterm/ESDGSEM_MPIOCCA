@@ -1,0 +1,9 @@
+epicenter_longitude = 94.57
+epicenter_latitude = 3.83
+depth = 25
+fault_length = 220 
+fault_width = 130
+strike_angle = 323
+slip_angle = 90
+dip_angle = 12
+dislocation = 0.018

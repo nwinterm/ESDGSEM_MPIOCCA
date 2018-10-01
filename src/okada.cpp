@@ -6,10 +6,9 @@
 
 
 
-okada::okada(const int tcase, const dfloat postol)
+okada::okada()
 {
-    Testcase = tcase;
-    PosPresTOL = postol;
+
 
 }
 
@@ -23,25 +22,6 @@ void okada :: InitQ(const int IsMeshSplit,const MeshPartitioning MeshSplit,const
 }
 
 
-/*!
- * borrowed code from Gandham who borrowed from Frank X Giraldo's DGCOM
- */
-void okada::set_ics_from_okada_model()
-{
-
-
-
-    datafloat xlower, xupper, ylower, yupper;
-    int xsize, ysize;
-    fmatrix dZ, XGRID, YGRID;
-
-    okadamapFull( xsize, ysize, xlower,
-                  xupper, ylower, yupper);
-
-    return;
-
-
-}
 
 
 
@@ -49,7 +29,8 @@ void okada::set_ics_from_okada_model()
 
 
 
-void okada::okadamapFull(const int Nelem,const int ngl, const dfloat x[],const dfloat y[], dfloat q[],)
+
+void okada::okadamapFull(const int Nelem,const int ngl, const dfloat x[],const dfloat y[], dfloat q[])
 {
     /*!
      * return displacement dZ for a surface displacement at (xloc, yloc)
@@ -63,7 +44,7 @@ void okada::okadamapFull(const int Nelem,const int ngl, const dfloat x[],const d
 
 
 
-    for(int fault = 1; fault <=5 ; ++fault)
+    for(int fault = 1; fault <=1 ; ++fault)
     {
 
         // WHAT DO THESE DO?!

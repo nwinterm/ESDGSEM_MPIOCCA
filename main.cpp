@@ -5,6 +5,7 @@
 #include "MPI_setup.h"
 #include "basis.h"
 #include "SW2D.h"
+#include "okada.h"
 #include "RungeKutta.h"
 #include "Mesh.h"
 #include "ReadInput.h"
@@ -703,7 +704,10 @@ int main(int argc, char *argv[])
     SW_Problem.InitQ(1,DGMeshPartition,Nelem,ngl,ngl2,x_phy,y_phy,q,0.0,b, g_const,h_0);
 
 
+    okada okadamap();
 
+    okadamap.okadamapFull(Nelem,ngl, x_phy,y_phy, q);
+{
 
     if(MPI.rank==0)
     {

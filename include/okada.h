@@ -10,8 +10,7 @@ using namespace Constants;
 class okada
 {
 public:
-    okada(const int, const dfloat);
-    void set_ics_from_okada_model();
+    okada();
     void okadamapFull(const int,const int,const dfloat[],const dfloat[], dfloat[]);
 
 private:
