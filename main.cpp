@@ -377,10 +377,10 @@ int main(int argc, char *argv[])
                     y_phy_global[id] = DGMesh.y_global[id];
                     if (ReadInBottom)
                     {
-                        dfloat b_min = -6.701;
+                        dfloat b_min = -7.30770216722054;
                         h_0 = -b_min;
                         dfloat zero = 0.0;
-                        b_global[id]    =h_0 + min(zero,DGMesh.b_global[id]);
+                        b_global[id]    =h_0 + DGMesh.b_global[id];
                     }
 
 
