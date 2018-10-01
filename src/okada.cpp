@@ -25,7 +25,7 @@ void okada::okadamapFull(const int Nelem,const int ngl, const dfloat x[],const d
     const dfloat zero	= 0.0;
     const dfloat osixty= 1.0/60.0; //0.016666666667;
     const dfloat rad	= M_PI/180. ;//0.01745329252;
-    const dfloat rr	= 6.378e6;
+    const dfloat earth_radius= 6.378e6;
 
 
 
@@ -86,7 +86,7 @@ void okada::okadamapFull(const int Nelem,const int ngl, const dfloat x[],const d
         const dfloat cs = cos(ang_l);
 
         //const dfloat xl = rr*cos(rad*yo)*(x0-xo)*rad + del_x;   ///original source from geoclaw, okada.py
-        const dfloat yl = rr*(y0-yo)*rad - del_y; ///from gandham, dont know why
+        const dfloat yl = earth_radius*(y0-yo)*rad - del_y; ///from gandham, dont know why
 
         for(int ie=0; ie<Nelem; ++ie) /// loop through all elements
         {
@@ -110,9 +110,9 @@ void okada::okadamapFull(const int Nelem,const int ngl, const dfloat x[],const d
                         xloc = (xloc/earth_radius)*(180./M_PI);
                         yloc = (atan(sinh(yloc/earth_radius))) * (180./M_PI);
 
-                        const dfloat xl = rr*cos(rad*yloc)*(x0-xo)*rad + del_x;
-                        const dfloat yy = rr*(yloc-yo)*rad;
-                        const dfloat xx = rr*cos(rad*yloc)*(xloc-xo)*rad;
+                        const dfloat xl = earth_radius*cos(rad*yloc)*(x0-xo)*rad + del_x;
+                        const dfloat yy = earth_radius*(yloc-yo)*rad;
+                        const dfloat xx = earth_radius*cos(rad*yloc)*(xloc-xo)*rad;
 
 
                         dfloat x1 = (xx-xl)*sin(ang_t)+(yy-yl)*cos(ang_t);
