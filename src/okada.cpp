@@ -148,7 +148,7 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
 }
 
 
-dfloat strike_slip (const dfloat x1,
+dfloat okada:: strike_slip (const dfloat x1,
                     const dfloat x2,
                     const dfloat x3,
                     const dfloat y1,
@@ -175,7 +175,7 @@ dfloat strike_slip (const dfloat x1,
 }
 
 
-dfloat dip_slip (const dfloat x1,
+dfloat okada:: dip_slip (const dfloat x1,
                  const dfloat x2,
                  const dfloat x3,
                  const dfloat y1,
