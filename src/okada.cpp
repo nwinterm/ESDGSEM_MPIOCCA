@@ -13,21 +13,6 @@ okada::okada()
 }
 
 
-void okada :: InitQ(const int IsMeshSplit,const MeshPartitioning MeshSplit,const int Nelem,const int ngl,const int ngl2,
-                    const dfloat x[],const dfloat y[], dfloat q[],const dfloat t,
-                    const dfloat * b, const dfloat g_const, dfloat h_0)
-{
-
-
-}
-
-
-
-
-
-
-
-
 
 
 void okada::okadamapFull(const int Nelem,const int ngl, const dfloat x[],const dfloat y[], dfloat q[])
