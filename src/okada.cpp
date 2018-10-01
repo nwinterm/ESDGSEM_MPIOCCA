@@ -33,8 +33,7 @@ void okada::okadamapFull(const int Nelem,const int ngl, const dfloat x[],const d
     {
 
         // WHAT DO THESE DO?!
-        const dfloat xo = xlower;//XGRID(1,1);//xlower;
-        const dfloat yo = yupper;//YGRID(1,1);//yupper;
+
 
 
         char dummy[BUFSIZ];
@@ -64,6 +63,9 @@ void okada::okadamapFull(const int Nelem,const int ngl, const dfloat x[],const d
         const dfloat xupper = x0m+l;
         const dfloat ylower = y0m-w;
         const dfloat yupper = y0m+w;
+
+        const dfloat xo = xlower;//XGRID(1,1);//xlower;
+        const dfloat yo = yupper;//YGRID(1,1);//yupper;
 
 
         const dfloat ang_l = rad*dl;
