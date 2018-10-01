@@ -376,11 +376,11 @@ int main(int argc, char *argv[])
                     x_phy_global[id] = DGMesh.x_global[id];
                     y_phy_global[id] = DGMesh.y_global[id];
                     if (ReadInBottom)
-                   {
-			dfloat b_min = -6.701;
-			h_0 = -b_min;
-			dfloat zero = 0.0;
-                       b_global[id]    =h_0 + min(zero,DGMesh.b_global[id]);
+                    {
+                        dfloat b_min = -6.701;
+                        h_0 = -b_min;
+                        dfloat zero = 0.0;
+                        b_global[id]    =h_0 + min(zero,DGMesh.b_global[id]);
                     }
 
 
@@ -392,7 +392,7 @@ int main(int argc, char *argv[])
         if (ReadInBottom)
         {
             //ReadFullMesh(NoSpaceDofs_global, b_global, &h_0);
-		cout << " Water displacement: " << h_0 << "\n";
+            cout << " Water displacement: " << h_0 << "\n";
         }
         else
         {
@@ -457,12 +457,12 @@ int main(int argc, char *argv[])
         cout <<"Distributing bottom topography data to MPI-ranks \n";
         DGMeshPartition.DivideBottom(MPI,NoSpaceDofs,b_global,b);
         //std::memcpy(&b, &b_global, sizeof b_global);
-	//std::memcpy(b, b_global, NoSpaceDofs*sizeof(dfloat));
+        //std::memcpy(b, b_global, NoSpaceDofs*sizeof(dfloat));
 
 
-	//cout <<" b at random node " << b[50] << " b_global: " << b_global[50]  << "\n";
-	//cout <<" b at random node " << b[550]<< " b_global: " << b_global[550]  <<"\n";
-	//cout <<" b at random node " << b[1230]<< " b_global: " << b_global[1230]  <<"\n";
+        //cout <<" b at random node " << b[50] << " b_global: " << b_global[50]  << "\n";
+        //cout <<" b at random node " << b[550]<< " b_global: " << b_global[550]  <<"\n";
+        //cout <<" b at random node " << b[1230]<< " b_global: " << b_global[1230]  <<"\n";
     }
     else
     {
@@ -707,7 +707,7 @@ int main(int argc, char *argv[])
     okada okadamap();
 
     okadamap.okadamapFull(Nelem,ngl, x_phy,y_phy, q);
-{
+
 
     if(MPI.rank==0)
     {
