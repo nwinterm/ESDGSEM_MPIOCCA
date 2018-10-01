@@ -12,11 +12,7 @@ class okada
 public:
     okada(const int, const dfloat);
     void set_ics_from_okada_model();
-    void okadamapFull(int &xsize, int &ysize,
-                            dfloat &xlower,
-                            dfloat &xupper,
-                            dfloat &ylower,
-                            dfloat &yupper);
+    void okadamapFull(const int,const int,const dfloat[],const dfloat[], dfloat[]);
 
 private:
 

@@ -36,7 +36,7 @@ void okada::set_ics_from_okada_model()
     fmatrix dZ, XGRID, YGRID;
 
     okadamapFull( xsize, ysize, xlower,
-                 xupper, ylower, yupper);
+                  xupper, ylower, yupper);
 
     return;
 
@@ -49,11 +49,7 @@ void okada::set_ics_from_okada_model()
 
 
 
-void okada::okadamapFull(int &xsize, int &ysize,
-                            dfloat &xlower,
-                            dfloat &xupper,
-                            dfloat &ylower,
-                            dfloat &yupper)
+void okada::okadamapFull(const int Nelem,const int ngl, const dfloat x[],const dfloat y[], dfloat q[],)
 {
     /*!
      * return displacement dZ for a surface displacement at (xloc, yloc)
@@ -69,6 +65,11 @@ void okada::okadamapFull(int &xsize, int &ysize,
 
     for(int fault = 1; fault <=5 ; ++fault)
     {
+
+        // WHAT DO THESE DO?!
+        const dfloat xo = xlower;//XGRID(1,1);//xlower;
+        const dfloat yo = yupper;//YGRID(1,1);//yupper;
+
 
         char dummy[BUFSIZ];
         sprintf(dummy, "%s%d.cfg", "./data/indianOceanUSGS", fault);
@@ -87,19 +88,17 @@ void okada::okadamapFull(int &xsize, int &ysize,
 
         usgsfile >> d; // dislocation
 
-
-
-        usgsfile >> xsize; // grid points in x-dir
-        usgsfile >> ysize; // grid points in y-dir
-        usgsfile >> ylower;
-        usgsfile >> yupper;
-        usgsfile >> xlower;
-        usgsfile >> xupper;
-
         usgsfile.close();
 
-        const dfloat xo = xlower;//XGRID(1,1);//xlower;
-        const dfloat yo = yupper;//YGRID(1,1);//yupper;
+        /// get epicenter coordinates in meters
+        x0m = (x0/earth_radius)*(180./M_PI);
+        y0m = (atan(sinh(y0/earth_radius))) * (180./M_PI);
+
+        const dfloat xlower = x0m-l;
+        const dfloat xupper = x0m+l;
+        const dfloat ylower = y0m-w;
+        const dfloat yupper = y0m+w;
+
 
         const dfloat ang_l = rad*dl;
         const dfloat ang_r = rad*rd;
@@ -118,56 +117,60 @@ void okada::okadamapFull(int &xsize, int &ysize,
         const dfloat sn = sin(ang_l);
         const dfloat cs = cos(ang_l);
 
-        //  const dfloat xl = rr*cos(rad*yo)*(x0-xo)*rad + del_x;
-        const dfloat yl = rr*(y0-yo)*rad - del_y;
+        //const dfloat xl = rr*cos(rad*yo)*(x0-xo)*rad + del_x;   ///original source from geoclaw, okada.py
+        const dfloat yl = rr*(y0-yo)*rad - del_y; ///from gandham, dont know why
 
-        int countInterior = 0;
-        for(int k=1; k<=K; ++k)
+        for(int ie=0; ie<Nelem; ++ie) /// loop through all elements
         {
-            for(int n=1; n<=Np; ++n)
+            for(int i=0; i<ngl; ++i)  /// loop through all nodes of element
             {
-                // get actual x/y in meters
-                dfloat xloc = x(n,k);
-                dfloat yloc = y(n,k);
-
-                /// convert to degrees
-                xloc = (xloc/earth_radius)*(180./M_PI);
-                yloc = (atan(sinh(yloc/earth_radius))) * (180./M_PI);
-
-                // check if this is in range of okada model
-                if(xloc >= xlower && xloc <= xupper &&
-                        yloc >= ylower && yloc <= yupper )
+                for(int j=0; j<ngl; ++j)  /// loop through all nodes of element
                 {
+                    const int ngl2=ngl*ngl;
+                    const int Neq=3;
+                    int qid = ie*ngl2*Neq   +j*ngl+i;
+                    int xid = ie*ngl2  + j*ngl+i;
+                    // get actual x/y in meters
+                    dfloat xloc = x[xid];
+                    dfloat yloc = y[xid];
 
-                    countInterior++;
-                    const dfloat xl = rr*cos(rad*yloc)*(x0-xo)*rad + del_x;
-                    const dfloat yy = rr*(yloc-yo)*rad;
-                    const dfloat xx = rr*cos(rad*yloc)*(xloc-xo)*rad;
+                    // check if this is in range of okada model
+                    if(xloc >= xlower && xloc <= xupper &&
+                            yloc >= ylower && yloc <= yupper )
+                    {
+                        /// convert to degrees
+                        xloc = (xloc/earth_radius)*(180./M_PI);
+                        yloc = (atan(sinh(yloc/earth_radius))) * (180./M_PI);
 
-
-                    dfloat x1 = (xx-xl)*sin(ang_t)+(yy-yl)*cos(ang_t);
-                    dfloat x2 = (xx-xl)*cos(ang_t)-(yy-yl)*sin(ang_t);
-                    x2 = -x2;
-                    dfloat x3 = zero;
-
-                    const dfloat p  = x2*cs+hh*sn;
-
-                    dfloat f1 = strike_slip (x1,x2,x3,x1+halfl,p,ang_l,hh);
-                    dfloat f2 = strike_slip (x1,x2,x3,x1+halfl,p-w,ang_l,hh);
-                    dfloat f3 = strike_slip (x1,x2,x3,x1-halfl,p,ang_l,hh);
-                    dfloat f4 = strike_slip (x1,x2,x3,x1-halfl,p-w,ang_l,hh);
-
-                    dfloat g1 = dip_slip (x1,x2,x3,x1+halfl,p,ang_l,hh);
-                    dfloat g2 = dip_slip (x1,x2,x3,x1+halfl,p-w,ang_l,hh);
-                    dfloat g3 = dip_slip (x1,x2,x3,x1-halfl,p,ang_l,hh);
-                    dfloat g4 = dip_slip (x1,x2,x3,x1-halfl,p-w,ang_l,hh);
+                        const dfloat xl = rr*cos(rad*yloc)*(x0-xo)*rad + del_x;
+                        const dfloat yy = rr*(yloc-yo)*rad;
+                        const dfloat xx = rr*cos(rad*yloc)*(xloc-xo)*rad;
 
 
-                    const dfloat us = (f1-f2-f3+f4)*ds;
-                    const dfloat ud = (g1-g2-g3+g4)*dd;
+                        dfloat x1 = (xx-xl)*sin(ang_t)+(yy-yl)*cos(ang_t);
+                        dfloat x2 = (xx-xl)*cos(ang_t)-(yy-yl)*sin(ang_t);
+                        x2 = -x2;
+                        dfloat x3 = zero;
 
-                    // This seems to update the current water height by strike/dip slips ?? displacements?!
-                    Q(n,k) += (us+ud);
+                        const dfloat p  = x2*cs+hh*sn;
+
+                        dfloat f1 = strike_slip (x1,x2,x3,x1+halfl,p,ang_l,hh);
+                        dfloat f2 = strike_slip (x1,x2,x3,x1+halfl,p-w,ang_l,hh);
+                        dfloat f3 = strike_slip (x1,x2,x3,x1-halfl,p,ang_l,hh);
+                        dfloat f4 = strike_slip (x1,x2,x3,x1-halfl,p-w,ang_l,hh);
+
+                        dfloat g1 = dip_slip (x1,x2,x3,x1+halfl,p,ang_l,hh);
+                        dfloat g2 = dip_slip (x1,x2,x3,x1+halfl,p-w,ang_l,hh);
+                        dfloat g3 = dip_slip (x1,x2,x3,x1-halfl,p,ang_l,hh);
+                        dfloat g4 = dip_slip (x1,x2,x3,x1-halfl,p-w,ang_l,hh);
+
+
+                        const dfloat us = (f1-f2-f3+f4)*ds;
+                        const dfloat ud = (g1-g2-g3+g4)*dd;
+
+                        // This seems to update the current water height by strike/dip slips ?? displacements?!
+                        q[qid] += (us+ud);
+                    }
                 }
             }
         }
@@ -178,52 +181,54 @@ void okada::okadamapFull(int &xsize, int &ysize,
 
 
 dfloat strike_slip (const dfloat x1,
-		       const dfloat x2,
-		       const dfloat x3,
-		       const dfloat y1,
-		       const dfloat y2,
-		       const dfloat dp,
-		       const dfloat dd){
-  /*!
-   * Used for Okada's model
-   * Code borrowed from gandham who borrowed from okada.py in geoclaw
-   */
-  const dfloat sn = sin(dp);
-  const dfloat cs = cos(dp);
-  const dfloat p = x2*cs + dd*sn;
-  const dfloat q = x2*sn - dd*cs;
-  const dfloat d_bar = y2*sn - q*cs;
-  const dfloat r = sqrt(y1*y1 + y2*y2 + q*q);
-  const dfloat xx = sqrt(y1*y1 + q*q);
-  const dfloat a4 = 0.5*1./cs*(log(r+d_bar) - sn*log(r+y2));
-  const dfloat f =
-    -(d_bar*q/r/(r+y2) + q*sn/(r+y2) + a4*sn)/(2.0*M_PI);
+                    const dfloat x2,
+                    const dfloat x3,
+                    const dfloat y1,
+                    const dfloat y2,
+                    const dfloat dp,
+                    const dfloat dd)
+{
+    /*!
+     * Used for Okada's model
+     * Code borrowed from gandham who borrowed from okada.py in geoclaw
+     */
+    const dfloat sn = sin(dp);
+    const dfloat cs = cos(dp);
+    const dfloat p = x2*cs + dd*sn;
+    const dfloat q = x2*sn - dd*cs;
+    const dfloat d_bar = y2*sn - q*cs;
+    const dfloat r = sqrt(y1*y1 + y2*y2 + q*q);
+    const dfloat xx = sqrt(y1*y1 + q*q);
+    const dfloat a4 = 0.5*1./cs*(log(r+d_bar) - sn*log(r+y2));
+    const dfloat f =
+        -(d_bar*q/r/(r+y2) + q*sn/(r+y2) + a4*sn)/(2.0*M_PI);
 
-  return f;
+    return f;
 }
 
 
 dfloat dip_slip (const dfloat x1,
-		    const dfloat x2,
-		    const dfloat x3,
-		    const dfloat y1,
-		    const dfloat y2,
-		    const dfloat dp,
-		    const dfloat dd){
-  /*!
-   * Based on Okada's paper (1985)
-   * Code borrowed from gandham who  borrowed from okada.py in geoclaw
-   */
-  const dfloat sn = sin(dp);
-  const dfloat cs = cos(dp);
+                 const dfloat x2,
+                 const dfloat x3,
+                 const dfloat y1,
+                 const dfloat y2,
+                 const dfloat dp,
+                 const dfloat dd)
+{
+    /*!
+     * Based on Okada's paper (1985)
+     * Code borrowed from gandham who  borrowed from okada.py in geoclaw
+     */
+    const dfloat sn = sin(dp);
+    const dfloat cs = cos(dp);
 
-  const dfloat p = x2*cs + dd*sn;
-  const dfloat q = x2*sn - dd*cs;
-  const dfloat d_bar = y2*sn - q*cs;
-  const dfloat r = sqrt(y1*y1 + y2*y2 + q*q);
-  const dfloat xx = sqrt(y1*y1 + q*q);
-  const dfloat a5 = 0.5*2/cs*atan((y2*(xx+q*cs)+xx*(r+xx)*sn)/y1/(r+xx)/cs);
-  const dfloat f = -(d_bar*q/r/(r+y1) + sn*atan(y1*y2/q/r) - a5*sn*cs)/(2.0*M_PI);
+    const dfloat p = x2*cs + dd*sn;
+    const dfloat q = x2*sn - dd*cs;
+    const dfloat d_bar = y2*sn - q*cs;
+    const dfloat r = sqrt(y1*y1 + y2*y2 + q*q);
+    const dfloat xx = sqrt(y1*y1 + q*q);
+    const dfloat a5 = 0.5*2/cs*atan((y2*(xx+q*cs)+xx*(r+xx)*sn)/y1/(r+xx)/cs);
+    const dfloat f = -(d_bar*q/r/(r+y1) + sn*atan(y1*y2/q/r) - a5*sn*cs)/(2.0*M_PI);
 
-  return f;
+    return f;
 }
