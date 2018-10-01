@@ -11,7 +11,7 @@ class okada
 {
 public:
     okada(const int);
-    void okadamapFull(const int,const int,const dfloat[],const dfloat[], dfloat[]);
+    void okadamapFull(const int,const dfloat[],const dfloat[], dfloat[]);
 
 private:
     int NumElements;
