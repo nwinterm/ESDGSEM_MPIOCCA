@@ -56,8 +56,8 @@ void okada::okadamapFull(const int Nelem,const int ngl, const dfloat x[],const d
         usgsfile.close();
 
         /// get epicenter coordinates in meters
-        x0m = (x0/earth_radius)*(180./M_PI);
-        y0m = (atan(sinh(y0/earth_radius))) * (180./M_PI);
+        const dfloat x0m = (x0/earth_radius)*(180./M_PI);
+        const dfloat y0m = (atan(sinh(y0/earth_radius))) * (180./M_PI);
 
         const dfloat xlower = x0m-l;
         const dfloat xupper = x0m+l;
