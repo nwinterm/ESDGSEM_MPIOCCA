@@ -1213,7 +1213,7 @@ cout << " bugfixes for element " << ie << "\n";
                 yXi_global[id] = y_xi[locID];
                 yEta_global[id] = y_eta[locID];
                 J_global[id] = J[locID];
-                cout << "J_Global: " J_global[id] << "\n";
+                cout << "J_Global: "<< J_global[id] << "\n";
                 if(ReadBottom)
                 {
 
