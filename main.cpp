@@ -536,7 +536,16 @@ int main(int argc, char *argv[])
     }
 
 
+			for (int ie=0;ie<Nelem;ie++){
+				for(int j=0;j<ngl;++j){
+					for(int i=0;i<ngl;++i){
+						int id = ie*ngl2+  j*ngl+i;
+						cout <<" Jacobian "<< J[id] <<"\n";
 
+				  }
+
+				}
+			}
 
     for(int is=0; is<Nfaces; ++is)
     {
