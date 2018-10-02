@@ -63,6 +63,10 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
         usgsfile.close();
 
         cout << "Epicenter of okada earthquake: " << x0 << ", " << y0 << "\n";
+        cout << "depth of okada earthquake: " << hh << "\n";
+        cout << "fault_length and fault_width of okada earthquake: " << l << ", " << w << "\n";
+        cout << "Strike Slip and Dip angles of okada earthquake: " << th << ", " << rd << ", " << dl << "\n";
+        cout << "dislocation of okada earthquake: " << d << "\n";
         /// get epicenter coordinates in meters
         const dfloat x0m = (x0/earth_radius)*(180./M_PI);
         const dfloat y0m = (atan(sinh(y0/earth_radius))) * (180./M_PI);
