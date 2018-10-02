@@ -374,7 +374,7 @@ int main(int argc, char *argv[])
                     J_global[id] = 1.0/DGMesh.J_global[id];
                     x_phy_global[id] = DGMesh.x_global[id];
                     y_phy_global[id] = DGMesh.y_global[id];
-                 
+
 		   if (ReadInBottom)
                     {
                         //dfloat b_min = -7.31;
@@ -537,6 +537,7 @@ int main(int argc, char *argv[])
 
 
 			for (int ie=0;ie<Nelem;ie++){
+                    cout << " Element " << ie << "\n";
 				for(int j=0;j<ngl;++j){
 					for(int i=0;i<ngl;++i){
 						int id = ie*ngl2+  j*ngl+i;

@@ -1198,7 +1198,7 @@ void Mesh::ReadMesh(const string meshFile)
                                 Gamma1b,Gamma2b,Gamma3b,Gamma4b,
                                 curved);
 
-
+cout << " bugfixes for element " << ie << "\n";
         for(int j=0; j<ngl; ++j)
         {
             for(int i=0; i<ngl; ++i)
@@ -1213,6 +1213,7 @@ void Mesh::ReadMesh(const string meshFile)
                 yXi_global[id] = y_xi[locID];
                 yEta_global[id] = y_eta[locID];
                 J_global[id] = J[locID];
+                cout << "J_Global: " J_global[id] << "\n";
                 if(ReadBottom)
                 {
 
