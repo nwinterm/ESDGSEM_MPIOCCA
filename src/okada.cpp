@@ -70,7 +70,8 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
 
         /// get epicenter coordinates in meters
         const dfloat x0m = x0*earth_radius*M_PI/180.0;
-        const dfloat y0m = earth_radius*asinh(tan(y0/(180.0*M_PI))))
+        const dfloat y0m = earth_radius*asinh(tan(y0/(180.0*M_PI)));
+
         cout << "Epicenter (KM) of okada earthquake: " << x0m << ", " << y0m << "\n";
         /// THIS IS ACTUALlY TRANSFORMATION FROM METER TO DEGREE
         ///const dfloat x0m = (x0/earth_radius)*(180./M_PI);
@@ -81,8 +82,8 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
         const dfloat ylower = y0m-w;
         const dfloat yupper = y0m+w;
 
-        const dfloat xo = xlower;//XGRID(1,1);//xlower;
-        const dfloat yo = yupper;//YGRID(1,1);//yupper;
+        const dfloat xo = xlower;
+        const dfloat yo = yupper;
 
 
         const dfloat ang_l = rad*dl;
@@ -115,9 +116,9 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
                     const int Neq=3;
                     int qid = ie*ngl2*Neq   +j*ngl+i;
                     int xid = ie*ngl2  + j*ngl+i;
-                    // get actual x/y in meters
-                    dfloat xloc = x[xid];
-                    dfloat yloc = y[xid];
+                    // get actual x/y in METERS
+                    dfloat xloc = 1000*x[xid];
+                    dfloat yloc = 1000*y[xid];
 
                     // check if this is in range of okada model
                     if(xloc >= xlower && xloc <= xupper &&
