@@ -249,123 +249,6 @@ void Mesh::InitMesh(const string meshFile, const bool Cartesian, const int Testc
 
 
 
-//    if(Testcase ==20)    //PARTIAL DAM BREAK, VARIABLE NelemX,NelemY
-//    {
-//        int ExtraEdges= int(0.9*NelemX); // the dam is supposed to have length of 1, so 1/10 of the elements
-//        int CutEdges = int(0.1*NelemX);
-//        int ghostCounter = 0;
-//
-//
-//        int * EdgeInfo_TMP  = (int*) calloc(m_num_edges*7,sizeof(int));
-//
-//        for(int is=0; is<m_num_edges; ++is)
-//        {
-//            for (int i=0; i<7; i++)
-//            {
-//                int id = is*7+i;
-//                EdgeInfo_TMP[id] = EdgeInfo[id];
-//            }
-//        }
-//
-//
-//        free(EdgeInfo);
-//        EdgeInfo = (int*) calloc((m_num_edges+ExtraEdges)*7,sizeof(int));
-//
-//        for(int is=0; is<m_num_edges; ++is)
-//        {
-//            for (int i=0; i<7; i++)
-//            {
-//                int id = is*7+i;
-//                EdgeInfo[id] = EdgeInfo_TMP[id];
-//            }
-//        }
-
-//
-//        int startIndex = (NelemX+1)*NelemY + NelemY/2;
-//        int endIndex = m_num_edges - NelemY/2 ;
-//        int increment =NelemX+1;
-//
-//        int MidIndex = startIndex + increment*(ExtraEdges/2-1);
-//        int startIndex2 = MidIndex + (CutEdges+1) * increment-1;
-//
-
-//        for(int is=startIndex; is<MidIndex; is+=increment)
-//        {
-//            int id = is*7;
-//            int ghostID = (m_num_edges+ghostCounter)*7;
-//            ghostCounter = ghostCounter+1;
-//
-//            EdgeInfo[ghostID]= EdgeInfo[id];
-//            EdgeInfo[ghostID+1]= EdgeInfo[id+1];
-//            EdgeInfo[ghostID+2]= EdgeInfo[id+3];
-//            EdgeInfo[ghostID+3]= -1;
-//            EdgeInfo[ghostID+4]= EdgeInfo[id+5];
-//            EdgeInfo[ghostID+5]= -1;
-//            EdgeInfo[ghostID+6]= EdgeInfo[id+6];
-//
-//            EdgeInfo[id+3] = -1 ;
-//            EdgeInfo[id+5]=-1;
-//
-//
-//
-//        }
-//
-//        for(int is=startIndex2; is<endIndex; is+=increment)
-//        {
-//            int id = is*7;
-//            int ghostID = (m_num_edges+ghostCounter)*7;
-//            ghostCounter = ghostCounter+1;
-//
-//            EdgeInfo[ghostID]= EdgeInfo[id];
-//            EdgeInfo[ghostID+1]= EdgeInfo[id+1];
-//            EdgeInfo[ghostID+2]= EdgeInfo[id+3];
-//            EdgeInfo[ghostID+3]= -1;
-//            EdgeInfo[ghostID+4]= EdgeInfo[id+5];
-//            EdgeInfo[ghostID+5]= -1;
-//            EdgeInfo[ghostID+6]= EdgeInfo[id+6];
-//
-//            EdgeInfo[id+3] = -1 ;
-//            EdgeInfo[id+5]=-1;
-//
-//        }
-//        ghostCounter = 1;
-//
-//        int eleStartIndex = NelemX/2+1;
-//        int eleEndIndex = m_num_elements - NelemY/2 +1;
-//        int eleIncrement = NelemX;
-//        int eleMidIndex = eleStartIndex + eleIncrement*(ExtraEdges/2-1);
-//        int eleStartIndex2 = eleMidIndex + (CutEdges+1) * eleIncrement;
-//
-//
-//
-//
-//
-//        for(int ie=eleStartIndex; ie<=eleMidIndex; ie=ie+eleIncrement)
-//        {
-//            int id = (ie-1)*4 + 3;
-//            ElementToEdge[id]   = m_num_edges + ghostCounter;
-//            ElemEdgeMasterSlave[id]=+1;
-//            ElemEdgeOrientation[id]=1;   //order is never reversed for left element! as it is master
-//            ghostCounter = ghostCounter+1;
-//        }
-//        for(int ie=eleStartIndex2; ie<=eleEndIndex; ie=ie+eleIncrement)
-//        {
-//            int id = (ie-1)*4 + 3;
-//            ElementToEdge[id]   = m_num_edges + ghostCounter;
-//            ElemEdgeMasterSlave[id]=+1;
-//            ElemEdgeOrientation[id]=1;   //order is never reversed for left element! as it is master
-//            ghostCounter = ghostCounter+1;
-//        }
-//
-//
-//
-//
-//        m_num_edges=m_num_edges+ExtraEdges;
-//
-//    }
-
-
-
 
     NormalsX = (dfloat*) calloc(m_num_edges*ngl,sizeof(dfloat));
     NormalsY = (dfloat*) calloc(m_num_edges*ngl,sizeof(dfloat));
@@ -785,18 +668,6 @@ void Mesh::GenerateMesh(const dfloat xL,const dfloat xR,const dfloat yL,const df
 
 void Mesh::ReadMesh(const string meshFile)
 {
-
-//,dfloat T, dfloat g_const
-
-//    corners.resize(4,2);
-//    x_phy.resize(ngl,ngl);
-//    y_phy.resize(ngl,ngl);
-
-
-
-
-
-
 
 
 
@@ -1589,15 +1460,15 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
             int ij = j*ngl+i;
             if (Curved)
             {
-                TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],x_GL[j],&x_phy[ij],&y_phy[ij]);
-
+                //TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],x_GL[j],&x_phy[ij],&y_phy[ij]);
+                TransfiniteQuadMapSingle(Gamma1X,Gamma2X,Gamma3X,Gamma4X,x_GL[i],x_GL[j],&x_phy[ij]);
+                TransfiniteQuadMapSingle(Gamma1Y,Gamma2Y,Gamma3Y,Gamma4Y,x_GL[i],x_GL[j],&y_phy[ij]);
                 if(ReadBottom)
                 {
                     TransfiniteQuadMapSingle(Gamma1b,Gamma2b,Gamma3b,Gamma4b,x_GL[i],x_GL[j],&b_phy[ij]);
                 }
                 TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],x_GL[j],&x_xi[ij],&x_eta[ij],&y_xi[ij],&y_eta[ij]);
-                //QuadMapMetrics(cornersX,cornersY,x_GL[i],x_GL[j],&xXi_2[ij],&xEta_2[ij],&yXi_2[ij],&yEta_2[ij]);
-                // QuadMapMetrics(cornersX,cornersY,x_GL[i],x_GL[j],&x_xi[ij],&x_eta[ij],&y_xi[ij],&y_eta[ij]);
+
 
 //dfloat DIFFERENCE1 = fabs(x_xi[ij] -xXi_2[ij]);
 //dfloat DIFFERENCE2 = fabs(x_eta[ij] -xEta_2[ij]);
@@ -1611,7 +1482,9 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
             }
             else
             {
-                QuadMap(cornersX,cornersY,x_GL[i],x_GL[j],&x_phy[ij],&y_phy[ij]);
+                //QuadMap(cornersX,cornersY,x_GL[i],x_GL[j],&x_phy[ij],&y_phy[ij]);
+                QuadMapSingle(cornersX,x_GL[i],x_GL[j],&x_phy[ij]);
+                QuadMapSingle(cornersY,x_GL[i],x_GL[j],&y_phy[ij]);
                 if(ReadBottom)
                 {
                     QuadMapSingle(cornersb,x_GL[i],x_GL[j],&b_phy[ij]);
