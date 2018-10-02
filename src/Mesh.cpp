@@ -1008,12 +1008,9 @@ void Mesh::ReadMesh(const string meshFile)
     ny_global = (dfloat*) calloc(m_num_elements*4*ngl,sizeof(dfloat));
     scal_global = (dfloat*) calloc(m_num_elements*4*ngl,sizeof(dfloat));
 
-
+    b_global = (dfloat*) calloc(m_num_elements*ngl2,sizeof(dfloat));
     // new for read in of bottom data
-    if(ReadBottom)
-    {
-        b_global = (dfloat*) calloc(m_num_elements*ngl2,sizeof(dfloat));
-    }
+
 
     for (unsigned ie = 0; ie < m_num_elements; ++ie)
     {
@@ -1038,12 +1035,10 @@ void Mesh::ReadMesh(const string meshFile)
         y_xi= (dfloat*) calloc(ngl2,sizeof(dfloat));
         y_eta= (dfloat*) calloc(ngl2,sizeof(dfloat));
         J= (dfloat*) calloc(ngl2,sizeof(dfloat));
-        if(ReadBottom)
-        {
-            b_phy= (dfloat*) calloc(ngl2,sizeof(dfloat));
 
-            cornersb = (dfloat*) calloc(4,sizeof(dfloat));
-        }
+        b_phy= (dfloat*) calloc(ngl2,sizeof(dfloat));
+        cornersb = (dfloat*) calloc(4,sizeof(dfloat));
+
 
         Gamma1b = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
         Gamma2b = (dfloat*) calloc(m_order_of_boundary_edges+1,sizeof(dfloat));
@@ -1394,14 +1389,13 @@ void Mesh::ReadMesh(const string meshFile)
         free(nx);
         free(ny);
 
-        if (ReadBottom)
-        {
-            free(b_phy);
-            free(Gamma1b);
-            free(Gamma2b);
-            free(Gamma3b);
-            free(Gamma4b);
-        }
+
+        free(b_phy);
+        free(Gamma1b);
+        free(Gamma2b);
+        free(Gamma3b);
+        free(Gamma4b);
+
 
 
     }//ele loop
