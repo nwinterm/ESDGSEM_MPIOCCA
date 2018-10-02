@@ -368,19 +368,21 @@ int main(int argc, char *argv[])
             {
                 for(int i=0; i<ngl; ++i)
                 {
-                    //erst alle Punkte die zu j=0 gehoeren, dann j=1, usw.
                     int id = ie*ngl2   +j*ngl+i;
                     int Qid =ie*ngl2*Neq + j*ngl+i;
-                    //        int id = (ieY*NelemX+ieX)*ngl2   +j*ngl+i+1;
+
                     J_global[id] = 1.0/DGMesh.J_global[id];
                     x_phy_global[id] = DGMesh.x_global[id];
                     y_phy_global[id] = DGMesh.y_global[id];
-                    if (ReadInBottom)
+                 
+		   if (ReadInBottom)
                     {
-                        dfloat b_min = -7.30770216722054;
+                        //dfloat b_min = -7.31;
+			dfloat b_min = -8.0;
                         h_0 = -b_min;
                         dfloat zero = 0.0;
-                        b_global[id]    =h_0 + DGMesh.b_global[id];
+			b_global[id]    =h_0 + min(zero,DGMesh.b_global[id]);
+                        //b_global[id]    =   h_0 + DGMesh.b_global[id];
                     }
 
 
@@ -579,7 +581,7 @@ int main(int argc, char *argv[])
     {
         cout <<" ... and distributed \n";
     }
-    //    cout << "RANK: " << MPI.rank << " local min ele Size: "<< minEleSize << " global min Ele Size: " << globalMinEleSize<< "\n";
+        cout << "RANK: " << MPI.rank << " local min ele Size: "<< minEleSize << " global min Ele Size: " << globalMinEleSize<< "\n";
 
 
 
@@ -704,9 +706,9 @@ int main(int argc, char *argv[])
     SW_Problem.InitQ(1,DGMeshPartition,Nelem,ngl,ngl2,x_phy,y_phy,q,0.0,b, g_const,h_0);
 
 
-    okada okadamap(Nelem);
+ //   okada okadamap(Nelem);
 
-    okadamap.okadamapFull(ngl, x_phy,y_phy, q);
+ //   okadamap.okadamapFull(ngl, x_phy,y_phy, q);
 
 
     if(MPI.rank==0)

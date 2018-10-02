@@ -865,12 +865,21 @@ void Mesh::ReadMesh(const string meshFile)
         std::getline(InputStream, current_string);
         current_line.clear();
         current_line.str(current_string);
+	if (ReadBottom){
         if (!(current_line >> x_nodes[i] >> y_nodes[i] >> b_nodes[i]))
         {
             std::string error_message("ERROR: Cant read in Nodes! ");
             error_message += filename;
             throw std::invalid_argument(error_message);
         }
+	}else{
+        if (!(current_line >> x_nodes[i] >> y_nodes[i]))
+        {
+            std::string error_message("ERROR: Cant read in Nodes! ");
+            error_message += filename;
+            throw std::invalid_argument(error_message);
+        }
+	}	
     }
 
 
@@ -1205,6 +1214,8 @@ void Mesh::ReadMesh(const string meshFile)
                     std::getline(InputStream, current_string);
                     current_line.clear();
                     current_line.str(current_string);
+
+		    if (ReadBottom){
                     switch(j)
                     {
                     case 0:
@@ -1245,6 +1256,49 @@ void Mesh::ReadMesh(const string meshFile)
                         break;
 
                     }
+		    }else{
+                    switch(j)
+                    {
+                    case 0:
+                        if (!(current_line >> Gamma1X[k]>> Gamma1Y[k]))
+                        {
+                            std::string error_message("ERROR: Cant read in given Gamma1 Curve! ");
+                            error_message += filename;
+                            cout << "Error in Line : "<<k <<"\n";
+                            throw std::invalid_argument(error_message);
+                        }
+                        break;
+                    case 1:
+                        if (!(current_line >> Gamma2X[k]>> Gamma2Y[k]))
+                        {
+                            std::string error_message("ERROR: Cant read in given Gamma2 Curve! ");
+                            error_message += filename;
+                            cout << "Error in Line : "<<k <<"\n";
+                            throw std::invalid_argument(error_message);
+                        }
+                        break;
+                    case 2:
+                        if (!(current_line >> Gamma3X[k]>> Gamma3Y[k]))
+                        {
+                            std::string error_message("ERROR: Cant read in given Gamma3 Curve! ");
+                            error_message += filename;
+                            cout << "Error in Line : "<<k <<"\n";
+                            throw std::invalid_argument(error_message);
+                        }
+                        break;
+                    case 3:
+                        if (!(current_line >> Gamma4X[k]>> Gamma4Y[k]))
+                        {
+                            std::string error_message("ERROR: Cant read in given Gamma4 Curve! ");
+                            error_message += filename;
+                            cout << "Error in Line : "<<k <<"\n";
+                            throw std::invalid_argument(error_message);
+                        }
+                        break;
+
+                    }
+
+			}
 
 
                 }
