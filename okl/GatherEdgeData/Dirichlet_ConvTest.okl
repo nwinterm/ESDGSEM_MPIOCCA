@@ -7,9 +7,9 @@ void Qnodal(const dfloat x,
             const dfloat b)
 {
 
-    *q1 = (eight+cos(two*PI*x)*sin(two*PI*y)*cos(t)-b);
-    *q2 = half*(eight+cos(two*PI*x)*sin(two*PI*y)*cos(t)-b);
-    *q3 = onepointfive*(eight+cos(two*PI*x)*sin(two*PI*y)*cos(t)-b);
+    *q1 = (eight+cos(x)*sin(y)*cos(t)-b);
+    *q2 = half*(eight+cos(x)*sin(y)*cos(t)-b);
+    *q3 = onepointfive*(eight+cos(x)*sin(y)*cos(t)-b);
 
 }
 

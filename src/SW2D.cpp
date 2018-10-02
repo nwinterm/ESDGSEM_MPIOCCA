@@ -295,7 +295,7 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
 
     case 1:      // periodic conv test
     {
-        h=8.0+cos(2.0*PI*x)*sin(2.0*PI*y)*cos(t)-b;
+        h=8.0+cos(x)*sin(y)*cos(t)-b;
         v= 0.5;
         w= 1.5;
         break;
@@ -786,7 +786,7 @@ void   SW2D::InitB(const int IsMeshSplit,const MeshPartitioning MeshSplit,const 
                 {
                 case 1:      // convergence test
                 {
-                    b[xid] = 2.0+sin(2.0*PI*y[xid])+cos(2.0*PI*x[xid]);//+cos(x[xid])*sin(y[xid])*cos(t);
+                    b[xid] = 2.0+0.5*sin(2.0*PI*y[xid])+cos(2.0*PI*x[xid]);//+cos(x[xid])*sin(y[xid])*cos(t);
                     break;
                 }
 
