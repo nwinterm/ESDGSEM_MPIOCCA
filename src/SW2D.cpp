@@ -747,7 +747,13 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
         break;
     }
 
-
+    case 90:      // okada test
+    {
+        h=20.0- b;
+        v= 0.0;
+        w= 0.0;
+        break;
+    }
 
 
     } //end switch
