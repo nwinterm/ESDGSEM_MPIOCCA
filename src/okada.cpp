@@ -41,6 +41,13 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
         dfloat w, l, rd, dl, th, d, y0, x0, hh;
 
         std::ifstream usgsfile(dummy);
+
+        if (!usgsfile)
+    {
+        std::string error_message("ERROR: Okada Input file not found: ");
+        error_message += filename;
+        throw std::invalid_argument(error_message);
+    }
         usgsfile >> x0; // epicenter longitude
         usgsfile >> y0; // epicenter latitude
         usgsfile >> hh; // depth
