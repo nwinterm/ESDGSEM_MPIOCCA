@@ -37,7 +37,7 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
 
 
         char dummy[BUFSIZ];
-        sprintf(dummy, "%s%d.cfg", "./data/indianOceanFault", fault);
+        sprintf(dummy, "%s%d.txt", "./data/indianOceanFault", fault);
         dfloat w, l, rd, dl, th, d, y0, x0, hh;
 
         std::ifstream usgsfile(dummy);
