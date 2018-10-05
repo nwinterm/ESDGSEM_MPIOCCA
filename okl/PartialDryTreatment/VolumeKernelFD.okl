@@ -306,7 +306,7 @@ kernel void VolumeKernelPartialDry(const int Nelem,
                             const dfloat r_Xeta=X_eta[xid];
                             const dfloat r_Xxi=X_xi[xid];
 
-                            const dfloat FxDeriv2= r_Yeta * FxiDerivBD - r_Yxi* FetaDeriv ;
+                            const dfloat FxDeriv2= r_Yeta * FxiDerivBD - r_Yxi* FetaDerivBD ;
                             const dfloat FxDeriv2_2= r_h * ( r_Yeta * FxiDeriv - r_Yxi* FetaDeriv );
 
                             const dfloat GyDeriv3=  -r_Xeta * GxiDerivBD + r_Xxi* GetaDerivBD ;
