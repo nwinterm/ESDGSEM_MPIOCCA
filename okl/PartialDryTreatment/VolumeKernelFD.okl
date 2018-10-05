@@ -97,14 +97,14 @@ kernel void VolumeKernelPartialDry(const int Nelem,
                     {
                         if (isPartlyDry[eleID]==1)
                         {
-                            dfloat FxiDeriv2_2=zero;
-                            dfloat FetaDeriv2_2=zero;
-                            dfloat GxiDeriv3_2=zero;
-                            dfloat GetaDeriv3_2=zero;
-                            dfloat FxiDeriv2=zero;
-                            dfloat FetaDeriv2=zero;
-                            dfloat GxiDeriv3=zero;
-                            dfloat GetaDeriv3=zero;
+                            dfloat FxiDeriv=zero;
+                            dfloat FetaDeriv=zero;
+                            dfloat GxiDeriv=zero;
+                            dfloat GetaDeriv=zero;
+                            dfloat FxiDerivBD=zero;
+                            dfloat FetaDerivBD=zero;
+                            dfloat GxiDerivBD=zero;
+                            dfloat GetaDerivBD=zero;
 
                             dfloat BxiDeriv=zero;
                             dfloat BetaDeriv=zero;
@@ -147,8 +147,8 @@ kernel void VolumeKernelPartialDry(const int Nelem,
                                     const dfloat r_Dp1 = s_DupwindFD[j][1];
                                     const dfloat r_D = s_DupwindFD[j][0];
 
-                                    FxiDeriv2_2 = r_D* s_F2_2[ieLoc][i][j] + r_Dp1* s_F2_2[ieLoc][i][j+1]  ;
-                                    GxiDeriv3_2 = r_D* s_G3_2[ieLoc][i][j] + r_Dp1* s_G3_2[ieLoc][i][j+1]  ;
+                                    FxiDeriv = r_D* s_F2_2[ieLoc][i][j] + r_Dp1* s_F2_2[ieLoc][i][j+1]  ;
+                                    GxiDeriv = r_D* s_G3_2[ieLoc][i][j] + r_Dp1* s_G3_2[ieLoc][i][j+1]  ;
                                     BxiDeriv = r_D* r_b + r_Dp1* s_B[ieLoc][i][j+1]  ;
 
                                 }
@@ -160,8 +160,8 @@ kernel void VolumeKernelPartialDry(const int Nelem,
                                     const dfloat r_D = s_DdownwindFD[j][ngl-1];
                                     const dfloat r_Dm1 = s_DdownwindFD[j][ngl-2];
 
-                                    FxiDeriv2_2 = r_Dm1* s_F2_2[ieLoc][i][j-1] + r_D* s_F2_2[ieLoc][i][j]  ;
-                                    GxiDeriv3_2 = r_Dm1* s_G3_2[ieLoc][i][j-1] + r_D* s_G3_2[ieLoc][i][j]  ;
+                                    FxiDeriv = r_Dm1* s_F2_2[ieLoc][i][j-1] + r_D* s_F2_2[ieLoc][i][j]  ;
+                                    GxiDeriv = r_Dm1* s_G3_2[ieLoc][i][j-1] + r_D* s_G3_2[ieLoc][i][j]  ;
                                     BxiDeriv = r_Dm1* s_B[ieLoc][i][j-1] + r_D* r_b  ;
 
                                 }
@@ -174,8 +174,8 @@ kernel void VolumeKernelPartialDry(const int Nelem,
                                     {
                                         const dfloat r_Dp1 = s_DcentralFD[j][j+1];
                                         const dfloat r_Dm1 = s_DcentralFD[j][j-1];
-                                        FxiDeriv2_2 = r_Dm1* s_F2_2[ieLoc][i][j-1] + r_Dp1* s_F2_2[ieLoc][i][j+1]  ;
-                                        GxiDeriv3_2 = r_Dm1* s_G3_2[ieLoc][i][j-1] + r_Dp1* s_G3_2[ieLoc][i][j+1]  ;
+                                        FxiDeriv = r_Dm1* s_F2_2[ieLoc][i][j-1] + r_Dp1* s_F2_2[ieLoc][i][j+1]  ;
+                                        GxiDeriv = r_Dm1* s_G3_2[ieLoc][i][j-1] + r_Dp1* s_G3_2[ieLoc][i][j+1]  ;
                                         BxiDeriv = r_Dm1* s_B[ieLoc][i][j-1] + r_Dp1* s_B[ieLoc][i][j+1]  ;
 
 
@@ -185,8 +185,8 @@ kernel void VolumeKernelPartialDry(const int Nelem,
                                     {
                                         const dfloat r_Dp1 = s_DupwindFD[j][j+1];
                                         const dfloat r_D = s_DupwindFD[j][j];
-                                        FxiDeriv2_2 = r_D* s_F2_2[ieLoc][i][j] + r_Dp1* s_F2_2[ieLoc][i][j+1] ;
-                                        GxiDeriv3_2 = r_D* s_G3_2[ieLoc][i][j] + r_Dp1* s_G3_2[ieLoc][i][j+1]  ;
+                                        FxiDeriv = r_D* s_F2_2[ieLoc][i][j] + r_Dp1* s_F2_2[ieLoc][i][j+1] ;
+                                        GxiDeriv = r_D* s_G3_2[ieLoc][i][j] + r_Dp1* s_G3_2[ieLoc][i][j+1]  ;
                                         BxiDeriv = r_D* r_b + r_Dp1* s_B[ieLoc][i][j+1]  ;
                                     }
 
@@ -197,8 +197,8 @@ kernel void VolumeKernelPartialDry(const int Nelem,
                                     {
                                         const dfloat r_D = s_DdownwindFD[j][j];
                                         const dfloat r_Dm1 = s_DdownwindFD[j][j-1];
-                                        FxiDeriv2_2 = r_Dm1* s_F2_2[ieLoc][i][j-1] + r_D* s_F2_2[ieLoc][i][j]  ;
-                                        GxiDeriv3_2 = r_Dm1* s_G3_2[ieLoc][i][j-1] + r_D* s_G3_2[ieLoc][i][j]  ;
+                                        FxiDeriv = r_Dm1* s_F2_2[ieLoc][i][j-1] + r_D* s_F2_2[ieLoc][i][j]  ;
+                                        GxiDeriv = r_Dm1* s_G3_2[ieLoc][i][j-1] + r_D* s_G3_2[ieLoc][i][j]  ;
 
                                         BxiDeriv = r_Dm1* s_B[ieLoc][i][j-1] + r_D* r_b  ;
                                     }
@@ -214,8 +214,8 @@ kernel void VolumeKernelPartialDry(const int Nelem,
                                     const dfloat r_D = s_DupwindFD[i][0];
 
 
-                                    FetaDeriv2_2 = r_D* s_F2_2[ieLoc][i][j] + r_Dp1* s_F2_2[ieLoc][i+1][j]  ;
-                                    GetaDeriv3_2 = r_D* s_G3_2[ieLoc][i][j] + r_Dp1* s_G3_2[ieLoc][i+1][j]  ;
+                                    FetaDeriv = r_D* s_F2_2[ieLoc][i][j] + r_Dp1* s_F2_2[ieLoc][i+1][j]  ;
+                                    GetaDeriv = r_D* s_G3_2[ieLoc][i][j] + r_Dp1* s_G3_2[ieLoc][i+1][j]  ;
 
                                     BetaDeriv = r_D* r_b + r_Dp1* s_B[ieLoc][i+1][j]  ;
 
@@ -228,8 +228,8 @@ kernel void VolumeKernelPartialDry(const int Nelem,
                                     const dfloat r_D = s_DdownwindFD[i][ngl-1];
                                     const dfloat r_Dm1 = s_DdownwindFD[i][ngl-2];
 
-                                    FetaDeriv2_2 = r_Dm1* s_F2_2[ieLoc][i-1][j] + r_D* s_F2_2[ieLoc][i][j]  ;
-                                    GetaDeriv3_2 = r_Dm1* s_G3_2[ieLoc][i-1][j] + r_D* s_G3_2[ieLoc][i][j]  ;
+                                    FetaDeriv = r_Dm1* s_F2_2[ieLoc][i-1][j] + r_D* s_F2_2[ieLoc][i][j]  ;
+                                    GetaDeriv = r_Dm1* s_G3_2[ieLoc][i-1][j] + r_D* s_G3_2[ieLoc][i][j]  ;
                                     BetaDeriv = r_Dm1* s_B[ieLoc][i-1][j] + r_D* r_b  ;
 
                                 }
@@ -243,8 +243,8 @@ kernel void VolumeKernelPartialDry(const int Nelem,
                                         const dfloat r_Dp1 = s_DcentralFD[i][i+1];
                                         const dfloat r_Dm1 = s_DcentralFD[i][i-1];
 
-                                        FetaDeriv2_2 = r_Dm1* s_F2_2[ieLoc][i-1][j] + r_Dp1* s_F2_2[ieLoc][i+1][j]  ;
-                                        GetaDeriv3_2 = r_Dm1* s_G3_2[ieLoc][i-1][j] + r_Dp1* s_G3_2[ieLoc][i+1][j]  ;
+                                        FetaDeriv = r_Dm1* s_F2_2[ieLoc][i-1][j] + r_Dp1* s_F2_2[ieLoc][i+1][j]  ;
+                                        GetaDeriv = r_Dm1* s_G3_2[ieLoc][i-1][j] + r_Dp1* s_G3_2[ieLoc][i+1][j]  ;
                                         BetaDeriv = r_Dm1* s_B[ieLoc][i-1][j] + r_Dp1* s_B[ieLoc][i+1][j]  ;
 
                                     }
@@ -253,8 +253,8 @@ kernel void VolumeKernelPartialDry(const int Nelem,
                                         const dfloat r_Dp1 = s_DupwindFD[i][i+1];
                                         const dfloat r_D = s_DupwindFD[i][i];
 
-                                        FetaDeriv2_2 = r_D* s_F2_2[ieLoc][i][j] + r_Dp1* s_F2_2[ieLoc][i+1][j]  ;
-                                        GetaDeriv3_2 = r_D* s_G3_2[ieLoc][i][j] + r_Dp1* s_G3_2[ieLoc][i+1][j]  ;
+                                        FetaDeriv = r_D* s_F2_2[ieLoc][i][j] + r_Dp1* s_F2_2[ieLoc][i+1][j]  ;
+                                        GetaDeriv = r_D* s_G3_2[ieLoc][i][j] + r_Dp1* s_G3_2[ieLoc][i+1][j]  ;
                                         BetaDeriv = r_D* r_b + r_Dp1* s_B[ieLoc][i+1][j]  ;
                                     }
 
@@ -266,8 +266,8 @@ kernel void VolumeKernelPartialDry(const int Nelem,
                                         const dfloat r_D = s_DdownwindFD[i][i];
                                         const dfloat r_Dm1 = s_DdownwindFD[i][i-1];
 
-                                        FetaDeriv2_2 = r_Dm1* s_F2_2[ieLoc][i-1][j] + r_D* s_F2_2[ieLoc][i][j]  ;
-                                        GetaDeriv3_2 = r_Dm1* s_G3_2[ieLoc][i-1][j] + r_D* s_G3_2[ieLoc][i][j]  ;
+                                        FetaDeriv = r_Dm1* s_F2_2[ieLoc][i-1][j] + r_D* s_F2_2[ieLoc][i][j]  ;
+                                        GetaDeriv = r_Dm1* s_G3_2[ieLoc][i-1][j] + r_D* s_G3_2[ieLoc][i][j]  ;
                                         BetaDeriv = r_Dm1* s_B[ieLoc][i-1][j] + r_D* r_b  ;
 
                                     }
@@ -279,24 +279,24 @@ kernel void VolumeKernelPartialDry(const int Nelem,
                             } // end of r_h> PosPresTOL
                             if (j==0)
                             {
-                                FxiDeriv2 += geomFace *  s_F2_BD[ieLoc][i][j];
-                                GxiDeriv3 += geomFace *  s_G3_BD[ieLoc][i][j];
+                                FxiDerivBD += geomFace *  s_F2_BD[ieLoc][i][j];
+                                GxiDerivBD += geomFace *  s_G3_BD[ieLoc][i][j];
                             }
                             if (j==ngl-1)
                             {
-                                FxiDeriv2 += -geomFace *  s_F2_BD[ieLoc][i][j];
-                                GxiDeriv3 += -geomFace *  s_G3_BD[ieLoc][i][j];
+                                FxiDerivBD += -geomFace *  s_F2_BD[ieLoc][i][j];
+                                GxiDerivBD += -geomFace *  s_G3_BD[ieLoc][i][j];
 
                             }
                             if (i==0)
                             {
-                                FetaDeriv2 += geomFace *  s_F2_BD[ieLoc][i][j];
-                                GetaDeriv3 += geomFace *  s_G3_BD[ieLoc][i][j];
+                                FetaDerivBD += geomFace *  s_F2_BD[ieLoc][i][j];
+                                GetaDerivBD += geomFace *  s_G3_BD[ieLoc][i][j];
                             }
                             if (i==ngl-1)
                             {
-                                FetaDeriv2 += -geomFace *  s_F2_BD[ieLoc][i][j];
-                                GetaDeriv3 += -geomFace *  s_G3_BD[ieLoc][i][j];
+                                FetaDerivBD += -geomFace *  s_F2_BD[ieLoc][i][j];
+                                GetaDerivBD += -geomFace *  s_G3_BD[ieLoc][i][j];
                             }
 
                             const int xid=eleID*ngl2   +i*ngl+j;
@@ -306,11 +306,11 @@ kernel void VolumeKernelPartialDry(const int Nelem,
                             const dfloat r_Xeta=X_eta[xid];
                             const dfloat r_Xxi=X_xi[xid];
 
-                            const dfloat FxDeriv2= r_Yeta * FxiDeriv2 - r_Yxi* FetaDeriv2_2 ;
-                            const dfloat FxDeriv2_2= r_h * ( r_Yeta * FxiDeriv2_2 - r_Yxi* FetaDeriv2_2 );
+                            const dfloat FxDeriv2= r_Yeta * FxiDerivBD - r_Yxi* FetaDeriv ;
+                            const dfloat FxDeriv2_2= r_h * ( r_Yeta * FxiDeriv - r_Yxi* FetaDeriv );
 
-                            const dfloat GyDeriv3=  -r_Xeta * GxiDeriv3 + r_Xxi* GetaDeriv3 ;
-                            const dfloat GyDeriv3_2= r_h* ( -r_Xeta * GxiDeriv3_2 + r_Xxi* GetaDeriv3_2 );
+                            const dfloat GyDeriv3=  -r_Xeta * GxiDerivBD + r_Xxi* GetaDerivBD ;
+                            const dfloat GyDeriv3_2= r_h* ( -r_Xeta * GxiDeriv + r_Xxi* GetaDeriv );
 
                             const dfloat BxDeriv = r_Yeta*BxiDeriv - r_Yxi * BetaDeriv;
                             const dfloat ByDeriv = -r_Xeta*BxiDeriv + r_Xxi * BetaDeriv;
