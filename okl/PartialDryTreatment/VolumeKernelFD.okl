@@ -1,4 +1,4 @@
-kernel void VolumeKernelFD(const int Nelem,
+kernel void VolumeKernelPartialDry(const int Nelem,
                            const dfloat * restrict  Jac,
                            const dfloat * restrict  Y_xi,
                            const dfloat * restrict  Y_eta,
