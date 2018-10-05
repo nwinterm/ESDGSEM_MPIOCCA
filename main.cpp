@@ -611,49 +611,49 @@ int main(int argc, char *argv[])
         GLw[i] = DGBasis.w_GL[i];
     }
 
-//    cout <<"\n D central: \n";
-//    for(int j=0; j<ngl; ++j)
-//    {
-//        for(int i=0; i<ngl; ++i)
-//        {
-//            int id =   j*ngl+i;
-//            cout <<DCentralFD[id]<<"  ";
-//        }
-//       cout <<"\n";
-//    }
+    cout <<"\n D central: \n";
+    for(int j=0; j<ngl; ++j)
+    {
+        for(int i=0; i<ngl; ++i)
+        {
+            int id =   j*ngl+i;
+            cout <<DCentralFD[id]<<"  ";
+        }
+       cout <<"\n";
+    }
 
-//    cout <<"\n D forward: \n";
-//    for(int j=0; j<ngl; ++j)
-//    {
-//        for(int i=0; i<ngl; ++i)
-//        {
-//            int id =   j*ngl+i;
-//            cout <<DforwardFD[id]<<"  ";
-//        }
-//       cout <<"\n";
-//    }
+    cout <<"\n D forward: \n";
+    for(int j=0; j<ngl; ++j)
+    {
+        for(int i=0; i<ngl; ++i)
+        {
+            int id =   j*ngl+i;
+            cout <<DforwardFD[id]<<"  ";
+        }
+       cout <<"\n";
+    }
 
-//    cout <<"\n D backward: \n";
-//    for(int j=0; j<ngl; ++j)
-//    {
-//        for(int i=0; i<ngl; ++i)
-//        {
-//            int id =   j*ngl+i;
-//            cout <<DbackwardFD[id]<<"  ";
-//        }
-//        cout <<"\n";
-//    }
+    cout <<"\n D backward: \n";
+    for(int j=0; j<ngl; ++j)
+    {
+        for(int i=0; i<ngl; ++i)
+        {
+            int id =   j*ngl+i;
+            cout <<DbackwardFD[id]<<"  ";
+        }
+        cout <<"\n";
+    }
 
-//    cout <<"\n D matrix: \n";
-//    for(int j=0; j<ngl; ++j)
-//    {
-//        for(int i=0; i<ngl; ++i)
-//        {
-//            int id =   j*ngl+i;
-//            cout <<Dmat0[id]<<"  ";
-//        }
-//        cout <<"\n";
-//    }
+    cout <<"\n D matrix: \n";
+    for(int j=0; j<ngl; ++j)
+    {
+        for(int i=0; i<ngl; ++i)
+        {
+            int id =   j*ngl+i;
+            cout <<Dmat0[id]<<"  ";
+        }
+        cout <<"\n";
+    }
 
 //MetricIdentities
 //    dfloat * MetricIdentities1 = (dfloat*) calloc(Nelem*ngl2,sizeof(dfloat));

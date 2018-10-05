@@ -82,28 +82,10 @@
 		<Unit filename="okl/DG/SurfaceKernel_V0.okl" />
 		<Unit filename="okl/DG/SurfaceKernel_V1.okl" />
 		<Unit filename="okl/DG/VolumeKernel.okl" />
-		<Unit filename="okl/DG/VolumeKernelFluxDiffV0.okl" />
-		<Unit filename="okl/DG/VolumeKernelFluxDiffV1.okl" />
-		<Unit filename="okl/DG/VolumeKernelFluxDiffV2.okl" />
-		<Unit filename="okl/DG/VolumeKernelFluxDiffV3.okl" />
-		<Unit filename="okl/DG/VolumeKernelFluxDiffV4.okl" />
-		<Unit filename="okl/DG/VolumeKernelFluxDiffV5.okl" />
-		<Unit filename="okl/DG/VolumeKernelFluxDiffV6.okl" />
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV99.okl">
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="okl/DG/VolumeKernelFluxDiffVM1.okl">
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="okl/DG/VolumeKernelV0.okl" />
-		<Unit filename="okl/DG/VolumeKernelV1.okl" />
-		<Unit filename="okl/DG/VolumeKernelV2.okl" />
-		<Unit filename="okl/DG/VolumeKernelV3.okl" />
-		<Unit filename="okl/DG/VolumeKernelV4.okl" />
-		<Unit filename="okl/DG/VolumeKernelV5.okl" />
-		<Unit filename="okl/DG/VolumeKernelV7.okl">
-			<Option target="Release" />
-		</Unit>
+		<Unit filename="okl/DG/VolumeKernelV99.okl" />
 		<Unit filename="okl/DiscontinuousBathimetry/calcDiscBottomSurf.okl" />
 		<Unit filename="okl/GatherEdgeData/3MoundInflow.okl" />
 		<Unit filename="okl/GatherEdgeData/CollectEdgeData_Bottom.okl" />
