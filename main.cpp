@@ -705,7 +705,7 @@ int main(int argc, char *argv[])
 
     }
 
-    if (Testcase==90)
+    if ((Testcase==90)||(Testcase==91))
     {
         if(MPI.rank==0)
         {

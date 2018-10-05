@@ -732,13 +732,13 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
     }
     case 87:      // Wet/Dry Wellbalanced Test
     {
-	dfloat zero = 0.0;
+        dfloat zero = 0.0;
         h=max(zero,h_0-b);
-              v= 0.0;
-              w= 0.0;
-              break;
+        v= 0.0;
+        w= 0.0;
+        break;
     }
-      case 88:      // Conv Test for Ocean Mesh
+    case 88:      // Conv Test for Ocean Mesh
     {
         //h=8.0+cos(2.0*PI*x)*sin(2.0*PI*y)*cos(t)-b;
         h= 20.0 + cos(0.001*x)*sin(0.001*y)*cos(t) - b;
@@ -747,17 +747,24 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
         break;
     }
 
-    case 90:      // okada test
+    case 90:      /// Tsunami with okada  all wet
     {
-	//dfloat zero = 0.0;
+        //dfloat zero = 0.0;
         //h=max(zero,h_0-b);
-	dfloat two = 2.0;
+        dfloat two = 2.0;
         h=h_0+2.0-b;
         v= 0.0;
         w= 0.0;
         break;
     }
-
+    case 91:      /// Tsunami with okada  wet//dry
+    {
+        dfloat zero = 0.0;
+        h=max(zero,h_0-b);
+        v= 0.0;
+        w= 0.0;
+        break;
+    }
 
     } //end switch
 
