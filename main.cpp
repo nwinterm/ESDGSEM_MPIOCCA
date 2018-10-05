@@ -617,7 +617,7 @@ int main(int argc, char *argv[])
         for(int i=0; i<ngl; ++i)
         {
             int id =   j*ngl+i;
-            cout <<DCentralFD[id]<<"  ";
+            cout <<DGBasis.DCentralFD[id]<<"  ";
         }
        cout <<"\n";
     }
@@ -628,7 +628,7 @@ int main(int argc, char *argv[])
         for(int i=0; i<ngl; ++i)
         {
             int id =   j*ngl+i;
-            cout <<DforwardFD[id]<<"  ";
+            cout <<DGBasis.DforwardFD[id]<<"  ";
         }
        cout <<"\n";
     }
@@ -639,21 +639,12 @@ int main(int argc, char *argv[])
         for(int i=0; i<ngl; ++i)
         {
             int id =   j*ngl+i;
-            cout <<DbackwardFD[id]<<"  ";
+            cout <<DGBasis.DbackwardFD[id]<<"  ";
         }
         cout <<"\n";
     }
 
-    cout <<"\n D matrix: \n";
-    for(int j=0; j<ngl; ++j)
-    {
-        for(int i=0; i<ngl; ++i)
-        {
-            int id =   j*ngl+i;
-            cout <<Dmat0[id]<<"  ";
-        }
-        cout <<"\n";
-    }
+
 
 //MetricIdentities
 //    dfloat * MetricIdentities1 = (dfloat*) calloc(Nelem*ngl2,sizeof(dfloat));
