@@ -324,8 +324,8 @@ kernel void VolumeKernelPartialDry(const int Nelem,
 
                             const dfloat r_Jac=Jac[xid];
 
-                            Qt[id+ngl2]        +=  - r_Jac *FluxDeriv2 - g_const*r_Jac *r_h*BxDeriv ;
-                            Qt[id+ngl2+ngl2]   +=  - r_Jac *FluxDeriv3 - g_const*r_Jac *r_h*ByDeriv;
+                            Qt[id+ngl2]        =  - r_Jac *FluxDeriv2 - g_const*r_Jac *r_h*BxDeriv ;
+                            Qt[id+ngl2+ngl2]   =  - r_Jac *FluxDeriv3 - g_const*r_Jac *r_h*ByDeriv;
 
 
 
