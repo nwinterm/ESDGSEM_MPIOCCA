@@ -15,7 +15,7 @@ kernel void FindDryElements(const int Nelem,
 
 
             dfloat r_minH =one;
-            int isDry=1;
+            int isDry=0;
             for (int k=0; k<ngl; ++k)
             {
                 occaUnroll(ngl)
