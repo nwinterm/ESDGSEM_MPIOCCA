@@ -377,12 +377,13 @@ int main(int argc, char *argv[])
 
 		   if (ReadInBottom)
                     {
-                        //dfloat b_min = -7.31;
-			dfloat b_min = -8.0;
+                        dfloat b_min = -7.31;
+			//dfloat b_min = -9.0;
                         h_0 = -b_min;
                         dfloat zero = 0.0;
-			b_global[id]    =h_0 + min(zero,DGMesh.b_global[id]);
-                        //b_global[id]    =   h_0 + DGMesh.b_global[id];
+			//b_global[id]    =h_0 + min(zero,DGMesh.b_global[id]);
+
+                        b_global[id]    =   h_0 + DGMesh.b_global[id];
                     }
 
 
@@ -704,16 +705,31 @@ int main(int argc, char *argv[])
 
     SW_Problem.InitQ(1,DGMeshPartition,Nelem,ngl,ngl2,x_phy,y_phy,q,0.0,b, g_const,h_0);
 
+    if(MPI.rank==0)
+    {
+        cout <<"... finished.\n";
+
+    }
 
     if (Testcase==90){
+    if(MPI.rank==0)
+    {
+
+        cout <<"Now initializing okada displacements...      ";
+    }
         okada okadamap(Nelem);
 
         okadamap.okadamapFull(ngl, x_phy,y_phy, q);
-    }
 
     if(MPI.rank==0)
     {
         cout <<"... finished.\n";
+
+    }
+    }
+
+    if(MPI.rank==0)
+    {
         cout <<"Allocating Memory on the device...      ";
     }
 

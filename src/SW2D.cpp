@@ -723,14 +723,14 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
         w= 0.0;
         break;
     }
-    case 86:      // WB Test for Ocean Mesh
+    case 86:      // Completely wet WB Test for Ocean Mesh
     {
-        h=20.0- b;
+        h=2.0+h_0 - b;
         v= 0.0;
         w= 0.0;
         break;
     }
-    case 87:      // WB Test for Ocean Mesh
+    case 87:      // Wet/Dry Wellbalanced Test
     {
 	dfloat zero = 0.0;
         h=max(zero,h_0-b);
@@ -749,7 +749,10 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
 
     case 90:      // okada test
     {
-        h=20.0- b;
+	//dfloat zero = 0.0;
+        //h=max(zero,h_0-b);
+	dfloat two = 2.0;
+        h=h_0+2.0-b;
         v= 0.0;
         w= 0.0;
         break;

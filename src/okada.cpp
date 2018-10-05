@@ -25,11 +25,11 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
     const dfloat zero	= 0.0;
     const dfloat osixty= 1.0/60.0; //0.016666666667;
     const dfloat rad	= M_PI/180. ;//0.01745329252;
-    const dfloat earth_radius= 6.378e6;
+    const dfloat earth_radius= 6.371e6; 	// should actually be = 6.378e6;
 
 
 
-    for(int fault = 1; fault <=1 ; ++fault)
+    for(int fault = 1; fault <=5 ; ++fault)
     {
 
         // WHAT DO THESE DO?!
@@ -70,20 +70,21 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
 
         /// get epicenter coordinates in meters
         const dfloat x0m = x0*earth_radius*M_PI/180.0;
-        const dfloat y0m = earth_radius*asinh(tan(y0/(180.0*M_PI)));
+        const dfloat y0m = earth_radius*asinh(tan(y0/180.0*M_PI));
 
         cout << "Epicenter (KM) of okada earthquake: " << x0m << ", " << y0m << "\n";
-        /// THIS IS ACTUALlY TRANSFORMATION FROM METER TO DEGREE
-        ///const dfloat x0m = (x0/earth_radius)*(180./M_PI);
-        ///const dfloat y0m = (atan(sinh(y0/earth_radius))) * (180./M_PI);
-        ///
+
+
         const dfloat xlower = x0m-l;
         const dfloat xupper = x0m+l;
         const dfloat ylower = y0m-w;
         const dfloat yupper = y0m+w;
 
-        const dfloat xo = xlower;
-        const dfloat yo = yupper;
+	// get lower values in degrees
+        const dfloat xo = (xlower/earth_radius)*(180./M_PI);
+        const dfloat yo = (atan(sinh(ylower/earth_radius))) * (180./M_PI);
+ 
+                        
 
 
         const dfloat ang_l = rad*dl;
@@ -98,13 +99,17 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
         const dfloat del_x = w*cos(ang_l)*cos(ang_t);
         const dfloat del_y = w*cos(ang_l)*sin(ang_t);
 
+
+        dfloat xl = earth_radius*cos(rad*yo)*(x0-xo)*rad + del_x;   		///original source from geoclaw, okada.py
+        const dfloat yl = earth_radius*(y0-yo)*rad - del_y; 			///from gandham, dont know why
         const dfloat ds = d*cos(ang_r);
         const dfloat dd = d*sin(ang_r);
         const dfloat sn = sin(ang_l);
         const dfloat cs = cos(ang_l);
 
-        //const dfloat xl = rr*cos(rad*yo)*(x0-xo)*rad + del_x;   ///original source from geoclaw, okada.py
-        const dfloat yl = earth_radius*(y0-yo)*rad - del_y; ///from gandham, dont know why
+
+
+
 
         for(int ie=0; ie<NumElements; ++ie) /// loop through all elements
         {
@@ -120,6 +125,10 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
                     dfloat xloc = 1000*x[xid];
                     dfloat yloc = 1000*y[xid];
 
+
+
+
+
                     // check if this is in range of okada model
                     if(xloc >= xlower && xloc <= xupper &&
                             yloc >= ylower && yloc <= yupper )
@@ -128,7 +137,12 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
                         xloc = (xloc/earth_radius)*(180./M_PI);
                         yloc = (atan(sinh(yloc/earth_radius))) * (180./M_PI);
 
-                        const dfloat xl = earth_radius*cos(rad*yloc)*(x0-xo)*rad + del_x;
+
+    		///#!-----added by Xiaoming Wang, Nov 11 2006----
+    			xl = earth_radius*cos(rad*yloc)*(x0-xo)*rad + del_x ; ///# TAL - Fixed sign, 9/07
+    		///#!---------------------------------------------
+
+                       // const dfloat xl = earth_radius*cos(rad*yloc)*(x0-xo)*rad + del_x;
                         const dfloat yy = earth_radius*(yloc-yo)*rad;
                         const dfloat xx = earth_radius*cos(rad*yloc)*(xloc-xo)*rad;
 
@@ -155,7 +169,7 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
                         const dfloat ud = (g1-g2-g3+g4)*dd;
 
                         // This seems to update the current water height by strike/dip slips ?? displacements?!
-                        q[qid] += (us+ud);
+                        q[qid] += (us+ud)/1000.0;
                     }
                 }
             }
