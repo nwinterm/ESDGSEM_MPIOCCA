@@ -106,7 +106,8 @@ void deviceclass:: initDeviceVariables(const int N,
                                        const int PositivityPreserving,
                                        const int ArtificialViscosity,
                                        const int DiscBottom,
-                                       const dfloat h_0 )
+                                       const dfloat h_0 ,
+                                       const int PartialDry)
 {
     const int Neq=3;
     const int GradNeq = Neq-1;
@@ -117,6 +118,7 @@ void deviceclass:: initDeviceVariables(const int N,
     {
         nglPad=1;
     }
+    PartialDryTreatment=PartialDry;
     dfloat TOL_PosPres = PosPresTOL;//pow(10.0,-4);
 //    dfloat ZeroTOL = pow(10.0,-12);	// double precision
     dfloat ZeroTOL = pow(10.0,-5);
