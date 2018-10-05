@@ -15,7 +15,7 @@ kernel void FindDryElements(const int Nelem,
 
 
             dfloat r_minH =one;
-
+            int isDry=0;
             for (int k=0; k<ngl; ++k)
             {
                 occaUnroll(ngl)
@@ -23,16 +23,16 @@ kernel void FindDryElements(const int Nelem,
                 {
                     const int Fid = ie*ngl2*Neq   +k*ngl+l;
                     const dfloat r_h = Q[Fid];
-                    r_minH = min(r_h,minH);
+                    r_minH = fmin(r_h,r_minH);
 
                 }
             }
 
             if (r_minH  < PosPresTOL)
             {
-                isPartlyDry[ie] = 1;
+                isDry = 1;
             }
-
+            isPartlyDry[ie] = isDry;
         }
 
 
