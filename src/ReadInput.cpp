@@ -111,7 +111,8 @@ void ReadInputFile(int *N,
                    int *KernelVersion,
                    int * KernelVersionSTD,
                    int * DiscBottom,
-                   int * ReadInBottom)
+                   int * ReadInBottom,
+                   int * PartialDryTreatment)
 {
 
 //,dfloat T, dfloat g_const
@@ -212,6 +213,8 @@ void ReadInputFile(int *N,
     *DiscBottom= getIntValue(current_string);
     std::getline(InputStream, current_string);
     *ReadInBottom= getIntValue(current_string);
+    std::getline(InputStream, current_string);
+    *PartialDryTreatment= getIntValue(current_string);
 
 }
 

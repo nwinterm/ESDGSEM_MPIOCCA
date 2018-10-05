@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
     int KernelVersion=-1;
     int KernelVersionSTD=-1;
     int ReadInBottom;
+    int PartialDryTreatment;
 
 
     int N=0;
@@ -162,7 +163,8 @@ int main(int argc, char *argv[])
                       &KernelVersion,
                       &KernelVersionSTD,
                       &DiscBottom,
-                      &ReadInBottom);
+                      &ReadInBottom,
+                      &PartialDryTreatment);
     }
 
     ShareInputData(MPI,
@@ -193,7 +195,8 @@ int main(int argc, char *argv[])
                    &NavgPad,
                    &KernelVersion,
                    &KernelVersionSTD,
-                   &DiscBottom);
+                   &DiscBottom,
+                   &PartialDryTreatment);
 
     if (Testcase == 31)
     {
@@ -375,13 +378,13 @@ int main(int argc, char *argv[])
                     x_phy_global[id] = DGMesh.x_global[id];
                     y_phy_global[id] = DGMesh.y_global[id];
 
-		   if (ReadInBottom)
+                    if (ReadInBottom)
                     {
                         dfloat b_min = -7.31;
-			//dfloat b_min = -9.0;
+                        //dfloat b_min = -9.0;
                         h_0 = -b_min;
                         dfloat zero = 0.0;
-			//b_global[id]    =h_0 + min(zero,DGMesh.b_global[id]);
+                        //b_global[id]    =h_0 + min(zero,DGMesh.b_global[id]);
 
                         b_global[id]    =   h_0 + DGMesh.b_global[id];
                     }
@@ -581,7 +584,7 @@ int main(int argc, char *argv[])
     {
         cout <<" ... and distributed \n";
     }
-        cout << "RANK: " << MPI.rank << " local min ele Size: "<< minEleSize << " global min Ele Size: " << globalMinEleSize<< "\n";
+    cout << "RANK: " << MPI.rank << " local min ele Size: "<< minEleSize << " global min Ele Size: " << globalMinEleSize<< "\n";
 
 
 
@@ -711,21 +714,22 @@ int main(int argc, char *argv[])
 
     }
 
-    if (Testcase==90){
-    if(MPI.rank==0)
+    if (Testcase==90)
     {
+        if(MPI.rank==0)
+        {
 
-        cout <<"Now initializing okada displacements...      ";
-    }
+            cout <<"Now initializing okada displacements...      ";
+        }
         okada okadamap(Nelem);
 
         okadamap.okadamapFull(ngl, x_phy,y_phy, q);
 
-    if(MPI.rank==0)
-    {
-        cout <<"... finished.\n";
+        if(MPI.rank==0)
+        {
+            cout <<"... finished.\n";
 
-    }
+        }
     }
 
     if(MPI.rank==0)
@@ -745,13 +749,13 @@ int main(int argc, char *argv[])
 
 
 
-    dfloat geomface = 1.0/DGBasis.w_GL[0];
+    const dfloat geomface = 1.0/DGBasis.w_GL[0];
 
 
 
     occa_device.initDeviceVariables(N, Nelem,Nfaces,MPI.rank, rkSSP, NEpad,NEsurfpad, Nedgepad,NavgPad, ES, Testcase, epsilon_0, sigma_max, sigma_min, PosPresTOL, geomface, g_const,
                                     PositivityPreserving,
-                                    ArtificialViscosity, DiscBottom,h_0 );
+                                    ArtificialViscosity, DiscBottom,h_0 ,PartialDryTreatment);
     //copy all permanent data onto the device
     if(MPI.rank==0)
     {
@@ -762,7 +766,9 @@ int main(int argc, char *argv[])
                                       normalsX,   normalsY,  Scal,  y_xi, y_eta, x_xi, x_eta, b,  Bx, By,
                                       Dmat, DGBasis.Dstrong, Dhat,  J,  x_phy,  y_phy,  q,  ElementSizes,  gRK,  Qt,
                                       VdmInv, ElemEdgeMasterSlave, ElemEdgeOrientation, ElemToEdge, EdgeData,EdgeReversed );
-
+    if(PartialDryTreatment){
+       occa_device.copyPartialDryData(DGBasis.DCentralFD,  DGBasis.DforwardFD,  DGBasis.DbackwardFD   );
+    }
 
     if(MPI.rank==0)
     {

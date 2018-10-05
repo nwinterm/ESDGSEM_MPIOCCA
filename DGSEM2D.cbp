@@ -77,36 +77,18 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="okl/DG/FindLambdaMax.okl" />
-		<Unit filename="okl/DG/FluxesOpt.okl">
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="okl/DG/MemCopyComparison.okl" />
 		<Unit filename="okl/DG/SurfaceKernel.okl" />
 		<Unit filename="okl/DG/SurfaceKernel_V0.okl" />
 		<Unit filename="okl/DG/SurfaceKernel_V1.okl" />
 		<Unit filename="okl/DG/VolumeKernel.okl" />
-		<Unit filename="okl/DG/VolumeKernelFluxDiffOpt.okl">
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="okl/DG/VolumeKernelFluxDiffOptPt1.okl">
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="okl/DG/VolumeKernelFluxDiffOptPt2.okl">
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV0.okl" />
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV1.okl" />
-		<Unit filename="okl/DG/VolumeKernelFluxDiffV10.okl">
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV2.okl" />
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV3.okl" />
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV4.okl" />
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV5.okl" />
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV6.okl" />
-		<Unit filename="okl/DG/VolumeKernelFluxDiffV7.okl" />
-		<Unit filename="okl/DG/VolumeKernelFluxDiffV8.okl" />
-		<Unit filename="okl/DG/VolumeKernelFluxDiffV9.okl" />
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV99.okl">
 			<Option target="Release" />
 		</Unit>
@@ -119,9 +101,6 @@
 		<Unit filename="okl/DG/VolumeKernelV3.okl" />
 		<Unit filename="okl/DG/VolumeKernelV4.okl" />
 		<Unit filename="okl/DG/VolumeKernelV5.okl" />
-		<Unit filename="okl/DG/VolumeKernelV6.okl">
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="okl/DG/VolumeKernelV7.okl">
 			<Option target="Release" />
 		</Unit>
@@ -144,24 +123,15 @@
 		<Unit filename="okl/ManufacturedSolutions/S_ConvTest4.okl.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="okl/NEW_OPERATOR/VolumeKernelFD.okl">
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="okl/NEW_OPERATOR/VolumeKernelFD_Central.okl">
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="okl/NEW_OPERATOR/VolumeKernelFD_Forward.okl">
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="okl/NEW_OPERATOR/VolumeKernelFD_KindaWorking.okl">
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="okl/NEW_OPERATOR/VolumeKernelFD_NotWBforDrylake.okl">
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="okl/NEW_OPERATOR/VolumeKernelFD_buPreFlip.okl">
-			<Option target="Release" />
-		</Unit>
+		<Unit filename="okl/PartialDryTreatment/FindDryElements.okl" />
+		<Unit filename="okl/PartialDryTreatment/VolumeKernelFD.okl" />
+		<Unit filename="okl/PartialDryTreatment/VolumeKernelFD_Central.okl" />
+		<Unit filename="okl/PartialDryTreatment/VolumeKernelFD_Forward.okl" />
+		<Unit filename="okl/PartialDryTreatment/VolumeKernelFD_NotWBforDrylake.okl" />
+		<Unit filename="okl/PartialDryTreatment/VolumeKernelFD_WorkingSBPN2.okl" />
+		<Unit filename="okl/PartialDryTreatment/VolumeKernelFD_WorkingWrongCentral.okl" />
+		<Unit filename="okl/PartialDryTreatment/VolumeKernelFD_preChanges.okl" />
+		<Unit filename="okl/PartialDryTreatment/VolumeKernelFD_worksonlyforN1.okl" />
 		<Unit filename="okl/Positivity/PosPres.okl" />
 		<Unit filename="okl/Positivity/PosPres_NEW.okl">
 			<Option target="Release" />

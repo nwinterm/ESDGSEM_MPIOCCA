@@ -33,8 +33,9 @@ public:
                              const dfloat g_const,
                              const int PositivityPreserving,
                              const int ArtificialViscosity,
-			     const int DiscBottom,
-				const dfloat h_0);
+                             const int DiscBottom,
+                             const dfloat h_0,
+                             const int PartialDry);
     void buildDeviceKernels(const int KernelVersion,
                             const int KernelVersionSTD,
                             const int Testcase,
@@ -43,37 +44,39 @@ public:
                             const int rkSSP,
                             const int ArtificialViscosity,
                             const int PositivityPreserving,
-			    const int DiscBottom);
-
-    void copyDeviceVariables( const int PositivityPreserving,
-                              const int Nelem,
-                              const dfloat* GLw,
-                              const dfloat * normalsX,
-                              const dfloat * normalsY,
-                              const dfloat* Scal,
-                              const dfloat* y_xi,
-                              const dfloat*y_eta,
-                              const dfloat*x_xi,
-                              const dfloat*x_eta,
-                              const dfloat*b,
-                              const dfloat* Bx,
-                              const dfloat*By,
-                              const dfloat* Dmat,
-                              const dfloat*Dstrong,
-                              const dfloat*Dhat,
-                              const dfloat* J,
-                              const dfloat* x_phy,
-                              const dfloat* y_phy,
-                              const dfloat* q,
-                              const dfloat* ElementSizes,
-                              const dfloat* gRK,
-                              const dfloat* Qt,
-                              const dfloat* VdmInv,
-                              const int*ElemEdgeMasterSlave,
-                              const int*ElemEdgeOrientation,
-                              const int*ElemToEdge,
-                              const int*EdgeData,
-			      const int*EdgeReversed);
+                            const int DiscBottom);
+    void copyPartialDryData(const dfloat* DCentralFD,
+                            const dfloat* DforwardFD,
+                            const dfloat* DbackwardFD);
+    void copyDeviceVariables(const int PositivityPreserving,
+                             const int Nelem,
+                             const dfloat* GLw,
+                             const dfloat * normalsX,
+                             const dfloat * normalsY,
+                             const dfloat* Scal,
+                             const dfloat* y_xi,
+                             const dfloat*y_eta,
+                             const dfloat*x_xi,
+                             const dfloat*x_eta,
+                             const dfloat*b,
+                             const dfloat* Bx,
+                             const dfloat*By,
+                             const dfloat* Dmat,
+                             const dfloat*Dstrong,
+                             const dfloat*Dhat,
+                             const dfloat* J,
+                             const dfloat* x_phy,
+                             const dfloat* y_phy,
+                             const dfloat* q,
+                             const dfloat* ElementSizes,
+                             const dfloat* gRK,
+                             const dfloat* Qt,
+                             const dfloat* VdmInv,
+                             const int*ElemEdgeMasterSlave,
+                             const int*ElemEdgeOrientation,
+                             const int*ElemToEdge,
+                             const int*EdgeData,
+                             const int*EdgeReversed);
     void freeOccaVars(const int rkSSP,
                       const int PositivityPreserving,
                       const int ArtificialViscosity );
@@ -103,7 +106,7 @@ public:
                      const int PlotVar,
                      const int EntropyPlot,
                      const int PositivityPreserving,
-		     const int DiscBottom);
+                     const int DiscBottom);
     virtual ~deviceclass();
 
     occa::device device;
@@ -126,7 +129,7 @@ public:
     occa::kernel calcNumFluxesViscose;
     occa::kernel ShockCapturing;
     occa::kernel calcDiscBottomSurf;
-    occa::kernel SurfaceKernelDiscBottom;       
+    occa::kernel SurfaceKernelDiscBottom;
 
 
     occa::kernel preservePosivitity;
@@ -136,8 +139,8 @@ public:
     occa::kernel scaleGradient;
     occa::kernel SurfaceKernelVisc;
 
-
-    occa::kernel VolumeKernelFD;
+    occa::kernel FindDryElements;
+    occa::kernel VolumeKernelPartialDry;
 
     occa::memory o_Qtmp; // for SSP RK
     occa::memory o_D,o_Dstrong,o_Dhat,o_Qt,o_gRK,o_q;//,o_Neq,o_ngl,o_Jac;
@@ -168,6 +171,11 @@ public:
 
     occa::memory o_ViscForPlot;
 
+    occa::memory o_DcentralFD, o_DforwardFD, o_DbackwardFD;
+
+    occa::memory o_isPartlyDry;
+
+
 
     dfloat * EntropyOverTime;
     dfloat * MassOverTime;
@@ -188,6 +196,7 @@ private:
     dfloat * y_phy_global;
     dfloat * J_global;
     dfloat * ViscPara_Global;
+    int PartialDryTreatment;
 
 
 

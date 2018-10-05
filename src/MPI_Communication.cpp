@@ -26,10 +26,11 @@ void ShareInputData(MPI_setup MPI,
                     int *NEpad,
                     int *NEsurfpad,
                     int *Nedgepad,
-                   int *NAvgPad,
+                    int *NAvgPad,
                     int* KernelVersion,
                     int *KernelVersionSTD,
-			int * HalfDryOperator)
+                    int *DiscBottom,
+                    int * PartialDryTreatment)
 {
 
 
@@ -61,7 +62,8 @@ void ShareInputData(MPI_setup MPI,
     MPI_Bcast (&*NAvgPad,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast (&*KernelVersion,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast (&*KernelVersionSTD,1,MPI_INT,0,MPI_COMM_WORLD);
-    MPI_Bcast (&*HalfDryOperator,1,MPI_DFLOAT,0,MPI_COMM_WORLD);
+    MPI_Bcast (&*DiscBottom,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast (&*PartialDryTreatment,1,MPI_INT,0,MPI_COMM_WORLD);
 
 //int *PlotVar,int *NumPlots,int *NumTimeChecks,int *Testcase, bool *ES,int *NumFlux, bool *FluxDifferencing, bool *Cartesian,int *rkorder, bool *rkSSP
 }
@@ -179,12 +181,12 @@ void CollectViscoseEdgeDataMPI(MPI_setup MPI, const MeshPartitioning MeshSplit, 
                 int tagRecv = MeshSplit.CommTags[cpuR*MeshSplit.NumProcessors + MPI.rank];
 
 
-                MPI_Isend(&qGradXL[id],EdgesToSend*ngl*gradNeq ,MPI_DFLOAT,cpuR,  tagSend,MPI_COMM_WORLD,&MPI.Send_qX_reqs[cpuR]);
-                MPI_Isend(&qGradYL[id],EdgesToSend*ngl*gradNeq ,MPI_DFLOAT,cpuR,MeshSplit.NumProcessors*MeshSplit.NumProcessors  +tagSend,MPI_COMM_WORLD,&MPI.Send_qY_reqs[cpuR]);
+                MPI_Isend(&qGradXL[id],EdgesToSend*ngl*gradNeq,MPI_DFLOAT,cpuR,  tagSend,MPI_COMM_WORLD,&MPI.Send_qX_reqs[cpuR]);
+                MPI_Isend(&qGradYL[id],EdgesToSend*ngl*gradNeq,MPI_DFLOAT,cpuR,MeshSplit.NumProcessors*MeshSplit.NumProcessors  +tagSend,MPI_COMM_WORLD,&MPI.Send_qY_reqs[cpuR]);
                 MPI_Isend(&ViscParaL[startIndex],EdgesToSend,MPI_DFLOAT,cpuR,2*MeshSplit.NumProcessors*MeshSplit.NumProcessors  +tagSend,MPI_COMM_WORLD,&MPI.Send_ViscPar_reqs[cpuR]);
 
-                MPI_Irecv(&qGradXR[id],EdgesToSend*ngl*gradNeq ,MPI_DFLOAT,cpuR,tagRecv,MPI_COMM_WORLD,&MPI.Recv_qX_reqs[cpuR]);
-                MPI_Irecv(&qGradYR[id],EdgesToSend*ngl*gradNeq ,MPI_DFLOAT,cpuR,MeshSplit.NumProcessors*MeshSplit.NumProcessors+tagRecv,MPI_COMM_WORLD,&MPI.Recv_qY_reqs[cpuR]);
+                MPI_Irecv(&qGradXR[id],EdgesToSend*ngl*gradNeq,MPI_DFLOAT,cpuR,tagRecv,MPI_COMM_WORLD,&MPI.Recv_qX_reqs[cpuR]);
+                MPI_Irecv(&qGradYR[id],EdgesToSend*ngl*gradNeq,MPI_DFLOAT,cpuR,MeshSplit.NumProcessors*MeshSplit.NumProcessors+tagRecv,MPI_COMM_WORLD,&MPI.Recv_qY_reqs[cpuR]);
                 MPI_Irecv(&ViscParaR[startIndex],EdgesToSend,MPI_DFLOAT,cpuR,2*MeshSplit.NumProcessors*MeshSplit.NumProcessors  +tagRecv,MPI_COMM_WORLD,&MPI.Recv_ViscPar_reqs[cpuR]);
 
 

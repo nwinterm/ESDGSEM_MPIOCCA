@@ -123,11 +123,13 @@ basis::basis(const int Ninput, const int FluxDifferencing)
 
 
 
-//    DCentralFD = (dfloat*) calloc(ngl2,sizeof(dfloat));
-//    D_SBP = (dfloat*) calloc(ngl2,sizeof(dfloat));
-//    DforwardFD= (dfloat*) calloc(ngl2,sizeof(dfloat));
-//    DbackwardFD= (dfloat*) calloc(ngl2,sizeof(dfloat));
-//    FiniteDifferenceOperators();
+    DCentralFD = (dfloat*) calloc(ngl2,sizeof(dfloat));
+
+    DforwardFD= (dfloat*) calloc(ngl2,sizeof(dfloat));
+    DbackwardFD= (dfloat*) calloc(ngl2,sizeof(dfloat));
+    FiniteDifferenceOperators();
+
+     //   D_SBP = (dfloat*) calloc(ngl2,sizeof(dfloat));
 //SBP CHECK from david
 //for(int i = 0; i < ngl; ++i){
 //dfloat Check1=0.0;
@@ -208,39 +210,39 @@ void basis :: FiniteDifferenceOperators()
         DbackwardFD[id] = (1.0/(x_GL[i]-x_GL[i-1]));
         DbackwardFD[idm1] = (-1.0/(x_GL[i]-x_GL[i-1]));
     };
-    dfloat wFD[ngl];
-    switch(N) {
-    case 1 : {
-		wFD[0] = w_GL[0];
-		wFD[1] = w_GL[1];
-	} 
-    case 2 : {
-		wFD[0] = 0.5;
-		wFD[1] = 1.0;
-		wFD[2] = 0.5;
-	} 
-    case 3 : {
-		wFD[0] = 0.5 - 0.1*sqrt(5.0);
-		wFD[1] = 0.5 + 0.1*sqrt(5.0);
-		wFD[2] = 0.5 + 0.1*sqrt(5.0);
-		wFD[3] = 0.5- 0.1*sqrt(5.0);
-	} 	
-}
-
-    D_SBP[0] = -0.5/wFD[0];
-cout << " N: " << N << "DSBP " << D_SBP[0] << "\n";
-    D_SBP[1] = 0.5/wFD[0];
-    D_SBP[ngl2-1] = 0.5/wFD[N];		//last entry		DOWNWIND
-    D_SBP[ngl2-2] = -0.5/wFD[N];		//second last entry		DOWNWIND
-
-    for (int i=1; i<ngl-1; i++)
-    {
-        const int id = i*ngl+i;
-        const int idp1 = id+1;
-        const int idm1 = id-1;
-        D_SBP[idp1]=0.5/wFD[i];
-        D_SBP[idm1]=-0.5/wFD[i];
-    };    
+//    dfloat wFD[ngl];
+//    switch(N) {
+//    case 1 : {
+//		wFD[0] = w_GL[0];
+//		wFD[1] = w_GL[1];
+//	}
+//    case 2 : {
+//		wFD[0] = 0.5;
+//		wFD[1] = 1.0;
+//		wFD[2] = 0.5;
+//	}
+//    case 3 : {
+//		wFD[0] = 0.5 - 0.1*sqrt(5.0);
+//		wFD[1] = 0.5 + 0.1*sqrt(5.0);
+//		wFD[2] = 0.5 + 0.1*sqrt(5.0);
+//		wFD[3] = 0.5- 0.1*sqrt(5.0);
+//	}
+//}
+//
+//    D_SBP[0] = -0.5/wFD[0];
+//cout << " N: " << N << "DSBP " << D_SBP[0] << "\n";
+//    D_SBP[1] = 0.5/wFD[0];
+//    D_SBP[ngl2-1] = 0.5/wFD[N];		//last entry		DOWNWIND
+//    D_SBP[ngl2-2] = -0.5/wFD[N];		//second last entry		DOWNWIND
+//
+//    for (int i=1; i<ngl-1; i++)
+//    {
+//        const int id = i*ngl+i;
+//        const int idp1 = id+1;
+//        const int idm1 = id-1;
+//        D_SBP[idp1]=0.5/wFD[i];
+//        D_SBP[idm1]=-0.5/wFD[i];
+//    };
 
 };
 
@@ -898,7 +900,7 @@ void basis :: LinfNorm(const dfloat Q[],const dfloat Q_exakt[],dfloat LinfError[
             for(int i=0; i<ngl; ++i)
             {
                 int id = ie*ngl2*Neq   +j*ngl+i;
-		
+
 		if (fabs(Q[id] - Q_exakt[id])>LinfError[0]){
 			maxErrorElement=ie;
 		}
@@ -907,7 +909,7 @@ void basis :: LinfNorm(const dfloat Q[],const dfloat Q_exakt[],dfloat LinfError[
                 LinfError[1]  =  max(LinfError[1],fabs(Q[id] - Q_exakt[id]));
                 id+=ngl2;
                 LinfError[2]  =  max(LinfError[2],fabs(Q[id] - Q_exakt[id]));
-		
+
             }
         }
     }
