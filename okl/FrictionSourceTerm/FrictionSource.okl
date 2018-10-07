@@ -38,7 +38,7 @@ kernel void FrictionSource(const int Nelem,
 
                             const dfloat r_f = two * w_angular *sin(r_latitude);
                             const dfloat r_CoriolisTerm1 = r_f * r_hv;
-                            const dfloat r_CoriolisTerm1 = - r_f * r_hu;
+                            const dfloat r_CoriolisTerm2 = - r_f * r_hu;
 
 
                             Qt[id+ngl2]         += -  r_ManningTerm1 +r_CoriolisTerm1 ;
