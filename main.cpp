@@ -717,9 +717,9 @@ int main(int argc, char *argv[])
 
             cout <<"Now initializing okada displacements...      ";
         }
-      ///  okada okadamap(Nelem);
+        okada okadamap(Nelem);
 
-      ///  okadamap.okadamapFull(ngl, x_phy,y_phy, q);
+        okadamap.okadamapFull(ngl, x_phy,y_phy, q);
 
         if(MPI.rank==0)
         {
