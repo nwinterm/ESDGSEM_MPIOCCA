@@ -1,7 +1,7 @@
 kernel void FrictionSource(const int Nelem,
-                                 const dfloat * restrict y,
-                                 const dfloat * restrict Q,
-                                 dfloat * restrict Qt)                                // const int * restrict isPartlyDry,
+                           const dfloat * restrict y,
+                           const dfloat * restrict Q,
+                           dfloat * restrict Qt)                                // const int * restrict isPartlyDry,
 {
 
 
@@ -22,29 +22,39 @@ kernel void FrictionSource(const int Nelem,
                         const int id        =   i*ngl+j;
 
 
-                            const int xid       =   eleID*ngl2   +i*ngl+j;
-                            const int Fid       =   eleID*ngl2*Neq   +i*ngl+j;
+                        const int xid       =   eleID*ngl2   +i*ngl+j;
+                        const int Fid       =   eleID*ngl2*Neq   +i*ngl+j;
 
-                            const dfloat r_latitude = atan(sinh(y[xid]/earth_radius)) * OneEightyOverPI;
-                            const dfloat r_h = Q[Fid];
-                            const dfloat r_hu = Q[Fid+ngl2];
-                            const dfloat r_hv = Q[Fid+ngl2+ngl2];
+                        const dfloat r_latitude = atan(sinh(y[xid]/earth_radius)) * OneEightyOverPI;
+                        const dfloat r_h = Q[Fid];
+                        const dfloat r_hu = Q[Fid+ngl2];
+                        const dfloat r_hv = Q[Fid+ngl2+ngl2];
 
-                            const dfloat r_h_expo = pow(r_h,seventhirds);
-                            const dfloat r_momentum_sum = pow(r_hu,two)+pow(r_hv,two);
-                            const dfloat r_momentum_root = sqrt(r_momentum_sum);
-                            const dfloat r_ManningTerm1 = ManningCoeff *g_const/r_h_expo * r_momentum_root * r_hu;
-                            const dfloat r_ManningTerm2 = ManningCoeff *g_const/r_h_expo * r_momentum_root * r_hv;
+                        dfloat r_h_expo_inv;
 
-                            const dfloat r_f = two * w_angular *sin(r_latitude);
-                            const dfloat r_CoriolisTerm1 = r_f * r_hv;
-                            const dfloat r_CoriolisTerm2 = - r_f * r_hu;
-
-
-                            Qt[id+ngl2]         += -  r_ManningTerm1 +r_CoriolisTerm1 ;
-                            Qt[id+ngl2+ngl2]    += -  r_ManningTerm2  +r_CoriolisTerm2;
-
+                        if (r_h_expo>PosPresTOL)
+                        {
+                            r_h_expo_inv= one/pow(r_h,seventhirds);
                         }
+                        else
+                        {
+                            r_h_expo_inv= zero;
+                        }
+
+                        const dfloat r_momentum_sum = pow(r_hu,two)+pow(r_hv,two);
+                        const dfloat r_momentum_root = sqrt(r_momentum_sum);
+                        const dfloat r_ManningTerm1 = ManningCoeff *g_const*r_h_expo_inv * r_momentum_root * r_hu;
+                        const dfloat r_ManningTerm2 = ManningCoeff *g_const*r_h_expo_inv * r_momentum_root * r_hv;
+
+                        const dfloat r_f = two * w_angular *sin(r_latitude);
+                        const dfloat r_CoriolisTerm1 = r_f * r_hv;
+                        const dfloat r_CoriolisTerm2 = - r_f * r_hu;
+
+
+                        Qt[id+ngl2]         += -  r_ManningTerm1 +r_CoriolisTerm1 ;
+                        Qt[id+ngl2+ngl2]    += -  r_ManningTerm2  +r_CoriolisTerm2;
+
+                    }
 
                 }
             }
