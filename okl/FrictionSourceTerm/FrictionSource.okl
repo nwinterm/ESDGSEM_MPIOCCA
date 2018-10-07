@@ -32,7 +32,7 @@ kernel void FrictionSource(const int Nelem,
 
                         dfloat r_h_expo_inv;
 
-                        if (r_h_expo>PosPresTOL)
+                        if (r_h>PosPresTOL)
                         {
                             r_h_expo_inv= one/pow(r_h,seventhirds);
                         }
