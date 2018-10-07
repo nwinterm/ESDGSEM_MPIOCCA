@@ -180,7 +180,7 @@ void deviceclass:: initDeviceVariables(const int N,
     const dfloat ManningCoefficient = 0.025;    ///in s/m^(1/3)
     const dfloat ManningCoefficient2 = pow(ManningCoefficient,2);    ///in s/m^(1/3)
     info.addDefine("ManningCoeff",ManningCoefficient2);
-    const dfloat seventhirds = 7/3;
+    const dfloat seventhirds = 7.0/3.0;
     info.addDefine("seventhirds",seventhirds);
     const dfloat earth_radius= 6.378e6; 	// should actually be = 6.378e6;
     info.addDefine("earth_radius",earth_radius);
