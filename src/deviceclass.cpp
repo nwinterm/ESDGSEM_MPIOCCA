@@ -186,7 +186,7 @@ void deviceclass:: initDeviceVariables(const int N,
     info.addDefine("earth_radius",earth_radius);
     const dfloat OneEightyOverPI = 180.0/M_PI;
     info.addDefine("OneEightyOverPI",OneEightyOverPI);
-    const dfloat w_angular = 2.0*M_PI/(24.0*3600.0);  ///equatorial speed of 465.1 m/s (1,526 ft/s)
+    const dfloat w_angular = 2.0*M_PI/(24.0*3600.0);
     cout << "Earth's angular velocity is "<< w_angular << "\n";
     info.addDefine("w_angular",w_angular);
 
