@@ -615,6 +615,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
         {
             NumPlots=5;
         }
+
         mCheckpoints = (dfloat*) calloc(NumPlots,sizeof(dfloat));
         mCheckpoints[0]=0.0;
         if (NumPlots>1)
@@ -640,6 +641,16 @@ void deviceclass:: DGtimeloop(const int Nelem,
             mCheckpoints[2]=T/6.0;
             mCheckpoints[3]=T/4.0;
             mCheckpoints[4]=T;
+        }
+        if ((Testcase == 90)||(Testcase == 91))
+        {
+            if ((NumPlots==5)&& (T==9600))
+            {
+                mCheckpoints[1]=1200.0;
+                mCheckpoints[2]=2400.0;
+                mCheckpoints[3]=4800.0;
+                mCheckpoints[4]=9600.0;
+            }
         }
         if ((Testcase == 33)||(Testcase == 36))
         {
