@@ -41,8 +41,8 @@ kernel void FrictionSource(const int Nelem,
                             const dfloat r_CoriolisTerm2 = - r_f * r_hu;
 
 
-                            Qt[id+ngl2]         += -  r_ManningTerm1;// +r_CoriolisTerm1 ;
-                            Qt[id+ngl2+ngl2]    += -  r_ManningTerm2;//  +r_CoriolisTerm2;
+                            Qt[id+ngl2]         += -  r_ManningTerm1 +r_CoriolisTerm1 ;
+                            Qt[id+ngl2+ngl2]    += -  r_ManningTerm2  +r_CoriolisTerm2;
 
                         }
 

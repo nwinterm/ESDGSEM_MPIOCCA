@@ -186,7 +186,7 @@ void deviceclass:: initDeviceVariables(const int N,
     info.addDefine("earth_radius",earth_radius);
     const dfloat OneEightyOverPI = 180.0/M_PI;
     info.addDefine("OneEightyOverPI",OneEightyOverPI);
-    const dfloat w_angular = 465.1;  ///equatorial speed of 465.1 m/s (1,526 ft/s)
+    const dfloat w_angular = 2.0*M_PI/(24.0*3600.0);  ///equatorial speed of 465.1 m/s (1,526 ft/s)
     info.addDefine("w_angular",w_angular);
 
     cout << "eps0, sigmaMax, sigmaMin, PosPresTOL "  << epsilon_0 << " " <<  sigma_max << "  "<< sigma_min <<  " " <<TOL_PosPres << "\n";
