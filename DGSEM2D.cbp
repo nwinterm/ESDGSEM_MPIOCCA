@@ -90,12 +90,14 @@
 		<Unit filename="okl/GatherEdgeData/Dirichlet_ConvTest2.okl" />
 		<Unit filename="okl/GatherEdgeData/Dirichlet_ConvTest3.okl" />
 		<Unit filename="okl/GatherEdgeData/Dirichlet_ConvTest4.okl" />
+		<Unit filename="okl/GatherEdgeData/Dirichlet_ConvTest5.okl" />
 		<Unit filename="okl/GatherEdgeData/InnerOuter.okl" />
 		<Unit filename="okl/GatherEdgeData/SolidWalls.okl" />
 		<Unit filename="okl/ManufacturedSolutions/S_ConvTest.okl" />
 		<Unit filename="okl/ManufacturedSolutions/S_ConvTest2.okl" />
 		<Unit filename="okl/ManufacturedSolutions/S_ConvTest3.okl" />
 		<Unit filename="okl/ManufacturedSolutions/S_ConvTest4.okl" />
+		<Unit filename="okl/ManufacturedSolutions/S_ConvTest5.okl" />
 		<Unit filename="okl/PartialDryTreatment/FindDryElements.okl" />
 		<Unit filename="okl/PartialDryTreatment/VolumeKernelFD.okl" />
 		<Unit filename="okl/PartialDryTreatment/VolumeKernelFD_Central.okl" />

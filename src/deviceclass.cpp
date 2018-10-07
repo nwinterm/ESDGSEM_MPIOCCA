@@ -327,6 +327,12 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
         addS = device.buildKernelFromSource("okl/ManufacturedSolutions/S_ConvTest4.okl","addS",info);
         break;
     }
+    case 89:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
+    {
+        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/Dirichlet_ConvTest5.okl","CollectEdgeData",info);
+        addS = device.buildKernelFromSource("okl/ManufacturedSolutions/S_ConvTest5.okl","addS",info);
+        break;
+    }
 //    case 6:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
 //    {
 //        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/InnerOuter.okl","CollectEdgeData",info);
@@ -902,7 +908,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
             }
 
             // add manufactured source term for convergence test
-            if ((Testcase==1)||(Testcase==7)||(Testcase==8)||(Testcase==88))
+            if ((Testcase==1)||(Testcase==7)||(Testcase==8)||(Testcase==88)||(Testcase==89))
             {
                 addS(Nelem,o_Bx,o_By,o_B,o_x,o_y,intermediatetime,o_Qt);
             }

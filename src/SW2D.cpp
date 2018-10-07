@@ -738,12 +738,21 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
         w= 0.0;
         break;
     }
-    case 88:      // Conv Test for Ocean Mesh
+    case 88:      /// Conv Test for Ocean Mesh
     {
         //h=8.0+cos(2.0*PI*x)*sin(2.0*PI*y)*cos(t)-b;
         h= 20.0 + cos(0.001*x)*sin(0.001*y)*cos(t) - b;
         v= 0.5;
         w= 1.5;
+        break;
+    }
+
+    case 89:      /// Conv Test for Ocean Mesh, for meters
+    {
+        //h=8.0+cos(2.0*PI*x)*sin(2.0*PI*y)*cos(t)-b;
+        h= 20000.0 + cos(0.000001*x)*sin(0.000001*y)*cos(t) - b;
+        v= 0.0005;
+        w= 0.0015;
         break;
     }
 

@@ -1,0 +1,182 @@
+void Qnodal(const dfloat x,
+            const  dfloat y,
+            dfloat * q1,
+            dfloat * q2,
+            dfloat * q3,
+            const dfloat t,
+            const dfloat b)
+{
+
+    *q1 = (20000.0+cos(0.000001*x)*sin(0.000001*y)*cos(t)-b);
+    *q2 = half*(20000.0+cos(0.000001*x)*sin(0.000001*y)*cos(t)-b);
+    *q3 = onepointfive*(20000.0+cos(0.000001*x)*sin(0.000001*y)*cos(t)-b);
+
+}
+
+kernel void CollectEdgeData(const int Nfaces,
+                            const int * restrict  EdgeData,
+                            const dfloat * restrict  Q,
+                            const dfloat * restrict  x,
+                            const dfloat * restrict  y,
+                            const dfloat * restrict  normx,
+                            const dfloat * restrict  normy,
+                            const dfloat * restrict  bL,
+                            const dfloat * restrict  bR,
+                            dfloat * restrict  qL,
+                            dfloat * restrict  qR,
+                            const dfloat t)
+{
+    for (int ifa=0; ifa<Nfaces; ifa++; outer0)
+    {
+        const int iel           =EdgeData[8*ifa];       //left element
+        const int ier           =EdgeData[8*ifa+1];       //right element
+        const int isl           =EdgeData[8*ifa+2];       //side within left element
+        const int isr           =EdgeData[8*ifa+3];      //side within right element
+        const int ireversed     =EdgeData[8*ifa+4];           //is order reversed? 0=yes for right side, 1=no, -1= yes for left side
+        const int cpuL          =EdgeData[8*ifa+5];     // rank of cpuL
+        const int cpuR          =EdgeData[8*ifa+6];     // rank of cpuR
+
+        for(int i=0; i<ngl; i++; inner0)
+        {
+
+
+            int idL,idR;
+            int idxL,idxR;
+            const int edgeID=ifa*ngl*Neq + i  ;   //for edge wise solution
+            const int edgeIDX=ifa*ngl + i  ;      //for edge wise spatial values (BOTTOM)
+            dfloat q1;
+            dfloat q2;
+            dfloat q3;
+
+
+
+            dfloat qNodalL[Neq];
+            dfloat qNodalR[Neq];
+            qNodalL[0]=zero;
+            qNodalL[1]=zero;
+            qNodalL[2]=zero;
+            qNodalR[0]=zero;
+            qNodalR[1]=zero;
+            qNodalR[2]=zero;
+
+
+
+            if (procID == cpuL)
+            {
+                switch(isl)
+                {
+                case (0): //bottom side
+                    idL = iel*ngl2*Neq+i;
+                    idxL = iel*ngl2+i;
+                    break;
+                case (2): //top side
+                    idL = iel*ngl2*Neq+ngl2-ngl+i;
+                    idxL = iel*ngl2+ngl2-ngl+i;
+                    break;
+                case (3): //left side
+                    idL = iel*ngl2*Neq+i*ngl;
+                    idxL = iel*ngl2+i*ngl;
+                    break;
+                case (1): //right side
+                    idL = iel*ngl2*Neq+(i+1)*ngl-1;
+                    idxL = iel*ngl2+(i+1)*ngl-1;
+                    break;
+
+                }
+
+
+
+
+                qNodalL[0]=Q[idL];
+                qNodalL[1]=Q[idL+ngl2];
+                qNodalL[2]=Q[idL+ngl2+ngl2];
+            }
+
+
+
+
+
+
+
+            if (procID == cpuR)
+            {
+                switch(isr)
+                {
+                case (0): //bottom side
+                    idR = ier*ngl2*Neq+i;
+                    idxR = ier*ngl2+i;
+                    break;
+                case (2): //top side
+                    idR = ier*ngl2*Neq+ngl2-ngl+i;
+                    idxR = ier*ngl2+ngl2-ngl+i;
+                    break;
+                case (3): //left side
+                    idR = ier*ngl2*Neq+i*ngl;
+                    idxR = ier*ngl2+i*ngl;
+                    break;
+                case (1): //right side
+                    idR = ier*ngl2*Neq+(i+1)*ngl-1;
+                    idxR = ier*ngl2+(i+1)*ngl-1;
+                    break;
+
+                }
+                qNodalR[0]=Q[idR];
+                qNodalR[1]=Q[idR+ngl2];
+                qNodalR[2]=Q[idR+ngl2+ngl2];
+            }
+
+
+
+
+
+
+
+
+
+            // EXTERIOR BOUNDARY CASE!
+
+
+            if (cpuL==-1)
+            {
+                Qnodal(x[idxR],y[idxR],&qNodalL[0],&qNodalL[1],&qNodalL[2],t,bR[edgeIDX]);
+
+            }
+            if (cpuR==-1)
+            {
+
+                Qnodal(x[idxL],y[idxL],&qNodalR[0],&qNodalR[1],&qNodalR[2],t,bL[edgeIDX]);
+
+            }
+
+
+
+
+
+
+
+
+            qL[edgeID]=qNodalL[0];
+            qL[edgeID+ngl]=qNodalL[1];
+            qL[edgeID+ngl+ngl]=qNodalL[2];
+
+            qR[edgeID]=qNodalR[0];
+            qR[edgeID+ngl]=qNodalR[1];
+            qR[edgeID+ngl+ngl]=qNodalR[2];
+
+
+
+
+
+
+
+
+
+        }//inner0 loop
+
+
+
+
+    }//outer0 loop
+
+
+}//end kernel
