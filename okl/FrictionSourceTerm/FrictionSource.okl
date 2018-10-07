@@ -1,5 +1,5 @@
 kernel void FrictionSource(const int Nelem,
-                                 const dfloat * restrict Y,
+                                 const dfloat * restrict y,
                                  const dfloat * restrict Q,
                                  dfloat * restrict Qt)                                // const int * restrict isPartlyDry,
 {
