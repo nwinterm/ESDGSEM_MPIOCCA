@@ -8,7 +8,7 @@
 
 okada::okada(const int Nelem)
 {
-NumElements = Nelem;
+    NumElements = Nelem;
 
 }
 
@@ -43,11 +43,11 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
         std::ifstream usgsfile(dummy);
 
         if (!usgsfile)
-    {
-        std::string error_message("ERROR: Okada Input file not found: ");
-        error_message += dummy;
-        throw std::invalid_argument(error_message);
-    }
+        {
+            std::string error_message("ERROR: Okada Input file not found: ");
+            error_message += dummy;
+            throw std::invalid_argument(error_message);
+        }
         usgsfile >> x0; // epicenter longitude
         usgsfile >> y0; // epicenter latitude
         usgsfile >> hh; // depth
@@ -80,7 +80,7 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
         const dfloat ylower = y0m-w;
         const dfloat yupper = y0m+w;
 
-	// get lower values in degrees
+        // get lower values in degrees
         const dfloat xo = (xlower/earth_radius)*(180./M_PI);
         const dfloat yo = (atan(sinh(ylower/earth_radius))) * (180./M_PI);
 
@@ -138,11 +138,11 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
                         yloc = (atan(sinh(yloc/earth_radius))) * (180./M_PI);
 
 
-    		///#!-----added by Xiaoming Wang, Nov 11 2006----
-    			xl = earth_radius*cos(rad*yloc)*(x0-xo)*rad + del_x ; ///# TAL - Fixed sign, 9/07
-    		///#!---------------------------------------------
+                        ///#!-----added by Xiaoming Wang, Nov 11 2006----
+                        xl = earth_radius*cos(rad*yloc)*(x0-xo)*rad + del_x ; ///# TAL - Fixed sign, 9/07
+                        ///#!---------------------------------------------
 
-                       // const dfloat xl = earth_radius*cos(rad*yloc)*(x0-xo)*rad + del_x;
+                        // const dfloat xl = earth_radius*cos(rad*yloc)*(x0-xo)*rad + del_x;
                         const dfloat yy = earth_radius*(yloc-yo)*rad;
                         const dfloat xx = earth_radius*cos(rad*yloc)*(xloc-xo)*rad;
 
@@ -181,12 +181,12 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
 
 
 dfloat okada:: strike_slip (const dfloat x1,
-                    const dfloat x2,
-                    const dfloat x3,
-                    const dfloat y1,
-                    const dfloat y2,
-                    const dfloat dp,
-                    const dfloat dd)
+                            const dfloat x2,
+                            const dfloat x3,
+                            const dfloat y1,
+                            const dfloat y2,
+                            const dfloat dp,
+                            const dfloat dd)
 {
     /*!
      * Used for Okada's model
@@ -208,12 +208,12 @@ dfloat okada:: strike_slip (const dfloat x1,
 
 
 dfloat okada:: dip_slip (const dfloat x1,
-                 const dfloat x2,
-                 const dfloat x3,
-                 const dfloat y1,
-                 const dfloat y2,
-                 const dfloat dp,
-                 const dfloat dd)
+                         const dfloat x2,
+                         const dfloat x3,
+                         const dfloat y1,
+                         const dfloat y2,
+                         const dfloat dp,
+                         const dfloat dd)
 {
     /*!
      * Based on Okada's paper (1985)
