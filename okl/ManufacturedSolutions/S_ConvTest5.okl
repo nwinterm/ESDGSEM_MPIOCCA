@@ -51,10 +51,10 @@ kernel void addS(const int Nelem,
                 int idLoc=j*ngl+i;
 
 
-                dfloat sinY=sin(0.001*s_y[idLoc]);
-                dfloat sinX=sin(0.001*s_x[idLoc]);
-                dfloat cosY=cos(0.001*s_y[idLoc]);
-                dfloat cosX=cos(0.001*s_x[idLoc]);
+                dfloat sinY=sin(0.000001*s_y[idLoc]);
+                dfloat sinX=sin(0.000001*s_x[idLoc]);
+                dfloat cosY=cos(0.000001*s_y[idLoc]);
+                dfloat cosX=cos(0.000001*s_x[idLoc]);
 
                 dfloat H= 20000.0+cosX*sinY*cos(t);
                 dfloat H_t=-cosX*sinY*sin(t);
@@ -63,8 +63,8 @@ kernel void addS(const int Nelem,
 
 
 
-                dfloat u=0.001*half;
-                dfloat v=0.001*onepointfive;
+                dfloat u=half;
+                dfloat v=onepointfive;
 
                 dfloat u_t=zero;
                 dfloat u_x=zero;

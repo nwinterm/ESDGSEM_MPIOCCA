@@ -751,8 +751,8 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
     {
         //h=8.0+cos(2.0*PI*x)*sin(2.0*PI*y)*cos(t)-b;
         h= 20000.0 + cos(0.000001*x)*sin(0.000001*y)*cos(t) - b;
-        v= 0.0005;
-        w= 0.0015;
+        v= 0.5;
+        w= 1.5;
         break;
     }
 
