@@ -1,4 +1,4 @@
-meshFile=meshFiles/PeriodicXandY5.mesh
+meshFile=meshFiles/SumatraOcean/Ocean1xm.mesh
 N=5
 CFL=0.1
 DFL=0.01
@@ -30,3 +30,4 @@ KernelVersionSTD=99
 DiscBottom=0
 ReadInBottom=0
 PartialDryTreatment=1
+FrictionTerms=1

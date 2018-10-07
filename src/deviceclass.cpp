@@ -106,8 +106,9 @@ void deviceclass:: initDeviceVariables(const int N,
                                        const int PositivityPreserving,
                                        const int ArtificialViscosity,
                                        const int DiscBottom,
-                                       const dfloat h_0 ,
-                                       const int PartialDry)
+                                       const dfloat h_0,
+                                       const int PartialDry,
+                                       const int FrictionTerms)
 {
     const int Neq=3;
     const int GradNeq = Neq-1;
@@ -119,6 +120,7 @@ void deviceclass:: initDeviceVariables(const int N,
         nglPad=1;
     }
     PartialDryTreatment=PartialDry;
+    CalcFrictionTerms=FrictionTerms;
     dfloat TOL_PosPres = PosPresTOL;//pow(10.0,-4);
 //    dfloat ZeroTOL = pow(10.0,-12);	// double precision
     dfloat ZeroTOL = pow(10.0,-5);
@@ -128,15 +130,15 @@ void deviceclass:: initDeviceVariables(const int N,
 //       << numeric_limits<dfloat>::denorm_min()
 //	<< " \n" ;
 
-    dfloat zero = 0.0;
-    dfloat half = 0.5;
-    dfloat one = 1.0;
-    dfloat fourth = 0.25;
-    dfloat eight = 8.0;
-    dfloat two = 2.0;
-    dfloat onepointfive = 1.5;
-    dfloat halfg = half*g_const;
-    dfloat fourthg = fourth*g_const;
+    const dfloat zero = 0.0;
+    const dfloat half = 0.5;
+    const dfloat one = 1.0;
+    const dfloat fourth = 0.25;
+    const dfloat eight = 8.0;
+    const dfloat two = 2.0;
+    const dfloat onepointfive = 1.5;
+    const dfloat halfg = half*g_const;
+    const dfloat fourthg = fourth*g_const;
     info.addDefine("procID",rank);
     info.addDefine("NEpad",NEpad);
     info.addDefine("NAvgPad",NAvgPad);
@@ -174,6 +176,16 @@ void deviceclass:: initDeviceVariables(const int N,
     info.addDefine("PosPresTOL",TOL_PosPres);
     info.addDefine("ZeroTOL",ZeroTOL);
     info.addDefine("h_zero",h_0);
+
+    const dfloat ManningCoefficient = 0.025;    ///in s/m^(1/3)
+    const dfloat ManningCoefficient2 = pow(ManningCoefficient,2);    ///in s/m^(1/3)
+    info.addDefine("ManningCoeff",ManningCoefficient2);
+    const dfloat seventhirds = 7/3;
+    info.addDefine("seventhirds",seventhirds);
+    const dfloat earth_radius= 6.378e6; 	// should actually be = 6.378e6;
+    info.addDefine("earth_radius",earth_radius);
+    const dfloat OneEightyOverPI = 180.0/M_PI;
+    info.addDefine("OneEightyOverPI",OneEightyOverPI);
 
     cout << "eps0, sigmaMax, sigmaMin, PosPresTOL "  << epsilon_0 << " " <<  sigma_max << "  "<< sigma_min <<  " " <<TOL_PosPres << "\n";
 
@@ -412,7 +424,11 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
         UpdateKernel=device.buildKernelFromSource("okl/RungeKutta/UpdateKernelLS.okl","UpdateKernel",info);
     }
 
+    if(CalcFrictionTerms)
+    {
 
+        FrictionSource=device.buildKernelFromSource("okl/FrictionSourceTerm/FrictionSource.okl","FrictionSource",info);
+    }
 
 
     if (ArtificialViscosity)
@@ -445,9 +461,9 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
 void deviceclass:: copyPartialDryData(const dfloat* DCentralFD, const dfloat* DforwardFD, const dfloat* DbackwardFD)
 {
 
-        o_DcentralFD.copyFrom(DCentralFD);
-        o_DforwardFD.copyFrom(DforwardFD);
-        o_DbackwardFD.copyFrom(DbackwardFD);
+    o_DcentralFD.copyFrom(DCentralFD);
+    o_DforwardFD.copyFrom(DforwardFD);
+    o_DbackwardFD.copyFrom(DbackwardFD);
 
 }
 
@@ -791,7 +807,8 @@ void deviceclass:: DGtimeloop(const int Nelem,
 
 // CORRECT VOLUME KERNEL
             VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_Qt);
-            if (PartialDryTreatment==1){
+            if (PartialDryTreatment==1)
+            {
                 FindDryElements(Nelem, o_q, o_isPartlyDry);
                 VolumeKernelPartialDry(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_isPartlyDry,o_DcentralFD,o_DforwardFD,o_DbackwardFD,o_B,o_Qt);
             }
@@ -817,6 +834,11 @@ void deviceclass:: DGtimeloop(const int Nelem,
                 SurfaceKernelDiscBottom(Nelem,o_Jac,o_ElemEdgeMasterSlave,o_ElemEdgeOrientation,o_ElemToEdge, o_DBSurf1,o_DBSurf2,o_Qt);
             }
 
+            if(CalcFrictionTerms)
+            {
+
+                FrictionSource(Nelem,o_y,o_q,o_Qt);
+            }
 
             if ( ArtificialViscosity==1)
             {

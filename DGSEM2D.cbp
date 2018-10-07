@@ -73,38 +73,29 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="okl/BR1_Gradient/scaleGradient.okl" />
-		<Unit filename="okl/DG/FindDryElements.okl">
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="okl/DG/FindLambdaMax.okl" />
 		<Unit filename="okl/DG/MemCopyComparison.okl" />
 		<Unit filename="okl/DG/SurfaceKernel.okl" />
 		<Unit filename="okl/DG/SurfaceKernel_V0.okl" />
 		<Unit filename="okl/DG/SurfaceKernel_V1.okl" />
-		<Unit filename="okl/DG/VolumeKernel.okl" />
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV99.okl">
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="okl/DG/VolumeKernelV99.okl" />
 		<Unit filename="okl/DiscontinuousBathimetry/calcDiscBottomSurf.okl" />
+		<Unit filename="okl/FrictionSourceTerm/FrictionSource.okl" />
 		<Unit filename="okl/GatherEdgeData/3MoundInflow.okl" />
 		<Unit filename="okl/GatherEdgeData/CollectEdgeData_Bottom.okl" />
 		<Unit filename="okl/GatherEdgeData/Dirichlet_ConvTest.okl" />
 		<Unit filename="okl/GatherEdgeData/Dirichlet_ConvTest2.okl" />
 		<Unit filename="okl/GatherEdgeData/Dirichlet_ConvTest3.okl" />
 		<Unit filename="okl/GatherEdgeData/Dirichlet_ConvTest4.okl" />
-		<Unit filename="okl/GatherEdgeData/Dirichlet_ConvTest4.okl.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="okl/GatherEdgeData/InnerOuter.okl" />
 		<Unit filename="okl/GatherEdgeData/SolidWalls.okl" />
 		<Unit filename="okl/ManufacturedSolutions/S_ConvTest.okl" />
 		<Unit filename="okl/ManufacturedSolutions/S_ConvTest2.okl" />
 		<Unit filename="okl/ManufacturedSolutions/S_ConvTest3.okl" />
 		<Unit filename="okl/ManufacturedSolutions/S_ConvTest4.okl" />
-		<Unit filename="okl/ManufacturedSolutions/S_ConvTest4.okl.c">
-			<Option compilerVar="CC" />
-		</Unit>
 		<Unit filename="okl/PartialDryTreatment/FindDryElements.okl" />
 		<Unit filename="okl/PartialDryTreatment/VolumeKernelFD.okl" />
 		<Unit filename="okl/PartialDryTreatment/VolumeKernelFD_Central.okl" />

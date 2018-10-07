@@ -89,6 +89,7 @@ int main(int argc, char *argv[])
     int KernelVersionSTD=-1;
     int ReadInBottom;
     int PartialDryTreatment;
+    int FrictionTerms;
 
 
     int N=0;
@@ -164,7 +165,8 @@ int main(int argc, char *argv[])
                       &KernelVersionSTD,
                       &DiscBottom,
                       &ReadInBottom,
-                      &PartialDryTreatment);
+                      &PartialDryTreatment,
+                      &FrictionTerms);
     }
 
     ShareInputData(MPI,
@@ -196,7 +198,8 @@ int main(int argc, char *argv[])
                    &KernelVersion,
                    &KernelVersionSTD,
                    &DiscBottom,
-                   &PartialDryTreatment);
+                   &PartialDryTreatment,
+                   &FrictionTerms);
 
     if (Testcase == 31)
     {
@@ -231,6 +234,8 @@ int main(int argc, char *argv[])
         cout <<"Cartesian: " <<Cartesian <<"\n";
         cout <<"rkorder: " <<rkorder <<"\n";
         cout <<"rkSSP: " <<rkSSP <<"\n";
+        cout <<"PartialDryTreatment: " <<PartialDryTreatment <<"\n";
+        cout <<"FrictionTerms: " <<FrictionTerms <<"\n";
         cout <<"Setting up Basis for N=" << N <<".\n";
     }
 
@@ -380,7 +385,7 @@ int main(int argc, char *argv[])
 
                     if (ReadInBottom)
                     {
-                        dfloat b_min = -7.31;
+                        dfloat b_min = -7310;
                         //dfloat b_min = -9.0;
                         h_0 = -b_min;
                         dfloat zero = 0.0;
@@ -746,7 +751,7 @@ int main(int argc, char *argv[])
 
     occa_device.initDeviceVariables(N, Nelem,Nfaces,MPI.rank, rkSSP, NEpad,NEsurfpad, Nedgepad,NavgPad, ES, Testcase, epsilon_0, sigma_max, sigma_min, PosPresTOL, geomface, g_const,
                                     PositivityPreserving,
-                                    ArtificialViscosity, DiscBottom,h_0 ,PartialDryTreatment);
+                                    ArtificialViscosity, DiscBottom,h_0,PartialDryTreatment,FrictionTerms);
     //copy all permanent data onto the device
     if(MPI.rank==0)
     {
@@ -757,8 +762,9 @@ int main(int argc, char *argv[])
                                       normalsX,   normalsY,  Scal,  y_xi, y_eta, x_xi, x_eta, b,  Bx, By,
                                       Dmat, DGBasis.Dstrong, Dhat,  J,  x_phy,  y_phy,  q,  ElementSizes,  gRK,  Qt,
                                       VdmInv, ElemEdgeMasterSlave, ElemEdgeOrientation, ElemToEdge, EdgeData,EdgeReversed );
-    if(PartialDryTreatment){
-       occa_device.copyPartialDryData(DGBasis.DCentralFD,  DGBasis.DforwardFD,  DGBasis.DbackwardFD   );
+    if(PartialDryTreatment)
+    {
+        occa_device.copyPartialDryData(DGBasis.DCentralFD,  DGBasis.DforwardFD,  DGBasis.DbackwardFD   );
     }
 
     if(MPI.rank==0)

@@ -112,7 +112,8 @@ void ReadInputFile(int *N,
                    int * KernelVersionSTD,
                    int * DiscBottom,
                    int * ReadInBottom,
-                   int * PartialDryTreatment)
+                   int * PartialDryTreatment,
+                   int * FrictionTerms)
 {
 
 //,dfloat T, dfloat g_const
@@ -215,7 +216,8 @@ void ReadInputFile(int *N,
     *ReadInBottom= getIntValue(current_string);
     std::getline(InputStream, current_string);
     *PartialDryTreatment= getIntValue(current_string);
-
+    std::getline(InputStream, current_string);
+    *FrictionTerms= getIntValue(current_string);
 }
 
 

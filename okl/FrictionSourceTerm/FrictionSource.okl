@@ -1,0 +1,59 @@
+kernel void FrictionSource(const int Nelem,
+                                 const dfloat * restrict Y,
+                                 const dfloat * restrict Q,
+                                 dfloat * restrict Qt)                                // const int * restrict isPartlyDry,
+{
+
+
+
+    for(int iEo = 0; iEo < Nelem; iEo+=NEpad; outer0)
+    {
+
+
+        for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
+        {
+            for (int i=0; i<ngl; ++i; inner1)
+            {
+                for (int j=0; j<ngl; ++j; inner0)
+                {
+                    const int eleID     =   iEo + ieLoc;
+                    if (eleID<Nelem)
+                    {
+                        const int id        =   i*ngl+j;
+
+
+                            const int xid       =   eleID*ngl2   +i*ngl+j;
+                            const int Fid       =   eleID*ngl2*Neq   +i*ngl+j;
+
+                            const dfloat r_latitude = atan(sinh(y[xid]/earth_radius)) * OneEightyOverPI;
+                            const dfloat r_h = Q[Fid];
+                            const dfloat r_hu = Q[Fid+ngl2];
+                            const dfloat r_hv = Q[Fid+ngl2+ngl2];
+
+                            const dfloat r_h_expo = pow(r_h,seventhirds);
+                            const dfloat r_momentum_sum = pow(r_hu,2)+pow(r_hv,2);
+                            const dfloat r_momentum_root = sqrt(r_momentum_sum);
+                            const dfloat r_ManningTerm1 = ManningCoeff *g_const/r_h_expo * r_momentum_root * r_hu;
+                            const dfloat r_ManningTerm2 = ManningCoeff *g_const/r_h_expo * r_momentum_root * r_hv;
+
+                            const dfloat r_f = two * w_angular *sin(r_latitude);
+                            const dfloat r_CoriolisTerm1 = r_f * r_hv;
+                            const dfloat r_CoriolisTerm1 = - r_f * r_hu;
+
+
+                            Qt[id+ngl2]         += -  r_ManningTerm1 +r_CoriolisTerm1 ;
+                            Qt[id+ngl2+ngl2]    += -  r_ManningTerm2  +r_CoriolisTerm2;
+
+                        }
+
+                }
+            }
+        }
+
+
+
+    }
+
+
+
+}

@@ -30,7 +30,8 @@ void ShareInputData(MPI_setup MPI,
                     int* KernelVersion,
                     int *KernelVersionSTD,
                     int *DiscBottom,
-                    int * PartialDryTreatment)
+                    int * PartialDryTreatment,
+                    int * FrictionTerms)
 {
 
 
@@ -64,7 +65,7 @@ void ShareInputData(MPI_setup MPI,
     MPI_Bcast (&*KernelVersionSTD,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast (&*DiscBottom,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast (&*PartialDryTreatment,1,MPI_INT,0,MPI_COMM_WORLD);
-
+    MPI_Bcast (&*FrictionTerms,1,MPI_INT,0,MPI_COMM_WORLD);
 //int *PlotVar,int *NumPlots,int *NumTimeChecks,int *Testcase, bool *ES,int *NumFlux, bool *FluxDifferencing, bool *Cartesian,int *rkorder, bool *rkSSP
 }
 

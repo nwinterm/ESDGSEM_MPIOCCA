@@ -37,7 +37,8 @@ void ReadInputFile(int *N,
                    int * KernelVersionSTD,
                    int * DiscBottom,
                    int * ReadInBottom,
-                   int * PartialDryTreatment);
+                   int * PartialDryTreatment,
+                   int * FrictionTerms);
 
 void ReadCartesianData(const int, const int, dfloat *xL,dfloat *xR,dfloat *yL,dfloat *yR, int *NelemX, int *NelemY,bool *PeriodicBD_X,bool *PeriodicBD_Y);
 void WriteFullMesh(const int NumNodes, const dfloat *x,const dfloat *y);

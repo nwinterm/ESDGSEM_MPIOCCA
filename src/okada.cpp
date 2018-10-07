@@ -25,7 +25,7 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
     const dfloat zero	= 0.0;
     const dfloat osixty= 1.0/60.0; //0.016666666667;
     const dfloat rad	= M_PI/180. ;//0.01745329252;
-    const dfloat earth_radius= 6.371e6; 	// should actually be = 6.378e6;
+    const dfloat earth_radius= 6.378e6; 	// was previously = 6.371e6 but that is not correct for lon/lat measurements
 
 
 
@@ -83,8 +83,8 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
 	// get lower values in degrees
         const dfloat xo = (xlower/earth_radius)*(180./M_PI);
         const dfloat yo = (atan(sinh(ylower/earth_radius))) * (180./M_PI);
- 
-                        
+
+
 
 
         const dfloat ang_l = rad*dl;
@@ -122,8 +122,8 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
                     int qid = ie*ngl2*Neq   +j*ngl+i;
                     int xid = ie*ngl2  + j*ngl+i;
                     // get actual x/y in METERS
-                    dfloat xloc = 1000*x[xid];
-                    dfloat yloc = 1000*y[xid];
+                    dfloat xloc = x[xid];
+                    dfloat yloc = y[xid];
 
 
 
@@ -169,7 +169,7 @@ void okada::okadamapFull(const int ngl, const dfloat x[],const dfloat y[], dfloa
                         const dfloat ud = (g1-g2-g3+g4)*dd;
 
                         // This seems to update the current water height by strike/dip slips ?? displacements?!
-                        q[qid] += (us+ud)/1000.0;
+                        q[qid] += (us+ud);
                     }
                 }
             }

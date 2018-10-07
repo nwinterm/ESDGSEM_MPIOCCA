@@ -35,7 +35,8 @@ public:
                              const int ArtificialViscosity,
                              const int DiscBottom,
                              const dfloat h_0,
-                             const int PartialDry);
+                             const int PartialDry,
+                             const int FrictionTerms);
     void buildDeviceKernels(const int KernelVersion,
                             const int KernelVersionSTD,
                             const int Testcase,
@@ -131,6 +132,8 @@ public:
     occa::kernel calcDiscBottomSurf;
     occa::kernel SurfaceKernelDiscBottom;
 
+    occa::kernel FrictionSource;
+
 
     occa::kernel preservePosivitity;
     occa::kernel calcAvg;
@@ -197,6 +200,7 @@ private:
     dfloat * J_global;
     dfloat * ViscPara_Global;
     int PartialDryTreatment;
+    int CalcFrictionTerms;
 
 
 
