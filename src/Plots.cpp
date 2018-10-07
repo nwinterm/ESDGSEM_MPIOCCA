@@ -41,14 +41,14 @@ void PlotSolution(const int Nelem, const int ngl,const int PlotVar, const dfloat
                         Qinv = 0.0;
                     }
 
-                    if (Q[id] > pow(10.0,2))
-                    {
-                        H=-1;
-                    }
-                    else
-                    {
+///                    if (Q[id] > pow(10.0,2))
+///                    {
+///                        H=-1;
+///                    }
+///                    else
+///                    {
                         H=Q[id]+b[xid];
-                    }
+///                    }
 
                     plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<<" \n";
 
