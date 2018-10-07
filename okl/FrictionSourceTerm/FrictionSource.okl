@@ -30,8 +30,8 @@ kernel void FrictionSource(const int Nelem,
                             const dfloat r_hu = Q[Fid+ngl2];
                             const dfloat r_hv = Q[Fid+ngl2+ngl2];
 
-                            const dfloat r_h_expo = pow(r_h,seventhirds);
-                            const dfloat r_momentum_sum = pow(r_hu,2)+pow(r_hv,2);
+                            const dfloat r_h_expo = pow(r_h,2.333); //pow(r_h,seventhirds);
+                            const dfloat r_momentum_sum = pow(r_hu,two)+pow(r_hv,two);
                             const dfloat r_momentum_root = sqrt(r_momentum_sum);
                             const dfloat r_ManningTerm1 = ManningCoeff *g_const/r_h_expo * r_momentum_root * r_hu;
                             const dfloat r_ManningTerm2 = ManningCoeff *g_const/r_h_expo * r_momentum_root * r_hv;
