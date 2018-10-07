@@ -42,6 +42,7 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="Cartesian.dat" />
+		<Unit filename="data/indianOceanFault1.txt" />
 		<Unit filename="include/Constants.hpp" />
 		<Unit filename="include/MPI_Communication.h" />
 		<Unit filename="include/MPI_setup.h" />

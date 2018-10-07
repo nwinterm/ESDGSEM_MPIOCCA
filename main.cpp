@@ -385,7 +385,7 @@ int main(int argc, char *argv[])
 
                     if (ReadInBottom)
                     {
-                        dfloat b_min = -7310;
+                        dfloat b_min = -7310.0;
                         //dfloat b_min = -9.0;
                         h_0 = -b_min;
                         dfloat zero = 0.0;
@@ -717,9 +717,9 @@ int main(int argc, char *argv[])
 
             cout <<"Now initializing okada displacements...      ";
         }
-        okada okadamap(Nelem);
+      ///  okada okadamap(Nelem);
 
-        okadamap.okadamapFull(ngl, x_phy,y_phy, q);
+      ///  okadamap.okadamapFull(ngl, x_phy,y_phy, q);
 
         if(MPI.rank==0)
         {
