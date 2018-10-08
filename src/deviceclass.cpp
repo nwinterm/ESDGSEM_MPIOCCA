@@ -642,7 +642,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
             mCheckpoints[3]=T/4.0;
             mCheckpoints[4]=T;
         }
-        if ((Testcase == 90)||(Testcase == 91))
+        if ((Testcase == 90)||(Testcase == 91)||(Testcase == 86)||(Testcase == 87))
         {
             if ((NumPlots==5)&& (T==9600))
             {

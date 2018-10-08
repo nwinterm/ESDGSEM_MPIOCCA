@@ -146,7 +146,6 @@
 		<Unit filename="src/SW2D.cpp" />
 		<Unit filename="src/basis.cpp" />
 		<Unit filename="src/deviceclass.cpp" />
-		<Unit filename="src/okada" />
 		<Unit filename="src/okada.cpp" />
 		<Extensions>
 			<code_completion />
