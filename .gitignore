@@ -6,3 +6,4 @@ obj/*
 nohup.out
 Results.txt
 
+*.layout
