@@ -21,7 +21,7 @@ void PlotSolution(const int Nelem, const int ngl,const int PlotVar, const dfloat
     case 1:
 
         plotfile <<"TITLE = H_solution.tec\n";
-        plotfile <<"VARIABLES = \"x\",\"y\",\"H\",\"u\",\"v\",\"bottom\"\n";
+        plotfile <<"VARIABLES = \"x\",\"y\",\"H\",\"hu\",\"hv\",\"bottom\"\n";
         for (int ie=0; ie<Nelem; ie++)
         {
             plotfile <<"ZONE I ="<<ngl<<",J="<<ngl<<",F=POINT\n";
@@ -41,16 +41,11 @@ void PlotSolution(const int Nelem, const int ngl,const int PlotVar, const dfloat
                         Qinv = 0.0;
                     }
 
-///                    if (Q[id] > pow(10.0,2))
-///                    {
-///                        H=-1;
-///                    }
-///                    else
-///                    {
-                        H=Q[id]+b[xid];
-///                    }
 
-                    plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<<" \n";
+                    H=Q[id]+b[xid];
+
+		    plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]<<" " << Q[id+ngl2+ngl2]<<" "<<b[xid]<<" \n";
+                    //plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<<" \n";
 
                 }
             }

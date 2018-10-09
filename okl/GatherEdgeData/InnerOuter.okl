@@ -31,7 +31,7 @@ kernel void CollectEdgeData(const int Nfaces,
                     const int isr           =EdgeData[8*ifa+3];      //side within right element
                     const int cpuL          =EdgeData[8*ifa+5];     // rank of cpuL
                     const int cpuR          =EdgeData[8*ifa+6];     // rank of cpuR
-                    const int increment = (1-ireversed)*(ngl-1-i) + ireversed*i;
+
 
                     int idL,idR;
                     const int edgeID=ifa*ngl*Neq + i ;   //for edge wise solution
@@ -39,8 +39,6 @@ kernel void CollectEdgeData(const int Nfaces,
 
 
 
-                    const dfloat nx = normx[edgeIDX];
-                    const dfloat ny = normy[edgeIDX];
                     dfloat qNodalL[Neq];
                     dfloat qNodalR[Neq];
 
@@ -120,7 +118,7 @@ kernel void CollectEdgeData(const int Nfaces,
 
 
 
-                        qNodalL[0]=5.f;//qNodalR[0];
+                        qNodalL[0]=qNodalR[0];
                         qNodalL[1]=zero;//qNodalR[1] ;
                         qNodalL[2]=zero;//qNodalR[2];
 
@@ -131,8 +129,8 @@ kernel void CollectEdgeData(const int Nfaces,
                     {
 
 
-                        qNodalR[0]=5.f;//qNodalL[0];
-                        qNodalR[1]=zero;//NodalL[1];
+                        qNodalR[0]=qNodalL[0];
+                        qNodalR[1]=zero;//qNodalL[1];
                         qNodalR[2]=zero;//qNodalL[2];
 
 

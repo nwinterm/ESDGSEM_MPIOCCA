@@ -31,7 +31,7 @@ kernel void SurfaceKernel(const int Nelem,
 
                         const int reversedOrder = ElemEdgeOrientation[ie*4 + iside];
                         //increment = j if order is correct, else increment = ngl-1-j
-                        const int increment  = reversedOrder*j + (1-reversedOrder)*(ngl-1 -j);
+                        const int increment  =reversedOrder*j + (1-reversedOrder)*(ngl-1 -j);
 
                         //THIS WAY THE STORAGE IN THE SHARED VARIABLES SHOULD ALWAYS BE IN THE CORRECT ORDER FOR THE LOCAL COORDINATES
 
@@ -89,7 +89,7 @@ kernel void SurfaceKernel(const int Nelem,
                         const int ifa = ElemToEdge[ie*4 + iside]-1;        //get id of element side
 
                         const int reversedOrder = ElemEdgeOrientation[ie*4 + iside];
-                        //increment = j if order is correct, else increment = ngl-1-j
+                        //increment = j if order is correct (==1), else increment = ngl-1-j
                         const int increment  = reversedOrder*j + (1-reversedOrder)*(ngl-1 -j);
 
                         //THIS WAY THE STORAGE IN THE SHARED VARIABLES SHOULD ALWAYS BE IN THE CORRECT ORDER FOR THE LOCAL COORDINATES

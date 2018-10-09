@@ -903,6 +903,7 @@ void basis :: LinfNorm(const dfloat Q[],const dfloat Q_exakt[],dfloat LinfError[
 
 		if (fabs(Q[id] - Q_exakt[id])>LinfError[0]){
 			maxErrorElement=ie;
+			//cout << "estimated value: " << Q[id] << " exact value " << Q_exakt[id] << "\n";
 		}
                 LinfError[0]  =  max(LinfError[0],fabs(Q[id] - Q_exakt[id]));
                 id+=ngl2;
