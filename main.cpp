@@ -557,19 +557,23 @@ int main(int argc, char *argv[])
         }
     }
 
-//for(int ie=0;ie<Nfaces;++ie){
-//	if (EdgeData[ie*8 + 4] == 0){
-//		cout << "\n face "<< ie << " is rotated for right element !\n  the normal is: \n" ;
-//
-//		for(int i=0;i<ngl;++i){
-//			int id = ie*ngl  +i ;
-//			cout << normalsX[id] << " ";
-//			cout << normalsY[id] << " ";
-//			dfloat  normalNorm = pow(normalsX[id],2) + pow(normalsY[id],2);
-//			cout  << " NORMALNORM: " << sqrt(normalNorm) <<" \n";
-//		}
-//	}
-//}
+    for(int ie=0; ie<Nfaces; ++ie)
+    {
+        if (EdgeData[ie*8 + 4] == 0)
+        {
+            cout << "\n face "<< ie << " is rotated for right element !\n  the normal is: \n" ;
+        }
+
+        for(int i=0; i<ngl; ++i)
+        {
+            int id = ie*ngl  +i ;
+            cout << normalsX[id] << " ";
+            cout << normalsY[id] << " ";
+            dfloat  normalNorm = pow(normalsX[id],2) + pow(normalsY[id],2);
+            cout  << " NORMALNORM: " << sqrt(normalNorm) <<" \n";
+
+        }
+    }
 
 
     if(MPI.rank==0)
@@ -654,38 +658,45 @@ int main(int argc, char *argv[])
 //MetricIdentities
     dfloat * MetricIdentities1 = (dfloat*) calloc(Nelem*ngl2,sizeof(dfloat));
     dfloat * MetricIdentities2 = (dfloat*) calloc(Nelem*ngl2,sizeof(dfloat));
-			for (int ie=0;ie<Nelem;ie++){
-				for(int j=0;j<ngl;++j){
-					for(int i=0;i<ngl;++i){
-						int ele_ij = ie*ngl2 +  j*ngl+i;
-						int loc_ij = j*ngl+i;
-						for (int l=0;l<ngl;l++){
+    for (int ie=0; ie<Nelem; ie++)
+    {
+        for(int j=0; j<ngl; ++j)
+        {
+            for(int i=0; i<ngl; ++i)
+            {
+                int ele_ij = ie*ngl2 +  j*ngl+i;
+                int loc_ij = j*ngl+i;
+                for (int l=0; l<ngl; l++)
+                {
 
-							int loc_il = i*ngl+l;
-							int loc_jl = j*ngl+l;
-							int ele_il = ie*ngl2 + i*ngl+l;
-							int ele_lj = ie*ngl2 + l*ngl+j;
-							MetricIdentities1[ele_ij] += Dmat0[loc_jl] *y_eta[ele_il]- Dmat0[loc_il] *y_xi[ele_lj];
-							MetricIdentities2[ele_ij] += -Dmat0[loc_jl] *x_eta[ele_il]+ Dmat0[loc_il] *x_xi[ele_lj];
-						}
-					}
-				  }
-			}
+                    int loc_il = i*ngl+l;
+                    int loc_jl = j*ngl+l;
+                    int ele_il = ie*ngl2 + i*ngl+l;
+                    int ele_lj = ie*ngl2 + l*ngl+j;
+                    MetricIdentities1[ele_ij] += Dmat0[loc_jl] *y_eta[ele_il]- Dmat0[loc_il] *y_xi[ele_lj];
+                    MetricIdentities2[ele_ij] += -Dmat0[loc_jl] *x_eta[ele_il]+ Dmat0[loc_il] *x_xi[ele_lj];
+                }
+            }
+        }
+    }
 
-			for (int ie=0;ie<Nelem;ie++){
-				for(int j=0;j<ngl;++j){
-					for(int i=0;i<ngl;++i){
-						int id = ie*ngl2+  j*ngl+i;
-					if(abs(MetricIdentities1[id]) >0.000000001)
-					   cout <<"Metric Identities1 for Ele: " << ie <<" "<<MetricIdentities1[id]<<"\n ";
-					if(abs(MetricIdentities2[id]) >0.000000001)
-					   cout <<"Metric Identities2 for Ele: " << ie <<" "<<MetricIdentities2[id]<<"\n  ";
-				  }
+    for (int ie=0; ie<Nelem; ie++)
+    {
+        for(int j=0; j<ngl; ++j)
+        {
+            for(int i=0; i<ngl; ++i)
+            {
+                int id = ie*ngl2+  j*ngl+i;
+                if(abs(MetricIdentities1[id]) >0.000000001)
+                    cout <<"Metric Identities1 for Ele: " << ie <<" "<<MetricIdentities1[id]<<"\n ";
+                if(abs(MetricIdentities2[id]) >0.000000001)
+                    cout <<"Metric Identities2 for Ele: " << ie <<" "<<MetricIdentities2[id]<<"\n  ";
+            }
 
-				}
-			}
-free(MetricIdentities1);
-free(MetricIdentities2);
+        }
+    }
+    free(MetricIdentities1);
+    free(MetricIdentities2);
 
 
 
