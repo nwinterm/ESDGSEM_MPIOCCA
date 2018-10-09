@@ -336,11 +336,11 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
         addS = device.buildKernelFromSource("okl/ManufacturedSolutions/S_ConvTest5.okl","addS",info);
         break;
     }
-    case 6:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
-    {
-        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/InnerOuter.okl","CollectEdgeData",info);
-        break;
-    }
+//    case 6:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
+//    {
+//        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/InnerOuter.okl","CollectEdgeData",info);
+//        break;
+//    }
     case 32:  // Inflow Boundaries for 3 Mound PP test case
     {
         CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/3MoundInflow.okl","CollectEdgeData",info);
