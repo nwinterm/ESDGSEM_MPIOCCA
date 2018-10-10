@@ -661,6 +661,7 @@ int main(int argc, char *argv[])
 //MetricIdentities
     dfloat * MetricIdentities1 = (dfloat*) calloc(Nelem*ngl2,sizeof(dfloat));
     dfloat * MetricIdentities2 = (dfloat*) calloc(Nelem*ngl2,sizeof(dfloat));
+    dfloat maxMetricIDError=0.0;
     for (int ie=0; ie<Nelem; ie++)
     {
         for(int j=0; j<ngl; ++j)
@@ -694,10 +695,13 @@ int main(int argc, char *argv[])
                     cout <<"Metric Identities1 for Ele: " << ie <<" "<<MetricIdentities1[id]<<"\n ";
                 if(abs(MetricIdentities2[id]) >0.000000001)
                     cout <<"Metric Identities2 for Ele: " << ie <<" "<<MetricIdentities2[id]<<"\n  ";
+                maxMetricIDError = max(maxMetricIDError,abs(MetricIdentities1[id]));
+                maxMetricIDError = max(maxMetricIDError,abs(MetricIdentities2[id]));
             }
 
         }
     }
+    cout << "Maximum Error in Approximation of Metric Identities is: " << maxMetricIDError << " !\n";
     free(MetricIdentities1);
     free(MetricIdentities2);
 
