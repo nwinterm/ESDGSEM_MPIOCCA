@@ -97,7 +97,7 @@ basis::basis(const int Ninput, const int FluxDifferencing)
             Dstrong[i*ngl+j]=D[i*ngl+j];
             if (FluxDifferencing)
             {
-                D[i*ngl+j]=2*D[i*ngl+j];
+                D[i*ngl+j]=2.0*D[i*ngl+j];
             }
         }
     }
@@ -684,7 +684,7 @@ void basis :: LGLNodesAndWeights()
 
         for (int j=1; j<=floor((N)/2.0); j++)
         {
-            x_GL[j] = -cos((j+1.0/4.0)*PI/N - 3.0/(8.0*N*PI)*1.0/(j+1.0/4.0));
+            x_GL[j] = -cos((j+1.0/4.0)*M_PI/N - 3.0/(8.0*N*M_PI)*1.0/(j+1.0/4.0));
 
             for (int k=0; k<=newton_it; k++)
             {
@@ -742,7 +742,7 @@ void basis :: GaussNodesAndWeights()
 
         for (int j=0; j<floor((N+1.0)/2.0); j++)
         {
-            x_Gauss[j] = -cos((2.0*j+1.0)/(2.0*N+2.0)*PI);
+            x_Gauss[j] = -cos((2.0*j+1.0)/(2.0*N+2.0)*M_PI);
 
             for (int k=0; k<=newton_it; k++)
             {

@@ -77,8 +77,6 @@
 		<Unit filename="okl/DG/FindLambdaMax.okl" />
 		<Unit filename="okl/DG/MemCopyComparison.okl" />
 		<Unit filename="okl/DG/SurfaceKernel.okl" />
-		<Unit filename="okl/DG/SurfaceKernel_V0.okl" />
-		<Unit filename="okl/DG/SurfaceKernel_V1.okl" />
 		<Unit filename="okl/DG/VolumeKernelFluxDiffV99.okl">
 			<Option target="Release" />
 		</Unit>
