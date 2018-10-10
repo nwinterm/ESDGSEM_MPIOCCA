@@ -959,7 +959,7 @@ void Mesh::ReadMesh(const string meshFile)
         else
         {
             curved=true;
-
+        }
         // Determine if the boundary curve is given.
         // If it is not, then we need to build the boundary curve from the two nodes.
         // If it is, simply copy over the boundary curve information to the intermediate storage class.
