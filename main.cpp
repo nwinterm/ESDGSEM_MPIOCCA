@@ -399,7 +399,9 @@ int main(int argc, char *argv[])
 
         if (ReadInBottom)
         {
+            cout << "Writing Out Full Mesh ...\n";
             WriteFullMesh(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global);
+            cout << "... DONE\n";
         }
 
         if (ReadInBottom)
