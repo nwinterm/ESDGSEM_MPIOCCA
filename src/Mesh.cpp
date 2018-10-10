@@ -963,7 +963,8 @@ void Mesh::ReadMesh(const string meshFile)
 
         // If none of the gammas are given, then we have a fully straight sided quadrilateral.
         // We do not need to set the gammas in this case.
-        if (!(is_gamma_given[0] || is_gamma_given[1] || is_gamma_given[2] || is_gamma_given[3]))
+        if(true)
+    ///    if (!(is_gamma_given[0] || is_gamma_given[1] || is_gamma_given[2] || is_gamma_given[3]))
         {
             curved=false;
         }//ElementData[eleInfoNo*i + 4 ]=1;    // side is straight sided
@@ -985,7 +986,8 @@ void Mesh::ReadMesh(const string meshFile)
                 cornersb[j] = b_nodes[CornerIDs[j]];
             }
             //if we dont have a given Gamma curve, we get one by interpolation (chebychev)
-            if (is_gamma_given[j] == false)
+              if(true)
+    ///if (is_gamma_given[j] == false)
             {
 
                 unsigned corner_initial;
@@ -1361,9 +1363,11 @@ void Mesh :: TransfiniteQuadMetrics(const dfloat * Gamma1X,const dfloat * Gamma1
 
     *X_psi = 0.5*(Xcomp1[1]-Xcomp1[3]+(1.0-eta)*Xpcomp1[0]+(1.0+eta)*Xpcomp1[2]) -  0.25*((1.0-eta)*(Xref1[1]-Xref1[0])+(1.0+eta)*(Xref1[2]-Xref1[3]));
 
-    *Y_psi = 0.5*(Xcomp2[1]-Xcomp2[3]+(1.0-eta)*Xpcomp2[0]+(1.0+eta)*Xpcomp2[2]) -0.25*((1.0-eta)*(Xref2[1]-Xref2[0])+(1.0+eta)*(Xref2[2]-Xref2[3]));
-
     *X_eta = 0.5*((1.0-psi)*Xpcomp1[3]+(1.0+psi)*Xpcomp1[1]+Xcomp1[2]-Xcomp1[0]) -  0.25*((1.0-psi)*(Xref1[3]-Xref1[0])+(1.0+psi)*(Xref1[2]-Xref1[1]));
+
+
+
+    *Y_psi = 0.5*(Xcomp2[1]-Xcomp2[3]+(1.0-eta)*Xpcomp2[0]+(1.0+eta)*Xpcomp2[2]) -0.25*((1.0-eta)*(Xref2[1]-Xref2[0])+(1.0+eta)*(Xref2[2]-Xref2[3]));
 
     *Y_eta = 0.5*((1.0-psi)*Xpcomp2[3]+(1.0+psi)*Xpcomp2[1]+Xcomp2[2]-Xcomp2[0]) - 0.25*((1.0-psi)*(Xref2[3]-Xref2[0])+(1.0+psi)*(Xref2[2]-Xref2[1]));
 
