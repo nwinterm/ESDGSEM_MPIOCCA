@@ -360,12 +360,24 @@ int main(int argc, char *argv[])
         b_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
 
         x_phy_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
+
+
         y_phy_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
 
 
+//            cout << "Writing Out Full Mesh ...\n";
+//            WriteFullMesh(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global);
+//            cout << "... DONE\n";
 
 
-
+        if (Cartesian)
+        {
+            if (ReadInBottom)
+            {
+                ReadFullMesh(NoSpaceDofs_global, b_global, &h_0);
+                cout << " Water displacement: " << h_0 << "\n";
+            }
+        }
         for(int ie=0; ie<Nelem_global; ++ie)
         {
 
@@ -382,13 +394,14 @@ int main(int argc, char *argv[])
 
                     if (ReadInBottom)
                     {
-                        dfloat b_min = -7310.0;
-                        //dfloat b_min = -9.0;
-                        h_0 = -b_min;
-                        dfloat zero = 0.0;
-                        //b_global[id]    =h_0 + min(zero,DGMesh.b_global[id]);
+                        if (!Cartesian){
+                            dfloat b_min = -7310.0;
+                            h_0 = -b_min;
+                            b_global[id]    =   h_0 + DGMesh.b_global[id];
+                        }else{
+                            b_global[id]    =   h_0 + b_global[id];
+                        }
 
-                        b_global[id]    =   h_0 + DGMesh.b_global[id];
                     }
 
 
@@ -398,23 +411,14 @@ int main(int argc, char *argv[])
         }
 
 
-//            cout << "Writing Out Full Mesh ...\n";
-//            WriteFullMesh(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global);
-//            cout << "... DONE\n";
 
 
-        if (ReadInBottom)
-        {
-            //ReadFullMesh(NoSpaceDofs_global, b_global, &h_0);
-            cout << " Water displacement: " << h_0 << "\n";
-        }
-        else
+
+        if (!ReadInBottom)
         {
             cout << "Not reading bottom from file, taking initial data as prescribed for test case!\n";
             SW_Problem.InitB(0,DGMeshPartition,Nelem_global,ngl,ngl2,x_phy_global,y_phy_global,b_global);
         }
-
-
 
 
 

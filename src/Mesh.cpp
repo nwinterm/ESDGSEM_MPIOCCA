@@ -1159,96 +1159,96 @@ void Mesh::ReadMesh(const string meshFile)
 
 
 
-        /// OVERWRITE EVERYTHING SUCH WE ONLY HAVE STRAIGHT SIDES
-        curved=false;
-        for (unsigned j = 0; j < 4; ++j)
-        {
-            //initialise the corners arrays or set it to the current corner nodes
-            cornersX[j] = x_nodes[CornerIDs[j]];
-            cornersY[j] = y_nodes[CornerIDs[j]];
-            if(ReadBottom)
-            {
-                cornersb[j] = b_nodes[CornerIDs[j]];
-            }
-            //if we dont have a given Gamma curve, we get one by interpolation (chebychev)
-
-                unsigned corner_initial;
-                unsigned corner_final;
-                switch(j)
-                {
-                case 0:
-                    corner_initial= CornerIDs[ 0 ];
-                    corner_final= CornerIDs[ 1 ];
-                    break;
-                case 1:
-                    corner_initial= CornerIDs[ 1 ];
-                    corner_final= CornerIDs[ 2 ];
-                    break;
-                case 2:
-                    corner_initial= CornerIDs[ 3 ];
-                    corner_final= CornerIDs[ 2 ];
-                    break;
-                case 3:
-                    corner_initial= CornerIDs[ 0 ];
-                    corner_final= CornerIDs[ 3 ];
-                    break;
-                }
-                dfloat x_initial = x_nodes[corner_initial];
-                dfloat x_final = x_nodes[corner_final];
-
-                dfloat y_initial = y_nodes[corner_initial];
-                dfloat y_final = y_nodes[corner_final];
-                if(ReadBottom)
-                {
-                    b_initial = b_nodes[corner_initial];
-                    b_final = b_nodes[corner_final];
-                }
-                for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k)
-                {
-                    dfloat interpolated_x = ((x_final - x_initial) * x_cheby[k]+ x_initial + x_final)/2.0;
-                    dfloat interpolated_y = ((y_final - y_initial) * x_cheby[k] + y_initial + y_final)/2.0;
-                    if(ReadBottom)
-                    {
-                        interpolated_b = ((b_final - b_initial) * x_cheby[k] + b_initial + b_final)/2.0;
-                    }
-                    switch(j)
-                    {
-                    case 0:
-                        Gamma1X[k]= interpolated_x;
-                        Gamma1Y[k]= interpolated_y;
-                        if(ReadBottom)
-                        {
-                            Gamma1b[k] = interpolated_b;
-                        }
-                        break;
-                    case 1:
-                        Gamma2X[k]= interpolated_x;
-                        Gamma2Y[k]= interpolated_y;
-                        if(ReadBottom)
-                        {
-                            Gamma2b[k] = interpolated_b;
-                        }
-                        break;
-                    case 2:
-                        Gamma3X[k]= interpolated_x;
-                        Gamma3Y[k]= interpolated_y;
-                        if(ReadBottom)
-                        {
-                            Gamma3b[k] = interpolated_b;
-                        }
-                        break;
-                    case 3:
-                        Gamma4X[k]= interpolated_x;
-                        Gamma4Y[k]= interpolated_y;
-                        if(ReadBottom)
-                        {
-                            Gamma4b[k] = interpolated_b;
-                        }
-                        break;
-                    }
-                }
-
-        }
+//        /// OVERWRITE EVERYTHING SUCH WE ONLY HAVE STRAIGHT SIDES
+//        curved=false;
+//        for (unsigned j = 0; j < 4; ++j)
+//        {
+//            //initialise the corners arrays or set it to the current corner nodes
+//            cornersX[j] = x_nodes[CornerIDs[j]];
+//            cornersY[j] = y_nodes[CornerIDs[j]];
+//            if(ReadBottom)
+//            {
+//                cornersb[j] = b_nodes[CornerIDs[j]];
+//            }
+//            //if we dont have a given Gamma curve, we get one by interpolation (chebychev)
+//
+//                unsigned corner_initial;
+//                unsigned corner_final;
+//                switch(j)
+//                {
+//                case 0:
+//                    corner_initial= CornerIDs[ 0 ];
+//                    corner_final= CornerIDs[ 1 ];
+//                    break;
+//                case 1:
+//                    corner_initial= CornerIDs[ 1 ];
+//                    corner_final= CornerIDs[ 2 ];
+//                    break;
+//                case 2:
+//                    corner_initial= CornerIDs[ 3 ];
+//                    corner_final= CornerIDs[ 2 ];
+//                    break;
+//                case 3:
+//                    corner_initial= CornerIDs[ 0 ];
+//                    corner_final= CornerIDs[ 3 ];
+//                    break;
+//                }
+//                dfloat x_initial = x_nodes[corner_initial];
+//                dfloat x_final = x_nodes[corner_final];
+//
+//                dfloat y_initial = y_nodes[corner_initial];
+//                dfloat y_final = y_nodes[corner_final];
+//                if(ReadBottom)
+//                {
+//                    b_initial = b_nodes[corner_initial];
+//                    b_final = b_nodes[corner_final];
+//                }
+//                for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k)
+//                {
+//                    dfloat interpolated_x = ((x_final - x_initial) * x_cheby[k]+ x_initial + x_final)/2.0;
+//                    dfloat interpolated_y = ((y_final - y_initial) * x_cheby[k] + y_initial + y_final)/2.0;
+//                    if(ReadBottom)
+//                    {
+//                        interpolated_b = ((b_final - b_initial) * x_cheby[k] + b_initial + b_final)/2.0;
+//                    }
+//                    switch(j)
+//                    {
+//                    case 0:
+//                        Gamma1X[k]= interpolated_x;
+//                        Gamma1Y[k]= interpolated_y;
+//                        if(ReadBottom)
+//                        {
+//                            Gamma1b[k] = interpolated_b;
+//                        }
+//                        break;
+//                    case 1:
+//                        Gamma2X[k]= interpolated_x;
+//                        Gamma2Y[k]= interpolated_y;
+//                        if(ReadBottom)
+//                        {
+//                            Gamma2b[k] = interpolated_b;
+//                        }
+//                        break;
+//                    case 2:
+//                        Gamma3X[k]= interpolated_x;
+//                        Gamma3Y[k]= interpolated_y;
+//                        if(ReadBottom)
+//                        {
+//                            Gamma3b[k] = interpolated_b;
+//                        }
+//                        break;
+//                    case 3:
+//                        Gamma4X[k]= interpolated_x;
+//                        Gamma4Y[k]= interpolated_y;
+//                        if(ReadBottom)
+//                        {
+//                            Gamma4b[k] = interpolated_b;
+//                        }
+//                        break;
+//                    }
+//                }
+//
+//        }
 
 
 
