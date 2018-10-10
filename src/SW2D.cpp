@@ -725,7 +725,7 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
     }
     case 86:      // Completely wet WB Test for Ocean Mesh
     {
-        h=2000.0+h_0 - b;
+        h=20000.0+h_0 - b;
         v= 0.0;
         w= 0.0;
         break;
