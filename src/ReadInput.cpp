@@ -342,7 +342,7 @@ void ReadFullMesh(const int NumNodes, dfloat *b, dfloat * h_0)
         b_min = min(b_min, b_input);
     }
     InputStream.close();
-    *h_0 = - b_min;
+    *h_0 = - floor(b_min);
     for (unsigned i = 0; i < NumNodes; ++i)
     {
         b[i] = *h_0 + b[i];
