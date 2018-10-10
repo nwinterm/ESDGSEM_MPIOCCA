@@ -955,11 +955,11 @@ void Mesh::ReadMesh(const string meshFile)
         ///if(true)
         if (!(is_gamma_given[0] || is_gamma_given[1] || is_gamma_given[2] || is_gamma_given[3]))
         {
-            curved=false;
+            curved=false;}
         else
         {
-            curved=true;
-        }
+            curved=true;}
+
         // Determine if the boundary curve is given.
         // If it is not, then we need to build the boundary curve from the two nodes.
         // If it is, simply copy over the boundary curve information to the intermediate storage class.
