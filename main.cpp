@@ -402,7 +402,7 @@ int main(int argc, char *argv[])
                         }
                         else
                         {
-                            b_global[id]    =   h_0 + b_global[id];
+                           // b_global[id]    =   h_0 + b_global[id];
                         }
 
                     }
