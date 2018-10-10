@@ -1677,7 +1677,7 @@ void Mesh :: LagrangeInterpolantDerivative(const dfloat xpt,const dfloat* functi
 
     for (int j = 0; j<=m_order_of_boundary_edges; j++)
     {
-        if(fabs(xpt-x_cheby[j])<pow(10.0,-14))
+        if(fabs(xpt-x_cheby[j])<pow(10.0,-12))
         {
             atNode = true;
             p = functionvals[j];
@@ -1727,7 +1727,7 @@ void Mesh :: LagrangeInterpolation(const dfloat xpt,const dfloat* functionvals,d
 
     for (int j = 0; j<=m_order_of_boundary_edges; j++)
     {
-        if(fabs(xpt-x_cheby[j])<pow(10.0,-14))
+        if(fabs(xpt-x_cheby[j])<pow(10.0,-12))
         {
             var1=true;
             *output = functionvals[j];
