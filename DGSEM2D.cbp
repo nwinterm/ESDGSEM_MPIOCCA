@@ -117,9 +117,6 @@
 		<Unit filename="okl/RiemannSolvers/calcESFluxRotated.okl">
 			<Option target="Release" />
 		</Unit>
-		<Unit filename="okl/RiemannSolvers/calcESFlux_V0.okl">
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="okl/RiemannSolvers/calcLFTypeESFlux.okl" />
 		<Unit filename="okl/RiemannSolvers/calcLaxFriedrich.okl" />
 		<Unit filename="okl/RungeKutta/UpdateKernelLS.okl" />
