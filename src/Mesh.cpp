@@ -963,8 +963,8 @@ void Mesh::ReadMesh(const string meshFile)
 
         // If none of the gammas are given, then we have a fully straight sided quadrilateral.
         // We do not need to set the gammas in this case.
-        if(true)
-    ///    if (!(is_gamma_given[0] || is_gamma_given[1] || is_gamma_given[2] || is_gamma_given[3]))
+        ///if(true)
+        if (!(is_gamma_given[0] || is_gamma_given[1] || is_gamma_given[2] || is_gamma_given[3]))
         {
             curved=false;
         }//ElementData[eleInfoNo*i + 4 ]=1;    // side is straight sided
@@ -986,8 +986,8 @@ void Mesh::ReadMesh(const string meshFile)
                 cornersb[j] = b_nodes[CornerIDs[j]];
             }
             //if we dont have a given Gamma curve, we get one by interpolation (chebychev)
-              if(true)
-    ///if (is_gamma_given[j] == false)
+            /// if(true)
+            if (is_gamma_given[j] == false)
             {
 
                 unsigned corner_initial;
@@ -1078,7 +1078,7 @@ void Mesh::ReadMesh(const string meshFile)
             }
             else // is_gamma_given is true
             {
-//		cout << "ACTUALLY READING IN GAMMA CURVE!\n";
+
                 curved =true;
                 for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k)
                 {
