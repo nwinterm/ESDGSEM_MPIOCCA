@@ -567,23 +567,23 @@ int main(int argc, char *argv[])
         }
     }
 
-    for(int ie=0; ie<Nfaces; ++ie)
-    {
-        if (EdgeData[ie*8 + 4] == 0)
-        {
-            cout << "\n face "<< ie << " is rotated for right element !\n  the normal is: \n" ;
-        }
-
-        for(int i=0; i<ngl; ++i)
-        {
-            int id = ie*ngl  +i ;
-            cout << normalsX[id] << " ";
-            cout << normalsY[id] << " ";
-            dfloat  normalNorm = pow(normalsX[id],2) + pow(normalsY[id],2);
-            cout  << " NORMALNORM: " << sqrt(normalNorm) <<" \n";
-
-        }
-    }
+//    for(int ie=0; ie<Nfaces; ++ie)
+//    {
+//        if (EdgeData[ie*8 + 4] == 0)
+//        {
+//            cout << "\n face "<< ie << " is rotated for right element !\n  the normal is: \n" ;
+//        }
+//
+//        for(int i=0; i<ngl; ++i)
+//        {
+//            int id = ie*ngl  +i ;
+//            cout << normalsX[id] << " ";
+//            cout << normalsY[id] << " ";
+//            dfloat  normalNorm = pow(normalsX[id],2) + pow(normalsY[id],2);
+//            cout  << " NORMALNORM: " << sqrt(normalNorm) <<" \n";
+//
+//        }
+//    }
 
 
     if(MPI.rank==0)
