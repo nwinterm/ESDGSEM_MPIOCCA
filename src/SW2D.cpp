@@ -758,10 +758,8 @@ void SW2D::InitQNodal(const dfloat x,const dfloat y, dfloat q[],const dfloat t,c
 
     case 90:      /// Tsunami with okada  all wet (for meter mesh now)
     {
-        //dfloat zero = 0.0;
-        //h=max(zero,h_0-b);
-        dfloat two = 2000.0;
-        h=h_0+2000.0-b;
+
+        h=h_0+20000.0-b;
         v= 0.0;
         w= 0.0;
         break;
