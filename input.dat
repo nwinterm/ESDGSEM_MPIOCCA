@@ -1,8 +1,8 @@
-meshFile=meshFiles/CircleInCircle-easy.mesh
+meshFile=meshFiles/CircleInCircle-straightsides.mesh
 N=6
 CFL=0.1
 DFL=0.01
-T=10.0
+T=100.0
 g_const=9.81
 ArtificialViscosity=0
 PositivityPreserving=0
