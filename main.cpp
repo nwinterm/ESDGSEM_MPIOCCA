@@ -691,10 +691,10 @@ int main(int argc, char *argv[])
             for(int i=0; i<ngl; ++i)
             {
                 int id = ie*ngl2+  j*ngl+i;
-                if(abs(MetricIdentities1[id]) >0.000000001)
-                    cout <<"Metric Identities1 for Ele: " << ie <<" "<<MetricIdentities1[id]<<"\n ";
-                if(abs(MetricIdentities2[id]) >0.000000001)
-                    cout <<"Metric Identities2 for Ele: " << ie <<" "<<MetricIdentities2[id]<<"\n  ";
+//                if(abs(MetricIdentities1[id]) >0.000000001)
+//                    cout <<"Metric Identities1 for Ele: " << ie <<" "<<MetricIdentities1[id]<<"\n ";
+//                if(abs(MetricIdentities2[id]) >0.000000001)
+//                    cout <<"Metric Identities2 for Ele: " << ie <<" "<<MetricIdentities2[id]<<"\n  ";
                 maxMetricIDError = max(maxMetricIDError,abs(MetricIdentities1[id]));
                 maxMetricIDError = max(maxMetricIDError,abs(MetricIdentities2[id]));
             }
