@@ -345,6 +345,6 @@ void ReadFullMesh(const int NumNodes, dfloat *b, dfloat * h_0)
     *h_0 = - b_min;
     for (unsigned i = 0; i < NumNodes; ++i)
     {
-        b[i] = *h_0 + b_input;
+        b[i] = *h_0 + b[i];
     }
 }
