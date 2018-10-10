@@ -288,14 +288,17 @@ void WriteFullMesh(const int NumNodes, const dfloat *x,const dfloat *y)
 
 //,dfloat T, dfloat g_const
 
-
+const dfloat earth_radius= 6.378e6;
     std::ofstream OutputStream;
     string filename="FullMesh.txt";
     OutputStream.open(filename.c_str());
     for(int inode=0; inode<NumNodes; ++inode)
     {
 
-        OutputStream << x[inode] << " " << y[inode] << "\n";
+
+        dfloat x_degree= (x[inode]/earth_radius)*(180./M_PI);
+        dfloat y_degree= (atan(sinh(y[inode]/earth_radius))) * (180./M_PI);
+        OutputStream << x_degree << " " << y_degree << "\n";
 
     }
     OutputStream.close();
