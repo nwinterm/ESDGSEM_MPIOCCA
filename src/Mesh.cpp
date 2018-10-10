@@ -713,22 +713,11 @@ void Mesh::ReadMesh(const string meshFile)
 
     for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k)
     {
-        x_cheby[k]= -cos(k * PI / m_order_of_boundary_edges);   // k = m_order_of_boundary_edges/2 => x_cheby(k+1) = -cos(PI/2) = 0
+        x_cheby[k]= -cos(k * M_PI / m_order_of_boundary_edges);   // k = m_order_of_boundary_edges/2 => x_cheby(k+1) = -cos(PI/2) = 0
     }
     //calculate barycentric weights for chebyshev nodes
     BarycentricWeights();
-//cout << "m_order_of_bd_edges " <<m_order_of_boundary_edges <<"\n";
-//    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k)
-//    {
-//        cout << "Bary Weights ("<<k<<") : "<<w_bary[k] <<"\n";
-//
-//    }
-//    for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k)
-//    {
-//        cout << "x_cheby ("<<k<<") : "<<x_cheby[k] <<"\n";
-//
-//    }
-//cout << "Continuing \n";
+
 
 
     for (unsigned i = 0; i < m_num_nodes; ++i)
@@ -967,11 +956,9 @@ void Mesh::ReadMesh(const string meshFile)
         if (!(is_gamma_given[0] || is_gamma_given[1] || is_gamma_given[2] || is_gamma_given[3]))
         {
             curved=false;
-        }//ElementData[eleInfoNo*i + 4 ]=1;    // side is straight sided
         else
         {
             curved=true;
-        }//ElementData[eleInfoNo*i + 4 ]=0;    // side is curved
 
         // Determine if the boundary curve is given.
         // If it is not, then we need to build the boundary curve from the two nodes.
@@ -986,13 +973,10 @@ void Mesh::ReadMesh(const string meshFile)
                 cornersb[j] = b_nodes[CornerIDs[j]];
             }
             //if we dont have a given Gamma curve, we get one by interpolation (chebychev)
-            /// if(true)
             if (is_gamma_given[j] == false)
             {
-
                 unsigned corner_initial;
                 unsigned corner_final;
-
                 switch(j)
                 {
                 case 0:
@@ -1011,10 +995,7 @@ void Mesh::ReadMesh(const string meshFile)
                     corner_initial= CornerIDs[ 0 ];
                     corner_final= CornerIDs[ 3 ];
                     break;
-
                 }
-
-
                 dfloat x_initial = x_nodes[corner_initial];
                 dfloat x_final = x_nodes[corner_final];
 
@@ -1027,15 +1008,12 @@ void Mesh::ReadMesh(const string meshFile)
                 }
                 for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k)
                 {
-
-
                     dfloat interpolated_x = ((x_final - x_initial) * x_cheby[k]+ x_initial + x_final)/2.0;
                     dfloat interpolated_y = ((y_final - y_initial) * x_cheby[k] + y_initial + y_final)/2.0;
                     if(ReadBottom)
                     {
                         interpolated_b = ((b_final - b_initial) * x_cheby[k] + b_initial + b_final)/2.0;
                     }
-
                     switch(j)
                     {
                     case 0:
@@ -1070,11 +1048,8 @@ void Mesh::ReadMesh(const string meshFile)
                             Gamma4b[k] = interpolated_b;
                         }
                         break;
-
                     }
                 }
-
-
             }
             else // is_gamma_given is true
             {
@@ -1178,6 +1153,142 @@ void Mesh::ReadMesh(const string meshFile)
                 }
             }
         }
+
+
+
+
+
+
+        /// OVERWRITE EVERYTHING SUCH WE ONLY HAVE STRAIGHT SIDES
+        curved=false;
+        for (unsigned j = 0; j < 4; ++j)
+        {
+            //initialise the corners arrays or set it to the current corner nodes
+            cornersX[j] = x_nodes[CornerIDs[j]];
+            cornersY[j] = y_nodes[CornerIDs[j]];
+            if(ReadBottom)
+            {
+                cornersb[j] = b_nodes[CornerIDs[j]];
+            }
+            //if we dont have a given Gamma curve, we get one by interpolation (chebychev)
+
+                unsigned corner_initial;
+                unsigned corner_final;
+                switch(j)
+                {
+                case 0:
+                    corner_initial= CornerIDs[ 0 ];
+                    corner_final= CornerIDs[ 1 ];
+                    break;
+                case 1:
+                    corner_initial= CornerIDs[ 1 ];
+                    corner_final= CornerIDs[ 2 ];
+                    break;
+                case 2:
+                    corner_initial= CornerIDs[ 3 ];
+                    corner_final= CornerIDs[ 2 ];
+                    break;
+                case 3:
+                    corner_initial= CornerIDs[ 0 ];
+                    corner_final= CornerIDs[ 3 ];
+                    break;
+                }
+                dfloat x_initial = x_nodes[corner_initial];
+                dfloat x_final = x_nodes[corner_final];
+
+                dfloat y_initial = y_nodes[corner_initial];
+                dfloat y_final = y_nodes[corner_final];
+                if(ReadBottom)
+                {
+                    b_initial = b_nodes[corner_initial];
+                    b_final = b_nodes[corner_final];
+                }
+                for (unsigned k = 0; k <= m_order_of_boundary_edges; ++k)
+                {
+                    dfloat interpolated_x = ((x_final - x_initial) * x_cheby[k]+ x_initial + x_final)/2.0;
+                    dfloat interpolated_y = ((y_final - y_initial) * x_cheby[k] + y_initial + y_final)/2.0;
+                    if(ReadBottom)
+                    {
+                        interpolated_b = ((b_final - b_initial) * x_cheby[k] + b_initial + b_final)/2.0;
+                    }
+                    switch(j)
+                    {
+                    case 0:
+                        Gamma1X[k]= interpolated_x;
+                        Gamma1Y[k]= interpolated_y;
+                        if(ReadBottom)
+                        {
+                            Gamma1b[k] = interpolated_b;
+                        }
+                        break;
+                    case 1:
+                        Gamma2X[k]= interpolated_x;
+                        Gamma2Y[k]= interpolated_y;
+                        if(ReadBottom)
+                        {
+                            Gamma2b[k] = interpolated_b;
+                        }
+                        break;
+                    case 2:
+                        Gamma3X[k]= interpolated_x;
+                        Gamma3Y[k]= interpolated_y;
+                        if(ReadBottom)
+                        {
+                            Gamma3b[k] = interpolated_b;
+                        }
+                        break;
+                    case 3:
+                        Gamma4X[k]= interpolated_x;
+                        Gamma4Y[k]= interpolated_y;
+                        if(ReadBottom)
+                        {
+                            Gamma4b[k] = interpolated_b;
+                        }
+                        break;
+                    }
+                }
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         // Extract the boundary names

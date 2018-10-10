@@ -26,103 +26,103 @@ kernel void calcNumFluxes(const int Nfaces,
 
 
 
-            		const int edgeIDX=ifa*ngl + i;              //for normals!!
-            		const int edgeID=ifa*ngl*Neq + i;           //for values!!
+                    const int edgeIDX=ifa*ngl + i;              //for normals!!
+                    const int edgeID=ifa*ngl*Neq + i;           //for values!!
 
- 		    	const int ireversed = edgeReversed[ifa];
-		    	const int edgeIDR = ifa*ngl*Neq + (1-ireversed)*(ngl-1-i) + ireversed*i;
-		    	const int edgeIDXR = ifa*ngl + (1-ireversed)*(ngl-1-i) + ireversed*i;
-
-
-            		const dfloat nx=normalx[edgeIDX];
-            		const dfloat ny=normaly[edgeIDX];
-            		const dfloat scaling=Scal[edgeIDX];
-
-            		dfloat NumFlux[Neq];
+                    const int ireversed = edgeReversed[ifa];
+                    const int edgeIDR = ifa*ngl*Neq + (1-ireversed)*(ngl-1-i) + ireversed*i;
+                    const int edgeIDXR = ifa*ngl + (1-ireversed)*(ngl-1-i) + ireversed*i;
 
 
+                    const dfloat nx=normalx[edgeIDX];
+                    const dfloat ny=normaly[edgeIDX];
+                    const dfloat scaling=Scal[edgeIDX];
 
-
-            		const dfloat hL=qL[edgeID];
-            		const dfloat hR=qR[edgeIDR ];
+                    dfloat NumFlux[Neq];
 
 
 
 
-            		dfloat uL;
-            		dfloat vL;
-            		dfloat huL;
-            		dfloat hvL;
-            		dfloat cL;
-            		if(hL>PosPresTOL)
-            		{
-                		uL=qL[edgeID+ngl]/hL;
-                		vL=qL[edgeID+ngl+ngl]/hL;
-                		huL=qL[edgeID+ngl];
-                		hvL=qL[edgeID+ngl+ngl];
-                		cL=sqrt(g_const*hL);
-            		}
-            		else
-            		{
-
-                		uL =zero;
-                		vL =zero;
-                		huL=zero;
-                		hvL=zero;
-                		cL=zero;
-            		}
-
-            		dfloat uR;
-            		dfloat vR;
-            		dfloat huR;
-            		dfloat hvR;
-            		dfloat cR;
-            		if(hR>PosPresTOL)
-            		{
-             		   uR=qR[edgeIDR +ngl]/hR;
-              		  vR=qR[edgeIDR +ngl+ngl]/hR;
-              		  huR=qR[edgeIDR +ngl];
-              		  hvR=qR[edgeIDR +ngl+ngl];
-              		  cR=sqrt(g_const*hR);
-
-            		}
-            		else
-            		{
-             		   uR =zero;
-             		   vR =zero;
-             		   huR=zero;
-            		    hvR=zero;
-            		    cR=zero;
-            		}
-
-            		const dfloat F1L = huL * nx + hvL * ny;
-            		const dfloat F1R = huR * nx + hvR * ny;
+                    const dfloat hL=qL[edgeID];
+                    const dfloat hR=qR[edgeIDR ];
 
 
-            		const dfloat F2L = nx*(huL*uL + half *g_const * hL*hL) + ny * huL*vL;
-            		const dfloat F2R = nx*(huR*uR + half *g_const * hR*hR) + ny * huR*vR;
 
 
-            		const dfloat F3L = nx * huL*vL + ny * (hvL*vL + half *g_const * hL*hL) ;
-            		const dfloat F3R = nx * huR*vR + ny * (hvR*vR + half *g_const * hR*hR) ;
+                    dfloat uL;
+                    dfloat vL;
+                    dfloat huL;
+                    dfloat hvL;
+                    dfloat cL;
+                    if(hL>PosPresTOL)
+                    {
+                        uL=qL[edgeID+ngl]/hL;
+                        vL=qL[edgeID+ngl+ngl]/hL;
+                        huL=qL[edgeID+ngl];
+                        hvL=qL[edgeID+ngl+ngl];
+                        cL=sqrt(g_const*hL);
+                    }
+                    else
+                    {
 
-            		const dfloat normVL = nx* uL + ny* vL;
-            		const dfloat normVR = nx* uR + ny* vR;
-            		const dfloat lambda1  = cL + fabs(normVL);
-           		 const dfloat lambda2  = cR + fabs(normVR);
-            		const dfloat maxLambda = max(lambda1,lambda2);
+                        uL =zero;
+                        vL =zero;
+                        huL=zero;
+                        hvL=zero;
+                        cL=zero;
+                    }
 
-            		NumFlux[0]=half*(F1L+F1R - maxLambda*(hR-hL));
-            		NumFlux[1]=half*(F2L+F2R - maxLambda*(huR-huL));
-            		NumFlux[2]=half*(F3L+F3R - maxLambda*(hvR-hvL));
+                    dfloat uR;
+                    dfloat vR;
+                    dfloat huR;
+                    dfloat hvR;
+                    dfloat cR;
+                    if(hR>PosPresTOL)
+                    {
+                        uR=qR[edgeIDR +ngl]/hR;
+                        vR=qR[edgeIDR +ngl+ngl]/hR;
+                        huR=qR[edgeIDR +ngl];
+                        hvR=qR[edgeIDR +ngl+ngl];
+                        cR=sqrt(g_const*hR);
 
-            		SurfaceParts[edgeID]          =  scaling*geomFace*  NumFlux[0];
-            		SurfaceParts[edgeID+ngl]      =  scaling*geomFace*  NumFlux[1];
-            		SurfaceParts[edgeID+ngl+ngl]  =  scaling*geomFace*  NumFlux[2];
+                    }
+                    else
+                    {
+                        uR =zero;
+                        vR =zero;
+                        huR=zero;
+                        hvR=zero;
+                        cR=zero;
+                    }
+
+                    const dfloat F1L = huL * nx + hvL * ny;
+                    const dfloat F1R = huR * nx + hvR * ny;
 
 
-		}
-	}
+                    const dfloat F2L = nx*(huL*uL + half *g_const * hL*hL) + ny * huL*vL;
+                    const dfloat F2R = nx*(huR*uR + half *g_const * hR*hR) + ny * huR*vR;
+
+
+                    const dfloat F3L = nx * huL*vL + ny * (hvL*vL + half *g_const * hL*hL) ;
+                    const dfloat F3R = nx * huR*vR + ny * (hvR*vR + half *g_const * hR*hR) ;
+
+                    const dfloat normVL = nx* uL + ny* vL;
+                    const dfloat normVR = nx* uR + ny* vR;
+                    const dfloat lambda1  = cL + fabs(normVL);
+                    const dfloat lambda2  = cR + fabs(normVR);
+                    const dfloat maxLambda = max(lambda1,lambda2);
+
+                    NumFlux[0]=half*(F1L+F1R - maxLambda*(hR-hL));
+                    NumFlux[1]=half*(F2L+F2R - maxLambda*(huR-huL));
+                    NumFlux[2]=half*(F3L+F3R - maxLambda*(hvR-hvL));
+
+                    SurfaceParts[edgeID]          =  scaling*geomFace*  NumFlux[0];
+                    SurfaceParts[edgeID+ngl]      =  scaling*geomFace*  NumFlux[1];
+                    SurfaceParts[edgeID+ngl+ngl]  =  scaling*geomFace*  NumFlux[2];
+
+
+                }
+            }
         }
     }
 
