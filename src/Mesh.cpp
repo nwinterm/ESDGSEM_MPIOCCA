@@ -1878,7 +1878,7 @@ void Mesh :: LagrangeInterpolation(const dfloat xpt,const dfloat* functionvals,d
 
 
 
-void basis :: BarycentricWeightsLGL()
+void Mesh :: BarycentricWeightsLGL()
 {
 
 
@@ -1904,7 +1904,7 @@ void basis :: BarycentricWeightsLGL()
 
 };
 
-void basis :: PolynomialDerivativeMatrixLGL()
+void Mesh :: PolynomialDerivativeMatrixLGL()
 {
 
 
