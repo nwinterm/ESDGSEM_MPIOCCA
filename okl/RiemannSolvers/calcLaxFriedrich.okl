@@ -100,7 +100,7 @@ kernel void calcNumFluxes(const int Nfaces,
                     const dfloat G1L = hvL ;
                     const dfloat G1R = hvR ;
 
-                    const dfloat F2L = huL*uL + half *g_const * hL*hL) ;
+                    const dfloat F2L = huL*uL + half *g_const * hL*hL ;
                     const dfloat F2R = (huR*uR + half *g_const * hR*hR) ;
                     const dfloat G2L =  huL*vL;
                     const dfloat G2R =   huR*vR;
