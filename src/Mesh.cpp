@@ -1666,8 +1666,8 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
         xEta = x_eta[Nj];
         yXi = y_xi[Nj];
 
-        Jtemp = xXi*yEta-xEta*yXi;
-        scal[idSide2]     = sqrt(yEta*yEta + xEta*xEta);
+        Jtemp = J[Nj];
+        scal[idSide2]     =1.0;/// sqrt(yEta*yEta + xEta*xEta);
         nx[idSide2] = copysign(1.0,Jtemp)*(yEta/scal[idSide2]);
         ny[idSide2] = copysign(1.0,Jtemp)*(-xEta/scal[idSide2]);
 
@@ -1676,8 +1676,8 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
         xXi = x_xi[Zeroj];
         xEta = x_eta[Zeroj];
         yXi = y_xi[Zeroj];
-        Jtemp = xXi*yEta-xEta*yXi;
-        scal[idSide4]      =  sqrt(yEta*yEta + xEta*xEta);
+        Jtemp = J[Zeroj];
+        scal[idSide4]    =1.0;///   =  sqrt(yEta*yEta + xEta*xEta);
         nx[idSide4] = -copysign(1.0,Jtemp)*(yEta/scal[idSide4]);
         ny[idSide4] = -copysign(1.0,Jtemp)*(-xEta/scal[idSide4]);
     }
@@ -1694,8 +1694,8 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
         xEta = x_eta[iZero];
         yXi = y_xi[iZero];
 
-        Jtemp = xXi*yEta-xEta*yXi;
-        scal[idSide1]      =  sqrt(yXi*yXi + xXi*xXi);
+        Jtemp = J[iZero];
+        scal[idSide1]     =1.0;///  =  sqrt(yXi*yXi + xXi*xXi);
         nx[idSide1]= -copysign(1.0,Jtemp)*(-yXi/scal[idSide1]);
         ny[idSide1] = -copysign(1.0,Jtemp)*(xXi/scal[idSide1]);
 
@@ -1704,8 +1704,8 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
         xXi = x_xi[iN];
         xEta = x_eta[iN];
         yXi = y_xi[iN];
-        Jtemp = xXi*yEta-xEta*yXi;
-        scal[idSide3]      = sqrt(yXi*yXi + xXi*xXi);
+        Jtemp = J[iN];
+        scal[idSide3]    =1.0;///   = sqrt(yXi*yXi + xXi*xXi);
         nx[idSide3] = copysign(1.0,Jtemp)*(-yXi/scal[idSide3]);
         ny[idSide3] = copysign(1.0,Jtemp)*(xXi/scal[idSide3]);
     }

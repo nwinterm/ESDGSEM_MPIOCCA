@@ -3,10 +3,6 @@ kernel void SurfaceKernel(const int Nelem,
                           const int * restrict  ElemEdgeMasterSlave,
                           const int * restrict  ElemEdgeOrientation,
                           const int * restrict  ElemToEdge,
-                          const dfloat * restrict Y_xi,
-                          const dfloat * restrict Y_eta,
-                          const dfloat * restrict X_xi,
-                          const dfloat * restrict X_eta,
                           const dfloat * restrict  FStar,
                           const dfloat * restrict  DBSurf1,
                           const dfloat * restrict  DBSurf2,
@@ -52,7 +48,7 @@ kernel void SurfaceKernel(const int Nelem,
 
                         const int r_Masterslave = ElemEdgeMasterSlave[ie*4+iside];
                         const dfloat r_Jac = Jac[xid];
-
+			
 
 
                         Qt[id]              +=    - r_Masterslave*  FStar[idFaceLoc] * r_Jac;
