@@ -966,10 +966,12 @@ void Mesh::ReadMesh(const string meshFile)
         ///if(true)
         if (!(is_gamma_given[0] || is_gamma_given[1] || is_gamma_given[2] || is_gamma_given[3]))
         {
-            curved=false;}
+            curved=false;
+        }
         else
         {
-            curved=true;}
+            curved=true;
+        }
 
         // Determine if the boundary curve is given.
         // If it is not, then we need to build the boundary curve from the two nodes.
@@ -1580,6 +1582,8 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
     dfloat xXi_2[ngl2],xEta_2[ngl2],yXi_2[ngl2],yEta_2[ngl2];
     dfloat x_tmp, y_tmp;
 
+
+    ///COMPUTE all the x and y nodes by Transfinite Quad map
     for (int j = 0; j<ngl; j++)
     {
         for (int i = 0; i<ngl; i++)
@@ -1594,7 +1598,7 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
                 {
                     TransfiniteQuadMapSingle(Gamma1b,Gamma2b,Gamma3b,Gamma4b,x_GL[i],x_GL[j],&b_phy[ij]);
                 }
-                TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],x_GL[j],&x_xi[ij],&x_eta[ij],&y_xi[ij],&y_eta[ij]);
+
 
 
 //dfloat DIFFERENCE1 = fabs(x_xi[ij] -xXi_2[ij]);
@@ -1616,46 +1620,59 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
                 {
                     QuadMapSingle(cornersb,x_GL[i],x_GL[j],&b_phy[ij]);
                 }
-                QuadMapMetrics(cornersX,cornersY,x_GL[i],x_GL[j],&x_xi[ij],&x_eta[ij],&y_xi[ij],&y_eta[ij]);
+
+            }
+
+        }
+    }
+
+    for (int j = 0; j<ngl; j++)
+    {
+        for (int i = 0; i<ngl; i++)
+        {
+            const int ij = j*ngl+i;
+            for (int k = 0; k<ngl; k++)
+            {
+                const int ik = k*ngl+i;
+                const int jk = k*ngl+j;
+                const int kj = j*ngl+k;
+                x_xi[ij]    +=  D[ik] *x_phy[kj];
+                x_eta[ij]   +=  D[jk] *x_phy[jk];
+
+                y_xi[ij]    +=  D[ik] *y_phy[kj];
+                y_eta[ij]   +=  D[jk] *y_phy[jk];
+
             }
             J[ij]= x_xi[ij]*y_eta[ij]-x_eta[ij]*y_xi[ij];
         }
     }
 
 
-
-
+    //TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],x_GL[j],&x_xi[ij],&x_eta[ij],&y_xi[ij],&y_eta[ij]);
+    //QuadMapMetrics(cornersX,cornersY,x_GL[i],x_GL[j],&x_xi[ij],&x_eta[ij],&y_xi[ij],&y_eta[ij]);
 
     for (int j = 0; j<ngl; j++)
     {
         int idSide2 = ngl+j;
         int idSide4 = 3*ngl+j;
-        if (Curved)
-        {
-//            TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,1.0,x_GL[j],&x_bndy[idSide2],&y_bndy[idSide2]);
-//            QuadMapMetrics(cornersX,cornersY,1.0,x_GL[j],&xXi,&xEta,&yXi,&yEta);
-            TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,1.0,x_GL[j],&xXi,&xEta,&yXi,&yEta);
-        }
-        else
-        {
-//            QuadMap(cornersX,cornersY,1.0,x_GL[j],&x_bndy[idSide2],&y_bndy[idSide2]);
-            QuadMapMetrics(cornersX,cornersY,1.0,x_GL[j],&xXi,&xEta,&yXi,&yEta);
-        }
+
+        const int Zeroj = j*ngl;
+        const int Nj = j*ngl+ngl-1;
+        yEta = y_eta[Nj];
+        xXi = x_xi[Nj];
+        xEta = x_eta[Nj];
+        yXi = y_xi[Nj];
+
         Jtemp = xXi*yEta-xEta*yXi;
         scal[idSide2]     = sqrt(yEta*yEta + xEta*xEta);
         nx[idSide2] = copysign(1.0,Jtemp)*(yEta/scal[idSide2]);
         ny[idSide2] = copysign(1.0,Jtemp)*(-xEta/scal[idSide2]);
-        if (Curved)
-        {
-//           TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,-1.0,x_GL[j],&x_bndy[idSide4],&y_bndy[idSide4]);
-//            QuadMapMetrics(cornersX,cornersY,-1.0,x_GL[j],&xXi,&xEta,&yXi,&yEta);
-            TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,-1.0,x_GL[j],&xXi,&xEta,&yXi,&yEta);
-        }
-        else
-        {
-//            QuadMap(cornersX,cornersY,-1.0,x_GL[j],&x_bndy[idSide4],&y_bndy[idSide4]);
-            QuadMapMetrics(cornersX,cornersY,-1.0,x_GL[j],&xXi,&xEta,&yXi,&yEta);
-        }
+
+
+        yEta = y_eta[Zeroj];
+        xXi = x_xi[Zeroj];
+        xEta = x_eta[Zeroj];
+        yXi = y_xi[Zeroj];
         Jtemp = xXi*yEta-xEta*yXi;
         scal[idSide4]      =  sqrt(yEta*yEta + xEta*xEta);
         nx[idSide4] = -copysign(1.0,Jtemp)*(yEta/scal[idSide4]);
@@ -1665,32 +1682,25 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
     {
         int idSide1 = i;
         int idSide3 = 2*ngl+i;
-        if (Curved)
-        {
-//            TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],-1.0,&x_bndy[idSide1],&y_bndy[idSide1]);
-//            QuadMapMetrics(cornersX,cornersY,x_GL[i],-1.0,&xXi,&xEta,&yXi,&yEta);
-            TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],-1.0,&xXi,&xEta,&yXi,&yEta);
-        }
-        else
-        {
-//            QuadMap(cornersX,cornersY,x_GL[i],-1.0,&x_bndy[idSide1],&y_bndy[idSide1]);
-            QuadMapMetrics(cornersX,cornersY,x_GL[i],-1.0,&xXi,&xEta,&yXi,&yEta);
-        }
+
+
+        const int iZero = i;
+        const int iN = (ngl-1)*ngl+i;
+        yEta = y_eta[iZero];
+        xXi = x_xi[iZero];
+        xEta = x_eta[iZero];
+        yXi = y_xi[iZero];
+
         Jtemp = xXi*yEta-xEta*yXi;
         scal[idSide1]      =  sqrt(yXi*yXi + xXi*xXi);
         nx[idSide1]= -copysign(1.0,Jtemp)*(-yXi/scal[idSide1]);
         ny[idSide1] = -copysign(1.0,Jtemp)*(xXi/scal[idSide1]);
-        if (Curved)
-        {
-//            TransfiniteQuadMap(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],1.0,&x_bndy[idSide3],&y_bndy[idSide3]);
-//            QuadMapMetrics(cornersX,cornersY,x_GL[i],1.0,&xXi,&xEta,&yXi,&yEta);
-            TransfiniteQuadMetrics(Gamma1X,Gamma1Y,Gamma2X,Gamma2Y,Gamma3X,Gamma3Y,Gamma4X,Gamma4Y,x_GL[i],1.0,&xXi,&xEta,&yXi,&yEta);
-        }
-        else
-        {
-//            QuadMap(cornersX,cornersY,x_GL[i],1.0,&x_bndy[idSide3],&y_bndy[idSide3]);
-            QuadMapMetrics(cornersX,cornersY,x_GL[i],1.0,&xXi,&xEta,&yXi,&yEta);
-        }
+
+
+        yEta = y_eta[Nj];
+        xXi = x_xi[Nj];
+        xEta = x_eta[Nj];
+        yXi = y_xi[Nj];
         Jtemp = xXi*yEta-xEta*yXi;
         scal[idSide3]      = sqrt(yXi*yXi + xXi*xXi);
         nx[idSide3] = copysign(1.0,Jtemp)*(-yXi/scal[idSide3]);
