@@ -1667,7 +1667,7 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
         yXi = y_xi[Nj];
 
         Jtemp = J[Nj];
-        scal[idSide2]      sqrt(yEta*yEta + xEta*xEta);
+        scal[idSide2]     = sqrt(yEta*yEta + xEta*xEta);
         nx[idSide2] = copysign(1.0,Jtemp)*(yEta/scal[idSide2]);
         ny[idSide2] = copysign(1.0,Jtemp)*(-xEta/scal[idSide2]);
 
