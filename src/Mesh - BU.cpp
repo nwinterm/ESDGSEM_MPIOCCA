@@ -12,23 +12,12 @@ Mesh::Mesh(const dfloat * fm_x_GL,const int int_ngl, const int intNele, const in
     NelemY=intNele;
     ReadBottom = ReadInBottom;
 
-
-
     for (int i=0; i<ngl; i++)
     {
 
         x_GL[i] = fm_x_GL[i];
 
     }
-
-
-    /// new approximation of metric terms
-    D = (dfloat*) calloc(ngl2,sizeof(dfloat));
-    w_baryLGL= (dfloat*) calloc(ngl,sizeof(dfloat));
-    BarycentricWeightsLGL();
-    PolynomialDerivativeMatrixLGL();
-
-
 //cout << "LGL Nodes: ";
 //for(int i = 0; i < ngl; ++i){
 //cout << " " << x_GL(i+1) << " " ;
@@ -1872,55 +1861,6 @@ void Mesh :: LagrangeInterpolation(const dfloat xpt,const dfloat* functionvals,d
 
 
 
-
-
-
-
-
-
-void basis :: BarycentricWeightsLGL()
-{
-
-
-    for(int i=0; i<ngl; i++)
-    {
-        w_baryLGL[i]=1.0;
-    };
-
-
-    for (int j=1; j<ngl; j++)
-    {
-        for (int k=0; k<j; k++)
-        {
-            w_baryLGL[k]=w_baryLGL[k]*(x_GL[k]-x_GL[j]);
-            w_baryLGL[j]=w_baryLGL[j]*(x_GL[j]-x_GL[k]);
-        };
-    };
-
-    for (int j=0; j<ngl; j++)
-    {
-        w_baryLGL[j]=1.0/w_baryLGL[j];
-    };
-
-};
-
-void basis :: PolynomialDerivativeMatrixLGL()
-{
-
-
-    for (int i=0; i<ngl; i++)
-    {
-        for (int j=0; j<ngl; j++)
-        {
-            if (i!=j)
-            {
-                const int id = i*ngl+j;
-                D[id]=(w_baryLGL[j]/w_baryLGL[i])*(1.0/(x_GL[i]-x_GL[j]));
-                D[i*ngl+i]=D[i*ngl+i] -D[id];
-            };
-        };
-    };
-};
 
 
 

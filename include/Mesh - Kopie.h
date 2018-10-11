@@ -59,7 +59,6 @@ private:
     int ReadBottom; // This variable is needed to indicate that Ocean Bottom Data must be read in from the mesh file!
 //        fmatrix x_GL;
     dfloat *  x_GL;
-
     dfloat * x_cheby;
     dfloat * w_bary;
 
@@ -89,7 +88,7 @@ private:
     dfloat interpolated_b;
 
     dfloat * D;
-    dfloat * w_baryLGL;
+
 //        fmatrix x_phy,y_phy;
 //        fmatrix x_xi,x_eta,y_xi,y_eta,J;
 //        fmatrix x_bndy,y_bndy,scal;
@@ -119,9 +118,6 @@ private:
     void TransfiniteQuadMapSingle(const dfloat*,const dfloat*,const dfloat*,const dfloat*,const dfloat,const dfloat,dfloat*);
     void QuadMapSingle(const dfloat *,const dfloat,const dfloat,dfloat*);
 
-
-    void BarycentricWeightsLGL();
-    void PolynomialDerivativeMatrixLGL();
 
 };
 
