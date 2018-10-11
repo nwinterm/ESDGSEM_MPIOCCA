@@ -131,9 +131,9 @@ kernel void calcNumFluxes(const int Nfaces,
                     NumFluxG[1]=half*(G2L+G2R );
                     NumFluxG[2]=half*(G3L+G3R );
 
-                    NumFlux[0]=(nx*NumFluxF[0]+ny*NumFluxG[0]) - half*maxLambda*(hR-hL);
-                    NumFlux[1]=(nx*NumFluxF[1]+ny*NumFluxG[1]) - half*maxLambda*(huR-huL);
-                    NumFlux[2]=(nx*NumFluxF[2]+ny*NumFluxG[2]) - half*maxLambda*(hvR-hvL);
+                    NumFlux[0]=(nx*NumFluxF[0]+ny*NumFluxG[0]) ;//- half*maxLambda*(hR-hL);
+                    NumFlux[1]=(nx*NumFluxF[1]+ny*NumFluxG[1]) ;//- half*maxLambda*(huR-huL);
+                    NumFlux[2]=(nx*NumFluxF[2]+ny*NumFluxG[2]) ;//- half*maxLambda*(hvR-hvL);
 
 
                     SurfaceParts[edgeID]          =  scaling*geomFace*  NumFlux[0];
