@@ -28,12 +28,15 @@ Mesh::Mesh(const dfloat * fm_x_GL,const int int_ngl, const int intNele, const in
     BarycentricWeightsLGL();
     PolynomialDerivativeMatrixLGL();
 
+cout << "D: ";
+for(int i = 0; i < ngl; ++i){
+        for(int j = 0; j < ngl; ++j){
+cout << " " << D[i*ngl+j] << " " ;
+}
+cout << " \n";
+}
 
-//cout << "LGL Nodes: ";
-//for(int i = 0; i < ngl; ++i){
-//cout << " " << x_GL(i+1) << " " ;
-//}
-//cout << " \n";
+
 }
 Mesh::~Mesh()
 {
