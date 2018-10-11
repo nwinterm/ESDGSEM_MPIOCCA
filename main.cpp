@@ -396,7 +396,7 @@ int main(int argc, char *argv[])
                     {
                         if (!Cartesian)
                         {
-                            dfloat b_min = -7310.0;// in kilometers now
+                            dfloat b_min = -7.3100;// in kilometers now
                             h_0 = -b_min;
                             b_global[id]    =   h_0 + DGMesh.b_global[id];
                         }
