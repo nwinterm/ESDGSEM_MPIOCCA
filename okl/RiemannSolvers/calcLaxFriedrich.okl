@@ -113,15 +113,20 @@ kernel void calcNumFluxes(const int Nfaces,
 
 
 
-                    const dfloat lambda1L  = cL + fabs(uL);
-                    const dfloat lambda1R  = cR + fabs(uR);
-                    const dfloat maxLambda1 = max(lambda1L,lambda1R);
+          //          const dfloat lambda1L  = cL + fabs(uL);
+          //          const dfloat lambda1R  = cR + fabs(uR);
+          //          const dfloat maxLambda1 = max(lambda1L,lambda1R);
 
-                    const dfloat lambda2L  = cL + fabs(vL);
-                    const dfloat lambda2R  = cR + fabs(vR);
-                    const dfloat maxLambda2 = max(lambda2L,lambda2R);
-                    const dfloat maxLambda = max(maxLambda1,maxLambda2);
+          //          const dfloat lambda2L  = cL + fabs(vL);
+          //          const dfloat lambda2R  = cR + fabs(vR);
+          //          const dfloat maxLambda2 = max(lambda2L,lambda2R);
+          //          const dfloat maxLambda = max(maxLambda1,maxLambda2);
 
+                    const dfloat normVL = nx* uL + ny* vL;
+                    const dfloat normVR = nx* uR + ny* vR;
+                    const dfloat lambda1  = cL + fabs(normVL);
+                    const dfloat lambda2  = cR + fabs(normVR);
+                    const dfloat maxLambda = max(lambda1,lambda2);
 
 
                     NumFluxF[0]=half*(F1L+F1R );
