@@ -26,9 +26,9 @@ kernel void calcNumFluxes(const int Nfaces,
 
                     const int edgeIDX=ifa*ngl + i;              //for normals!!
                     const int edgeID=ifa*ngl*Neq + i;           //for values!!
- 		    const int ireversed = edgeReversed[ifa];
-		    const int edgeIDR = ifa*ngl*Neq + (1-ireversed)*(ngl-1-i) + ireversed*i;
-		    const int edgeIDXR = ifa*ngl + (1-ireversed)*(ngl-1-i) + ireversed*i;
+                    const int ireversed = edgeReversed[ifa];
+                    const int edgeIDR = ifa*ngl*Neq + (1-ireversed)*(ngl-1-i) + ireversed*i;
+                    const int edgeIDXR = ifa*ngl + (1-ireversed)*(ngl-1-i) + ireversed*i;
 
 
                     const dfloat nx=normalx[edgeIDX];
@@ -110,7 +110,7 @@ kernel void calcNumFluxes(const int Nfaces,
                         //{
                         //    avgC=zero;
                         //}
-			const dfloat avgC=sqrt(fabs(half*(cL+cR)));
+                        const dfloat avgC=sqrt(fabs(half*(cL+cR)));
 
 
                         const dfloat q1L=g_const*(hL+bL)-half*uL*uL-half*vL*vL;
