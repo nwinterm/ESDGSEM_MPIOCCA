@@ -40,6 +40,7 @@ kernel void calcNumFluxes(const int Nfaces,
 
                     dfloat NumFluxF[Neq];
                     dfloat NumFluxG[Neq];
+                    dfloat NumFlux[Neq];
 
 
 
@@ -119,21 +120,25 @@ kernel void calcNumFluxes(const int Nfaces,
                     const dfloat lambda2L  = cL + fabs(vL);
                     const dfloat lambda2R  = cR + fabs(vR);
                     const dfloat maxLambda2 = max(lambda2L,lambda2R);
+                    const dfloat maxLambda = max(maxLambda1,maxLambda2);
 
 
 
-                    NumFluxF[0]=half*(F1L+F1R - maxLambda1*(hR-hL));
-                    NumFluxF[1]=half*(F2L+F2R - maxLambda1*(huR-huL));
-                    NumFluxF[2]=half*(F3L+F3R - maxLambda1*(hvR-hvL));
-                    NumFluxG[0]=half*(G1L+G1R - maxLambda2*(hR-hL));
-                    NumFluxG[1]=half*(G2L+G2R - maxLambda2*(huR-huL));
-                    NumFluxG[2]=half*(G3L+G3R - maxLambda2*(hvR-hvL));
+                    NumFluxF[0]=half*(F1L+F1R );
+                    NumFluxF[1]=half*(F2L+F2R );
+                    NumFluxF[2]=half*(F3L+F3R );
+                    NumFluxG[0]=half*(G1L+G1R );
+                    NumFluxG[1]=half*(G2L+G2R );
+                    NumFluxG[2]=half*(G3L+G3R );
+
+                    NumFlux[0]=(nx*NumFluxF[0]+ny*NumFluxG[0]) - half*maxLambda*(hR-hL);
+                    NumFlux[1]=(nx*NumFluxF[1]+ny*NumFluxG[2]) - half*maxLambda*(huR-huL);
+                    NumFlux[2]=(nx*NumFluxF[2]+ny*NumFluxG[2]) - half*maxLambda*(hvR-hvL);
 
 
-
-                    SurfaceParts[edgeID]          =  scaling*geomFace*  (nx*NumFluxF[0]+ny*NumFluxG[0]);
-                    SurfaceParts[edgeID+ngl]      =  scaling*geomFace*  (nx*NumFluxF[1]+ny*NumFluxG[1]);
-                    SurfaceParts[edgeID+ngl+ngl]  =  scaling*geomFace*  (nx*NumFluxF[2]+ny*NumFluxG[2]);
+                    SurfaceParts[edgeID]          =  scaling*geomFace*  NumFlux[0];
+                    SurfaceParts[edgeID+ngl]      =  scaling*geomFace*  NumFlux[1];
+                    SurfaceParts[edgeID+ngl+ngl]  =  scaling*geomFace*  NumFlux[2];
 
 
                 }
