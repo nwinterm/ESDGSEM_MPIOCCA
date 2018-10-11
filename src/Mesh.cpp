@@ -28,13 +28,13 @@ Mesh::Mesh(const dfloat * fm_x_GL,const int int_ngl, const int intNele, const in
     BarycentricWeightsLGL();
     PolynomialDerivativeMatrixLGL();
 
-cout << "D: ";
-for(int i = 0; i < ngl; ++i){
-        for(int j = 0; j < ngl; ++j){
-cout << " " << D[i*ngl+j] << " " ;
-}
-cout << " \n";
-}
+//cout << "D: ";
+//for(int i = 0; i < ngl; ++i){
+//        for(int j = 0; j < ngl; ++j){
+//cout << " " << D[i*ngl+j] << " " ;
+//}
+//cout << " \n";
+//}
 
 
 }
@@ -1639,11 +1639,11 @@ void Mesh :: ConstructMappedGeometry(const dfloat * cornersX,const dfloat * corn
                 const int ik = k*ngl+i;
                 const int jk = k*ngl+j;
                 const int kj = j*ngl+k;
-                x_xi[ij]    +=  D[ik] *x_phy[kj];
-                x_eta[ij]   +=  D[jk] *x_phy[jk];
+                x_xi[ij]    +=  D[i*ngl+k] *x_phy[j*ngl+k];
+                x_eta[ij]   +=  D[j*ngl+k] *x_phy[k*ngl+i];
 
-                y_xi[ij]    +=  D[ik] *y_phy[kj];
-                y_eta[ij]   +=  D[jk] *y_phy[jk];
+                y_xi[ij]    +=  D[i*ngl+k] *y_phy[j*ngl+k];
+                y_eta[ij]   +=  D[j*ngl+k] *y_phy[k*ngl+i];
 
             }
             J[ij]= x_xi[ij]*y_eta[ij]-x_eta[ij]*y_xi[ij];
