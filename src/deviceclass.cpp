@@ -835,7 +835,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
             device.finish();
 
             cout <<"\n q_t Post Volume: \n";
-			for (int ie=0;ie<Nelem;ie++){
+			for (int ie=0;ie<1;ie++){
 					cout <<"Ele: " << ie <<"\n";
 				for(int j=0;j<ngl;++j){
 					for(int i=0;i<ngl;++i){
@@ -874,7 +874,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
             device.finish();
 
             cout <<"\n q_t Post Surface: \n";
-			for (int ie=0;ie<Nelem;ie++){
+			for (int ie=0;ie<1;ie++){
 					cout <<"Ele: " << ie <<"\n";
 				for(int j=0;j<ngl;++j){
 					for(int i=0;i<ngl;++i){
