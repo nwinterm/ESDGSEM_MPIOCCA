@@ -684,7 +684,7 @@ void Mesh::ReadMesh(const string meshFile)
 {
 
 
-    const dfloat earth_radius= 6.378e6;
+    const dfloat earth_radius= 6.378e3;
 
     std::ifstream InputStream;
     string filename=meshFile;
