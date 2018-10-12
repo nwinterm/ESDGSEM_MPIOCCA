@@ -265,7 +265,7 @@ int main(int argc, char *argv[])
     cout <<"Creating Mesh Partitioning .\n";
     MeshPartitioning DGMeshPartition(MPI.numtasks, ngl);
 
-    Mesh DGMesh(DGBasis.x_GL,ngl,NelemX,ReadInBottom);
+    Mesh DGMesh(DGBasis.x_GL,ngl,NelemX,ReadInBottom,ConvertToKM);
 
 
 
