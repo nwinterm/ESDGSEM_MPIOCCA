@@ -763,7 +763,7 @@ void Mesh::ReadMesh(const string meshFile)
             x_nodes[i]=x_nodes[i]*earth_radius*M_PI/180.0;
             y_nodes[i]=earth_radius*asinh(tan(y_nodes[i]/180.0*M_PI));
 
-            cout << "Node in KM: " << x_nodes[i] << ", " << y_nodes[i] << "\n";
+            //cout << "Node in KM: " << x_nodes[i] << ", " << y_nodes[i] << "\n";
         }
     }
 
@@ -1096,10 +1096,15 @@ void Mesh::ReadMesh(const string meshFile)
                                 error_message += filename;
                                 cout << "Error in Line : "<<k <<"\n";
                                 throw std::invalid_argument(error_message);
+
+                            }
+                            else
+                            {
                                 if (ConvertToKM)
                                 {
                                     Gamma1X[k]=Gamma1X[k]*earth_radius*M_PI/180.0;
                                     Gamma1Y[k]=earth_radius*asinh(tan(Gamma1Y[k]/180.0*M_PI));
+
                                 }
                             }
                             break;
@@ -1110,6 +1115,10 @@ void Mesh::ReadMesh(const string meshFile)
                                 error_message += filename;
                                 cout << "Error in Line : "<<k <<"\n";
                                 throw std::invalid_argument(error_message);
+
+                            }
+                            else
+                            {
                                 if (ConvertToKM)
                                 {
                                     Gamma2X[k]=Gamma2X[k]*earth_radius*M_PI/180.0;
@@ -1124,6 +1133,11 @@ void Mesh::ReadMesh(const string meshFile)
                                 error_message += filename;
                                 cout << "Error in Line : "<<k <<"\n";
                                 throw std::invalid_argument(error_message);
+
+
+                            }
+                            else
+                            {
                                 if (ConvertToKM)
                                 {
                                     Gamma3X[k]=Gamma3X[k]*earth_radius*M_PI/180.0;
@@ -1138,6 +1152,10 @@ void Mesh::ReadMesh(const string meshFile)
                                 error_message += filename;
                                 cout << "Error in Line : "<<k <<"\n";
                                 throw std::invalid_argument(error_message);
+
+                            }
+                            else
+                            {
                                 if (ConvertToKM)
                                 {
                                     Gamma4X[k]=Gamma4X[k]*earth_radius*M_PI/180.0;
@@ -1159,6 +1177,10 @@ void Mesh::ReadMesh(const string meshFile)
                                 error_message += filename;
                                 cout << "Error in Line : "<<k <<"\n";
                                 throw std::invalid_argument(error_message);
+
+                            }
+                            else
+                            {
                                 if (ConvertToKM)
                                 {
                                     Gamma1X[k]=Gamma1X[k]*earth_radius*M_PI/180.0;
@@ -1173,6 +1195,9 @@ void Mesh::ReadMesh(const string meshFile)
                                 error_message += filename;
                                 cout << "Error in Line : "<<k <<"\n";
                                 throw std::invalid_argument(error_message);
+                            }
+                            else
+                            {
                                 if (ConvertToKM)
                                 {
                                     Gamma2X[k]=Gamma2X[k]*earth_radius*M_PI/180.0;
@@ -1187,6 +1212,10 @@ void Mesh::ReadMesh(const string meshFile)
                                 error_message += filename;
                                 cout << "Error in Line : "<<k <<"\n";
                                 throw std::invalid_argument(error_message);
+
+                            }
+                            else
+                            {
                                 if (ConvertToKM)
                                 {
                                     Gamma3X[k]=Gamma3X[k]*earth_radius*M_PI/180.0;
@@ -1201,6 +1230,10 @@ void Mesh::ReadMesh(const string meshFile)
                                 error_message += filename;
                                 cout << "Error in Line : "<<k <<"\n";
                                 throw std::invalid_argument(error_message);
+
+                            }
+                            else
+                            {
                                 if (ConvertToKM)
                                 {
                                     Gamma4X[k]=Gamma4X[k]*earth_radius*M_PI/180.0;
