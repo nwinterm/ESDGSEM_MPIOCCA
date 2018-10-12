@@ -123,7 +123,7 @@ void deviceclass:: initDeviceVariables(const int N,
     CalcFrictionTerms=FrictionTerms;
     dfloat TOL_PosPres = PosPresTOL;//pow(10.0,-4);
 //    dfloat ZeroTOL = pow(10.0,-12);	// double precision
-    dfloat ZeroTOL = pow(10.0,-5);
+    dfloat ZeroTOL = pow(10.0,-12);
 //  	cout << "The range for type float is from "
 //       << numeric_limits<dfloat>::min()
 //       << " to "
@@ -644,6 +644,14 @@ void deviceclass:: DGtimeloop(const int Nelem,
                 mCheckpoints[2]=2400.0;
                 mCheckpoints[3]=4800.0;
                 mCheckpoints[4]=9600.0;
+
+            }
+            if ((NumPlots==5)&& (T==160))
+            {
+                mCheckpoints[1]=20.0;
+                mCheckpoints[2]=40.0;
+                mCheckpoints[3]=80.0;
+                mCheckpoints[4]=160.0;
             }
         }
         if ((Testcase == 33)||(Testcase == 36))
