@@ -399,7 +399,7 @@ int main(int argc, char *argv[])
                             dfloat b_min = -7.3100;// in kilometers now
                             h_0 = -b_min;
                             dfloat MinusOneMeter = -0.001;
-                            b_global[id]    =   h_0 + min(MinusOne,DGMesh.b_global[id]);
+                            b_global[id]    =   h_0 + min(MinusOneMeter,DGMesh.b_global[id]);
                         }
                         else
                         {
