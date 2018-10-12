@@ -32,7 +32,7 @@ kernel void ShockCapturing(const int Nelem,
                 //ABUSE OF NOTATION, THESE ARE NODAL VALUES NOW
 
                 const dfloat r_h = Q[Fid];
-                const dfloat r_b = b[Fid];
+                const dfloat r_b = b[Xid];
                 const dfloat r_h2 = r_h*r_h;
                 const dfloat r_ShockIndicator=r_b+r_h;
 
