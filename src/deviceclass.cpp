@@ -778,7 +778,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
         }
         if ( ArtificialViscosity==1)
         {
-            ShockCapturing(Nelem, o_q,o_b,o_VdmInv,o_EleSizes,o_ViscPara,o_ViscForPlot);
+            ShockCapturing(Nelem, o_q,o_B,o_VdmInv,o_EleSizes,o_ViscPara,o_ViscForPlot);
             o_ViscPara.copyTo(ViscPara);
             GetGlobalViscParaMax(MPI,  MeshSplit,ViscPara, &maxViscPara);
 
@@ -869,7 +869,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
                 // at first RK step we already now o_ViscPara from time step computation!
                 if (rkstage>0)
                 {
-                    ShockCapturing(Nelem, o_q,o_b,o_VdmInv,o_EleSizes,o_ViscPara,o_ViscForPlot);
+                    ShockCapturing(Nelem, o_q,o_B,o_VdmInv,o_EleSizes,o_ViscPara,o_ViscForPlot);
                 }
 
                 calcNumFluxesGradient(Nfaces,o_EdgeData,o_nx,o_ny,o_scal, o_qL, o_qR, o_SurfGradientX,o_SurfGradientY);
