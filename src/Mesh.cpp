@@ -762,6 +762,8 @@ void Mesh::ReadMesh(const string meshFile)
         {
             x_nodes[i]=x_nodes[i]*earth_radius*M_PI/180.0;
             y_nodes[i]=earth_radius*asinh(tan(y_nodes[i]/180.0*M_PI));
+
+            cout << "Node in KM: " << x_nodes[i] << ", " << y_nodes[i] << "\n";
         }
     }
 
