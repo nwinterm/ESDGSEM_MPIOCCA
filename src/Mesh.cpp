@@ -1,7 +1,7 @@
 #include "Mesh.h"
 
 
-Mesh::Mesh(const dfloat * fm_x_GL,const int int_ngl, const int intNele, const int ReadInBottom, const int ConvertToMeters)
+Mesh::Mesh(const dfloat * fm_x_GL,const int int_ngl, const int intNele, const int ReadInBottom, const int ConvertToKiloMeters)
 {
 //    x_GL=fm_x_GL;
     ngl=int_ngl;
@@ -11,7 +11,7 @@ Mesh::Mesh(const dfloat * fm_x_GL,const int int_ngl, const int intNele, const in
     NelemX=intNele;
     NelemY=intNele;
     ReadBottom = ReadInBottom;
-
+    ConvertToKM=ConvertToKiloMeters;
 
 
     for (int i=0; i<ngl; i++)
