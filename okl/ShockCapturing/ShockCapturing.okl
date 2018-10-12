@@ -1,5 +1,6 @@
 kernel void ShockCapturing(const int Nelem,
                            const dfloat * restrict  Q,
+                           const dfloat * restrict  b,
                            const dfloat * restrict VdmInv,
                            const dfloat * restrict EleSizes,
                            dfloat * restrict  ViscPara,
@@ -31,10 +32,11 @@ kernel void ShockCapturing(const int Nelem,
                 //ABUSE OF NOTATION, THESE ARE NODAL VALUES NOW
 
                 const dfloat r_h = Q[Fid];
+                const dfloat r_b = b[Fid];
                 const dfloat r_h2 = r_h*r_h;
+                const dfloat r_ShockIndicator=r_b+r_h;
 
-
- 		s_Q1modal[i][j]=r_h2;
+                s_Q1modal[i][j]=r_ShockIndicator;
 
             }
         }
@@ -159,16 +161,22 @@ kernel void ShockCapturing(const int Nelem,
                 }
             }
 
-		if (nenner1<ZeroTOL){
-            		term1=zero;
-		}else{
-			term1= zaehler1/nenner1 ;
-		}
-		if (nenner1<ZeroTOL){
-            		term2=zero;
-		}else{
-			term2= zaehler2/nenner2 ;
-		}
+            if (nenner1<ZeroTOL)
+            {
+                term1=zero;
+            }
+            else
+            {
+                term1= zaehler1/nenner1 ;
+            }
+            if (nenner1<ZeroTOL)
+            {
+                term2=zero;
+            }
+            else
+            {
+                term2= zaehler2/nenner2 ;
+            }
 
 
 
@@ -193,11 +201,11 @@ kernel void ShockCapturing(const int Nelem,
 
 
 
-            
-		ViscPara[ie] = viscStar;
-		ViscParaForPlot[ie] = viscStar;
 
-		
+            ViscPara[ie] = viscStar;
+            ViscParaForPlot[ie] = viscStar;
+
+
 
         }
 
