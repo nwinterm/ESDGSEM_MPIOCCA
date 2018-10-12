@@ -834,17 +834,17 @@ void deviceclass:: DGtimeloop(const int Nelem,
             o_Qt.copyTo(Qt);
             device.finish();
 
-            cout <<"\n q_t Post Volume: \n";
-			for (int ie=0;ie<1;ie++){
-					cout <<"Ele: " << ie <<"\n";
-				for(int j=0;j<ngl;++j){
-					for(int i=0;i<ngl;++i){
-						int id = ie*ngl2*Neq +  j*ngl+i;
-					   cout <<Qt[id+ngl2]<<",  ";
-				  }
-					cout <<"\n";
-				}
-			}
+//            cout <<"\n q_t Post Volume: \n";
+//			for (int ie=0;ie<1;ie++){
+//					cout <<"Ele: " << ie <<"\n";
+//				for(int j=0;j<ngl;++j){
+//					for(int i=0;i<ngl;++i){
+//						int id = ie*ngl2*Neq +  j*ngl+i;
+//					   cout <<Qt[id+ngl2]<<",  ";
+//				  }
+//					cout <<"\n";
+//				}
+//			}
 
 
             if (PartialDryTreatment==1)
@@ -873,17 +873,17 @@ void deviceclass:: DGtimeloop(const int Nelem,
             o_Qt.copyTo(Qt);
             device.finish();
 
-            cout <<"\n q_t Post Surface: \n";
-			for (int ie=0;ie<1;ie++){
-					cout <<"Ele: " << ie <<"\n";
-				for(int j=0;j<ngl;++j){
-					for(int i=0;i<ngl;++i){
-						int id = ie*ngl2*Neq +  j*ngl+i;
-					   cout <<Qt[id+ngl2]<<",  ";
-				  }
-					cout <<"\n";
-				}
-			}
+//            cout <<"\n q_t Post Surface: \n";
+//			for (int ie=0;ie<1;ie++){
+//					cout <<"Ele: " << ie <<"\n";
+//				for(int j=0;j<ngl;++j){
+//					for(int i=0;i<ngl;++i){
+//						int id = ie*ngl2*Neq +  j*ngl+i;
+//					   cout <<Qt[id+ngl2]<<",  ";
+//				  }
+//					cout <<"\n";
+//				}
+//			}
 
 
             if (DiscBottom==1)
