@@ -124,12 +124,8 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="okl/RungeKutta/rkLS.okl" />
-		<Unit filename="okl/ViscoseParts/ShockCapturing.okl" />
-		<Unit filename="okl/ViscoseParts/ShockCapturing_new.okl">
-			<Option target="Release" />
-		</Unit>
+		<Unit filename="okl/ShockCapturing/ShockCapturing.okl" />
 		<Unit filename="okl/ViscoseParts/SurfaceKernelVisc.okl" />
-		<Unit filename="okl/ViscoseParts/UpdateQt.okl" />
 		<Unit filename="okl/ViscoseParts/VolumeKernelViscose.okl" />
 		<Unit filename="okl/ViscoseParts/calcNumFluxesViscose.okl" />
 		<Unit filename="src/MPI_Communication.cpp" />
