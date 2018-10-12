@@ -829,6 +829,24 @@ void deviceclass:: DGtimeloop(const int Nelem,
 
 // CORRECT VOLUME KERNEL
             VolumeKernel(Nelem, o_Jac,o_Yxi,o_Yeta,o_Xxi,o_Xeta,o_q,o_D,o_Bx,o_By,o_Qt);
+
+
+            o_Qt.copyTo(Qt);
+            device.finish();
+
+            cout <<"\n q_t Post Volume: \n";
+			for (int ie=0;ie<Nelem;ie++){
+					cout <<"Ele: " << ie <<"\n";
+				for(int j=0;j<ngl;++j){
+					for(int i=0;i<ngl;++i){
+						int id = ie*ngl2*Neq +  j*ngl+i;
+					   cout <<Qt[id+ngl2]<<",  ";
+				  }
+					cout <<"\n";
+				}
+			}
+
+
             if (PartialDryTreatment==1)
             {
                 FindDryElements(Nelem, o_q, o_isPartlyDry);
@@ -849,6 +867,24 @@ void deviceclass:: DGtimeloop(const int Nelem,
             calcNumFluxes(Nfaces,o_EdgeReversed,o_nx,o_ny,o_scal,o_qL,o_qR,o_bL,o_bR,o_SurfaceParts);
 
             SurfaceKernel(Nelem,o_Jac,o_ElemEdgeMasterSlave,o_ElemEdgeOrientation,o_ElemToEdge, o_SurfaceParts,o_DBSurf1,o_DBSurf2,o_Qt);
+
+
+
+            o_Qt.copyTo(Qt);
+            device.finish();
+
+            cout <<"\n q_t Post Surface: \n";
+			for (int ie=0;ie<Nelem;ie++){
+					cout <<"Ele: " << ie <<"\n";
+				for(int j=0;j<ngl;++j){
+					for(int i=0;i<ngl;++i){
+						int id = ie*ngl2*Neq +  j*ngl+i;
+					   cout <<Qt[id+ngl2]<<",  ";
+				  }
+					cout <<"\n";
+				}
+			}
+
 
             if (DiscBottom==1)
             {
