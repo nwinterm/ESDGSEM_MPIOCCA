@@ -113,7 +113,8 @@ void ReadInputFile(int *N,
                    int * DiscBottom,
                    int * ReadInBottom,
                    int * PartialDryTreatment,
-                   int * FrictionTerms)
+                   int * FrictionTerms,
+                   int * ConvertToKM)
 {
 
 //,dfloat T, dfloat g_const
@@ -218,6 +219,8 @@ void ReadInputFile(int *N,
     *PartialDryTreatment= getIntValue(current_string);
     std::getline(InputStream, current_string);
     *FrictionTerms= getIntValue(current_string);
+    std::getline(InputStream, current_string);
+    *ConvertToKM= getIntValue(current_string);
 }
 
 
@@ -288,7 +291,7 @@ void WriteFullMesh(const int NumNodes, const dfloat *x,const dfloat *y)
 
 //,dfloat T, dfloat g_const
 
-const dfloat earth_radius= 6.378e6;
+    const dfloat earth_radius= 6.378e6;
     std::ofstream OutputStream;
     string filename="FullMesh.txt";
     OutputStream.open(filename.c_str());

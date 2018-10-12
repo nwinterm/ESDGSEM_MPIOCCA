@@ -8,7 +8,7 @@
 using namespace Constants;
 
 void ShareInputData(MPI_setup, int *,dfloat *,dfloat *, dfloat *,dfloat *,int *,int *,dfloat *,dfloat *,dfloat *,
-                    dfloat *,int *,int*,int *,int *,int *, int *,int *, int *,int*, int *, int *,int*,int*,int*,int*,int*,int*,int*,int*);
+                    dfloat *,int *,int*,int *,int *,int *, int *,int *, int *,int*, int *, int *,int*,int*,int*,int*,int*,int*,int*,int*,int*);
 
 
 

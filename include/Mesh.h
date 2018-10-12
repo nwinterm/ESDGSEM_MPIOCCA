@@ -56,6 +56,7 @@ private:
     int ngl,ngl2;
     int NelemX;
     int NelemY;
+    int ConvertToKM;
     int ReadBottom; // This variable is needed to indicate that Ocean Bottom Data must be read in from the mesh file!
 //        fmatrix x_GL;
     dfloat *  x_GL;

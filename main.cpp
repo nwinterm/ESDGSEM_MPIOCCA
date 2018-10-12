@@ -90,6 +90,7 @@ int main(int argc, char *argv[])
     int ReadInBottom;
     int PartialDryTreatment;
     int FrictionTerms;
+    int ConvertToKM;
 
 
     int N=0;
@@ -166,7 +167,8 @@ int main(int argc, char *argv[])
                       &DiscBottom,
                       &ReadInBottom,
                       &PartialDryTreatment,
-                      &FrictionTerms);
+                      &FrictionTerms,
+                      &ConvertToKM);
     }
 
     ShareInputData(MPI,
@@ -199,7 +201,8 @@ int main(int argc, char *argv[])
                    &KernelVersionSTD,
                    &DiscBottom,
                    &PartialDryTreatment,
-                   &FrictionTerms);
+                   &FrictionTerms,
+                    &ConvertToKM);
 
     if (Testcase == 31)
     {

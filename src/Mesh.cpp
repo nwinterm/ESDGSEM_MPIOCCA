@@ -1,7 +1,7 @@
 #include "Mesh.h"
 
 
-Mesh::Mesh(const dfloat * fm_x_GL,const int int_ngl, const int intNele, const int ReadInBottom)
+Mesh::Mesh(const dfloat * fm_x_GL,const int int_ngl, const int intNele, const int ReadInBottom, const int ConvertToMeters)
 {
 //    x_GL=fm_x_GL;
     ngl=int_ngl;
@@ -684,6 +684,7 @@ void Mesh::ReadMesh(const string meshFile)
 {
 
 
+    const dfloat earth_radius= 6.378e6;
 
     std::ifstream InputStream;
     string filename=meshFile;
@@ -756,6 +757,11 @@ void Mesh::ReadMesh(const string meshFile)
                 error_message += filename;
                 throw std::invalid_argument(error_message);
             }
+        }
+        if (ConvertToKM)
+        {
+            x_nodes[i]=x_nodes[i]*earth_radius*M_PI/180.0;
+            y_nodes[i]=earth_radius*asinh(tan(y_nodes[i]/180.0*M_PI));
         }
     }
 
@@ -1088,6 +1094,11 @@ void Mesh::ReadMesh(const string meshFile)
                                 error_message += filename;
                                 cout << "Error in Line : "<<k <<"\n";
                                 throw std::invalid_argument(error_message);
+                                if (ConvertToKM)
+                                {
+                                    Gamma1X[k]=Gamma1X[k]*earth_radius*M_PI/180.0;
+                                    Gamma1Y[k]=earth_radius*asinh(tan(Gamma1Y[k]/180.0*M_PI));
+                                }
                             }
                             break;
                         case 1:
@@ -1097,6 +1108,11 @@ void Mesh::ReadMesh(const string meshFile)
                                 error_message += filename;
                                 cout << "Error in Line : "<<k <<"\n";
                                 throw std::invalid_argument(error_message);
+                                if (ConvertToKM)
+                                {
+                                    Gamma2X[k]=Gamma2X[k]*earth_radius*M_PI/180.0;
+                                    Gamma2Y[k]=earth_radius*asinh(tan(Gamma2Y[k]/180.0*M_PI));
+                                }
                             }
                             break;
                         case 2:
@@ -1106,6 +1122,11 @@ void Mesh::ReadMesh(const string meshFile)
                                 error_message += filename;
                                 cout << "Error in Line : "<<k <<"\n";
                                 throw std::invalid_argument(error_message);
+                                if (ConvertToKM)
+                                {
+                                    Gamma3X[k]=Gamma3X[k]*earth_radius*M_PI/180.0;
+                                    Gamma3Y[k]=earth_radius*asinh(tan(Gamma3Y[k]/180.0*M_PI));
+                                }
                             }
                             break;
                         case 3:
@@ -1115,6 +1136,11 @@ void Mesh::ReadMesh(const string meshFile)
                                 error_message += filename;
                                 cout << "Error in Line : "<<k <<"\n";
                                 throw std::invalid_argument(error_message);
+                                if (ConvertToKM)
+                                {
+                                    Gamma4X[k]=Gamma4X[k]*earth_radius*M_PI/180.0;
+                                    Gamma4Y[k]=earth_radius*asinh(tan(Gamma4Y[k]/180.0*M_PI));
+                                }
                             }
                             break;
 
@@ -1131,6 +1157,11 @@ void Mesh::ReadMesh(const string meshFile)
                                 error_message += filename;
                                 cout << "Error in Line : "<<k <<"\n";
                                 throw std::invalid_argument(error_message);
+                                if (ConvertToKM)
+                                {
+                                    Gamma1X[k]=Gamma1X[k]*earth_radius*M_PI/180.0;
+                                    Gamma1Y[k]=earth_radius*asinh(tan(Gamma1Y[k]/180.0*M_PI));
+                                }
                             }
                             break;
                         case 1:
@@ -1140,6 +1171,11 @@ void Mesh::ReadMesh(const string meshFile)
                                 error_message += filename;
                                 cout << "Error in Line : "<<k <<"\n";
                                 throw std::invalid_argument(error_message);
+                                if (ConvertToKM)
+                                {
+                                    Gamma2X[k]=Gamma2X[k]*earth_radius*M_PI/180.0;
+                                    Gamma2Y[k]=earth_radius*asinh(tan(Gamma2Y[k]/180.0*M_PI));
+                                }
                             }
                             break;
                         case 2:
@@ -1149,6 +1185,11 @@ void Mesh::ReadMesh(const string meshFile)
                                 error_message += filename;
                                 cout << "Error in Line : "<<k <<"\n";
                                 throw std::invalid_argument(error_message);
+                                if (ConvertToKM)
+                                {
+                                    Gamma3X[k]=Gamma3X[k]*earth_radius*M_PI/180.0;
+                                    Gamma3Y[k]=earth_radius*asinh(tan(Gamma3Y[k]/180.0*M_PI));
+                                }
                             }
                             break;
                         case 3:
@@ -1158,6 +1199,11 @@ void Mesh::ReadMesh(const string meshFile)
                                 error_message += filename;
                                 cout << "Error in Line : "<<k <<"\n";
                                 throw std::invalid_argument(error_message);
+                                if (ConvertToKM)
+                                {
+                                    Gamma4X[k]=Gamma4X[k]*earth_radius*M_PI/180.0;
+                                    Gamma4Y[k]=earth_radius*asinh(tan(Gamma4Y[k]/180.0*M_PI));
+                                }
                             }
                             break;
 
