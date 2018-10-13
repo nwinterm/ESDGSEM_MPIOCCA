@@ -118,7 +118,7 @@ kernel void CollectEdgeData(const int Nfaces,
                     if (cpuL==-1)
                     {
 
-                        if(bRight>6.0)
+                        if(bRight>5.0)
                         {
                             dfloat vx;
                             dfloat vy;
@@ -147,7 +147,7 @@ kernel void CollectEdgeData(const int Nfaces,
                     }
                     if (cpuR==-1)
                     {
-                        if(bLeft>6.0)
+                        if(bLeft>5.0)
                         {
                             dfloat vx;
                             dfloat vy;
@@ -166,9 +166,9 @@ kernel void CollectEdgeData(const int Nfaces,
                         }
                         else
                         {
-                            qNodalL[0]=qNodalR[0];
-                            qNodalL[1]= qNodalR[1];
-                            qNodalL[2]= qNodalR[2];
+                            qNodalR[0]=qNodalL[0];
+                            qNodalR[1]=qNodalL[1];
+                            qNodalR[2]=qNodalL[2];
 
                         }
 
