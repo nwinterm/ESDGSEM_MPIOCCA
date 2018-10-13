@@ -340,6 +340,16 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
         CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/3MoundInflow.okl","CollectEdgeData",info);
         break;
     }
+        case 90:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
+    {
+        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/OceanBoundary.okl","CollectEdgeData",info);
+        break;
+    }
+        case 91:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
+    {
+        CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/OceanBoundary.okl","CollectEdgeData",info);
+        break;
+    }
     default:
         CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/SolidWalls.okl","CollectEdgeData",info);
         break;
