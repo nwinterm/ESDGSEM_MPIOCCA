@@ -177,16 +177,19 @@ void deviceclass:: initDeviceVariables(const int N,
     info.addDefine("ZeroTOL",ZeroTOL);
     info.addDefine("h_zero",h_0);
 
-    const dfloat ManningCoefficient = 0.025;    ///in s/m^(1/3)
-    const dfloat ManningCoefficient2 = pow(ManningCoefficient,2);    ///in s/m^(1/3)
+   /// const dfloat ManningCoefficient = 0.025;    ///in s/m^(1/3)
+    const dfloat ManningCoefficient = 0.025/600.0;    ///in min/km^(1/3)
+    const dfloat ManningCoefficient2 = pow(ManningCoefficient,2);
     info.addDefine("ManningCoeff",ManningCoefficient2);
     const dfloat seventhirds = 7.0/3.0;
     info.addDefine("seventhirds",seventhirds);
-    const dfloat earth_radius= 6.378e6; 	// should actually be = 6.378e6;
+    ///const dfloat earth_radius= 6.378e6; 	// earth radius in meters
+    const dfloat earth_radius= 6.378e3; 	// earth radius in kilometers
     info.addDefine("earth_radius",earth_radius);
     const dfloat OneEightyOverPI = 180.0/M_PI;
     info.addDefine("OneEightyOverPI",OneEightyOverPI);
-    const dfloat w_angular = 2.0*M_PI/(24.0*3600.0);
+   /// const dfloat w_angular = 2.0*M_PI/(24.0*3600.0);    //in radians/second
+    const dfloat w_angular = 2.0*M_PI/(24.0*60.0);    //in radians/minute
     cout << "Earth's angular velocity is "<< w_angular << "\n";
     info.addDefine("w_angular",w_angular);
 

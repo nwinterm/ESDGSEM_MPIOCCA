@@ -64,15 +64,9 @@
 		<Unit filename="meshFiles/PeriodicXandY6.mesh" />
 		<Unit filename="meshFiles/PeriodicXandY7.mesh" />
 		<Unit filename="okl/BR1_Gradient/CollectEdgeDataGradient.okl" />
-		<Unit filename="okl/BR1_Gradient/ModifyGradient.okl">
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="okl/BR1_Gradient/SurfaceKernelGradient.okl" />
 		<Unit filename="okl/BR1_Gradient/calcGradient.okl" />
 		<Unit filename="okl/BR1_Gradient/calcNumFluxesGradient.okl" />
-		<Unit filename="okl/BR1_Gradient/calcNumFluxesGradientMod.okl">
-			<Option target="Release" />
-		</Unit>
 		<Unit filename="okl/BR1_Gradient/scaleGradient.okl" />
 		<Unit filename="okl/DG/FindLambdaMax.okl" />
 		<Unit filename="okl/DG/MemCopyComparison.okl" />
@@ -91,6 +85,7 @@
 		<Unit filename="okl/GatherEdgeData/Dirichlet_ConvTest4.okl" />
 		<Unit filename="okl/GatherEdgeData/Dirichlet_ConvTest5.okl" />
 		<Unit filename="okl/GatherEdgeData/InnerOuter.okl" />
+		<Unit filename="okl/GatherEdgeData/OceanBoundary.okl" />
 		<Unit filename="okl/GatherEdgeData/SolidWalls.okl" />
 		<Unit filename="okl/ManufacturedSolutions/S_ConvTest.okl" />
 		<Unit filename="okl/ManufacturedSolutions/S_ConvTest2.okl" />
