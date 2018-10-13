@@ -39,8 +39,8 @@ kernel void CollectEdgeData(const int Nfaces,
 
                     const dfloat nx = normx[edgeIDX];
                     const dfloat ny = normy[edgeIDX];
-                    const dfloat bL = bL[edgeIDX];
-                    const dfloat bR = bR[edgeIDX];
+                    const dfloat bLeft = bL[edgeIDX];
+                    const dfloat bRight = bR[edgeIDX];
                     dfloat qNodalL[Neq];
                     dfloat qNodalR[Neq];
 
@@ -118,7 +118,7 @@ kernel void CollectEdgeData(const int Nfaces,
                     if (cpuL==-1)
                     {
 
-                        if(bR>6.0)
+                        if(bRight>6.0)
                         {
                             dfloat vx;
                             dfloat vy;
@@ -147,7 +147,7 @@ kernel void CollectEdgeData(const int Nfaces,
                     }
                     if (cpuR==-1)
                     {
-                        if(bL>6.0)
+                        if(bLeft>6.0)
                         {
                             dfloat vx;
                             dfloat vy;
