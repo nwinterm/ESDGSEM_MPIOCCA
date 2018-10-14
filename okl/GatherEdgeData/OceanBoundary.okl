@@ -138,9 +138,9 @@ kernel void CollectEdgeData(const int Nfaces,
                         }
                         else
                         {
-                            qNodalL[0]=qNodalR[0];
-                            qNodalL[1]= qNodalR[1];
-                            qNodalL[2]= qNodalR[2];
+                            qNodalL[0]=7.31;//qNodalR[0];
+                            qNodalL[1]=zero;//qNodalR[1];
+                            qNodalL[2]=zero;//qNodalR[2];
 
                         }
 
@@ -166,9 +166,28 @@ kernel void CollectEdgeData(const int Nfaces,
                         }
                         else
                         {
+                           // dfloat vx=qNodalL[1]/qNodalL[0];
+                          //  dfloat vy=qNodalL[2]/qNodalL[0];
+                            dfloat vx;
+                            dfloat vy;
+                            vx = qNodalL[1];
+                            vy = qNodalL[2];
+
+
+                            const dfloat v_n  = nx * vx + ny * vy;
+                            const dfloat v_t  = -ny*vx + nx * vy;
+
+                            const dfloat vTilde_x =  nx * v_n ;//- ny * v_t;
+                            const dfloat vTilde_y =  ny * v_n ;//+ nx * v_t;
+			
                             qNodalR[0]=qNodalL[0];
-                            qNodalR[1]=qNodalL[1];
-                            qNodalR[2]=qNodalL[2];
+                            qNodalR[1]=vTilde_x;
+                            qNodalR[2]=vTilde_y;
+
+//			    dfloat r_hOutside = 7.31-bLeft;
+//                            qNodalR[0]=r_hOutside;
+//                            qNodalR[1]=r_hOutside*vx;
+//                            qNodalR[2]=r_hOutside*vy;
 
                         }
 

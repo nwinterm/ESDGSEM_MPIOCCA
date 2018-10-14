@@ -1,4 +1,4 @@
-meshFile=meshFiles/SumatraOcean/Ocean2xKM.mesh
+meshFile=meshFiles/SumatraOcean/Ocean1xKM.mesh
 N=7
 CFL=0.1
 DFL=0.01
