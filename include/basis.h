@@ -44,6 +44,7 @@ public:
 
     void L2Norm(const dfloat[],const dfloat[],const dfloat[],dfloat[]);
     void calcElementSizes(const dfloat [],dfloat [],dfloat *minEleSize);
+    void UpdateMaximumFriction(const dfloat FrictionForPlot[],dfloat maximumFriction[]);
     void LinfNorm(const dfloat[],const dfloat[],dfloat[]);
     void setNelemLocal(const int);
     void setNelemGlobal(const int);

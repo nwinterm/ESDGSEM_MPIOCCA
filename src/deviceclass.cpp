@@ -776,7 +776,11 @@ void deviceclass:: DGtimeloop(const int Nelem,
 
 
     cout << "about to enter time loop\n";
+    if (CalcFrictionTerms)
+    {
+        maximumFriction = (dfloat*) calloc(ngl2*Nelem_global*(Neq-1),sizeof(dfloat));
 
+    }
 
 
     while (t<T)
@@ -1069,10 +1073,23 @@ void deviceclass:: DGtimeloop(const int Nelem,
 
                     if (CalcFrictionTerms)
                     {
-                        dfloat * FrictionForPlot = (dfloat*) calloc(ngl2*Nelem_global*(Neq-1),sizeof(dfloat));
-                        o_FrictionForPlot.copyTo(FrictionForPlot);
-                        PlotFriction(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,FrictionForPlot,plotCount);
-                        free(FrictionForPlot);
+                        if (t<T)
+                        {
+                            dfloat * FrictionForPlot = (dfloat*) calloc(ngl2*Nelem_global*(Neq-1),sizeof(dfloat));
+                            o_FrictionForPlot.copyTo(FrictionForPlot);
+                            DGBasis.UpdateMaximumFriction(maximumFriction,FrictionForPlot);
+                            free(FrictionForPlot);
+                        }
+                        else
+                        {
+                            dfloat * FrictionForPlot = (dfloat*) calloc(ngl2*Nelem_global*(Neq-1),sizeof(dfloat));
+                            o_FrictionForPlot.copyTo(FrictionForPlot);
+                            DGBasis.UpdateMaximumFriction(maximumFriction,FrictionForPlot);
+                            PlotFriction(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,maximumFriction,plotCount);
+                            free(FrictionForPlot);
+                            free(maximumFriction);
+                        }
+
                     }
 
 

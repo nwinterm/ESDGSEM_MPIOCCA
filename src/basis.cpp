@@ -1095,4 +1095,28 @@ void basis :: calcTotalMass(const dfloat Q[],const dfloat J[],dfloat *TotalMass)
 };
 
 
+void basis :: UpdateMaximumFriction(const dfloat FrictionForPlot[],dfloat maximumFriction[])
+{
+
+
+    for (int ie=0; ie<Nelem_global; ie++)
+    {
+        for(int j=0; j<ngl; ++j)
+        {
+            for(int i=0; i<ngl; ++i)
+            {
+                int id = ie*ngl2*(Neq-1)   +j*ngl+i;
+
+
+                maximumFriction[id]  = max(abs(FrictionForPlot[id]),maximumFriction[id]);
+
+
+            }
+        }
+    }
+
+
+};
+
+
 

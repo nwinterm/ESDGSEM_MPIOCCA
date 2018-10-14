@@ -185,6 +185,7 @@ public:
     dfloat * EntropyOverTime;
     dfloat * MassOverTime;
     dfloat * EntropyTimes;
+    dfloat * maximumFriction;
 
 
 protected:
