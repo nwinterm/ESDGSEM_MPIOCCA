@@ -1070,7 +1070,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
                     if (CalcFrictionTerms)
                     {
                         dfloat * FrictionForPlot = (dfloat*) calloc(ngl2*Nelem_global*(Neq-1),sizeof(dfloat));
-                        o_FrictionForPlot.CopyTo(FrictionForPlot);
+                        o_FrictionForPlot.copyTo(FrictionForPlot);
                         PlotFriction(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,FrictionForPlot,plotCount);
                         free(FrictionForPlot);
                     }
