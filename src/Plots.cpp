@@ -18,7 +18,7 @@ void PlotSolution(const int Nelem, const int ngl,const int PlotVar, const dfloat
     dfloat Qinv;
     switch(PlotVar)
     {
-    case 1:
+    case 1:{
 
         plotfile <<"TITLE = H_solution.tec\n";
         plotfile <<"VARIABLES = \"x\",\"y\",\"H\",\"hu\",\"hv\",\"bottom\"\n";
@@ -50,8 +50,74 @@ void PlotSolution(const int Nelem, const int ngl,const int PlotVar, const dfloat
                 }
             }
         }
-        break;
+        break;}
+        case 2:{
+
+        plotfile <<"TITLE = H_solution.tec\n";
+        plotfile <<"VARIABLES = \"x\",\"y\",\"FreeSurface\",\"hu\",\"hv\",\"bottom\"\n";
+        for (int ie=0; ie<Nelem; ie++)
+        {
+            plotfile <<"ZONE I ="<<ngl<<",J="<<ngl<<",F=POINT\n";
+            for(int j=0; j<ngl; ++j)
+            {
+                for(int i=0; i<ngl; ++i)
+                {
+                    int id = ie*ngl2*Neq   +j*ngl+i;
+                    int xid = ie*ngl2   +j*ngl+i;
+                    dfloat H;
+
+
+                    H=Q[id]+b[xid]-7.31;
+
+		    plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]<<" " << Q[id+ngl2+ngl2]<<" "<<b[xid]<<" \n";
+                    //plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<<" \n";
+
+                }
+            }
+        }
+        break;}
     }
+
+    plotfile.close();
+
+
+}
+
+void PlotFriction(const int Nelem, const int ngl,const int PlotVar, const dfloat x[], const dfloat y[], const dfloat Friction[], const int plotCount)
+{
+
+    ostringstream os;
+    os << "movie/Friction_" << plotCount << ".tec";
+    string fName = os.str();
+
+
+    ofstream plotfile;
+    plotfile.open (fName.c_str());
+
+
+    int ngl2=ngl*ngl;
+
+        plotfile <<"TITLE = Friction.tec\n";
+        plotfile <<"VARIABLES = \"x\",\"y\",\"Friction1\",\"Friction2\"\n";
+        for (int ie=0; ie<Nelem; ie++)
+        {
+            plotfile <<"ZONE I ="<<ngl<<",J="<<ngl<<",F=POINT\n";
+            for(int j=0; j<ngl; ++j)
+            {
+                for(int i=0; i<ngl; ++i)
+                {
+                    int id = ie*ngl2*(Neq-1)   +j*ngl+i;
+                    int xid = ie*ngl2   +j*ngl+i;
+
+
+
+		    plotfile <<x[xid]<<" "<<y[xid]<<" " << Friction[id]<<" " << Friction[id+ngl2]<<" \n";
+                    //plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<<" \n";
+
+                }
+            }
+        }
+
 
     plotfile.close();
 

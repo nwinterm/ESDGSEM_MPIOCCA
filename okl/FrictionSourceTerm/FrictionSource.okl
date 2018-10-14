@@ -1,7 +1,8 @@
 kernel void FrictionSource(const int Nelem,
                            const dfloat * restrict y,
                            const dfloat * restrict Q,
-                           dfloat * restrict Qt)                                // const int * restrict isPartlyDry,
+                           dfloat * restrict Qt,
+                           dfloat * restrict FrictionForPlot)
 {
 
 
@@ -24,6 +25,7 @@ kernel void FrictionSource(const int Nelem,
 
                         const int xid       =   eleID*ngl2   +i*ngl+j;
                         const int Fid       =   eleID*ngl2*Neq   +i*ngl+j;
+                        const int Frictionid       =   eleID*ngl2*(Neq-1)   +i*ngl+j;
 
                         const dfloat r_latitude = atan(sinh(y[xid]/earth_radius)) * OneEightyOverPI;
                         const dfloat r_h = Q[Fid];
@@ -53,6 +55,8 @@ kernel void FrictionSource(const int Nelem,
 
                         Qt[id+ngl2]         += -  r_ManningTerm1  +r_CoriolisTerm1 ;
                         Qt[id+ngl2+ngl2]    += -  r_ManningTerm2  +r_CoriolisTerm2;
+                        FrictionForPlot[Frictionid] =-  r_ManningTerm1 ;
+                        FrictionForPlot[Frictionid+ngl2] =-  r_ManningTerm2 ;
 
                     }
 

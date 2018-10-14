@@ -178,6 +178,8 @@ public:
 
     occa::memory o_isPartlyDry;
 
+    occa::memory o_FrictionForPlot;
+
 
 
     dfloat * EntropyOverTime;

@@ -177,7 +177,7 @@ void deviceclass:: initDeviceVariables(const int N,
     info.addDefine("ZeroTOL",ZeroTOL);
     info.addDefine("h_zero",h_0);
 
-   /// const dfloat ManningCoefficient = 0.025;    ///in s/m^(1/3)
+    /// const dfloat ManningCoefficient = 0.025;    ///in s/m^(1/3)
     const dfloat ManningCoefficient = 0.025/600.0;    ///in min/km^(1/3)
     const dfloat ManningCoefficient2 = pow(ManningCoefficient,2);
     info.addDefine("ManningCoeff",ManningCoefficient2);
@@ -188,7 +188,7 @@ void deviceclass:: initDeviceVariables(const int N,
     info.addDefine("earth_radius",earth_radius);
     const dfloat OneEightyOverPI = 180.0/M_PI;
     info.addDefine("OneEightyOverPI",OneEightyOverPI);
-   /// const dfloat w_angular = 2.0*M_PI/(24.0*3600.0);    //in radians/second
+    /// const dfloat w_angular = 2.0*M_PI/(24.0*3600.0);    //in radians/second
     const dfloat w_angular = 2.0*M_PI/(24.0*60.0);    //in radians/minute
     cout << "Earth's angular velocity is "<< w_angular << "\n";
     info.addDefine("w_angular",w_angular);
@@ -292,6 +292,12 @@ void deviceclass:: initDeviceVariables(const int N,
 
     }
 
+    if(CalcFrictionTerms)
+    {
+
+        o_FrictionForPlot= device.malloc(ngl2*Nelem*(Neq-1)*sizeof(dfloat));
+    }
+
 }
 
 
@@ -343,12 +349,12 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
         CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/3MoundInflow.okl","CollectEdgeData",info);
         break;
     }
-        case 90:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
+    case 90:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
     {
         CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/OceanBoundary.okl","CollectEdgeData",info);
         break;
     }
-        case 91:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
+    case 91:  // THIS INCLUDES DIRICHLET BOUNDARIES FOR PERIODIC CONVERGENCE TEST
     {
         CollectEdgeData=device.buildKernelFromSource("okl/GatherEdgeData/OceanBoundary.okl","CollectEdgeData",info);
         break;
@@ -908,7 +914,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
             if(CalcFrictionTerms)
             {
 
-                FrictionSource(Nelem,o_y,o_q,o_Qt);
+                FrictionSource(Nelem,o_y,o_q,o_Qt,o_FrictionForPlot);
             }
 
             if ( ArtificialViscosity==1)
@@ -1059,6 +1065,14 @@ void deviceclass:: DGtimeloop(const int Nelem,
                         DGBasis.calcTotalMass(q_global,J_global,&TotalMass);
                         MassOverTime[plotCount] = TotalMass;
                         EntropyTimes[plotCount] = t;
+                    }
+
+                    if (CalcFrictionTerms)
+                    {
+                        dfloat * FrictionForPlot = (dfloat*) calloc(ngl2*Nelem_global*(Neq-1),sizeof(dfloat));
+                        o_FrictionForPlot.CopyTo(FrictionForPlot);
+                        PlotFriction(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,FrictionForPlot,plotCount);
+                        free(FrictionForPlot);
                     }
 
 
