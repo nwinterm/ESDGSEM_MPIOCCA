@@ -1077,14 +1077,14 @@ void deviceclass:: DGtimeloop(const int Nelem,
                         {
                             dfloat * FrictionForPlot = (dfloat*) calloc(ngl2*Nelem_global*(Neq-1),sizeof(dfloat));
                             o_FrictionForPlot.copyTo(FrictionForPlot);
-                            DGBasis.UpdateMaximumFriction(maximumFriction,FrictionForPlot);
+                            DGBasis.UpdateMaximumFriction(FrictionForPlot,maximumFriction);
                             free(FrictionForPlot);
                         }
                         else
                         {
                             dfloat * FrictionForPlot = (dfloat*) calloc(ngl2*Nelem_global*(Neq-1),sizeof(dfloat));
                             o_FrictionForPlot.copyTo(FrictionForPlot);
-                            DGBasis.UpdateMaximumFriction(maximumFriction,FrictionForPlot);
+                            DGBasis.UpdateMaximumFriction(FrictionForPlot,maximumFriction);
                             PlotFriction(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,maximumFriction,plotCount);
                             free(FrictionForPlot);
                             free(maximumFriction);
