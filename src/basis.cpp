@@ -1107,9 +1107,8 @@ void basis :: UpdateMaximumFriction(const dfloat FrictionForPlot[],dfloat maximu
             {
                 int id = ie*ngl2*(Neq-1)   +j*ngl+i;
 
-
-                maximumFriction[id]  = max(abs(FrictionForPlot[id]),maximumFriction[id]);
-
+                maximumFriction[id]       =     max(abs(FrictionForPlot[id]),maximumFriction[id]);
+                maximumFriction[id+ngl2]  =     max(abs(FrictionForPlot[id+ngl2]),maximumFriction[id+ngl2]);
 
             }
         }
