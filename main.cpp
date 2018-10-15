@@ -402,7 +402,8 @@ int main(int argc, char *argv[])
                             //h_0 = -b_min;
                             //  cout << " Water displacement: " << h_0 << "\n";
                             dfloat MinusOneMeter = -0.01;
-                            b_global[id]    =   h_0 + min(MinusOneMeter,DGMesh.b_global[id]);
+                            //b_global[id]    =   h_0 + min(MinusOneMeter,DGMesh.b_global[id]);
+                            b_global[id]    =   h_0 + min(MinusOneMeter,b_global[id]);
                         }
                         else
                         {
