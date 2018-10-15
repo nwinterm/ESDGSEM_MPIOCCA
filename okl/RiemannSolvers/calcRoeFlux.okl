@@ -141,7 +141,7 @@ kernel void calcNumFluxes(const int Nfaces,
                     const dfloat LambdaR13inv = lambda1*(-ny*OneOver2c);
 
 
-                    const dfloat LambdaR21inv = lambda2*(-r_normvelHat);
+                    const dfloat LambdaR21inv = lambda2*(-ny*r_uHat + nx*r_vHat);
                     const dfloat LambdaR22inv = lambda2*(-ny);
                     const dfloat LambdaR23inv = lambda2*(nx);
 
