@@ -113,6 +113,7 @@
 		<Unit filename="okl/RiemannSolvers/calcLFTypeESFlux.okl" />
 		<Unit filename="okl/RiemannSolvers/calcLaxFriedrich.okl" />
 		<Unit filename="okl/RiemannSolvers/calcLaxFriedrichCorrect.okl" />
+		<Unit filename="okl/RiemannSolvers/calcRoeFlux.okl" />
 		<Unit filename="okl/RungeKutta/UpdateKernelLS.okl" />
 		<Unit filename="okl/RungeKutta/UpdateKernelSSP.okl" />
 		<Unit filename="okl/RungeKutta/UpdateKernelSSP_V1.okl">

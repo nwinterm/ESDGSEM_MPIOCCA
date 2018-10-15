@@ -419,6 +419,11 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
         calcNumFluxes=device.buildKernelFromSource("okl/RiemannSolvers/calcESFluxRotated.okl","calcNumFluxes",info);
         break;
     }
+    case 4:
+    {
+        calcNumFluxes=device.buildKernelFromSource("okl/RiemannSolvers/calcRoeFlux.okl","calcNumFluxes",info);
+        break;
+    }
     }
 
     // calc specific value on edges like jump in b and average h
