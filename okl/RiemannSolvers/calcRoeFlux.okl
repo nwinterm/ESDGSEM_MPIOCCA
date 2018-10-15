@@ -152,15 +152,15 @@ kernel void calcNumFluxes(const int Nfaces,
 
                     const dfloat RLR11 = R11*LambdaR11inv + R12*LambdaR21inv + R13*LambdaR31inv;
                     const dfloat RLR12 = R11*LambdaR12inv + R12*LambdaR22inv + R13*LambdaR32inv;
-                    const dfloat RLR13 = R13*LambdaR11inv + R12*LambdaR23inv + R13*LambdaR33inv;
+                    const dfloat RLR13 = R13*LambdaR13inv + R12*LambdaR23inv + R13*LambdaR33inv;
 
                     const dfloat RLR21 = R21*LambdaR11inv + R22*LambdaR21inv + R23*LambdaR31inv;
                     const dfloat RLR22 = R21*LambdaR12inv + R22*LambdaR22inv + R23*LambdaR32inv;
-                    const dfloat RLR23 = R23*LambdaR11inv + R22*LambdaR23inv + R23*LambdaR33inv;
+                    const dfloat RLR23 = R23*LambdaR13inv + R22*LambdaR23inv + R23*LambdaR33inv;
 
                     const dfloat RLR31 = R31*LambdaR11inv + R32*LambdaR21inv + R33*LambdaR31inv;
                     const dfloat RLR32 = R31*LambdaR12inv + R32*LambdaR22inv + R33*LambdaR32inv;
-                    const dfloat RLR33 = R33*LambdaR11inv + R32*LambdaR23inv + R33*LambdaR33inv;
+                    const dfloat RLR33 = R33*LambdaR13inv + R32*LambdaR23inv + R33*LambdaR33inv;
 
                     const dfloat deltaH = hR-hL;
                     const dfloat deltaHu = huR-huL;
