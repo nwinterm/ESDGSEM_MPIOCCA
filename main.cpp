@@ -202,7 +202,7 @@ int main(int argc, char *argv[])
                    &DiscBottom,
                    &PartialDryTreatment,
                    &FrictionTerms,
-                    &ConvertToKM);
+                   &ConvertToKM);
 
     if (Testcase == 31)
     {
@@ -373,14 +373,13 @@ int main(int argc, char *argv[])
 //            cout << "... DONE\n";
 
 
-        if (Cartesian)
+
+        if (ReadInBottom)
         {
-            if (ReadInBottom)
-            {
-                ReadFullMesh(NoSpaceDofs_global, b_global, &h_0);
-                cout << " Water displacement: " << h_0 << "\n";
-            }
+            ReadFullMesh(NoSpaceDofs_global, b_global, &h_0);
+            cout << " Water displacement: " << h_0 << "\n";
         }
+
         for(int ie=0; ie<Nelem_global; ++ie)
         {
 
@@ -401,14 +400,13 @@ int main(int argc, char *argv[])
                         {
                             //dfloat b_min = -7.3100;// in kilometers now
                             //h_0 = -b_min;
-                            ReadFullMesh(NoSpaceDofs_global, b_global, &h_0);
-                            cout << " Water displacement: " << h_0 << "\n";
+                            //  cout << " Water displacement: " << h_0 << "\n";
                             dfloat MinusOneMeter = -0.01;
                             b_global[id]    =   h_0 + min(MinusOneMeter,DGMesh.b_global[id]);
                         }
                         else
                         {
-                           // b_global[id]    =   h_0 + b_global[id];
+                            // b_global[id]    =   h_0 + b_global[id];
                         }
 
                     }
