@@ -345,11 +345,12 @@ void ReadFullMesh(const int NumNodes, dfloat *b, dfloat * h_0)
             error_message += filename;
             throw std::invalid_argument(error_message);
         }
-        b[i] = b_input;
         b_min = min(b_min, b_input);
+        b[i] = b_input/1000.0;
+
     }
     InputStream.close();
-    *h_0 = - floor(b_min);
+    *h_0 = - floor(b_min)/1000.0;
 //    for (unsigned i = 0; i < NumNodes; ++i)
 //    {
 //        b[i] = *h_0 + b[i];
