@@ -368,9 +368,9 @@ int main(int argc, char *argv[])
         y_phy_global = (dfloat*) calloc(NoSpaceDofs_global,sizeof(dfloat));
 
 
-//            cout << "Writing Out Full Mesh ...\n";
-//            WriteFullMesh(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global);
-//            cout << "... DONE\n";
+            cout << "Writing Out Full Mesh ...\n";
+            WriteFullMesh(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global);
+            cout << "... DONE\n";
 
 
         if (Cartesian)
