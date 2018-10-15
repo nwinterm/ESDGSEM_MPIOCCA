@@ -54,14 +54,13 @@ kernel void calcNumFluxes(const int Nfaces,
                     dfloat vL;
                     dfloat huL;
                     dfloat hvL;
-                    dfloat cL;
+
                     if(hL>PosPresTOL)
                     {
                         uL=qL[edgeID+ngl]/hL;
                         vL=qL[edgeID+ngl+ngl]/hL;
                         huL=qL[edgeID+ngl];
                         hvL=qL[edgeID+ngl+ngl];
-                        cL=sqrt(g_const*hL);
                     }
                     else
                     {
@@ -70,21 +69,18 @@ kernel void calcNumFluxes(const int Nfaces,
                         vL =zero;
                         huL=zero;
                         hvL=zero;
-                        cL=zero;
                     }
 
                     dfloat uR;
                     dfloat vR;
                     dfloat huR;
                     dfloat hvR;
-                    dfloat cR;
                     if(hR>PosPresTOL)
                     {
                         uR=qR[edgeIDR +ngl]/hR;
                         vR=qR[edgeIDR +ngl+ngl]/hR;
                         huR=qR[edgeIDR +ngl];
                         hvR=qR[edgeIDR +ngl+ngl];
-                        cR=sqrt(g_const*hR);
 
                     }
                     else
@@ -93,7 +89,6 @@ kernel void calcNumFluxes(const int Nfaces,
                         vR =zero;
                         huR=zero;
                         hvR=zero;
-                        cR=zero;
                     }
 
                     const dfloat F1L = huL ;
@@ -143,7 +138,7 @@ kernel void calcNumFluxes(const int Nfaces,
 
                     const dfloat LambdaR11inv = lambda1* (r_normvelHat+r_cHat)*OneOver2c;
                     const dfloat LambdaR12inv = lambda1*(-nx*OneOver2c);
-                    const dfloat LambdaR13inv = lambda1*(-y*OneOver2c);
+                    const dfloat LambdaR13inv = lambda1*(-ny*OneOver2c);
 
 
                     const dfloat LambdaR21inv = lambda2*(-r_normvelHat);
