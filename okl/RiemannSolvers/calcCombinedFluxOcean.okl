@@ -307,8 +307,8 @@ void F_ES(const dfloat q1L,const dfloat q2L,const dfloat q3L,
 
 
     *F1=F0_ES;
-    *F2=bRotNumFlux1
-        *F3=bRotNumFlux2;
+    *F2=bRotNumFlux1;
+    *F3=bRotNumFlux2;
 
 }
 
