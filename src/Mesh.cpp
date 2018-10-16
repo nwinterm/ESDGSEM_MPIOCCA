@@ -810,7 +810,6 @@ void Mesh::ReadMesh(const string meshFile)
         ElementToEdge[id]=is+1;
 
 
-
         // sgn(side_of_right_element)
 
         int index_direction;

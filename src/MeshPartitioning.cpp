@@ -90,7 +90,7 @@ void MeshPartitioning::DivideMesh(const Mesh GlobalMesh,const MPI_setup MPI)
         {
             MyEdgesLocalToGlobal[is] = is; //(is,1);
         }
-
+///EDGE INFO FROM Mesh.cpp:    (startnode,endnode,elementLeft,elementRight,sideOfLeftElement,sideOfRightElement,OrientiationRightElement)
         for (int is=0; is<global_NumEdges; is++)
         {
             int glbEdgeInfoID=(is)*7;
@@ -395,9 +395,9 @@ void MeshPartitioning::DivideMesh(const Mesh GlobalMesh,const MPI_setup MPI)
                 globalEdgeInfo[id1+3] = ElementGlobalToLocal[GlobalMesh.EdgeInfo[glbEdgeInfoID+3] ]-1;//(1,GlobalMesh.EdgeInfo[glbEdgeInfoID+3]+1)-1 ;	//!this is changed to be the local element on right processor
                 globalEdgeInfo[id1+4] = GlobalMesh.EdgeInfo[glbEdgeInfoID+4];	//!local side left element <- fine as is
                 globalEdgeInfo[id1+5] = GlobalMesh.EdgeInfo[glbEdgeInfoID+5]	;//!local side right element <- fine as is
-                globalEdgeInfo[id1+6] = GlobalMesh.EdgeInfo[glbEdgeInfoID+6];
-                globalEdgeInfo[id1+7]= proc_LEFT -1;
-                globalEdgeInfo[id1+8]= proc_LEFT -1;
+                globalEdgeInfo[id1+6] = GlobalMesh.EdgeInfo[glbEdgeInfoID+6];   ///ORientation right element
+                globalEdgeInfo[id1+7]= proc_LEFT -1;    /// PROCESSOR OF LEFT ELEMENT
+                globalEdgeInfo[id1+8]= proc_LEFT -1;    /// PROCESSOR OF RIGHT ELEMENT
                 globalEdgeInfo[id1+9] = is -1	;	//!global side id
 
             }

@@ -507,6 +507,9 @@ int main(int argc, char *argv[])
     {
         cout <<"Loading Mesh Data into global arrays on HOST... \n";
     }
+    /// EDGE INFO FROM Mesh.cpp:    (startnode,endnode,elementLeft,elementRight,sideOfLeftElement,sideOfRightElement,OrientiationRightElement)
+    /// AFTER MESH PARTITIONING:  (elementLeft,elementRight,sideOfLeftElement,sideOfRightElement,OrientiationRightElement,ProcessorLeft,ProcessorRight,GlobalSideID)
+    /// NEW IDEA: MAYBE ENTRY THAT DETERMINES BOUNDARY CONDITION!
     for(int is=0; is<Nfaces; ++is)
     {
         for (int info=0; info<8; info++)
