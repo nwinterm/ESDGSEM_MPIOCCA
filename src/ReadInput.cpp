@@ -309,7 +309,7 @@ void WriteFullMesh(const int NumNodes, const dfloat *x,const dfloat *y)
 }
 
 
-void ReadFullMesh(const int NumNodes, dfloat *b, dfloat * h_0)
+void ReadFullMesh(const int NumNodes,const int N, dfloat *b, dfloat * h_0)
 {
 
 //,dfloat T, dfloat g_const
