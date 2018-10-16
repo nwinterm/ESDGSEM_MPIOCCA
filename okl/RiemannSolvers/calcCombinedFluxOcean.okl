@@ -364,7 +364,7 @@ kernel void calcNumFluxes(const int Nfaces,
                     dfloat NumFlux[Neq];
 
 
-                    if ((cpuR ==-1) && (bL>5.0))
+                    if ((cpuR ==-1) && (bL>6.7))
                     {
                         F_Roe(qL[edgeID],qL[edgeID+ngl],qL[edgeID+ngl+ngl],
                               qR[edgeIDR],qR[edgeIDR+ngl],qR[edgeIDR+ngl+ngl],
