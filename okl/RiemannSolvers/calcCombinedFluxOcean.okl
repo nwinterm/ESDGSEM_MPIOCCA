@@ -367,17 +367,17 @@ kernel void calcNumFluxes(const int Nfaces,
                     if ((cpuR ==-1) && (bL>5.0))
                     {
                         F_Roe(qL[edgeID],qL[edgeID+ngl],qL[edgeID+ngl+ngl],
-                              qR[edgeID],qR[edgeID+ngl],qR[edgeID+ngl+ngl],
+                              qR[edgeIDR],qR[edgeIDR+ngl],qR[edgeIDR+ngl+ngl],
                               nx,ny,
-                              &NumFlux[0],&NumFlux[1],&NumFlux[2])
+                              &NumFlux[0],&NumFlux[1],&NumFlux[2]);
                     }
                     else
                     {
                         F_ES(qL[edgeID],qL[edgeID+ngl],qL[edgeID+ngl+ngl],
-                             qR[edgeID],qR[edgeID+ngl],qR[edgeID+ngl+ngl],
+                             qR[edgeIDR],qR[edgeIDR+ngl],qR[edgeIDR+ngl+ngl],
                              nx,ny,
                              bL, bR,
-                             &NumFlux[0],&NumFlux[1],&NumFlux[2])
+                             &NumFlux[0],&NumFlux[1],&NumFlux[2]);
                     }
 
 
