@@ -175,6 +175,7 @@ void deviceclass:: initDeviceVariables(const int N,
     info.addDefine("geomFace",geomface );
     info.addDefine("PosPresTOL",TOL_PosPres);
     info.addDefine("ZeroTOL",ZeroTOL);
+    cout << "Adding h_0 to kernel as: " << h_0 <<"\n";
     info.addDefine("h_zero",h_0);
 
     /// const dfloat ManningCoefficient = 0.025;    ///in s/m^(1/3)

@@ -138,7 +138,7 @@ kernel void CollectEdgeData(const int Nfaces,
                         }
                         else
                         {
-                            qNodalL[0]=7.446-bRight;//qNodalR[0];
+                            qNodalL[0]=h_zero-bRight;//qNodalR[0];
                             qNodalL[1]=zero;//qNodalR[1];
                             qNodalL[2]=zero;//qNodalR[2];
 
@@ -168,7 +168,7 @@ kernel void CollectEdgeData(const int Nfaces,
                         {
 
 
-                            qNodalR[0]=7.446-bLeft;
+                            qNodalR[0]=h_zero-bLeft;
                             qNodalR[1]=0;
                             qNodalR[2]=0;
 
