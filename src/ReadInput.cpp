@@ -319,12 +319,12 @@ void ReadFullMesh(const int NumNodes,const int N, dfloat *b, dfloat * h_0)
     filename << "bottomfiles/BottomListN" << N << ".txt";
 
     ///string filename="bottomfiles/BottomListN" + N +".txt";
-    InputStream.open(filename.c_str());
+    InputStream.open(filename.str());
 
     if (!InputStream)
     {
         std::string error_message("ERROR: Bottom Topography file not found: ");
-        error_message += filename;
+        error_message += filename.str();
         throw std::invalid_argument(error_message);
     }
 
