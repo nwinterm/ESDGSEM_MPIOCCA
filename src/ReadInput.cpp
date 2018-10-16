@@ -314,7 +314,7 @@ void ReadFullMesh(const int NumNodes, dfloat *b, dfloat * h_0)
 
 //,dfloat T, dfloat g_const
     std::ifstream InputStream;
-    string filename="bottomfiles/BottomListN3degree1x.txt";
+    string filename="bottomfiles/BottomListN" + N +".txt";
     InputStream.open(filename.c_str());
 
     if (!InputStream)
