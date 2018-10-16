@@ -1,0 +1,400 @@
+void F_Roe(const dfloat q1L,const dfloat q2L,const dfloat q3L,
+           const dfloat q1R,const dfloat q2R,const dfloat q3R,
+           const dfloat nx, const dfloat ny,
+           dfloat * F1,dfloat * F2,dfloat * F3
+          )
+{
+
+    const dfloat hL=q1L;
+    const dfloat hR=q1R;
+
+
+    dfloat uL;
+    dfloat vL;
+    dfloat huL;
+    dfloat hvL;
+
+    if(hL>PosPresTOL)
+    {
+        uL=q2L/hL;
+        vL=q3L/hL;
+        huL=q2L;
+        hvL=q3L;
+    }
+    else
+    {
+
+        uL =zero;
+        vL =zero;
+        huL=zero;
+        hvL=zero;
+    }
+
+    dfloat uR;
+    dfloat vR;
+    dfloat huR;
+    dfloat hvR;
+    if(hR>PosPresTOL)
+    {
+        huR=q2R;
+        hvR=q3R;
+        uR=huR/hR;
+        vR=hvR/hR;
+
+
+    }
+    else
+    {
+        uR =zero;
+        vR =zero;
+        huR=zero;
+        hvR=zero;
+    }
+
+    const dfloat F1L = huL ;
+    const dfloat F1R = huR ;
+    const dfloat G1L = hvL ;
+    const dfloat G1R = hvR ;
+
+    const dfloat F2L = huL*uL + half *g_const * hL*hL ;
+    const dfloat F2R = (huR*uR + half *g_const * hR*hR) ;
+    const dfloat G2L =  huL*vL;
+    const dfloat G2R =   huR*vR;
+
+    const dfloat F3L = huL*vL  ;
+    const dfloat F3R =  huR*vR  ;
+    const dfloat G3L = (hvL*vL + half *g_const * hL*hL) ;
+    const dfloat G3R =  (hvR*vR + half *g_const * hR*hR) ;
+
+
+    /// ROE AVERAGEs
+    const dfloat r_hHat = half * (hL+hR);
+    const dfloat r_uHat = (uL*sqrt(hL) + uR*sqrt(hR))/(sqrt(hL) + sqrt(hR));
+    const dfloat r_vHat = (vL*sqrt(hL) + vR*sqrt(hR))/(sqrt(hL) + sqrt(hR));
+    const dfloat r_cHat = sqrt(g_const*r_hHat);
+
+    const dfloat r_normvelHat = nx*r_uHat + ny*r_vHat;
+
+    const dfloat lambda1 =abs( r_normvelHat- r_cHat);
+    const dfloat lambda2 = abs(r_normvelHat);
+    const dfloat lambda3 = abs(r_normvelHat + r_cHat);
+
+
+    const dfloat R11 = one;
+    const dfloat R12 = zero;
+    const dfloat R13 = one;
+
+
+    const dfloat R21 = r_uHat - r_cHat *nx;
+    const dfloat R22 = -ny;
+    const dfloat R23 = r_uHat + r_cHat *nx;
+
+
+    const dfloat R31 = r_vHat - r_cHat *ny;
+    const dfloat R32 = nx;
+    const dfloat R33 = r_vHat + r_cHat *ny;
+
+    const dfloat OneOver2c = half/r_cHat;
+
+    const dfloat LambdaR11inv = lambda1* (r_normvelHat+r_cHat)*OneOver2c;
+    const dfloat LambdaR12inv = lambda1*(-nx*OneOver2c);
+    const dfloat LambdaR13inv = lambda1*(-ny*OneOver2c);
+
+
+    const dfloat LambdaR21inv = lambda2*(-ny*r_uHat + nx*r_vHat);
+    const dfloat LambdaR22inv = lambda2*(-ny);
+    const dfloat LambdaR23inv = lambda2*(nx);
+
+
+    const dfloat LambdaR31inv = lambda3*(-(r_normvelHat-r_cHat)*OneOver2c);
+    const dfloat LambdaR32inv = lambda3*(nx*OneOver2c);
+    const dfloat LambdaR33inv = lambda3*(ny*OneOver2c);
+
+    const dfloat RLR11 = R11*LambdaR11inv + R12*LambdaR21inv + R13*LambdaR31inv;
+    const dfloat RLR12 = R11*LambdaR12inv + R12*LambdaR22inv + R13*LambdaR32inv;
+    const dfloat RLR13 = R11*LambdaR13inv + R12*LambdaR23inv + R13*LambdaR33inv;
+
+    const dfloat RLR21 = R21*LambdaR11inv + R22*LambdaR21inv + R23*LambdaR31inv;
+    const dfloat RLR22 = R21*LambdaR12inv + R22*LambdaR22inv + R23*LambdaR32inv;
+    const dfloat RLR23 = R21*LambdaR13inv + R22*LambdaR23inv + R23*LambdaR33inv;
+
+    const dfloat RLR31 = R31*LambdaR11inv + R32*LambdaR21inv + R33*LambdaR31inv;
+    const dfloat RLR32 = R31*LambdaR12inv + R32*LambdaR22inv + R33*LambdaR32inv;
+    const dfloat RLR33 = R31*LambdaR13inv + R32*LambdaR23inv + R33*LambdaR33inv;
+
+    const dfloat deltaH = hR-hL;
+    const dfloat deltaHu = huR-huL;
+    const dfloat deltaHv = hvR-hvL;
+    const dfloat dissTerm1 = RLR11*deltaH + RLR12*deltaHu + RLR13*deltaHv;
+    const dfloat dissTerm2 = RLR21*deltaH + RLR22*deltaHu + RLR23*deltaHv;
+    const dfloat dissTerm3 = RLR31*deltaH + RLR32*deltaHu + RLR33*deltaHv;
+
+    const dfloat F1hat=half*(F1L+F1R );
+    const dfloat F2hat=half*(F2L+F2R );
+    const dfloat F3hat=half*(F3L+F3R );
+    const dfloat G1hat=half*(G1L+G1R );
+    const dfloat G2hat=half*(G2L+G2R );
+    const dfloat G3hat=half*(G3L+G3R );
+
+
+    *F1=(nx*F1hat+ny*G1hat) - half*dissTerm1;
+    *F2=(nx*F2hat+ny*G2hat) - half*dissTerm2;
+    *F3=(nx*F3hat+ny*G3hat) - half*dissTerm3;
+
+}
+
+
+void F_ES(const dfloat q1L,const dfloat q2L,const dfloat q3L,
+          const dfloat q1R,const dfloat q2R,const dfloat q3R,
+          const dfloat nx, const dfloat ny,
+          const dfloat bL, const dfloat bR,
+          dfloat * F1,dfloat * F2,dfloat * F3
+         )
+{
+
+    const dfloat hL=q1L;
+    const dfloat hR=q1R;
+
+
+    dfloat uL;
+    dfloat vL;
+    dfloat huL;
+    dfloat hvL;
+
+    if(hL>PosPresTOL)
+    {
+        uL=q2L/hL;
+        vL=q3L/hL;
+        huL=q2L;
+        hvL=q3L;
+    }
+    else
+    {
+
+        uL =zero;
+        vL =zero;
+        huL=zero;
+        hvL=zero;
+    }
+
+    dfloat uR;
+    dfloat vR;
+    dfloat huR;
+    dfloat hvR;
+    if(hR>PosPresTOL)
+    {
+        huR=q2R;
+        hvR=q3R;
+        uR=huR/hR;
+        vR=hvR/hR;
+
+
+    }
+    else
+    {
+        uR =zero;
+        vR =zero;
+        huR=zero;
+        hvR=zero;
+    }
+
+    const dfloat vL_n  = nx * uL + ny * vL;	//Cartesian e.g. n = (1,0) => v_n = u,   e.g. n = (0,1) => v_n = v,
+    const dfloat vL_t  = - ny* uL + nx * vL;	//Cartesian e.g. n = (1,0) => v_t = v,   e.g. n = (0,1) => v_t = -u,
+
+
+    const dfloat vR_n  = nx * uR + ny * vR;
+    const dfloat vR_t  = - ny* uR + nx * vR;
+
+
+
+
+    const dfloat avgH = half*(hL+hR);
+    const dfloat avgH2= half*(hL*hL+hR*hR);
+    const dfloat avgU = half*(vL_n+vR_n);
+    const dfloat avgV = half*(vL_t+vR_t);
+
+
+
+    dfloat F0_ES=avgH * avgU;
+    dfloat F1_ES=avgH*avgU*avgU + (half*g_const*avgH2 );
+    dfloat F2_ES=avgH*avgV*avgU ;
+
+
+
+
+
+    if(ES)
+    {
+
+
+
+        const dfloat cL=g_const*hL;
+        const dfloat cR=g_const*hR;
+        const dfloat avgC=sqrt(fabs(half*(cL+cR)));
+
+
+        const dfloat q1L=g_const*(hL+bL)-half*vL_n*vL_n-half*vL_t*vL_t;
+        const dfloat q2L=vL_n;
+        const dfloat q3L=vL_t;
+        const dfloat q1R=g_const*(hR+bR)-half*vR_n*vR_n-half*vR_t*vR_t;
+        const dfloat q2R=vR_n;
+        const dfloat q3R=vR_t;
+
+        const dfloat jumpQ1 = q1R-q1L;
+        const dfloat jumpQ2 = q2R-q2L;
+        const dfloat jumpQ3 = q3R-q3L;
+
+
+        //averaged right eigenvectors
+        const dfloat R11 = one;
+        const dfloat R12 = zero;
+        const dfloat R13 = one;
+
+
+        const dfloat R21 = avgU + avgC;
+        const dfloat R22 = zero;
+        const dfloat R23 = avgU - avgC;
+
+
+        const dfloat R31 = avgV;
+        const dfloat R32 = one;
+        const dfloat R33 = avgV;
+
+
+        const dfloat SL11 = half/g_const*fabs(avgU  + avgC);
+        const dfloat SL22 = fabs(avgH*avgU);
+        const dfloat SL33 = half/g_const*fabs(avgU  - avgC);
+
+
+
+        const dfloat RSL11 = R11 * SL11;
+        const dfloat RSL12 = zero;
+        const dfloat RSL13 = R13 * SL33;
+
+        const dfloat RSL21 = R21 * SL11;
+        const dfloat RSL22 = R22 * SL22;
+        const dfloat RSL23 = R23 * SL33;
+
+        const dfloat RSL31 = R31 * SL11;
+        const dfloat RSL32 = R32 * SL22;
+        const dfloat RSL33 = R33 * SL33;
+
+        // RSL R^T
+        const dfloat RSLR11= RSL11*R11 + RSL12*R12 + RSL13 * R13;
+        const dfloat RSLR12= RSL11*R21 + RSL12*R22 + RSL13 * R23;
+        const dfloat RSLR13= RSL11*R31 + RSL12*R32 + RSL13 * R33;
+
+        const dfloat RSLR21= RSL21*R11 + RSL22*R12 + RSL23 * R13;
+        const dfloat RSLR22= RSL21*R21 + RSL22*R22 + RSL23 * R23;
+        const dfloat RSLR23= RSL21*R31 + RSL22*R32 + RSL23 * R33;
+
+        const dfloat RSLR31= RSL31*R11 + RSL32*R12 + RSL33 * R13;
+        const dfloat RSLR32= RSL31*R21 + RSL32*R22 + RSL33 * R23;
+        const dfloat RSLR33= RSL31*R31 + RSL32*R32 + RSL33 * R33;
+
+
+        F0_ES+= -half*(RSLR11 * jumpQ1 + RSLR12 * jumpQ2 + RSLR13 * jumpQ3);
+        F1_ES+= -half*(RSLR21 * jumpQ1 + RSLR22 * jumpQ2 + RSLR23 * jumpQ3);
+        F2_ES+= -half*(RSLR31 * jumpQ1 + RSLR32 * jumpQ2 + RSLR33 * jumpQ3);
+
+
+
+
+    }
+
+    const dfloat bRotNumFlux1 = nx * F1_ES  - ny * F2_ES ;	//Cartesian e.g. n = (1,0) => rotNumflux[1]  =  NumFlux[1],   e.g. n = (0,1) => rotNumflux[1]  =  -NumFlux[2],
+    const dfloat bRotNumFlux2 = ny * F1_ES  + nx * F2_ES ;	//Cartesian e.g. n = (1,0) => rotNumflux[2]  =  NumFlux[2],   e.g. n = (0,1) => rotNumflux[2]  =  NumFlux[1],
+
+
+    *F1=F0_ES;
+    *F2=bRotNumFlux1
+        *F3=bRotNumFlux2;
+
+}
+
+
+
+
+
+kernel void calcNumFluxes(const int Nfaces,
+                          const int * restrict  EdgeData,
+                          const int  * restrict  edgeReversed,
+                          const dfloat * restrict  normalx,
+                          const dfloat * restrict  normaly,
+                          const dfloat * restrict Scal,
+                          const dfloat * restrict  qL,
+                          const dfloat * restrict  qR,
+                          const dfloat * restrict  BL,
+                          const dfloat * restrict  BR,
+                          dfloat * restrict  SurfaceParts)
+{
+    for (int ifa_base=0; ifa_base<Nfaces; ifa_base+=Nedgepad; outer0)
+    {
+
+
+
+        for (int ifa_inner = 0; ifa_inner < Nedgepad; ifa_inner++; inner1)
+        {
+            for(int i=0; i<ngl; i++; inner0)
+            {
+
+                const int ifa = ifa_base + ifa_inner;
+
+                if (ifa<Nfaces)
+                {
+
+
+
+                    const int edgeIDX=ifa*ngl + i;              //for normals!!
+                    const int edgeID=ifa*ngl*Neq + i;           //for values!!
+
+                    const int ireversed = edgeReversed[ifa];
+                    const int edgeIDR = ifa*ngl*Neq + (1-ireversed)*(ngl-1-i) + ireversed*i;
+                    const int edgeIDXR = ifa*ngl + (1-ireversed)*(ngl-1-i) + ireversed*i;
+
+                    const int cpuR          =EdgeData[8*ifa+6];     // rank of cpuR
+
+
+                    const dfloat nx=normalx[edgeIDX];
+                    const dfloat ny=normaly[edgeIDX];
+                    const dfloat scaling=Scal[edgeIDX];
+
+                    const dfloat bL=BL[edgeIDX];
+                    const dfloat bR=BR[edgeIDXR ];
+                    dfloat NumFlux[Neq];
+
+
+                    if ((cpuR ==-1) && (bL>5.0))
+                    {
+                        F_Roe(qL[edgeID],qL[edgeID+ngl],qL[edgeID+ngl+ngl],
+                              qR[edgeID],qR[edgeID+ngl],qR[edgeID+ngl+ngl],
+                              nx,ny,
+                              &NumFlux[0],&NumFlux[1],&NumFlux[2])
+                    }
+                    else
+                    {
+                        F_ES(qL[edgeID],qL[edgeID+ngl],qL[edgeID+ngl+ngl],
+                             qR[edgeID],qR[edgeID+ngl],qR[edgeID+ngl+ngl],
+                             nx,ny,
+                             bL, bR,
+                             &NumFlux[0],&NumFlux[1],&NumFlux[2])
+                    }
+
+
+
+
+                    SurfaceParts[edgeID]          =  scaling*geomFace*  NumFlux[0];
+                    SurfaceParts[edgeID+ngl]      =  scaling*geomFace*  NumFlux[1];
+                    SurfaceParts[edgeID+ngl+ngl]  =  scaling*geomFace*  NumFlux[2];
+
+
+                }
+            }
+        }
+    }
+
+
+
+
+
+}

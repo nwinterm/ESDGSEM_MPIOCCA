@@ -106,6 +106,7 @@
 			<Option target="Release" />
 		</Unit>
 		<Unit filename="okl/Positivity/calcAvg.okl" />
+		<Unit filename="okl/RiemannSolvers/calcCombinedFluxOcean.okl" />
 		<Unit filename="okl/RiemannSolvers/calcESFlux.okl" />
 		<Unit filename="okl/RiemannSolvers/calcESFluxRotated.okl">
 			<Option target="Release" />

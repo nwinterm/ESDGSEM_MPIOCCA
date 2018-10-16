@@ -1,4 +1,5 @@
 kernel void calcNumFluxes(const int Nfaces,
+                          const int * restrict  EdgeData,
                           const int  * restrict  edgeReversed,
                           const dfloat * restrict  normalx,
                           const dfloat * restrict  normaly,
@@ -26,10 +27,10 @@ kernel void calcNumFluxes(const int Nfaces,
 
                     const int edgeIDX=ifa*ngl + i;              //for normals!!
                     const int edgeID=ifa*ngl*Neq + i;           //for values!!
-		    
- 		    const int ireversed = edgeReversed[ifa];
-		    const int edgeIDR = ifa*ngl*Neq + (1-ireversed)*(ngl-1-i) + ireversed*i;
-		    const int edgeIDXR = ifa*ngl + (1-ireversed)*(ngl-1-i) + ireversed*i;
+
+                    const int ireversed = edgeReversed[ifa];
+                    const int edgeIDR = ifa*ngl*Neq + (1-ireversed)*(ngl-1-i) + ireversed*i;
+                    const int edgeIDXR = ifa*ngl + (1-ireversed)*(ngl-1-i) + ireversed*i;
 
                     const dfloat nx=normalx[edgeIDX];
                     const dfloat ny=normaly[edgeIDX];
@@ -45,11 +46,11 @@ kernel void calcNumFluxes(const int Nfaces,
                     {
                         uL=qL[edgeID+ngl]/hL;
                         vL=qL[edgeID+ngl+ngl]/hL;
-			
+
                     }
                     else
                     {
-			//hL=zero;
+                        //hL=zero;
                         uL =zero;
                         vL =zero;
                     }
@@ -68,16 +69,16 @@ kernel void calcNumFluxes(const int Nfaces,
                     }
                     else
                     {
-			//hR=zero;
+                        //hR=zero;
                         uR =zero;
                         vR =zero;
                     }
 
 
                     const dfloat vL_n  = nx * uL + ny * vL;	//Cartesian e.g. n = (1,0) => v_n = u,   e.g. n = (0,1) => v_n = v,
-                    const dfloat vL_t  = - ny* uL + nx * vL;	//Cartesian e.g. n = (1,0) => v_t = v,   e.g. n = (0,1) => v_t = -u,	
+                    const dfloat vL_t  = - ny* uL + nx * vL;	//Cartesian e.g. n = (1,0) => v_t = v,   e.g. n = (0,1) => v_t = -u,
 
-	
+
                     const dfloat vR_n  = nx * uR + ny * vR;
                     const dfloat vR_t  = - ny* uR + nx * vR;
 

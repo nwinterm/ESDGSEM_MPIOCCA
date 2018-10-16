@@ -424,6 +424,11 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
         calcNumFluxes=device.buildKernelFromSource("okl/RiemannSolvers/calcRoeFlux.okl","calcNumFluxes",info);
         break;
     }
+    case 5:
+    {
+        calcNumFluxes=device.buildKernelFromSource("okl/RiemannSolvers/calcCombinedFluxOcean.okl","calcNumFluxes",info);
+        break;
+    }
     }
 
     // calc specific value on edges like jump in b and average h
@@ -892,7 +897,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
                 //o_qR.copyFrom(qR,1);
             }
 
-            calcNumFluxes(Nfaces,o_EdgeReversed,o_nx,o_ny,o_scal,o_qL,o_qR,o_bL,o_bR,o_SurfaceParts);
+            calcNumFluxes(Nfaces,o_EdgeData,o_EdgeReversed,o_nx,o_ny,o_scal,o_qL,o_qR,o_bL,o_bR,o_SurfaceParts);
 
             SurfaceKernel(Nelem,o_Jac,o_ElemEdgeMasterSlave,o_ElemEdgeOrientation,o_ElemToEdge, o_SurfaceParts,o_DBSurf1,o_DBSurf2,o_Qt);
 

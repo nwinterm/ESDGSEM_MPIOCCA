@@ -1,4 +1,5 @@
 kernel void calcNumFluxes(const int Nfaces,
+                          const int * restrict  EdgeData,
                           const dfloat * restrict  normalx,
                           const dfloat * restrict  normaly,
                           const dfloat * restrict Scal,
