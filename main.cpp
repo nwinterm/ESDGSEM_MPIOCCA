@@ -376,7 +376,7 @@ int main(int argc, char *argv[])
 
         if (ReadInBottom)
         {
-            ReadFullMesh(NoSpaceDofs_global,N, b_global, &h_0);
+            ReadFullMesh(NoSpaceDofs_global,Nelem_global,N, b_global, &h_0);
             cout << " Water displacement: " << h_0 << "\n";
         }
 

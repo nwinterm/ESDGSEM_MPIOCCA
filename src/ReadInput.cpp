@@ -308,52 +308,73 @@ void WriteFullMesh(const int NumNodes, const dfloat *x,const dfloat *y)
 }
 
 
-void ReadFullMesh(const int NumNodes,const int N, dfloat *b, dfloat * h_0)
+void ReadFullMesh(const int NumNodes,const int Nelem, const int N, dfloat *b, dfloat * h_0)
 {
 
 //,dfloat T, dfloat g_const
     std::ifstream InputStream;
 
     std::ostringstream o;
-    o << "bottomfiles/BottomListN" << N << ".txt";
-    std:string filename = o.str();
-    ///string filename="bottomfiles/BottomListN" + N +".txt";
-    InputStream.open(filename.c_str());
-
-    if (!InputStream)
+    string meshtype;
+    switch(Nelem)
     {
-        std::string error_message("ERROR: Bottom Topography file not found: ");
+    case 4928:
+    {
+        meshtype="1xmesh";
+        break;
+    }
+    case 9345:
+    {
+        meshtype="2xmesh";
+        break;
+    }
+    case 22855:
+    {
+        meshtype="4xmesh";
+        break;
+    }
+    }
+}
+o << "bottomfiles/" << meshtype.c_str() << "/BottomListN" << N << ".txt";
+std:
+string filename = o.str();
+///string filename="bottomfiles/BottomListN" + N +".txt";
+InputStream.open(filename.c_str());
+
+if (!InputStream)
+{
+    std::string error_message("ERROR: Bottom Topography file not found: ");
+    error_message += filename;
+    throw std::invalid_argument(error_message);
+}
+
+std::string current_string;
+std::stringstream current_line(current_string);
+
+dfloat b_min=0.0;
+
+
+
+for (unsigned i = 0; i < NumNodes; ++i)
+{
+    std::getline(InputStream, current_string);
+    current_line.clear();
+    current_line.str(current_string);
+    dfloat dummyA;
+    dfloat dummyB;
+    dfloat b_input;
+    if (!(current_line >> dummyA >> dummyB >> b_input))
+    {
+        std::string error_message("ERROR: Cant read in Nodes! ");
         error_message += filename;
         throw std::invalid_argument(error_message);
     }
+    b_min = min(b_min, b_input);
+    b[i] = b_input/1000.0;
 
-    std::string current_string;
-    std::stringstream current_line(current_string);
-
-    dfloat b_min=0.0;
-
-
-
-    for (unsigned i = 0; i < NumNodes; ++i)
-    {
-        std::getline(InputStream, current_string);
-        current_line.clear();
-        current_line.str(current_string);
-        dfloat dummyA;
-        dfloat dummyB;
-        dfloat b_input;
-        if (!(current_line >> dummyA >> dummyB >> b_input))
-        {
-            std::string error_message("ERROR: Cant read in Nodes! ");
-            error_message += filename;
-            throw std::invalid_argument(error_message);
-        }
-        b_min = min(b_min, b_input);
-        b[i] = b_input/1000.0;
-
-    }
-    InputStream.close();
-    *h_0 = - floor(b_min)/1000.0;
+}
+InputStream.close();
+*h_0 = - floor(b_min)/1000.0;
 //    for (unsigned i = 0; i < NumNodes; ++i)
 //    {
 //        b[i] = *h_0 + b[i];
