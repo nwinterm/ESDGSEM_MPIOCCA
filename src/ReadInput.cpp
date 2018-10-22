@@ -291,7 +291,6 @@ void WriteFullMesh(const int NumNodes, const dfloat *x,const dfloat *y)
 
 //,dfloat T, dfloat g_const
 
-    const dfloat earth_radius= 6.378e6;
     std::ofstream OutputStream;
     string filename="FullMeshDegree.txt";
     OutputStream.open(filename.c_str());
