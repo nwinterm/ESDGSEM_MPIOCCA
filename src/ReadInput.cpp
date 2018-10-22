@@ -334,7 +334,6 @@ void ReadFullMesh(const int NumNodes,const int Nelem, const int N, dfloat *b, df
         break;
     }
     }
-}
 o << "bottomfiles/" << meshtype.c_str() << "/BottomListN" << N << ".txt";
 std::string filename = o.str();
 ///string filename="bottomfiles/BottomListN" + N +".txt";
