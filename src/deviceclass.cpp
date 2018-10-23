@@ -813,7 +813,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
         FindLambdaMax(Nelem, o_q, o_LambdaMax);
 
 
-        ArrivalTimes(Nelem,t,o_q,o_Arrivaltimes);
+        setArrivaltimes(Nelem,t,o_q,o_Arrivaltimes);
 
 
         globalLambdaMax=0.0;
