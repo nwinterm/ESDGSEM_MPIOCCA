@@ -304,8 +304,8 @@ void deviceclass:: initDeviceVariables(const int N,
     if(calcArrivalTimes)
     {
         dfloat * ArrivalTimings = (dfloat*) calloc(ngl2*Nelem_global,sizeof(dfloat));
-        o_Arrivaltimes= device.malloc(ngl2*Nelem*sizeof(dfloat));
-        o_Arrivaltimes.copyFrom(ArrivalTimings);
+        o_Arrivaltimings= device.malloc(ngl2*Nelem*sizeof(dfloat));
+        o_Arrivaltimings.copyFrom(ArrivalTimings);
 
     }
 
@@ -813,7 +813,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
         FindLambdaMax(Nelem, o_q, o_LambdaMax);
 
 
-        setArrivaltimes(Nelem,t,o_q,o_Arrivaltimes);
+        setArrivaltimes(Nelem,t,o_q,o_Arrivaltimings);
 
 
         globalLambdaMax=0.0;
@@ -1163,6 +1163,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
             dfloat * ArrivalTimings = (dfloat*) calloc(ngl2*Nelem_global,sizeof(dfloat));
             o_ArrivalTimings.copyTo(ArrivalTimings);
             PlotArrivalTimings(Nelem_global,ngl,x_phy_global,y_phy_global,ArrivalTimings);
+            free(o_Arrivaltimings);
 
         }
     }
