@@ -807,10 +807,10 @@ void deviceclass:: DGtimeloop(const int Nelem,
                 }
                 if (createTimeSeries)
                 {
-                    ChennaiTimeSeries[plotCount] = q_global[chennaiID*Neq];
-                    TuticorinTimeSeries[plotCount]= q_global[tuticorinID*Neq];
-                    VisakhapatnamTimeSeries[plotCount]= q_global[viskhapatnamID*Neq];
-                    ParadipTimeSeries[plotCount]= q_global[paradipID*Neq];
+                    ChennaiTimeSeries[plotCount] = q_global[chennaiID*Neq]+b_global[chennaiID]-h_0;
+                    TuticorinTimeSeries[plotCount]= q_global[tuticorinID*Neq]+b_global[tuticorinID]-h_0;
+                    VisakhapatnamTimeSeries[plotCount]= q_global[viskhapatnamID*Neq]+b_global[viskhapatnamID]-h_0;
+                    ParadipTimeSeries[plotCount]= q_global[paradipID*Neq]+b_global[paradipID]-h_0;
                     TimeSeriesTimes[plotCount]=t;
 
                 }
@@ -1148,10 +1148,10 @@ void deviceclass:: DGtimeloop(const int Nelem,
                     }
                     if (createTimeSeries)
                     {
-                        ChennaiTimeSeries[plotCount] = q_global[chennaiID*Neq];
-                        TuticorinTimeSeries[plotCount]= q_global[tuticorinID*Neq];
-                        VisakhapatnamTimeSeries[plotCount]= q_global[viskhapatnamID*Neq];
-                        ParadipTimeSeries[plotCount]= q_global[paradipID*Neq];
+                        ChennaiTimeSeries[plotCount] = q_global[chennaiID*Neq]+b_global[chennaiID]-h_0;
+                        TuticorinTimeSeries[plotCount]= q_global[tuticorinID*Neq]+b_global[tuticorinID]-h_0;
+                        VisakhapatnamTimeSeries[plotCount]= q_global[viskhapatnamID*Neq]+b_global[viskhapatnamID]-h_0;
+                        ParadipTimeSeries[plotCount]= q_global[paradipID*Neq]+b_global[paradipID]-h_0;
                         TimeSeriesTimes[plotCount]=t;
 
                     }
