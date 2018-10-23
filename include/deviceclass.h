@@ -183,7 +183,7 @@ public:
 
     occa::memory o_FrictionForPlot;
 
-    occa::memory o_Arrivaltimings;
+    occa::memory o_ArrivalTimings;
 
 
 
