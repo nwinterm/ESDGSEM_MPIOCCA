@@ -37,7 +37,8 @@ public:
                              const dfloat h_0,
                              const int PartialDry,
                              const int FrictionTerms,
-                             const int calcArrivalTimes);
+                             const int CalcArrivalTimes,
+                             const int CreateTimeSeries);
     void buildDeviceKernels(const int KernelVersion,
                             const int KernelVersionSTD,
                             const int Testcase,
@@ -50,6 +51,10 @@ public:
     void copyPartialDryData(const dfloat* DCentralFD,
                             const dfloat* DforwardFD,
                             const dfloat* DbackwardFD);
+    void copyTimeSeriesIDs(const int id1,
+                           const int id2,
+                           const int id3,
+                           const int id4);
     void copyDeviceVariables(const int PositivityPreserving,
                              const int Nelem,
                              const dfloat* GLw,
@@ -186,6 +191,12 @@ public:
     occa::memory o_ArrivalTimings;
 
 
+    dfloat * ChennaiTimeSeries;
+    dfloat * TuticorinTimeSeries;
+    dfloat * VisakhapatnamTimeSeries;
+    dfloat * ParadipTimeSeries;
+    dfloat * TimeSeriesTimes;
+
 
     dfloat * EntropyOverTime;
     dfloat * MassOverTime;
@@ -212,9 +223,13 @@ private:
     int PartialDryTreatment;
     int CalcFrictionTerms;
     int calcArrivalTimes;
+    int createTimeSeries;
 
 
-
+    int chennaiID;
+    int paradipID;
+    int tuticorinID;
+    int viskhapatnamID;
 
 };
 
