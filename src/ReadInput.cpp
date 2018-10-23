@@ -381,3 +381,23 @@ InputStream.close();
 //        b[i] = *h_0 + b[i];
 //    }
 }
+
+
+
+void FindElementID(const int NumNodes, const dfloat *x,const dfloat *y, const dfloat lonToFind, const dfloat latToFind, int coordID)
+{
+
+//,dfloat T, dfloat g_const
+    dfloat minimumDistance=20;
+    for(int inode=0; inode<NumNodes; ++inode)
+    {
+        dfloat distance = sqrt(pow(lonToFind-x[inode],2)+pow(latToFind-y[inode],2));
+
+        if (distance < minimumDistance){
+            minimumDistance = min(minimumDistance,distance);
+            xcoordID= inode;
+        }
+    }
+
+
+}
