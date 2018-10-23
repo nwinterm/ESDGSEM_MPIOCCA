@@ -46,5 +46,5 @@ void ReadCartesianData(const int, const int, dfloat *xL,dfloat *xR,dfloat *yL,df
 void WriteFullMesh(const int NumNodes, const dfloat *x,const dfloat *y);
 void ReadFullMesh(const int NumNodes,const int Nelem, const int N, dfloat *b, dfloat *h_0);
 
-void FindElementID(const int NumNodes, const dfloat *x,const dfloat *y, const dfloat lonToFind, const dfloat latToFind, int coordID);
+void FindElementID(const int NumNodes, const dfloat *x,const dfloat *y, const dfloat lonToFind, const dfloat latToFind, int* coordID);
 #endif // READINPUT_H
