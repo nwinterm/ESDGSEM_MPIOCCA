@@ -404,7 +404,7 @@ int main(int argc, char *argv[])
                 cout <<" Paradip! closest node: "<< paradipID << " with coordinates: " << DGMesh.x_global[paradipID] << ", "<<DGMesh.y_global[paradipID] << "\n";
                 cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
             }
-            occa_device.copyTimeSeriesIDs(hennaiID,paradipID,tuticorinID,viskhapatnamID);
+            occa_device.copyTimeSeriesIDs(chennaiID,paradipID,tuticorinID,viskhapatnamID);
 
         }
 
