@@ -395,7 +395,7 @@ void FindElementID(const int NumNodes, const dfloat *x,const dfloat *y, const df
 
         if (distance < minimumDistance){
             minimumDistance = min(minimumDistance,distance);
-            xcoordID= inode;
+            coordID= inode;
         }
     }
 
