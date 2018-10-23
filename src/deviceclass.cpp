@@ -807,10 +807,10 @@ void deviceclass:: DGtimeloop(const int Nelem,
                 }
                 if (createTimeSeries)
                 {
-                    ChennaiTimeSeries[plotCount] = q_global[chennaiID*ngl2];
-                    TuticorinTimeSeries[plotCount]= q_global[tuticorinID*ngl2];
-                    VisakhapatnamTimeSeries[plotCount]= q_global[viskhapatnamID*ngl2];
-                    ParadipTimeSeries[plotCount]= q_global[paradipID*ngl2];
+                    ChennaiTimeSeries[plotCount] = q_global[chennaiID*Neq];
+                    TuticorinTimeSeries[plotCount]= q_global[tuticorinID*Neq];
+                    VisakhapatnamTimeSeries[plotCount]= q_global[viskhapatnamID*Neq];
+                    ParadipTimeSeries[plotCount]= q_global[paradipID*Neq];
                     TimeSeriesTimes[plotCount]=t;
 
                 }
@@ -1148,10 +1148,10 @@ void deviceclass:: DGtimeloop(const int Nelem,
                     }
                     if (createTimeSeries)
                     {
-                        ChennaiTimeSeries[plotCount] = q_global[chennaiID*ngl2];
-                        TuticorinTimeSeries[plotCount]= q_global[tuticorinID*ngl2];
-                        VisakhapatnamTimeSeries[plotCount]= q_global[viskhapatnamID*ngl2];
-                        ParadipTimeSeries[plotCount]= q_global[paradipID*ngl2];
+                        ChennaiTimeSeries[plotCount] = q_global[chennaiID*Neq];
+                        TuticorinTimeSeries[plotCount]= q_global[tuticorinID*Neq];
+                        VisakhapatnamTimeSeries[plotCount]= q_global[viskhapatnamID*Neq];
+                        ParadipTimeSeries[plotCount]= q_global[paradipID*Neq];
                         TimeSeriesTimes[plotCount]=t;
 
                     }
@@ -1217,7 +1217,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
         }
         if (createTimeSeries)
         {
-            PlotTimeSeries(NumPlots,ChennaiTimeSeries,TuticorinTimeSeries,VisakhapatnamTimeSeries,ParadipTimeSeries,TimeSeriesTimes);
+            PlotTimeSeries(NumPlots,TimeSeriesTimes,ChennaiTimeSeries,TuticorinTimeSeries,VisakhapatnamTimeSeries,ParadipTimeSeries);
 
         }
         if (calcArrivalTimes)
