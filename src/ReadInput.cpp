@@ -389,6 +389,7 @@ void FindElementID(const int NumNodes, const dfloat *x,const dfloat *y, const df
 
 //,dfloat T, dfloat g_const
     dfloat minimumDistance=20;
+    const dfloat earth_radius= 6.378e6;
     *coordID=-1;
     for(int inode=0; inode<NumNodes; ++inode)
     {
