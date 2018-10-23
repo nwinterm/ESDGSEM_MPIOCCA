@@ -337,45 +337,45 @@ void ReadFullMesh(const int NumNodes,const int Nelem, const int N, dfloat *b, df
         break;
     }
     }
-o << "bottomfiles/" << meshtype.c_str() << "/BottomListN" << N << ".txt";
-std::string filename = o.str();
+    o << "bottomfiles/" << meshtype.c_str() << "/BottomListN" << N << ".txt";
+    std::string filename = o.str();
 ///string filename="bottomfiles/BottomListN" + N +".txt";
-InputStream.open(filename.c_str());
+    InputStream.open(filename.c_str());
 
-if (!InputStream)
-{
-    std::string error_message("ERROR: Bottom Topography file not found: ");
-    error_message += filename;
-    throw std::invalid_argument(error_message);
-}
-
-std::string current_string;
-std::stringstream current_line(current_string);
-
-dfloat b_min=0.0;
-
-
-
-for (unsigned i = 0; i < NumNodes; ++i)
-{
-    std::getline(InputStream, current_string);
-    current_line.clear();
-    current_line.str(current_string);
-    dfloat dummyA;
-    dfloat dummyB;
-    dfloat b_input;
-    if (!(current_line >> dummyA >> dummyB >> b_input))
+    if (!InputStream)
     {
-        std::string error_message("ERROR: Cant read in Nodes! ");
+        std::string error_message("ERROR: Bottom Topography file not found: ");
         error_message += filename;
         throw std::invalid_argument(error_message);
     }
-    b_min = min(b_min, b_input);
-    b[i] = b_input/1000.0;
 
-}
-InputStream.close();
-*h_0 = - floor(b_min)/1000.0;
+    std::string current_string;
+    std::stringstream current_line(current_string);
+
+    dfloat b_min=0.0;
+
+
+
+    for (unsigned i = 0; i < NumNodes; ++i)
+    {
+        std::getline(InputStream, current_string);
+        current_line.clear();
+        current_line.str(current_string);
+        dfloat dummyA;
+        dfloat dummyB;
+        dfloat b_input;
+        if (!(current_line >> dummyA >> dummyB >> b_input))
+        {
+            std::string error_message("ERROR: Cant read in Nodes! ");
+            error_message += filename;
+            throw std::invalid_argument(error_message);
+        }
+        b_min = min(b_min, b_input);
+        b[i] = b_input/1000.0;
+
+    }
+    InputStream.close();
+    *h_0 = - floor(b_min)/1000.0;
 //    for (unsigned i = 0; i < NumNodes; ++i)
 //    {
 //        b[i] = *h_0 + b[i];
@@ -392,9 +392,13 @@ void FindElementID(const int NumNodes, const dfloat *x,const dfloat *y, const df
     *coordID=-1;
     for(int inode=0; inode<NumNodes; ++inode)
     {
-        dfloat distance = sqrt(pow(lonToFind-x[inode],2)+pow(latToFind-y[inode],2));
 
-        if (distance < minimumDistance){
+        dfloat x_degree= (x[inode]/earth_radius)*(180./M_PI);
+        dfloat y_degree= (atan(sinh(y[inode]/earth_radius))) * (180./M_PI);
+        dfloat distance = sqrt(pow(lonToFind-x_degree,2)+pow(latToFind-y_degree,2));
+
+        if (distance < minimumDistance)
+        {
             minimumDistance = min(minimumDistance,distance);
             *coordID= inode;
         }
