@@ -129,7 +129,7 @@ void PlotArrivalTimings(const int Nelem, const int ngl, const dfloat x[], const 
 {
 
     ostringstream os;
-    os << "movie/Arrivals_" << plotCount << ".tec";
+    os << "movie/Arrivals.tec";
     string fName = os.str();
 
 
