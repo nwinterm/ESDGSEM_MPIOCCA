@@ -24,7 +24,7 @@ kernel void ArrivalTimes(const int Nelem,
 
 
                         const int Fid = eleID*ngl2*Neq   +i*ngl+j;
-                        const int Xid = eleID*ngl2*Neq   +i*ngl+j;
+                        const int Xid = eleID*ngl2   +i*ngl+j;
 
                         if(Arrivaltimes[Xid]==zero)
                         {
