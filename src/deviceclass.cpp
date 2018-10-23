@@ -808,9 +808,9 @@ void deviceclass:: DGtimeloop(const int Nelem,
                 if (createTimeSeries)
                 {
                     ChennaiTimeSeries[plotCount] = q_global[chennaiID*ngl2];
-                    TuticorinTimeSeries[plotCount]= q_global[TuticorinID*ngl2];
-                    VisakhapatnamTimeSeries[plotCount]= q_global[VisakhapatnamID*ngl2];
-                    ParadipTimeSeries[plotCount]= q_global[ParadipID*ngl2];
+                    TuticorinTimeSeries[plotCount]= q_global[tuticorinID*ngl2];
+                    VisakhapatnamTimeSeries[plotCount]= q_global[viskhapatnamID*ngl2];
+                    ParadipTimeSeries[plotCount]= q_global[paradipID*ngl2];
                     TimeSeriesTimes[plotCount]=t;
 
                 }
@@ -1148,7 +1148,11 @@ void deviceclass:: DGtimeloop(const int Nelem,
                     }
                     if (createTimeSeries)
                     {
-
+                        ChennaiTimeSeries[plotCount] = q_global[chennaiID*ngl2];
+                        TuticorinTimeSeries[plotCount]= q_global[tuticorinID*ngl2];
+                        VisakhapatnamTimeSeries[plotCount]= q_global[viskhapatnamID*ngl2];
+                        ParadipTimeSeries[plotCount]= q_global[paradipID*ngl2];
+                        TimeSeriesTimes[plotCount]=t;
 
                     }
                     if (CalcFrictionTerms)
