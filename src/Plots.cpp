@@ -148,12 +148,11 @@ void PlotArrivalTimings(const int Nelem, const int ngl, const dfloat x[], const 
             {
                 for(int i=0; i<ngl; ++i)
                 {
-                    int id = ie*ngl2*(Neq-1)   +j*ngl+i;
                     int xid = ie*ngl2   +j*ngl+i;
 
 
 
-		    plotfile <<x[xid]<<" "<<y[xid]<<" " << Arrivaltimes[id] <<" \n";
+		    plotfile <<x[xid]<<" "<<y[xid]<<" " << Arrivaltimes[xid] <<" \n";
                     //plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<<" \n";
 
                 }

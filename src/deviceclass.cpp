@@ -303,7 +303,7 @@ void deviceclass:: initDeviceVariables(const int N,
 
     if(calcArrivalTimes)
     {
-        dfloat * ArrivalTimings = (dfloat*) calloc(ngl2*Nelem_global,sizeof(dfloat));
+        dfloat * ArrivalTimings = (dfloat*) calloc(ngl2*Nelem,sizeof(dfloat));
         o_ArrivalTimings= device.malloc(ngl2*Nelem*sizeof(dfloat));
         o_ArrivalTimings.copyFrom(ArrivalTimings);
 
@@ -1154,6 +1154,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
 
     }
 
+
     if (MPI.rank==0)
     {
         if (EntropyPlot)
@@ -1164,7 +1165,8 @@ void deviceclass:: DGtimeloop(const int Nelem,
         }
         if (calcArrivalTimes)
         {
-            dfloat * ArrivalTimings = (dfloat*) calloc(ngl2*Nelem_global,sizeof(dfloat));
+            setArrivaltimes(Nelem,T,o_q,o_b,o_ArrivalTimings);
+            dfloat * ArrivalTimings = (dfloat*) calloc(ngl2*Nelem,sizeof(dfloat));
             o_ArrivalTimings.copyTo(ArrivalTimings);
             PlotArrivalTimings(Nelem_global,ngl,x_phy_global,y_phy_global,ArrivalTimings);
             free(o_ArrivalTimings);
