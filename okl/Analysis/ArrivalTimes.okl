@@ -28,7 +28,8 @@ kernel void ArrivalTimes(const int Nelem,
 
                         if(Arrivaltimes[Xid]==zero)
                         {
-                            if ((q[Fid]+b[Xid])-h_zero)>PosPresTOL)
+
+                            if ((q[Fid]+b[Xid])-h_zero>PosPresTOL)
                             {
                                 Arrivaltimes[Xid] = t;
                             }
