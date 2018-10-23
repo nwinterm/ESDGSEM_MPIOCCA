@@ -1163,7 +1163,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
             dfloat * ArrivalTimings = (dfloat*) calloc(ngl2*Nelem_global,sizeof(dfloat));
             o_ArrivalTimings.copyTo(ArrivalTimings);
             PlotArrivalTimings(Nelem_global,ngl,x_phy_global,y_phy_global,ArrivalTimings);
-            free(o_Arrivaltimings);
+            free(o_ArrivalTimings);
 
         }
     }
