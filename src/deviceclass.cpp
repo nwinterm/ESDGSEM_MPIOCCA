@@ -109,7 +109,8 @@ void deviceclass:: initDeviceVariables(const int N,
                                        const dfloat h_0_in,
                                        const int PartialDry,
                                        const int FrictionTerms,
-                                       const int CalcArrivalTimes)
+                                       const int CalcArrivalTimes,
+                                       const int CreateTimeSeries)
 {
     const int Neq=3;
     const int GradNeq = Neq-1;
@@ -122,6 +123,7 @@ void deviceclass:: initDeviceVariables(const int N,
     }
     h_0=h_0_in;
     calcArrivalTimes=CalcArrivalTimes;
+    createTimeSeries = CreateTimeSeries;
     PartialDryTreatment=PartialDry;
     CalcFrictionTerms=FrictionTerms;
     dfloat TOL_PosPres = PosPresTOL;//pow(10.0,-4);
@@ -305,13 +307,16 @@ void deviceclass:: initDeviceVariables(const int N,
     if(calcArrivalTimes)
     {
         dfloat * ArrivalTimings = (dfloat*) calloc(ngl2*Nelem,sizeof(dfloat));
-        for (int i =0;i<Nelem*ngl2;i++){
+        for (int i =0; i<Nelem*ngl2; i++)
+        {
             ArrivalTimings[i]=-1.0;
         }
         o_ArrivalTimings= device.malloc(ngl2*Nelem*sizeof(dfloat));
         o_ArrivalTimings.copyFrom(ArrivalTimings);
 
     }
+
+
 
 }
 
@@ -519,6 +524,20 @@ void deviceclass:: copyPartialDryData(const dfloat* DCentralFD, const dfloat* Df
 }
 
 
+void deviceclass:: copyTimeSeriesIDs(const int id1,
+                                     const int id2,
+                                     const int id3,
+                                     const int id4)
+{
+
+    chennaiID =id1;
+    paradipID=id2;
+    tuticorinID=id3;
+    viskhapatnamID=id4;
+
+}
+
+
 void deviceclass:: copyDeviceVariables( const int PositivityPreserving, const int Nelem,const dfloat* GLw,
                                         const dfloat * normalsX, const dfloat * normalsY, const dfloat* Scal, const dfloat* y_xi, const dfloat*y_eta, const dfloat*x_xi, const dfloat*x_eta, const dfloat*b, const dfloat* Bx, const dfloat*By,
                                         const dfloat* Dmat, const dfloat*Dstrong, const dfloat*Dhat, const dfloat* J, const dfloat* x_phy, const dfloat* y_phy, const dfloat* q, const dfloat* ElementSizes, const dfloat* gRK, const dfloat* Qt,
@@ -631,6 +650,15 @@ void deviceclass:: DGtimeloop(const int Nelem,
             EntropyOverTime = (dfloat*) calloc(NumPlots,sizeof(dfloat));
             MassOverTime = (dfloat*) calloc(NumPlots,sizeof(dfloat));
             EntropyTimes = (dfloat*) calloc(NumPlots,sizeof(dfloat));
+        }
+
+        if (createTimeSeries)
+        {
+            ChennaiTimeSeries = (dfloat*) calloc(NumPlots,sizeof(dfloat));
+            TuticorinTimeSeries = (dfloat*) calloc(NumPlots,sizeof(dfloat));
+            VisakhapatnamTimeSeries = (dfloat*) calloc(NumPlots,sizeof(dfloat));
+            ParadipTimeSeries = (dfloat*) calloc(NumPlots,sizeof(dfloat));
+            TimeSeriesTimes = (dfloat*) calloc(NumPlots,sizeof(dfloat));
         }
 
     }
@@ -777,6 +805,17 @@ void deviceclass:: DGtimeloop(const int Nelem,
                     MassOverTime[plotCount] = TotalMass;
                     EntropyTimes[plotCount] = t;
                 }
+                if (createTimeSeries)
+                {
+                    ChennaiTimeSeries[plotCount] = q_global[chennaiID*ngl2];
+                    TuticorinTimeSeries[plotCount]= q_global[TuticorinID*ngl2];
+                    VisakhapatnamTimeSeries[plotCount]= q_global[VisakhapatnamID*ngl2];
+                    ParadipTimeSeries[plotCount]= q_global[ParadipID*ngl2];
+                    TimeSeriesTimes[plotCount]=t;
+
+                }
+
+
             }
             else
             {
@@ -1107,7 +1146,11 @@ void deviceclass:: DGtimeloop(const int Nelem,
                         MassOverTime[plotCount] = TotalMass;
                         EntropyTimes[plotCount] = t;
                     }
+                    if (createTimeSeries)
+                    {
 
+
+                    }
                     if (CalcFrictionTerms)
                     {
                         if (t<T)

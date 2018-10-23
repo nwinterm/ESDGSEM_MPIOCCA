@@ -92,6 +92,7 @@ int main(int argc, char *argv[])
     int FrictionTerms;
     int ConvertToKM;
     int calcArrivalTimes;
+    int createTimeSeries;
 
 
     int N=0;
@@ -170,7 +171,8 @@ int main(int argc, char *argv[])
                       &PartialDryTreatment,
                       &FrictionTerms,
                       &ConvertToKM,
-                      &calcArrivalTimes);
+                      &calcArrivalTimes,
+                      &createTimeSeries);
     }
 
     ShareInputData(MPI,
@@ -205,7 +207,8 @@ int main(int argc, char *argv[])
                    &PartialDryTreatment,
                    &FrictionTerms,
                    &ConvertToKM,
-                   &calcArrivalTimes);
+                   &calcArrivalTimes,
+                   &createTimeSeries);
 
     if (Testcase == 31)
     {
@@ -348,10 +351,72 @@ int main(int argc, char *argv[])
     dfloat * y_phy_global;
     dfloat h_0;
 
-    int chennaiID;
+    /// IF a time series is created, these are the node IDs at which that happens!
+
+    if (MPI.rank ==0 )
+    {
+        if (createTimeSeries)
+        {
+
+            int chennaiID;
     int paradipID;
     int tuticorinID;
     int viskhapatnamID;
+            dfloat lonToFind;
+            dfloat latToFind;
+
+            /// FIND CHENNAI
+            lonToFind =80.30;
+            latToFind = 13.10;
+
+            FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&chennaiID);
+            if (chennaiID>=0)
+            {
+                cout <<" CHENNAI! closest node: "<< chennaiID << " with coordinates: " << DGMesh.x_global[chennaiID] << ", "<<DGMesh.y_global[chennaiID] << "\n";
+                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+            }
+
+            ///FIND Tuticorin
+            lonToFind = 78.15;
+            latToFind = 8.80;
+            FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&tuticorinID);
+            if (tuticorinID>=0)
+            {
+                cout <<" TUTICORIN! closest node: "<< tuticorinID << " with coordinates: " << DGMesh.x_global[tuticorinID] << ", "<<DGMesh.y_global[tuticorinID] << "\n";
+                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+            }
+
+            ///FIND Visakhapatnam
+            lonToFind = 83.28;
+            latToFind = 17.68;
+            FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&viskhapatnamID);
+            if (viskhapatnamID>=0)
+            {
+                cout <<" Visakhapatnam! closest node: "<< viskhapatnamID << " with coordinates: " << DGMesh.x_global[viskhapatnamID] << ", "<<DGMesh.y_global[viskhapatnamID] << "\n";
+                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+            }
+            ///FIND Paradip
+            lonToFind = 86.7;
+            latToFind = 20.26;
+            FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&paradipID);
+            if (paradipID>=0)
+            {
+                cout <<" Paradip! closest node: "<< paradipID << " with coordinates: " << DGMesh.x_global[paradipID] << ", "<<DGMesh.y_global[paradipID] << "\n";
+                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+            }
+                    occa_device.copyTimeSeriesIDs(const int chennaiID,
+                                     const int paradipID,
+                                     const int tuticorinID,
+                                     const int viskhapatnamID);
+
+        }
+
+
+
+    }
+
+
+
 
     if (MPI.rank ==0 )
     {
@@ -381,48 +446,8 @@ int main(int argc, char *argv[])
 
 
 
-/// FIND CHENNAI
-        dfloat lonToFind;
-        dfloat latToFind;
 
-        lonToFind =80.30;
-        latToFind = 13.10;
 
-        FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&chennaiID);
-        if (chennaiID>=0)
-        {
-            cout <<" CHENNAI! closest node: "<< chennaiID << " with coordinates: " << DGMesh.x_global[chennaiID] << ", "<<DGMesh.y_global[chennaiID] << "\n";
-            cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
-        }
-
-///FIND Tuticorin
-        lonToFind = 78.15;
-        latToFind = 8.80;
-        FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&tuticorinID);
-        if (tuticorinID>=0)
-        {
-            cout <<" TUTICORIN! closest node: "<< tuticorinID << " with coordinates: " << DGMesh.x_global[tuticorinID] << ", "<<DGMesh.y_global[tuticorinID] << "\n";
-            cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
-        }
-
-///FIND Visakhapatnam
-        lonToFind = 83.28;
-        latToFind = 17.68;
-        FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&viskhapatnamID);
-        if (viskhapatnamID>=0)
-        {
-            cout <<" TUTICORIN! closest node: "<< viskhapatnamID << " with coordinates: " << DGMesh.x_global[viskhapatnamID] << ", "<<DGMesh.y_global[viskhapatnamID] << "\n";
-            cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
-        }
-///FIND Paradip
-        lonToFind = 86.7;
-        latToFind = 20.26;
-        FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&paradipID);
-        if (paradipID>=0)
-        {
-            cout <<" TUTICORIN! closest node: "<< paradipID << " with coordinates: " << DGMesh.x_global[paradipID] << ", "<<DGMesh.y_global[paradipID] << "\n";
-            cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
-        }
 
 
         if (ReadInBottom)
@@ -835,7 +860,7 @@ int main(int argc, char *argv[])
 
     occa_device.initDeviceVariables(N, Nelem,Nfaces,MPI.rank, rkSSP, NEpad,NEsurfpad, Nedgepad,NavgPad, ES, Testcase, epsilon_0, sigma_max, sigma_min, PosPresTOL, geomface, g_const,
                                     PositivityPreserving,
-                                    ArtificialViscosity, DiscBottom,h_0,PartialDryTreatment,FrictionTerms,calcArrivalTimes);
+                                    ArtificialViscosity, DiscBottom,h_0,PartialDryTreatment,FrictionTerms,calcArrivalTimes,createTimeSeries);
     //copy all permanent data onto the device
     if(MPI.rank==0)
     {
