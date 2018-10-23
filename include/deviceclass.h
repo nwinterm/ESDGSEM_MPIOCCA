@@ -36,7 +36,8 @@ public:
                              const int DiscBottom,
                              const dfloat h_0,
                              const int PartialDry,
-                             const int FrictionTerms);
+                             const int FrictionTerms,
+                             const int calcArrivalTimes);
     void buildDeviceKernels(const int KernelVersion,
                             const int KernelVersionSTD,
                             const int Testcase,

@@ -787,7 +787,7 @@ int main(int argc, char *argv[])
 
     occa_device.initDeviceVariables(N, Nelem,Nfaces,MPI.rank, rkSSP, NEpad,NEsurfpad, Nedgepad,NavgPad, ES, Testcase, epsilon_0, sigma_max, sigma_min, PosPresTOL, geomface, g_const,
                                     PositivityPreserving,
-                                    ArtificialViscosity, DiscBottom,h_0,PartialDryTreatment,FrictionTerms);
+                                    ArtificialViscosity, DiscBottom,h_0,PartialDryTreatment,FrictionTerms,calcArrivalTimes);
     //copy all permanent data onto the device
     if(MPI.rank==0)
     {
