@@ -126,7 +126,7 @@ void deviceclass:: initDeviceVariables(const int N,
     CalcFrictionTerms=FrictionTerms;
     dfloat TOL_PosPres = PosPresTOL;//pow(10.0,-4);
 //    dfloat ZeroTOL = pow(10.0,-12);	// double precision
-    dfloat ZeroTOL = 0.0;//pow(10.0,-12);
+    dfloat ZeroTOL = pow(10.0,-12);
 //  	cout << "The range for type float is from "
 //       << numeric_limits<dfloat>::min()
 //       << " to "
