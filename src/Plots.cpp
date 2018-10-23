@@ -5,86 +5,88 @@
 void PlotSolution(const int Nelem, const int ngl,const int PlotVar, const dfloat x[], const dfloat y[], const dfloat Q[], const dfloat b[], const int plotCount, const dfloat h_0)
 {
 
-    ostringstream os;
-    os << "movie/plot_" << plotCount << ".tec";
-    string fName = os.str();
-
-
-    ofstream plotfile;
-    plotfile.open (fName.c_str());
-
-
-    int ngl2=ngl*ngl;
-    dfloat Qinv;
-    switch(PlotVar)
+    if (PlotVar>0)
     {
-    case 1:
-    {
+        ostringstream os;
+        os << "movie/plot_" << plotCount << ".tec";
+        string fName = os.str();
 
-        plotfile <<"TITLE = H_solution.tec\n";
-        plotfile <<"VARIABLES = \"x\",\"y\",\"H\",\"hu\",\"hv\",\"bottom\"\n";
-        for (int ie=0; ie<Nelem; ie++)
+
+        ofstream plotfile;
+        plotfile.open (fName.c_str());
+
+
+        int ngl2=ngl*ngl;
+        dfloat Qinv;
+        switch(PlotVar)
         {
-            plotfile <<"ZONE I ="<<ngl<<",J="<<ngl<<",F=POINT\n";
-            for(int j=0; j<ngl; ++j)
+        case 1:
+        {
+
+            plotfile <<"TITLE = H_solution.tec\n";
+            plotfile <<"VARIABLES = \"x\",\"y\",\"H\",\"hu\",\"hv\",\"bottom\"\n";
+            for (int ie=0; ie<Nelem; ie++)
             {
-                for(int i=0; i<ngl; ++i)
+                plotfile <<"ZONE I ="<<ngl<<",J="<<ngl<<",F=POINT\n";
+                for(int j=0; j<ngl; ++j)
                 {
-                    int id = ie*ngl2*Neq   +j*ngl+i;
-                    int xid = ie*ngl2   +j*ngl+i;
-                    dfloat H;
-                    if (Q[id] > 0.0)
+                    for(int i=0; i<ngl; ++i)
                     {
-                        Qinv = 1.0/Q[id];
+                        int id = ie*ngl2*Neq   +j*ngl+i;
+                        int xid = ie*ngl2   +j*ngl+i;
+                        dfloat H;
+                        if (Q[id] > 0.0)
+                        {
+                            Qinv = 1.0/Q[id];
+                        }
+                        else
+                        {
+                            Qinv = 0.0;
+                        }
+
+
+                        H=Q[id]+b[xid];
+
+                        plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]<<" " << Q[id+ngl2+ngl2]<<" "<<b[xid]<<" \n";
+                        //plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<<" \n";
+
                     }
-                    else
-                    {
-                        Qinv = 0.0;
-                    }
-
-
-                    H=Q[id]+b[xid];
-
-                    plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]<<" " << Q[id+ngl2+ngl2]<<" "<<b[xid]<<" \n";
-                    //plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<<" \n";
-
                 }
             }
+            break;
         }
-        break;
-    }
-    case 2:
-    {
-
-        plotfile <<"TITLE = H_solution.tec\n";
-        plotfile <<"VARIABLES = \"x\",\"y\",\"FreeSurface\",\"hu\",\"hv\",\"bottom\"\n";
-        for (int ie=0; ie<Nelem; ie++)
+        case 2:
         {
-            plotfile <<"ZONE I ="<<ngl<<",J="<<ngl<<",F=POINT\n";
-            for(int j=0; j<ngl; ++j)
+
+            plotfile <<"TITLE = H_solution.tec\n";
+            plotfile <<"VARIABLES = \"x\",\"y\",\"FreeSurface\",\"hu\",\"hv\",\"bottom\"\n";
+            for (int ie=0; ie<Nelem; ie++)
             {
-                for(int i=0; i<ngl; ++i)
+                plotfile <<"ZONE I ="<<ngl<<",J="<<ngl<<",F=POINT\n";
+                for(int j=0; j<ngl; ++j)
                 {
-                    int id = ie*ngl2*Neq   +j*ngl+i;
-                    int xid = ie*ngl2   +j*ngl+i;
-                    dfloat H;
+                    for(int i=0; i<ngl; ++i)
+                    {
+                        int id = ie*ngl2*Neq   +j*ngl+i;
+                        int xid = ie*ngl2   +j*ngl+i;
+                        dfloat H;
 
 
-                    H=Q[id]+b[xid]-h_0;
+                        H=Q[id]+b[xid]-h_0;
 
-                    plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]<<" " << Q[id+ngl2+ngl2]<<" "<<b[xid]<<" \n";
-                    //plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<<" \n";
+                        plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]<<" " << Q[id+ngl2+ngl2]<<" "<<b[xid]<<" \n";
+                        //plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<<" \n";
 
+                    }
                 }
             }
+            break;
         }
-        break;
+        }
+
+        plotfile.close();
+
     }
-    }
-
-    plotfile.close();
-
-
 }
 
 void PlotFriction(const int Nelem, const int ngl,const int PlotVar, const dfloat x[], const dfloat y[], const dfloat Friction[], const int plotCount)
