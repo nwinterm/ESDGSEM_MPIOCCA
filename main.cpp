@@ -379,9 +379,11 @@ int main(int argc, char *argv[])
         dfloat latToFind = 8.80;
         int coordID;
         FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&coordID);
-        cout <<" closest node: "<< coordID << " with coordinates: " << DGMesh.x_global[coordID] << ", "<<DGMesh.y_global[coordID] << "\n";
-        cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
-
+        if (coordID>=0)
+        {
+            cout <<" closest node: "<< coordID << " with coordinates: " << DGMesh.x_global[coordID] << ", "<<DGMesh.y_global[coordID] << "\n";
+            cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+        }
 
 
         if (ReadInBottom)
