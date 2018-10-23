@@ -815,7 +815,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
         if (calcArrivalTimes)
         {
 
-            setArrivaltimes(Nelem,t,o_q,o_b,o_ArrivalTimings);
+            setArrivaltimes(Nelem,t,o_q,o_B,o_ArrivalTimings);
         }
 
 
@@ -1165,7 +1165,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
         }
         if (calcArrivalTimes)
         {
-            setArrivaltimes(Nelem,T,o_q,o_b,o_ArrivalTimings);
+            setArrivaltimes(Nelem,T,o_q,o_B,o_ArrivalTimings);
             dfloat * ArrivalTimings = (dfloat*) calloc(ngl2*Nelem,sizeof(dfloat));
             o_ArrivalTimings.copyTo(ArrivalTimings);
             PlotArrivalTimings(Nelem_global,ngl,x_phy_global,y_phy_global,ArrivalTimings);
