@@ -208,6 +208,7 @@ private:
     dfloat * y_phy_global;
     dfloat * J_global;
     dfloat * ViscPara_Global;
+    dfloat * h_0;
     int PartialDryTreatment;
     int CalcFrictionTerms;
     int calcArrivalTimes;

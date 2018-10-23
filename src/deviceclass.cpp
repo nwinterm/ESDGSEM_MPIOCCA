@@ -106,7 +106,7 @@ void deviceclass:: initDeviceVariables(const int N,
                                        const int PositivityPreserving,
                                        const int ArtificialViscosity,
                                        const int DiscBottom,
-                                       const dfloat h_0,
+                                       const dfloat h_0_in,
                                        const int PartialDry,
                                        const int FrictionTerms,
                                        const int CalcArrivalTimes)
@@ -120,6 +120,7 @@ void deviceclass:: initDeviceVariables(const int N,
     {
         nglPad=1;
     }
+    h_0=h_0_in;
     calcArrivalTimes=CalcArrivalTimes;
     PartialDryTreatment=PartialDry;
     CalcFrictionTerms=FrictionTerms;
@@ -760,7 +761,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
                 }
                 else
                 {
-                    PlotSolution(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,q_global,b_global,plotCount);
+                    PlotSolution(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,q_global,b_global,plotCount,h_0);
                 }
 
                 if (EntropyPlot)
@@ -1077,7 +1078,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
                     }
                     else
                     {
-                        PlotSolution(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,q_global,b_global,plotCount);
+                        PlotSolution(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,q_global,b_global,plotCount,h_0);
                     }
                     if(ArtificialViscosity==1)
                     {

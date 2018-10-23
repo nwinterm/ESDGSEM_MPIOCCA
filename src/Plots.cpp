@@ -2,7 +2,7 @@
 
 
 
-void PlotSolution(const int Nelem, const int ngl,const int PlotVar, const dfloat x[], const dfloat y[], const dfloat Q[], const dfloat b[], const int plotCount)
+void PlotSolution(const int Nelem, const int ngl,const int PlotVar, const dfloat x[], const dfloat y[], const dfloat Q[], const dfloat b[], const int plotCount, const dfloat h_0)
 {
 
     ostringstream os;
@@ -70,7 +70,7 @@ void PlotSolution(const int Nelem, const int ngl,const int PlotVar, const dfloat
                     dfloat H;
 
 
-                    H=Q[id]+b[xid]-7.31;
+                    H=Q[id]+b[xid]-h_0;
 
                     plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]<<" " << Q[id+ngl2+ngl2]<<" "<<b[xid]<<" \n";
                     //plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<<" \n";
