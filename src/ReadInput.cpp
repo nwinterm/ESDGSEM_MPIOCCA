@@ -114,7 +114,8 @@ void ReadInputFile(int *N,
                    int * ReadInBottom,
                    int * PartialDryTreatment,
                    int * FrictionTerms,
-                   int * ConvertToKM)
+                   int * ConvertToKM,
+                   int * calcArrivalTimes)
 {
 
 //,dfloat T, dfloat g_const
@@ -221,6 +222,8 @@ void ReadInputFile(int *N,
     *FrictionTerms= getIntValue(current_string);
     std::getline(InputStream, current_string);
     *ConvertToKM= getIntValue(current_string);
+    std::getline(InputStream, current_string);
+    *calcArrivalTimes= getIntValue(current_string);
 }
 
 

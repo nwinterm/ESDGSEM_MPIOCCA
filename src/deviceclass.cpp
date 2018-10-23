@@ -108,7 +108,8 @@ void deviceclass:: initDeviceVariables(const int N,
                                        const int DiscBottom,
                                        const dfloat h_0,
                                        const int PartialDry,
-                                       const int FrictionTerms)
+                                       const int FrictionTerms,
+                                       const int CalcArrivalTimes)
 {
     const int Neq=3;
     const int GradNeq = Neq-1;
@@ -119,6 +120,7 @@ void deviceclass:: initDeviceVariables(const int N,
     {
         nglPad=1;
     }
+    calcArrivalTimes=CalcArrivalTimes;
     PartialDryTreatment=PartialDry;
     CalcFrictionTerms=FrictionTerms;
     dfloat TOL_PosPres = PosPresTOL;//pow(10.0,-4);
@@ -299,6 +301,14 @@ void deviceclass:: initDeviceVariables(const int N,
         o_FrictionForPlot= device.malloc(ngl2*Nelem*(Neq-1)*sizeof(dfloat));
     }
 
+    if(calcArrivalTimes)
+    {
+        dfloat * ArrivalTimings = (dfloat*) calloc(ngl2*Nelem_global,sizeof(dfloat));
+        o_Arrivaltimes= device.malloc(ngl2*Nelem*sizeof(dfloat));
+        o_Arrivaltimes.copyFrom(ArrivalTimings);
+
+    }
+
 }
 
 
@@ -462,7 +472,11 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
 
         FrictionSource=device.buildKernelFromSource("okl/FrictionSourceTerm/FrictionSource.okl","FrictionSource",info);
     }
+    if(calcArrivalTimes)
+    {
+        setArrivaltimes =   device.buildKernelFromSource("okl/Analysis/ArrivalTimes.okl","ArrivalTimes",info);
 
+    }
 
     if (ArtificialViscosity)
     {
@@ -797,6 +811,9 @@ void deviceclass:: DGtimeloop(const int Nelem,
     while (t<T)
     {
         FindLambdaMax(Nelem, o_q, o_LambdaMax);
+
+
+        ArrivalTimes(Nelem,t,o_q,o_Arrivaltimes);
 
 
         globalLambdaMax=0.0;
@@ -1139,6 +1156,14 @@ void deviceclass:: DGtimeloop(const int Nelem,
         {
             PlotEntropy(NumPlots, EntropyTimes,EntropyOverTime);
             PlotMass(NumPlots, EntropyTimes,MassOverTime);
+
+        }
+        if (calcArrivalTimes)
+        {
+            dfloat * ArrivalTimings = (dfloat*) calloc(ngl2*Nelem_global,sizeof(dfloat));
+            o_ArrivalTimings.copyTo(ArrivalTimings);
+            PlotArrivalTimings(Nelem_global,ngl,x_phy_global,y_phy_global,ArrivalTimings);
+
         }
     }
     free(q);

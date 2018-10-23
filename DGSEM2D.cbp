@@ -63,6 +63,7 @@
 		<Unit filename="meshFiles/PeriodicXandY5.mesh" />
 		<Unit filename="meshFiles/PeriodicXandY6.mesh" />
 		<Unit filename="meshFiles/PeriodicXandY7.mesh" />
+		<Unit filename="okl/Analysis/ArrivalTimes.okl" />
 		<Unit filename="okl/BR1_Gradient/CollectEdgeDataGradient.okl" />
 		<Unit filename="okl/BR1_Gradient/SurfaceKernelGradient.okl" />
 		<Unit filename="okl/BR1_Gradient/calcGradient.okl" />
@@ -102,10 +103,6 @@
 		<Unit filename="okl/PartialDryTreatment/VolumeKernelFD_preChanges.okl" />
 		<Unit filename="okl/PartialDryTreatment/VolumeKernelFD_worksonlyforN1.okl" />
 		<Unit filename="okl/Positivity/PosPres.okl" />
-		<Unit filename="okl/Positivity/PosPres_NEW.okl">
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="okl/Positivity/calcAvg.okl" />
 		<Unit filename="okl/RiemannSolvers/calcCombinedFluxOcean.okl" />
 		<Unit filename="okl/RiemannSolvers/calcESFlux.okl" />
 		<Unit filename="okl/RiemannSolvers/calcESFluxRotated.okl">

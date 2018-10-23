@@ -32,7 +32,8 @@ void ShareInputData(MPI_setup MPI,
                     int *DiscBottom,
                     int *PartialDryTreatment,
                     int *FrictionTerms,
-                    int *ConvertToKM)
+                    int *ConvertToKM,
+                    int *calcArrivalTimes)
 {
 
 
@@ -68,6 +69,7 @@ void ShareInputData(MPI_setup MPI,
     MPI_Bcast (&*PartialDryTreatment,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast (&*FrictionTerms,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast (&*ConvertToKM,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast (&*calcArrivalTimes,1,MPI_INT,0,MPI_COMM_WORLD);
 //int *PlotVar,int *NumPlots,int *NumTimeChecks,int *Testcase, bool *ES,int *NumFlux, bool *FluxDifferencing, bool *Cartesian,int *rkorder, bool *rkSSP
 }
 

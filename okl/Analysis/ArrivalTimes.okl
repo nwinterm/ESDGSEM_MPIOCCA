@@ -1,0 +1,45 @@
+kernel void ArrivalTimes(const int Nelem,
+                         const dfloat t,
+                         const dfloat * restrict  q,
+                         dfloat * restrict  Arrivaltimes)
+{
+
+
+    for(int iEo = 0; iEo < Nelem; iEo+=NEpad; outer0)
+    {
+
+
+        for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
+        {
+            for (int i=0; i<ngl; ++i; inner1)
+            {
+                for (int j=0; j<ngl; ++j; inner0)
+                {
+                    const int eleID     =   iEo + ieLoc;
+                    if (eleID<Nelem)
+                    {
+
+
+
+
+                        const int Fid = eleID*ngl2*Neq   +i*ngl+j;
+                        const int Xid = eleID*ngl2*Neq   +i*ngl+j;
+
+                        if(Arrivaltimes[Xid]==zero)
+                        {
+                            if ((q[Fid]-h_0)>PosPresTOL)
+                            {
+                                Arrivaltimes[Xid] = t;
+                            }
+                        }
+
+
+
+
+
+                    }
+                }
+            }
+        }
+
+    }

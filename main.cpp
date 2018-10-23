@@ -91,6 +91,7 @@ int main(int argc, char *argv[])
     int PartialDryTreatment;
     int FrictionTerms;
     int ConvertToKM;
+    int calcArrivalTimes;
 
 
     int N=0;
@@ -168,7 +169,8 @@ int main(int argc, char *argv[])
                       &ReadInBottom,
                       &PartialDryTreatment,
                       &FrictionTerms,
-                      &ConvertToKM);
+                      &ConvertToKM,
+                      &calcArrivalTimes);
     }
 
     ShareInputData(MPI,
@@ -202,7 +204,8 @@ int main(int argc, char *argv[])
                    &DiscBottom,
                    &PartialDryTreatment,
                    &FrictionTerms,
-                   &ConvertToKM);
+                   &ConvertToKM,
+                   &calcArrivalTimes);
 
     if (Testcase == 31)
     {

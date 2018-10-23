@@ -124,6 +124,48 @@ void PlotFriction(const int Nelem, const int ngl,const int PlotVar, const dfloat
 
 }
 
+
+void PlotArrivalTimings(const int Nelem, const int ngl, const dfloat x[], const dfloat y[], const dfloat Arrivaltimes[])
+{
+
+    ostringstream os;
+    os << "movie/Arrivals_" << plotCount << ".tec";
+    string fName = os.str();
+
+
+    ofstream plotfile;
+    plotfile.open (fName.c_str());
+
+
+    int ngl2=ngl*ngl;
+
+        plotfile <<"TITLE = Arrivals.tec\n";
+        plotfile <<"VARIABLES = \"x\",\"y\",\"Arrivaltime\",\n";
+        for (int ie=0; ie<Nelem; ie++)
+        {
+            plotfile <<"ZONE I ="<<ngl<<",J="<<ngl<<",F=POINT\n";
+            for(int j=0; j<ngl; ++j)
+            {
+                for(int i=0; i<ngl; ++i)
+                {
+                    int id = ie*ngl2*(Neq-1)   +j*ngl+i;
+                    int xid = ie*ngl2   +j*ngl+i;
+
+
+
+		    plotfile <<x[xid]<<" "<<y[xid]<<" " << Arrivaltimes[id] <<" \n";
+                    //plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<<" \n";
+
+                }
+            }
+        }
+
+
+    plotfile.close();
+
+
+}
+
 void PlotSolutionWithExact(const int Nelem, const int ngl,const int PlotVar, const dfloat x[], const dfloat y[], const dfloat Q[], const dfloat b[], const int plotCount, const dfloat qExact[])
 {
 

@@ -145,6 +145,8 @@ public:
     occa::kernel FindDryElements;
     occa::kernel VolumeKernelPartialDry;
 
+    occa::kernel setArrivaltimes;
+
     occa::memory o_Qtmp; // for SSP RK
     occa::memory o_D,o_Dstrong,o_Dhat,o_Qt,o_gRK,o_q;//,o_Neq,o_ngl,o_Jac;
     occa::memory o_VdmInv;//,o_SubCellMat,;
@@ -180,12 +182,15 @@ public:
 
     occa::memory o_FrictionForPlot;
 
+    occa::memory o_Arrivaltimes;
+
 
 
     dfloat * EntropyOverTime;
     dfloat * MassOverTime;
     dfloat * EntropyTimes;
     dfloat * maximumFriction;
+    dfloat * ArrivalTimings;
 
 
 protected:
@@ -204,6 +209,7 @@ private:
     dfloat * ViscPara_Global;
     int PartialDryTreatment;
     int CalcFrictionTerms;
+    int calcArrivalTimes;
 
 
 
