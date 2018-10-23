@@ -807,9 +807,14 @@ void deviceclass:: DGtimeloop(const int Nelem,
                 }
                 if (createTimeSeries)
                 {
-                    ChennaiTimeSeries[plotCount] = q_global[(chennaiID)*Neq+chennaiID]+b_global[chennaiID]-h_0;
+                    int id;
+                    id = floor(chennaiID/ngl2)*(Neq-1)*ngl2 + chennaiID;
+                    ChennaiTimeSeries[plotCount] = q_global[id ]+b_global[chennaiID]-h_0;
+                    id = floor(tuticorinID/ngl2)*(Neq-1)*ngl2 + tuticorinID;
                     TuticorinTimeSeries[plotCount]= q_global[(tuticorinID)*Neq+tuticorinID]+b_global[tuticorinID]-h_0;
+                    id = floor(viskhapatnamID/ngl2)*(Neq-1)*ngl2 + viskhapatnamID;
                     VisakhapatnamTimeSeries[plotCount]= q_global[(viskhapatnamID)*Neq+viskhapatnamID]+b_global[viskhapatnamID]-h_0;
+                    id = floor(paradipID/ngl2)*(Neq-1)*ngl2 + paradipID;
                     ParadipTimeSeries[plotCount]= q_global[(paradipID)*Neq+paradipID]+b_global[paradipID]-h_0;
                     TimeSeriesTimes[plotCount]=t;
 
