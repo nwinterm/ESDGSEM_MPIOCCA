@@ -394,8 +394,8 @@ void FindElementID(const int NumNodes, const dfloat *x,const dfloat *y, const df
     for(int inode=0; inode<NumNodes; ++inode)
     {
 
-        dfloat x_degree= (x[inode]/earth_radius)*(180./M_PI);
-        dfloat y_degree= (atan(sinh(y[inode]/earth_radius))) * (180./M_PI);
+        dfloat x_degree= (x[inode]*1000.0/earth_radius)*(180./M_PI);
+        dfloat y_degree= (atan(sinh(y[inode]*1000.0/earth_radius))) * (180./M_PI);
         dfloat distance = sqrt(pow(lonToFind-x_degree,2)+pow(latToFind-y_degree,2));
 
         if (distance < minimumDistance)
