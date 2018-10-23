@@ -384,7 +384,7 @@ InputStream.close();
 
 
 
-void FindElementID(const int NumNodes, const dfloat *x,const dfloat *y, const dfloat lonToFind, const dfloat latToFind, int coordID)
+void FindElementID(const int NumNodes, const dfloat *x,const dfloat *y, const dfloat lonToFind, const dfloat latToFind, int *coordID)
 {
 
 //,dfloat T, dfloat g_const
@@ -395,7 +395,7 @@ void FindElementID(const int NumNodes, const dfloat *x,const dfloat *y, const df
 
         if (distance < minimumDistance){
             minimumDistance = min(minimumDistance,distance);
-            coordID= inode;
+            *coordID= inode;
         }
     }
 
