@@ -367,6 +367,7 @@ void PlotEntropy(const int NumPlots, const dfloat EntropyTimes[], const dfloat T
 
 
 }
+
 void PlotMass(const int NumPlots, const dfloat PlotTimes[], const dfloat TotalMass[])
 {
 
@@ -388,6 +389,46 @@ void PlotMass(const int NumPlots, const dfloat PlotTimes[], const dfloat TotalMa
     for(int i=0; i<NumPlots; ++i)
     {
         plotfile <<PlotTimes[i]<<" "<<(TotalMass[i]-TotalMass[0])/TotalMass[0]<<" \n";
+    }
+
+
+
+
+
+
+
+    plotfile.close();
+
+
+
+
+
+}
+
+
+
+
+void PlotTimeSeries(const int NumPlots, const dfloat TimeSeriesTimes[], const dfloat ChennaiTimeSeries[],const dfloat TuticorinTimeSeries[],const dfloat VisakhapatnamTimeSeries[],const dfloat ParadipTimeSeries[])
+{
+
+    ostringstream os;
+    os << "movie/Timeseries.tec";
+    string fName = os.str();
+
+
+    ofstream plotfile;
+    plotfile.open (fName.c_str());
+
+
+
+
+    plotfile <<"TITLE = Timeseries.tec\n";
+    plotfile <<"VARIABLES = \"t\",\"Chennai\",\"Tuticorin\",\"Visakhapatnam\",\"Paradip\"\n";
+
+
+    for(int i=0; i<NumPlots; ++i)
+    {
+        plotfile <<TimeSeriesTimes[i]<<" "<<ChennaiTimeSeries[i]<<" "<<TuticorinTimeSeries[i]<<" "<<VisakhapatnamTimeSeries[i]<<" "<<ParadipTimeSeries[i]<<" \n";
     }
 
 

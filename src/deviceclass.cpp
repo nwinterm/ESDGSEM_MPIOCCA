@@ -1215,6 +1215,11 @@ void deviceclass:: DGtimeloop(const int Nelem,
             PlotMass(NumPlots, EntropyTimes,MassOverTime);
 
         }
+        if (createTimeSeries)
+        {
+            PlotTimeSeries(NumPlots,ChennaiTimeSeries,TuticorinTimeSeries,VisakhapatnamTimeSeries,ParadipTimeSeries,TimeSeriesTimes);
+
+        }
         if (calcArrivalTimes)
         {
             dfloat * ArrivalTimings = (dfloat*) calloc(ngl2*Nelem_global,sizeof(dfloat));
