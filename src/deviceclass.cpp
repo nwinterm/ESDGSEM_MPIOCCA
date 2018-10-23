@@ -304,8 +304,8 @@ void deviceclass:: initDeviceVariables(const int N,
 
     if(calcArrivalTimes)
     {
-        dfloat * ArrivalTimings = (dfloat*) calloc(ngl2*Nelem_global,sizeof(dfloat));
-        for (int i =0;i<Nelem_global*ngl2;i++){
+        dfloat * ArrivalTimings = (dfloat*) calloc(ngl2*Nelem,sizeof(dfloat));
+        for (int i =0;i<Nelem*ngl2;i++){
             ArrivalTimings[i]=-1.0;
         }
         o_ArrivalTimings= device.malloc(ngl2*Nelem*sizeof(dfloat));
