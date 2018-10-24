@@ -413,8 +413,8 @@ void PlotMass(const int NumPlots, const dfloat PlotTimes[], const dfloat TotalMa
 void PlotTimeSeries(const int NumPlots, const dfloat TimeSeriesTimes[],
                      const dfloat ChennaiTimeSeries[],const dfloat TuticorinTimeSeries[],
                      const dfloat VisakhapatnamTimeSeries[],const dfloat ParadipTimeSeries[],
-                     const dfloat KochiTimeSeries,const dfloat MormugaoTimeSeries,
-                     const dfloat OkhaTimeSeries)
+                     const dfloat KochiTimeSeries[],const dfloat MormugaoTimeSeries[],
+                     const dfloat OkhaTimeSeries[])
 {
 
     ostringstream os;
