@@ -397,7 +397,7 @@ int main(int argc, char *argv[])
             {
 //                cout <<" Visakhapatnam! closest node: "<< viskhapatnamID << " with coordinates: " << DGMesh.x_global[viskhapatnamID] << ", "<<DGMesh.y_global[viskhapatnamID] << "\n";
 //                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
-                cout <<" Visakhapatnam! closest node: " << "\n";
+                cout <<" Visakhapatnam! closest node: " << viskhapatnamID << "\n";
             }
             ///FIND Paradip
             lonToFind = 86.7;
