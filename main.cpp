@@ -359,9 +359,9 @@ int main(int argc, char *argv[])
         {
 
             int chennaiID;
-    int paradipID;
-    int tuticorinID;
-    int viskhapatnamID;
+    int paradipID=-1;
+    int tuticorinID=-1;
+    int viskhapatnamID=-1;
             dfloat lonToFind;
             dfloat latToFind;
 
@@ -409,7 +409,7 @@ int main(int argc, char *argv[])
             ///FIND Kochi
             lonToFind = 76.26;
             latToFind = 9.96;
-            int KochiID;
+            int KochiID=-1;
             FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&KochiID);
             if (KochiID>=0)
             {
@@ -419,7 +419,7 @@ int main(int argc, char *argv[])
             ///FIND Mormugao
             lonToFind = 73.80;
             latToFind = 15.42;
-            int MormugaoID;
+            int MormugaoID=-1;
             FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&MormugaoID);
             if (MormugaoID>=0)
             {
@@ -431,7 +431,7 @@ int main(int argc, char *argv[])
             ///FIND Okha
             lonToFind = 69.08;
             latToFind = 22.47;
-            int OkhaID;
+            int OkhaID=-1;
             FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&OkhaID);
             if (OkhaID>=0)
             {

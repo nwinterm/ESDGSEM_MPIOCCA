@@ -1246,7 +1246,14 @@ void deviceclass:: DGtimeloop(const int Nelem,
         if (createTimeSeries)
         {
             PlotTimeSeries(NumPlots,TimeSeriesTimes,ChennaiTimeSeries,TuticorinTimeSeries,VisakhapatnamTimeSeries,ParadipTimeSeries,KochiTimeSeries,MormugaoTimeSeries,OkhaTimeSeries);
-
+            free(TimeSeriesTimes);
+            free(ChennaiTimeSeries);
+            free(TuticorinTimeSeries);
+            free(VisakhapatnamTimeSeries);
+            free(ParadipTimeSeries);
+            free(KochiTimeSeries);
+            free(MormugaoTimeSeries);
+            free(OkhaTimeSeries);
         }
         if (calcArrivalTimes)
         {
