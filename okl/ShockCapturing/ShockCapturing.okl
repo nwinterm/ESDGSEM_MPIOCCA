@@ -34,7 +34,7 @@ kernel void ShockCapturing(const int Nelem,
                 const dfloat r_h = Q[Fid];
                 const dfloat r_b = b[Xid];
                 const dfloat r_h2 = r_h*r_h;
-                const dfloat r_ShockIndicator=(r_b+r_h)-7.31;
+                const dfloat r_ShockIndicator=(r_b+r_h)-h_zero;
 
                 s_Q1modal[i][j]=r_ShockIndicator;
 
