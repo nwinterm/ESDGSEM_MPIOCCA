@@ -537,7 +537,7 @@ void deviceclass:: copyTimeSeriesIDs(const int id1,
     paradipID=id2;
     tuticorinID=id3;
     viskhapatnamID=id4;
-    kochID=id5;
+    kochiID=id5;
     mormugaoID=id6;
     okhaID=id7;
 
