@@ -410,7 +410,11 @@ void PlotMass(const int NumPlots, const dfloat PlotTimes[], const dfloat TotalMa
 
 
 
-void PlotTimeSeries(const int NumPlots, const dfloat TimeSeriesTimes[], const dfloat ChennaiTimeSeries[],const dfloat TuticorinTimeSeries[],const dfloat VisakhapatnamTimeSeries[],const dfloat ParadipTimeSeries[])
+void PlotTimeSeries(const int NumPlots, const dfloat TimeSeriesTimes[],
+                     const dfloat ChennaiTimeSeries[],const dfloat TuticorinTimeSeries[],
+                     const dfloat VisakhapatnamTimeSeries[],const dfloat ParadipTimeSeries[],
+                     const dfloat KochiTimeSeries,const dfloat MormugaoTimeSeries,
+                     const dfloat OkhaTimeSeries)
 {
 
     ostringstream os;
@@ -425,12 +429,13 @@ void PlotTimeSeries(const int NumPlots, const dfloat TimeSeriesTimes[], const df
 
 
     plotfile <<"TITLE = Timeseries.tec\n";
-    plotfile <<"VARIABLES = \"t\",\"Chennai\",\"Tuticorin\",\"Visakhapatnam\",\"Paradip\"\n";
+    plotfile <<"VARIABLES = \"t\",\"Chennai\",\"Tuticorin\",\"Visakhapatnam\",\"Paradip\",\"Kochi\",\"Mormugao\",\"Okha\"\n";
 
 
     for(int i=0; i<NumPlots; ++i)
     {
-        plotfile <<TimeSeriesTimes[i]<<" "<<ChennaiTimeSeries[i]<<" "<<TuticorinTimeSeries[i]<<" "<<VisakhapatnamTimeSeries[i]<<" "<<ParadipTimeSeries[i]<<" \n";
+        plotfile <<TimeSeriesTimes[i]<<" "<<ChennaiTimeSeries[i]<<" "<<TuticorinTimeSeries[i]<<" "<<VisakhapatnamTimeSeries[i]<<" "<<ParadipTimeSeries[i]
+        <<" "<<KochiTimeSeries[i]<<" "<<MormugaoTimeSeries[i]<<" "<<OkhaTimeSeries[i]<<" \n";
     }
 
 

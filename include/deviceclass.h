@@ -54,7 +54,10 @@ public:
     void copyTimeSeriesIDs(const int id1,
                            const int id2,
                            const int id3,
-                           const int id4);
+                           const int id4,
+                           const int id5,
+                           const int id6,
+                           const int id7);
     void copyDeviceVariables(const int PositivityPreserving,
                              const int Nelem,
                              const dfloat* GLw,
@@ -195,6 +198,9 @@ public:
     dfloat * TuticorinTimeSeries;
     dfloat * VisakhapatnamTimeSeries;
     dfloat * ParadipTimeSeries;
+    dfloat * KochiTimeSeries;
+    dfloat * MormugaoTimeSeries;
+    dfloat * OkhaTimeSeries;
     dfloat * TimeSeriesTimes;
 
 
@@ -230,6 +236,9 @@ private:
     int paradipID;
     int tuticorinID;
     int viskhapatnamID;
+    int kochiID;
+    int mormugaoID;
+    int okhaID;
 
 };
 

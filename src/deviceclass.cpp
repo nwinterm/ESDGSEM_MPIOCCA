@@ -527,13 +527,19 @@ void deviceclass:: copyPartialDryData(const dfloat* DCentralFD, const dfloat* Df
 void deviceclass:: copyTimeSeriesIDs(const int id1,
                                      const int id2,
                                      const int id3,
-                                     const int id4)
+                                     const int id4,
+                                     const int id5,
+                                     const int id6,
+                                     const int id7)
 {
 
     chennaiID =id1;
     paradipID=id2;
     tuticorinID=id3;
     viskhapatnamID=id4;
+    kochID=id5;
+    mormugaoID=id6;
+    okhaID=id7;
 
 }
 
@@ -658,6 +664,9 @@ void deviceclass:: DGtimeloop(const int Nelem,
             TuticorinTimeSeries = (dfloat*) calloc(NumPlots,sizeof(dfloat));
             VisakhapatnamTimeSeries = (dfloat*) calloc(NumPlots,sizeof(dfloat));
             ParadipTimeSeries = (dfloat*) calloc(NumPlots,sizeof(dfloat));
+            KochiTimeSeries = (dfloat*) calloc(NumPlots,sizeof(dfloat));
+            MormugaoTimeSeries = (dfloat*) calloc(NumPlots,sizeof(dfloat));
+            OkhaTimeSeries = (dfloat*) calloc(NumPlots,sizeof(dfloat));
             TimeSeriesTimes = (dfloat*) calloc(NumPlots,sizeof(dfloat));
         }
 
@@ -1162,6 +1171,15 @@ void deviceclass:: DGtimeloop(const int Nelem,
                         VisakhapatnamTimeSeries[plotCount]= q_global[id ]+b_global[viskhapatnamID]-h_0;
                         id = floor(paradipID/ngl2)*(Neq-1)*ngl2 + paradipID;
                         ParadipTimeSeries[plotCount]= q_global[id ]+b_global[paradipID]-h_0;
+
+                        id = floor(kochiID/ngl2)*(Neq-1)*ngl2 + kochiID;
+                        KochiTimeSeries[plotCount]= q_global[id ]+b_global[kochiID]-h_0;
+
+                        id = floor(mormugaoID/ngl2)*(Neq-1)*ngl2 + mormugaoID;
+                        MormugaoTimeSeries[plotCount]= q_global[id ]+b_global[mormugaoID]-h_0;
+
+                        id = floor(okhaID/ngl2)*(Neq-1)*ngl2 + okhaID;
+                        OkhaTimeSeries[plotCount]= q_global[id ]+b_global[okhaID]-h_0;
                         TimeSeriesTimes[plotCount]=t;
 
                     }
@@ -1227,7 +1245,7 @@ void deviceclass:: DGtimeloop(const int Nelem,
         }
         if (createTimeSeries)
         {
-            PlotTimeSeries(NumPlots,TimeSeriesTimes,ChennaiTimeSeries,TuticorinTimeSeries,VisakhapatnamTimeSeries,ParadipTimeSeries);
+            PlotTimeSeries(NumPlots,TimeSeriesTimes,ChennaiTimeSeries,TuticorinTimeSeries,VisakhapatnamTimeSeries,ParadipTimeSeries,KochiTimeSeries,MormugaoTimeSeries,OkhaTimeSeries);
 
         }
         if (calcArrivalTimes)

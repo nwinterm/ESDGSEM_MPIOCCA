@@ -404,7 +404,41 @@ int main(int argc, char *argv[])
                 cout <<" Paradip! closest node: "<< paradipID << " with coordinates: " << DGMesh.x_global[paradipID] << ", "<<DGMesh.y_global[paradipID] << "\n";
                 cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
             }
-            occa_device.copyTimeSeriesIDs(chennaiID,paradipID,tuticorinID,viskhapatnamID);
+
+
+            ///FIND Kochi
+            lonToFind = 76.26;
+            latToFind = 9.96;
+            int KochiID;
+            FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&KochiID);
+            if (KochiID>=0)
+            {
+                cout <<" Paradip! closest node: "<< KochiID << " with coordinates: " << DGMesh.x_global[KochiID] << ", "<<DGMesh.y_global[KochiID] << "\n";
+                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+            }
+            ///FIND Mormugao
+            lonToFind = 73.80;
+            latToFind = 15.42;
+            int MormugaoID;
+            FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&MormugaoID);
+            if (MormugaoID>=0)
+            {
+                cout <<" Paradip! closest node: "<< MormugaoID << " with coordinates: " << DGMesh.x_global[MormugaoID] << ", "<<DGMesh.y_global[MormugaoID] << "\n";
+                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+            }
+
+
+            ///FIND Okha
+            lonToFind = 69.08;
+            latToFind = 22.47;
+            int OkhaID;
+            FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&OkhaID);
+            if (OkhaID>=0)
+            {
+                cout <<" Paradip! closest node: "<< OkhaID << " with coordinates: " << DGMesh.x_global[OkhaID] << ", "<<DGMesh.y_global[OkhaID] << "\n";
+                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+            }
+            occa_device.copyTimeSeriesIDs(chennaiID,paradipID,tuticorinID,viskhapatnamID,KochiID,MormugaoID,OkhaID);
 
         }
 
