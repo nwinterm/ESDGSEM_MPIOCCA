@@ -434,8 +434,7 @@ void PlotTimeSeries(const int NumPlots, const dfloat TimeSeriesTimes[],
 
     for(int i=0; i<NumPlots; ++i)
     {
-        plotfile <<TimeSeriesTimes[i]<<" "<<ChennaiTimeSeries[i]<<" "<<TuticorinTimeSeries[i]<<" "<<VisakhapatnamTimeSeries[i]<<" "<<ParadipTimeSeries[i]
-        <<" "<<KochiTimeSeries[i]<<" "<<MormugaoTimeSeries[i]<<" "<<OkhaTimeSeries[i]<<" \n";
+        plotfile <<TimeSeriesTimes[i]<<" "<<ChennaiTimeSeries[i]<<" "<<TuticorinTimeSeries[i]<<" "<<VisakhapatnamTimeSeries[i]<<" "<<ParadipTimeSeries[i]<<" "<<KochiTimeSeries[i]<<" "<<MormugaoTimeSeries[i]<<" "<<OkhaTimeSeries[i]<<" \n";
     }
 
 
