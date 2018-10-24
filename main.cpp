@@ -372,8 +372,9 @@ int main(int argc, char *argv[])
             FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&chennaiID);
             if (chennaiID>=0)
             {
-                cout <<" CHENNAI! closest node: "<< chennaiID << " with coordinates: " << DGMesh.x_global[chennaiID] << ", "<<DGMesh.y_global[chennaiID] << "\n";
-                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+//                cout <<" CHENNAI! closest node: "<< chennaiID << " with coordinates: " << DGMesh.x_global[chennaiID] << ", "<<DGMesh.y_global[chennaiID] << "\n";
+//                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+                cout <<" CHENNAI! closest node: "<< chennaiID  << "\n";
             }
 
             ///FIND Tuticorin
@@ -382,8 +383,10 @@ int main(int argc, char *argv[])
             FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&tuticorinID);
             if (tuticorinID>=0)
             {
-                cout <<" TUTICORIN! closest node: "<< tuticorinID << " with coordinates: " << DGMesh.x_global[tuticorinID] << ", "<<DGMesh.y_global[tuticorinID] << "\n";
-                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+//                cout <<" TUTICORIN! closest node: "<< tuticorinID << " with coordinates: " << DGMesh.x_global[tuticorinID] << ", "<<DGMesh.y_global[tuticorinID] << "\n";
+//                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+
+                cout <<" TUTICORIN! closest node: "<< tuticorinID  << "\n";
             }
 
             ///FIND Visakhapatnam
@@ -392,8 +395,9 @@ int main(int argc, char *argv[])
             FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&viskhapatnamID);
             if (viskhapatnamID>=0)
             {
-                cout <<" Visakhapatnam! closest node: "<< viskhapatnamID << " with coordinates: " << DGMesh.x_global[viskhapatnamID] << ", "<<DGMesh.y_global[viskhapatnamID] << "\n";
-                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+//                cout <<" Visakhapatnam! closest node: "<< viskhapatnamID << " with coordinates: " << DGMesh.x_global[viskhapatnamID] << ", "<<DGMesh.y_global[viskhapatnamID] << "\n";
+//                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+                cout <<" Visakhapatnam! closest node: " << "\n";
             }
             ///FIND Paradip
             lonToFind = 86.7;
@@ -401,8 +405,9 @@ int main(int argc, char *argv[])
             FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&paradipID);
             if (paradipID>=0)
             {
-                cout <<" Paradip! closest node: "<< paradipID << " with coordinates: " << DGMesh.x_global[paradipID] << ", "<<DGMesh.y_global[paradipID] << "\n";
-                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+//                cout <<" Paradip! closest node: "<< paradipID << " with coordinates: " << DGMesh.x_global[paradipID] << ", "<<DGMesh.y_global[paradipID] << "\n";
+//                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+                cout <<" Paradip! closest node: "<< paradipID  << "\n";
             }
 
 
@@ -413,8 +418,10 @@ int main(int argc, char *argv[])
             FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&KochiID);
             if (KochiID>=0)
             {
-                cout <<" Paradip! closest node: "<< KochiID << " with coordinates: " << DGMesh.x_global[KochiID] << ", "<<DGMesh.y_global[KochiID] << "\n";
-                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+//                cout <<" Kochi! closest node: "<< KochiID << " with coordinates: " << DGMesh.x_global[KochiID] << ", "<<DGMesh.y_global[KochiID] << "\n";
+//                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+
+                cout <<" Kochi! closest node: "<< KochiID<< "\n";
             }
             ///FIND Mormugao
             lonToFind = 73.80;
@@ -423,8 +430,10 @@ int main(int argc, char *argv[])
             FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&MormugaoID);
             if (MormugaoID>=0)
             {
-                cout <<" Paradip! closest node: "<< MormugaoID << " with coordinates: " << DGMesh.x_global[MormugaoID] << ", "<<DGMesh.y_global[MormugaoID] << "\n";
-                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+//                cout <<" Mormugao! closest node: "<< MormugaoID << " with coordinates: " << DGMesh.x_global[MormugaoID] << ", "<<DGMesh.y_global[MormugaoID] << "\n";
+//                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+                cout <<" Mormugao! closest node: "<< MormugaoID  << "\n";
+
             }
 
 
@@ -435,8 +444,10 @@ int main(int argc, char *argv[])
             FindElementID(NoSpaceDofs_global, DGMesh.x_global,DGMesh.y_global,lonToFind,latToFind,&OkhaID);
             if (OkhaID>=0)
             {
-                cout <<" Paradip! closest node: "<< OkhaID << " with coordinates: " << DGMesh.x_global[OkhaID] << ", "<<DGMesh.y_global[OkhaID] << "\n";
-                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+//                cout <<" Okha! closest node: "<< OkhaID << " with coordinates: " << DGMesh.x_global[OkhaID] << ", "<<DGMesh.y_global[OkhaID] << "\n";
+//                cout <<" actual coordinates: "<< lonToFind<< ", "<< latToFind << "\n";
+
+                cout <<" Okha! closest node: "<< OkhaID << "\n";
             }
             occa_device.copyTimeSeriesIDs(chennaiID,paradipID,tuticorinID,viskhapatnamID,KochiID,MormugaoID,OkhaID);
 
