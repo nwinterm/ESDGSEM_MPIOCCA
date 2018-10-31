@@ -522,6 +522,7 @@ int main(int argc, char *argv[])
                             dfloat MinusOneMeter = -0.01;
                             //b_global[id]    =   h_0 + min(MinusOneMeter,DGMesh.b_global[id]);
                             b_global[id]    =   h_0 + min(MinusOneMeter,b_global[id]);
+			    //b_global[id]    =   h_0 + b_global[id];
                         }
                         else
                         {

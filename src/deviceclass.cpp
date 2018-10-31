@@ -309,7 +309,7 @@ void deviceclass:: initDeviceVariables(const int N,
         dfloat * ArrivalTimings = (dfloat*) calloc(ngl2*Nelem,sizeof(dfloat));
         for (int i =0; i<Nelem*ngl2; i++)
         {
-            ArrivalTimings[i]=-1.0;
+            ArrivalTimings[i]=1000.0;
         }
         o_ArrivalTimings= device.malloc(ngl2*Nelem*sizeof(dfloat));
         o_ArrivalTimings.copyFrom(ArrivalTimings);

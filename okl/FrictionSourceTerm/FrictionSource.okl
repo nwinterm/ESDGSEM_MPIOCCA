@@ -34,13 +34,13 @@ kernel void FrictionSource(const int Nelem,
 
                         dfloat r_h_expo_inv;
 
-                        if (r_h>PosPresTOL)
+                        if (r_h<PosPresTOL)
                         {
-                            r_h_expo_inv= one/pow(r_h,seventhirds);
+                            r_h_expo_inv= one/pow(PosPresTOL,seventhirds);
                         }
                         else
                         {
-                            r_h_expo_inv= zero;
+                            r_h_expo_inv= one/pow(r_h,seventhirds);
                         }
 
                         const dfloat r_momentum_sum = pow(r_hu,two)+pow(r_hv,two);

@@ -26,10 +26,10 @@ kernel void ArrivalTimes(const int Nelem,
                         const int Fid = eleID*ngl2*Neq   +i*ngl+j;
                         const int Xid = eleID*ngl2   +i*ngl+j;
 
-                        if(Arrivaltimes[Xid]==-one)
+                        if(Arrivaltimes[Xid]==1000.0)
                         {
-
-                            if (fabs((q[Fid]+b[Xid])-h_zero)>ZeroTOL)
+			//if (fabs((q[Fid]+b[Xid])-h_zero)>ZeroTOL)
+                            if (fabs((q[Fid]+b[Xid])-h_zero)>0.00005)
                             {
                                 Arrivaltimes[Xid] = t;
                             }

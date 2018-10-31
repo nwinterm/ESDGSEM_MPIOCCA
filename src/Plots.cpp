@@ -70,11 +70,13 @@ void PlotSolution(const int Nelem, const int ngl,const int PlotVar, const dfloat
                         int id = ie*ngl2*Neq   +j*ngl+i;
                         int xid = ie*ngl2   +j*ngl+i;
                         dfloat H;
+			dfloat bottom;
 
 
                         H=Q[id]+b[xid]-h_0;
+			bottom = b[xid]-h_0;
 
-                        plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]<<" " << Q[id+ngl2+ngl2]<<" "<<b[xid]<<" \n";
+                        plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]<<" " << Q[id+ngl2+ngl2]<<" "<<bottom <<" \n";
                         //plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<<" \n";
 
                     }
