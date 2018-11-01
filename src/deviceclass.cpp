@@ -1139,10 +1139,13 @@ void deviceclass:: DGtimeloop(const int Nelem,
                     }
                     if(ArtificialViscosity==1)
                     {
-
+			if (PlotVar!=0){
                         o_ViscForPlot.copyTo(ViscPara);
                         CollectViscPara(MPI,   MeshSplit, ViscPara, ViscPara_Global);
                         PlotViscoseParameter(Nelem_global, ngl, x_phy_global,y_phy_global, ViscPara_Global, plotCount);
+			}
+
+
 //                        CollectViscosity( MPI, MeshSplit, Qx,Qy, Qx_global, Qy_global);
 //                        PlotViscosity(Nelem_global,ngl,PlotVar,x_phy_global,y_phy_global,Qx_global,Qy_global,plotCount);
 //                        CollectViscosity( MPI, MeshSplit, QtVisc,Qy, QtVisc_global, Qy_global);

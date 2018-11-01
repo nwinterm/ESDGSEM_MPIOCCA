@@ -253,6 +253,9 @@ void PlotViscosity(const int Nelem, const int ngl,const int PlotVar, const dfloa
     int ngl2=ngl*ngl;
 
 
+   if (PlotVar==0){
+
+	}else{
 
 
     plotfile <<"TITLE = H_solution.tec\n";
@@ -274,7 +277,7 @@ void PlotViscosity(const int Nelem, const int ngl,const int PlotVar, const dfloa
         }
     }
 
-
+}
 
     plotfile << "Test";
     plotfile.close();
