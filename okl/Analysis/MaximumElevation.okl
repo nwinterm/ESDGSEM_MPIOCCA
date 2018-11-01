@@ -1,0 +1,40 @@
+kernel void MaximumElevation(const int Nelem,
+                             const dfloat t,
+                             const dfloat * restrict  q,
+                             const dfloat * restrict  b,
+                             dfloat * restrict  maximumElevations)
+{
+
+
+    for(int iEo = 0; iEo < Nelem; iEo+=NEpad; outer0)
+    {
+
+
+        for (int ieLoc=0; ieLoc<NEpad; ++ieLoc; inner2)
+        {
+            for (int i=0; i<ngl; ++i; inner1)
+            {
+                for (int j=0; j<ngl; ++j; inner0)
+                {
+                    const int eleID     =   iEo + ieLoc;
+                    if (eleID<Nelem)
+                    {
+
+
+
+
+                        const int Fid = eleID*ngl2*Neq   +i*ngl+j;
+                        const int Xid = eleID*ngl2   +i*ngl+j;
+
+                        const dfloat freeSurface = q[Fid]+b[Xid]-h_zero;
+
+                        maximumElevations[Xid]= max(maximumElevations[Xid],freeSurface);
+
+
+
+                    }
+                }
+            }
+        }
+
+    }

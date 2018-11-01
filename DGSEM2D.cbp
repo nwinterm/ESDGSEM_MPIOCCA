@@ -64,6 +64,7 @@
 		<Unit filename="meshFiles/PeriodicXandY6.mesh" />
 		<Unit filename="meshFiles/PeriodicXandY7.mesh" />
 		<Unit filename="okl/Analysis/ArrivalTimes.okl" />
+		<Unit filename="okl/Analysis/MaximumElevation.okl" />
 		<Unit filename="okl/BR1_Gradient/CollectEdgeDataGradient.okl" />
 		<Unit filename="okl/BR1_Gradient/SurfaceKernelGradient.okl" />
 		<Unit filename="okl/BR1_Gradient/calcGradient.okl" />

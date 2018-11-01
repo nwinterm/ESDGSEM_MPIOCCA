@@ -93,6 +93,7 @@ int main(int argc, char *argv[])
     int ConvertToKM;
     int calcArrivalTimes;
     int createTimeSeries;
+    int calcMaximumElevation;
 
 
     int N=0;
@@ -172,7 +173,8 @@ int main(int argc, char *argv[])
                       &FrictionTerms,
                       &ConvertToKM,
                       &calcArrivalTimes,
-                      &createTimeSeries);
+                      &createTimeSeries,
+                      &calcMaximumElevation);
     }
 
     ShareInputData(MPI,
@@ -208,7 +210,8 @@ int main(int argc, char *argv[])
                    &FrictionTerms,
                    &ConvertToKM,
                    &calcArrivalTimes,
-                   &createTimeSeries);
+                   &createTimeSeries,
+                   &calcMaximumElevation);
 
     if (Testcase == 31)
     {
@@ -359,9 +362,9 @@ int main(int argc, char *argv[])
         {
 
             int chennaiID;
-    int paradipID=-1;
-    int tuticorinID=-1;
-    int viskhapatnamID=-1;
+            int paradipID=-1;
+            int tuticorinID=-1;
+            int viskhapatnamID=-1;
             dfloat lonToFind;
             dfloat latToFind;
 
@@ -522,7 +525,7 @@ int main(int argc, char *argv[])
                             dfloat MinusOneMeter = -0.01;
                             //b_global[id]    =   h_0 + min(MinusOneMeter,DGMesh.b_global[id]);
                             b_global[id]    =   h_0 + min(MinusOneMeter,b_global[id]);
-			    //b_global[id]    =   h_0 + b_global[id];
+                            //b_global[id]    =   h_0 + b_global[id];
                         }
                         else
                         {
@@ -903,7 +906,7 @@ int main(int argc, char *argv[])
 
     occa_device.initDeviceVariables(N, Nelem,Nfaces,MPI.rank, rkSSP, NEpad,NEsurfpad, Nedgepad,NavgPad, ES, Testcase, epsilon_0, sigma_max, sigma_min, PosPresTOL, geomface, g_const,
                                     PositivityPreserving,
-                                    ArtificialViscosity, DiscBottom,h_0,PartialDryTreatment,FrictionTerms,calcArrivalTimes,createTimeSeries);
+                                    ArtificialViscosity, DiscBottom,h_0,PartialDryTreatment,FrictionTerms,calcArrivalTimes,createTimeSeries,calcMaximumElevation);
     //copy all permanent data onto the device
     if(MPI.rank==0)
     {

@@ -38,7 +38,10 @@ public:
                              const int PartialDry,
                              const int FrictionTerms,
                              const int CalcArrivalTimes,
-                             const int CreateTimeSeries);
+                             const int CreateTimeSeries,
+                             const int CalcMaximumElevation);
+
+                             MaximumElevation
     void buildDeviceKernels(const int KernelVersion,
                             const int KernelVersionSTD,
                             const int Testcase,
@@ -155,6 +158,7 @@ public:
     occa::kernel VolumeKernelPartialDry;
 
     occa::kernel setArrivaltimes;
+    occa::kernel setMaximumElevation;
 
     occa::memory o_Qtmp; // for SSP RK
     occa::memory o_D,o_Dstrong,o_Dhat,o_Qt,o_gRK,o_q;//,o_Neq,o_ngl,o_Jac;
@@ -192,6 +196,7 @@ public:
     occa::memory o_FrictionForPlot;
 
     occa::memory o_ArrivalTimings;
+    occa::memory o_MaximumElevation;
 
 
     dfloat * ChennaiTimeSeries;
@@ -209,6 +214,7 @@ public:
     dfloat * EntropyTimes;
     dfloat * maximumFriction;
     dfloat * ArrivalTimings;
+    dfloat * maximumElevation;
 
 
 protected:
@@ -230,6 +236,7 @@ private:
     int CalcFrictionTerms;
     int calcArrivalTimes;
     int createTimeSeries;
+    int calcMaximumElevation;
 
 
     int chennaiID;

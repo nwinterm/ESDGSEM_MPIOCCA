@@ -34,3 +34,4 @@ FrictionTerms=1
 ConvertToKM=1
 ArrivalTimings=1
 createTimeSeries=1
+MaximumElevation=1

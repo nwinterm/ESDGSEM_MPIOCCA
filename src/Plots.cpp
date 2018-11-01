@@ -70,11 +70,11 @@ void PlotSolution(const int Nelem, const int ngl,const int PlotVar, const dfloat
                         int id = ie*ngl2*Neq   +j*ngl+i;
                         int xid = ie*ngl2   +j*ngl+i;
                         dfloat H;
-			dfloat bottom;
+                        dfloat bottom;
 
 
                         H=Q[id]+b[xid]-h_0;
-			bottom = b[xid]-h_0;
+                        bottom = b[xid]-h_0;
 
                         plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]<<" " << Q[id+ngl2+ngl2]<<" "<<bottom <<" \n";
                         //plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<<" \n";
@@ -173,6 +173,48 @@ void PlotArrivalTimings(const int Nelem, const int ngl, const dfloat x[], const 
 
 }
 
+void PlotMaximumElevations(const int Nelem, const int ngl, const dfloat x[], const dfloat y[], const dfloat MaximumElevations[])
+{
+
+    ostringstream os;
+    os << "movie/MaximumElevations.tec";
+    string fName = os.str();
+
+
+    ofstream plotfile;
+    plotfile.open (fName.c_str());
+
+
+    int ngl2=ngl*ngl;
+
+    plotfile <<"TITLE = MaximumElevations.tec\n";
+    plotfile <<"VARIABLES = \"x\",\"y\",\"MaximumElevation\",\n";
+    for (int ie=0; ie<Nelem; ie++)
+    {
+        plotfile <<"ZONE I ="<<ngl<<",J="<<ngl<<",F=POINT\n";
+        for(int j=0; j<ngl; ++j)
+        {
+            for(int i=0; i<ngl; ++i)
+            {
+                int xid = ie*ngl2   +j*ngl+i;
+
+
+
+                plotfile <<x[xid]<<" "<<y[xid]<<" " << MaximumElevations[xid] <<" \n";
+                //plotfile <<x[xid]<<" "<<y[xid]<<" "<<H<< " " << Q[id+ngl2]*Qinv<<" " << Q[id+ngl2+ngl2]*Qinv<<" "<<b[xid]<<" \n";
+
+            }
+        }
+    }
+
+
+    plotfile.close();
+
+
+}
+
+
+
 void PlotSolutionWithExact(const int Nelem, const int ngl,const int PlotVar, const dfloat x[], const dfloat y[], const dfloat Q[], const dfloat b[], const int plotCount, const dfloat qExact[])
 {
 
@@ -253,31 +295,34 @@ void PlotViscosity(const int Nelem, const int ngl,const int PlotVar, const dfloa
     int ngl2=ngl*ngl;
 
 
-   if (PlotVar==0){
-
-	}else{
-
-
-    plotfile <<"TITLE = H_solution.tec\n";
-    plotfile <<"VARIABLES = \"x\",\"y\",\"Qx1\",\"Qx2\",\"Qx3\",\"Qy1\",\"Qy2\",\"Qy3\"\n";
-
-    for (int ie=0; ie<Nelem; ie++)
+    if (PlotVar==0)
     {
-        plotfile <<"ZONE I ="<<ngl<<",J="<<ngl<<",F=POINT\n";
-        for(int j=0; j<ngl; ++j)
+
+    }
+    else
+    {
+
+
+        plotfile <<"TITLE = H_solution.tec\n";
+        plotfile <<"VARIABLES = \"x\",\"y\",\"Qx1\",\"Qx2\",\"Qx3\",\"Qy1\",\"Qy2\",\"Qy3\"\n";
+
+        for (int ie=0; ie<Nelem; ie++)
         {
-            for(int i=0; i<ngl; ++i)
+            plotfile <<"ZONE I ="<<ngl<<",J="<<ngl<<",F=POINT\n";
+            for(int j=0; j<ngl; ++j)
             {
-                int id = ie*ngl2*Neq   +j*ngl+i;
-                int xid = ie*ngl2   +j*ngl+i;
-                plotfile <<x[xid]<<" "<<y[xid]<<" "<<Qx[id]<<" "<<Qx[id+ngl2]<<" "<<Qx[id+ngl2+ngl2]<<" "<<Qy[id]<<" "<<Qy[id+ngl2]<<" "<<Qy[id+ngl2+ngl2]<<" \n";
+                for(int i=0; i<ngl; ++i)
+                {
+                    int id = ie*ngl2*Neq   +j*ngl+i;
+                    int xid = ie*ngl2   +j*ngl+i;
+                    plotfile <<x[xid]<<" "<<y[xid]<<" "<<Qx[id]<<" "<<Qx[id+ngl2]<<" "<<Qx[id+ngl2+ngl2]<<" "<<Qy[id]<<" "<<Qy[id+ngl2]<<" "<<Qy[id+ngl2+ngl2]<<" \n";
 
 
+                }
             }
         }
-    }
 
-}
+    }
 
     plotfile << "Test";
     plotfile.close();
@@ -416,10 +461,10 @@ void PlotMass(const int NumPlots, const dfloat PlotTimes[], const dfloat TotalMa
 
 
 void PlotTimeSeries(const int NumPlots, const dfloat TimeSeriesTimes[],
-                     const dfloat ChennaiTimeSeries[],const dfloat TuticorinTimeSeries[],
-                     const dfloat VisakhapatnamTimeSeries[],const dfloat ParadipTimeSeries[],
-                     const dfloat KochiTimeSeries[],const dfloat MormugaoTimeSeries[],
-                     const dfloat OkhaTimeSeries[])
+                    const dfloat ChennaiTimeSeries[],const dfloat TuticorinTimeSeries[],
+                    const dfloat VisakhapatnamTimeSeries[],const dfloat ParadipTimeSeries[],
+                    const dfloat KochiTimeSeries[],const dfloat MormugaoTimeSeries[],
+                    const dfloat OkhaTimeSeries[])
 {
 
     ostringstream os;

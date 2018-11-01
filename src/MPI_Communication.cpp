@@ -34,7 +34,8 @@ void ShareInputData(MPI_setup MPI,
                     int *FrictionTerms,
                     int *ConvertToKM,
                     int *calcArrivalTimes,
-                    int *createTimeSeries)
+                    int *createTimeSeries,
+                    int *calcMaximumElevation)
 {
 
 
@@ -72,6 +73,7 @@ void ShareInputData(MPI_setup MPI,
     MPI_Bcast (&*ConvertToKM,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast (&*calcArrivalTimes,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast (&*createTimeSeries,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast (&*calcMaximumElevation,1,MPI_INT,0,MPI_COMM_WORLD);
 //int *PlotVar,int *NumPlots,int *NumTimeChecks,int *Testcase, bool *ES,int *NumFlux, bool *FluxDifferencing, bool *Cartesian,int *rkorder, bool *rkSSP
 }
 

@@ -110,7 +110,8 @@ void deviceclass:: initDeviceVariables(const int N,
                                        const int PartialDry,
                                        const int FrictionTerms,
                                        const int CalcArrivalTimes,
-                                       const int CreateTimeSeries)
+                                       const int CreateTimeSeries,
+                                       const int CalcMaximumElevation)
 {
     const int Neq=3;
     const int GradNeq = Neq-1;
@@ -124,6 +125,7 @@ void deviceclass:: initDeviceVariables(const int N,
     h_0=h_0_in;
     calcArrivalTimes=CalcArrivalTimes;
     createTimeSeries = CreateTimeSeries;
+    calcMaximumElevation = CalcMaximumElevation;
     PartialDryTreatment=PartialDry;
     CalcFrictionTerms=FrictionTerms;
     dfloat TOL_PosPres = PosPresTOL;//pow(10.0,-4);
@@ -317,6 +319,14 @@ void deviceclass:: initDeviceVariables(const int N,
     }
 
 
+    if (calcMaximumElevation){
+        dfloat * maximumElevation = (dfloat*) calloc(NoSpaceDofs,sizeof(dfloat));
+        o_MaximumElevation = device.malloc(ngl2*Nelem*sizeof(dfloat));
+        o_MaximumElevation.copyFrom(maximumElevation);
+
+    }
+
+
 
 }
 
@@ -485,6 +495,10 @@ void deviceclass:: buildDeviceKernels(const int KernelVersion,
     {
         setArrivaltimes =   device.buildKernelFromSource("okl/Analysis/ArrivalTimes.okl","ArrivalTimes",info);
 
+    }
+
+    if(calcMaximumElevation){
+        setMaximumElevation=   device.buildKernelFromSource("okl/Analysis/MaximumElevation.okl","MaximumElevation",info);
     }
 
     if (ArtificialViscosity)
@@ -1105,6 +1119,11 @@ void deviceclass:: DGtimeloop(const int Nelem,
 
             setArrivaltimes(Nelem,t,o_q,o_B,o_ArrivalTimings);
         }
+
+        if (calcMaximumElevation){
+
+            setMaximumElevation(Nelem,t,o_q,o_B,o_MaximumElevation);
+        }
         //PRINT SOLUTION
         if(plotCount<NumPlots)
         {
@@ -1139,11 +1158,12 @@ void deviceclass:: DGtimeloop(const int Nelem,
                     }
                     if(ArtificialViscosity==1)
                     {
-			if (PlotVar!=0){
-                        o_ViscForPlot.copyTo(ViscPara);
-                        CollectViscPara(MPI,   MeshSplit, ViscPara, ViscPara_Global);
-                        PlotViscoseParameter(Nelem_global, ngl, x_phy_global,y_phy_global, ViscPara_Global, plotCount);
-			}
+                        if (PlotVar!=0)
+                        {
+                            o_ViscForPlot.copyTo(ViscPara);
+                            CollectViscPara(MPI,   MeshSplit, ViscPara, ViscPara_Global);
+                            PlotViscoseParameter(Nelem_global, ngl, x_phy_global,y_phy_global, ViscPara_Global, plotCount);
+                        }
 
 
 //                        CollectViscosity( MPI, MeshSplit, Qx,Qy, Qx_global, Qy_global);
@@ -1264,6 +1284,14 @@ void deviceclass:: DGtimeloop(const int Nelem,
             o_ArrivalTimings.copyTo(ArrivalTimings);
             PlotArrivalTimings(Nelem_global,ngl,x_phy_global,y_phy_global,ArrivalTimings);
             free(o_ArrivalTimings);
+
+        }
+
+        if (calcMaximumElevation){
+            dfloat * maximumElevations = (dfloat*) calloc(ngl2*Nelem_global,sizeof(dfloat));
+            o_MaximumElevation.copyTo(maximumElevations);
+            PlotMaximumElevation(Nelem_global,ngl,x_phy_global,y_phy_global,maximumElevations);
+            free(maximumElevations);
 
         }
     }

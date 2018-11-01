@@ -116,7 +116,8 @@ void ReadInputFile(int *N,
                    int * FrictionTerms,
                    int * ConvertToKM,
                    int * calcArrivalTimes,
-                   int * createTimeSeries)
+                   int * createTimeSeries,
+                   int * calcMaximumElevation)
 {
 
 //,dfloat T, dfloat g_const
@@ -227,6 +228,9 @@ void ReadInputFile(int *N,
     *calcArrivalTimes= getIntValue(current_string);
     std::getline(InputStream, current_string);
     *createTimeSeries= getIntValue(current_string);
+    std::getline(InputStream, current_string);
+    *calcMaximumElevation= getIntValue(current_string);
+
 
 
 
