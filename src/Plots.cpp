@@ -173,7 +173,7 @@ void PlotArrivalTimings(const int Nelem, const int ngl, const dfloat x[], const 
 
 }
 
-void PlotMaximumElevations(const int Nelem, const int ngl, const dfloat x[], const dfloat y[], const dfloat MaximumElevations[])
+void PlotMaximumElevation(const int Nelem, const int ngl, const dfloat x[], const dfloat y[], const dfloat MaximumElevations[])
 {
 
     ostringstream os;

@@ -41,7 +41,7 @@ public:
                              const int CreateTimeSeries,
                              const int CalcMaximumElevation);
 
-                             MaximumElevation
+
     void buildDeviceKernels(const int KernelVersion,
                             const int KernelVersionSTD,
                             const int Testcase,

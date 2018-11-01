@@ -18,7 +18,7 @@ void PlotTimeSeries(const int, const dfloat[], const dfloat[],const dfloat[],con
 void PlotMass(const int, const dfloat [], const dfloat []);
 
 void PlotArrivalTimings(const int, const int, const dfloat[],const dfloat[],const dfloat[]);
-void PlotMaximumElevations(const int, const int, const dfloat[],const dfloat[],const dfloat[]);
+void PlotMaximumElevation(const int, const int, const dfloat[],const dfloat[],const dfloat[]);
 
 #endif // plots_H
 
