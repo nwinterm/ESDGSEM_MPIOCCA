@@ -1,3 +1,18 @@
+//==================================================================================================================================
+// Copyright (c) 2019 Niklas Wintermeyer
+// Copyright (c) 2019 Gregor Gassner
+// Copyright (c) 2019 Andrew Winters
+//
+// This file is part of ESDGSEM_MPIOCCA (github.com/ESDGSEM_MPIOCCA). ESDGSEM_MPIOCCA is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3
+// of the License, or (at your option) any later version.
+//
+// ESDGSEM_MPIOCCA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License v3.0 for more details.
+//
+// You should have received a copy of the GNU General Public License along with ESDGSEM_MPIOCCA. If not, see <http://www.gnu.org/licenses/>.
+
+
 #include <iostream>
 #include <fstream>
 #include "occa.hpp"
@@ -521,15 +536,18 @@ int main(int argc, char *argv[])
                         {
                             //dfloat b_min = -7.3100;// in kilometers now
                             //h_0 = -b_min;
-                            //  cout << " Water displacement: " << h_0 << "\n";
-                            dfloat MinusOneMeter = -0.01;
-                            //b_global[id]    =   h_0 + min(MinusOneMeter,DGMesh.b_global[id]);
-                            b_global[id]    =   h_0 + min(MinusOneMeter,b_global[id]);
-                            //b_global[id]    =   h_0 + b_global[id];
+                            //  cout << " Water displacement: " << h_0 << "\n"
+
+                            //// TEST FOR ALL WET
+                            //dfloat MinusOneMeter = -0.01;
+                            //b_global[id]    =   h_0 + min(MinusOneMeter,b_global[id]);
+
+
+                            b_global[id]    =   h_0 + b_global[id];
                         }
                         else
                         {
-                            // b_global[id]    =   h_0 + b_global[id];
+                             b_global[id]    =   h_0 + b_global[id];
                         }
 
                     }

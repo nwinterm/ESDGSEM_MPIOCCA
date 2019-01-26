@@ -1,3 +1,18 @@
+//==================================================================================================================================
+// Copyright (c) 2019 Niklas Wintermeyer
+// Copyright (c) 2019 Gregor Gassner
+// Copyright (c) 2019 Andrew Winters
+//
+// This file is part of ESDGSEM_MPIOCCA (github.com/ESDGSEM_MPIOCCA). ESDGSEM_MPIOCCA is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3
+// of the License, or (at your option) any later version.
+//
+// ESDGSEM_MPIOCCA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License v3.0 for more details.
+//
+// You should have received a copy of the GNU General Public License along with ESDGSEM_MPIOCCA. If not, see <http://www.gnu.org/licenses/>.
+
+
 kernel void SurfaceKernelGradient(const int Nelem,
                                   const dfloat * restrict Jac,
                                   const int * restrict  ElemEdgeMasterSlave,
@@ -37,7 +52,7 @@ kernel void SurfaceKernelGradient(const int Nelem,
                         //THIS WAY THE STORAGE IN THE SHARED VARIABLES SHOULD ALWAYS BE IN THE CORRECT ORDER FOR THE LOCAL COORDINATES
 
                         const int idFaceLoc = ifa*ngl*(Neq-1)+ increment;        //get local id on the side storage SurfaceParts
- 
+
 
                         const int xid = ie*ngl2 + is*(ngl2-ngl) + j;
 
@@ -48,7 +63,7 @@ kernel void SurfaceKernelGradient(const int Nelem,
 
                         const int r_Masterslave = ElemEdgeMasterSlave[ie*4+iside];
                         const dfloat r_Jac = Jac[xid];
-			
+
 
 
                         qGradientX[id]              +=    r_Masterslave*  UStarX[idFaceLoc] * r_Jac;
@@ -98,7 +113,7 @@ kernel void SurfaceKernelGradient(const int Nelem,
                         //THIS WAY THE STORAGE IN THE SHARED VARIABLES SHOULD ALWAYS BE IN THE CORRECT ORDER FOR THE LOCAL COORDINATES
 
                         const int idFaceLoc = ifa*ngl*(Neq-1)+ increment;        //get local id on the side storage SurfaceParts
-     
+
 
                         const int xid = ie*ngl2+j*ngl + (1-is)*(ngl-1);
                         const int id= ie*ngl2*(Neq-1)+(1-is)*(ngl-1) +j*ngl;
